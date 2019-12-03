@@ -1,0 +1,53 @@
+module SWTbahnLite {
+
+    aspects
+        yellow 0x02
+        green 0x01
+        red 0x00
+        on 0x00
+        off 0x01
+    end
+
+    boards
+        master 0xDA000D680052EF
+        lightcontrol 0x05000D6B0083EC
+        onecontrol 0x05000D7500DBED
+    end
+
+    segments on master range from 1 to 29 address start at 0x00
+
+    signals on lightcontrol range from 1 to 6 number start at 0x00 aspects yellow, green, red initial red
+    signals on lightcontrol range from 7 to 14 number start at 0x07 aspects green, red initial red
+    signals lightcontrol
+        signalends = {
+            number 0x12
+            aspects on off
+            initial on
+        }
+        lanterns = {
+            number 0x13
+            aspects on off
+            initial on
+        }
+    end
+
+    points on onecontrol range from 1 to 7 number start at 0x00 initial normal
+
+    blocks
+        block1 = {
+            main seg1
+            buffer seg2 seg3
+            exit sig1
+            direction bidirectional
+            endElemId block2
+        }
+        block2 = {
+            main seg5
+            buffer seg4
+            exit sig2
+            direction clockwise
+            startElemId block1
+            endElemId point1
+        }
+    end
+}

@@ -1,0 +1,109 @@
+module SWTbahnLite {
+
+    aspects
+        yellow = {
+            value 0x02
+        }
+        green = {
+            value 0x01
+        }
+        red = {
+            value 0x00
+        }
+        on = {
+            value 0x00
+        }
+        off = {
+            value 0x01
+        }
+    end
+
+    boards
+        master = { 
+            uniqueId 0xDA000D680052EF
+        }
+        lightcontrol = {
+            uniqueId 0x05000D6B0083EC
+        }
+        onecontrol =  {
+            uniqueId 0x05000D7500DBED
+        }
+    end
+
+    segments master
+        seg1 = {
+            address 0x00
+        }
+        seg2 = {
+            address 0x01
+        }
+        seg3 = {
+            address 0x02
+        }
+        seg4 = {
+            address 0x03
+        }
+        seg5 = {
+            address 0x04
+        }
+        seg6 = {
+            address 0x05
+            startElemId point1
+        }
+        seg7 = {
+            address 0x07
+            startElemId point1
+        }
+    end
+
+    signals lightcontrol
+        sig1 = {
+            number 0x00
+            aspects yellow green red
+            initial red
+        }
+        sig2 = {
+            number 0x01
+            aspects yellow green red
+            initial red
+        }
+        sig7 = {
+            number 0x06
+            aspects green red
+            initial red
+        }
+        signalends = {
+            number 0x12
+            aspects on off
+            initial on
+        }
+    end
+
+    points onecontrol
+        point1 = {
+            number 0x00
+            initial normal
+            startElemId point1
+            endElemId seg6
+            sideElemId seg7
+        }
+    end
+
+    blocks
+        block1 = {
+            main seg1
+            buffer seg2 seg3
+            exit sig1
+            direction bidirectional
+            endElemId block2
+        }
+        block2 = {
+            main seg5
+            buffer seg4
+            exit sig2
+            direction clockwise
+            startElemId block1
+            endElemId point1
+        }
+    end
+}
