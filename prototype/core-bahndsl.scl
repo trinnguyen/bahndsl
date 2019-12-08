@@ -1,0 +1,229 @@
+module SWTbahn
+    # define all signal aspects
+    aspects
+        yellow 0x02
+        green 0x01
+        red 0x00
+        on 0x00
+        off 0x01
+        normal 0x00
+        reserve 0x01
+    end
+
+    # define all board, each board has ID and unique address
+    boards
+        master 0xDA000D680052EF
+        lightcontrol 0x05000D6B0083EC
+        onecontrol 0x05000D7500DBED
+    end
+
+    # define all segments on a board, each segment has ID and Address
+    segments master
+        seg1 0x00
+        seg2 0x01
+        seg3 0x02
+        seg4 0x03
+    end
+
+    # define signals on a board, each board has ID, number and aspects
+    signals lightcontrol
+        signal1 0x00
+            aspects yellow, green, red
+            initial red
+        signal2 0x01
+            aspects yellow, green, red
+            initial red
+        signal7 0x06
+            aspects 
+                green 0x02
+                red 0x09
+            end
+            initial red
+        signalends 0x12
+            aspects on, off
+            initial on
+    end
+
+    # define all points on a board, each point has ID, number and initial aspect, always has 2 aspects: normal and reserve
+    points onecontrol
+        point1 0x00 
+            aspects normal, reverse
+            initial normal
+            start seg1
+            side seg2
+            end seg3
+        point1 start:seg1, side: seg2 -> end:seg3
+        point2 0x00 
+            aspects normal, reverse
+            initial normal
+            start seg1
+            end seg3
+        point2 start:seg1 -> end:seg3
+        point3
+            aspects normal, reverse
+            initial normal
+            startin seg1
+            startout seg2
+            endin seg3
+            endout seg4
+    end
+
+    # define all blocks by combining defined segments and signals
+    blocks
+        block1 
+            startbuffer seg1
+            startsignal signal1
+            main seg2
+            endbuffer seg3
+            endsignal signal3
+            direction bidirectional
+        block2
+            startbuffer seg1
+            startsignal signal1
+            main seg2
+            direction clockwise
+        block3
+            startbuffer seg3
+            startsignal signal3
+            main seg2
+            direction anti-clockwise
+    end
+
+    # trains
+    trains
+    end
+
+    # layout
+    layout
+
+    end
+
+    # interlocking table
+    interlockingtable
+        route0
+            source signal3
+            destination signal6
+            direction anti-clockwise
+            path
+                seg31
+                seg30
+                seg29
+            end
+            points
+                point2 reverse
+            end
+            signals
+                signal5
+            end
+            conflicts
+                route1
+                route2
+                route3
+                route4
+                route5
+                route6
+                route7
+                route8
+                route9
+            end
+    end
+
+    # interlocking procedure - required
+    def interlocking_procedure(interlockingtable, source_signal, destination_signal, train)
+        var route = interlocking_table_get_route(source_signal, destination_signal)
+        if route == nil
+            return nil
+        end
+        
+        var not_grantable = route_is_unavailable_or_conflicted(interlockingtable, route)
+        if not_grantable
+            return nil
+        end
+        
+        var is_clear = route_is_clear(route, train)
+        if !is_clear
+            return nil
+        end
+        
+        block_route(route, train)
+        set_route_points_signals(route)
+        return route
+    end
+    
+    def route_is_unavailable_or_conflicted(route)
+        # Check if the route has been granted (unavailable)
+        if route.train != nil
+            return true
+
+        # Check conflicts
+        for item in route.conflicts
+            if item.train != nil
+                return true
+            end
+        end
+
+        return false
+    end
+
+    def route_is_clear(route, train)
+        # Signal at the route source has to be red (stop aspect)
+        if get_signal_aspect(route.source) != red
+            return false
+        end
+
+        # Signals of tracks that intersect the route have to be red (stop aspect)
+        for signal in route.signals
+            if get_signal_aspect(signal) != red
+                return false
+            end
+        end
+
+        # All track segments on the route have to be clear
+        var index = 0
+        for segment in route.path
+            var data = get_segment_data(segment)
+            if data.occupied
+                # Only the first track segment can be occupied, and only by the requesting train
+                if index == 0 && data.dcc_address_cnt == 1
+                    var query_train = get_train(data.dcc_addresses[0])
+                    if query_train != train
+                        return false;
+                    end
+                else
+                    return false;
+                end
+            end
+        end
+        return true
+    end
+
+    def block_route(route, train)
+        route.train = train
+    end
+
+    def set_route_points_signals(route)
+        # Set points
+        for point in route.points
+            if !switch_point(point.point, point.position)
+                # Execute route: Set point - invalid parameters
+                return false
+            end
+        end
+
+        # Set entry signal to green (proceed aspect)
+        if !set_signal(route.source, green)
+            # Set signal - invalid parameters
+            return false
+        end
+
+        return true
+    end
+
+    # Built-in functions
+    external def interlocking_table_get_route(interlockingtable, source_signal, destination_signal)
+    external def get_signal_aspect(signal)
+    external def get_segment_data(segment)
+    external def get_train(dcc_address)
+    external def switch_point(point, aspect)
+    external def set_signal(signal, aspect)
+end
