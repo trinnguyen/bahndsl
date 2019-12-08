@@ -1,0 +1,9 @@
+grammar de.uniba.swt.dsl.BahnDSL with org.eclipse.xtext.common.Terminals
+
+generate bahnDSL "http://www.uniba.de/swt/dsl/BahnDSL"
+
+Model:
+	greetings+=Greeting*;
+	
+Greeting:
+	'Hello' name=ID '!';
