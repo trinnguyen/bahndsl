@@ -49,23 +49,23 @@ module SWTbahn
         point1 0x00 
             aspects normal, reverse
             initial normal
-            start seg1
-            side seg2
-            end seg3
+            startseg seg1
+            sideseg seg2
+            endseg seg3
         point1 start:seg1, side: seg2 -> end:seg3
         point2 0x00 
             aspects normal, reverse
             initial normal
-            start seg1
-            end seg3
+            startseg seg1
+            endseg seg3
         point2 start:seg1 -> end:seg3
         point3
             aspects normal, reverse
             initial normal
-            startin seg1
-            startout seg2
-            endin seg3
-            endout seg4
+            startinseg seg1
+            startoutseg seg2
+            endinseg seg3
+            endoutseg seg4
     end
 
     # define all blocks by combining defined segments and signals
@@ -97,6 +97,9 @@ module SWTbahn
     layout
 
     end
+
+    # platform config
+    platform
 
     # interlocking table
     interlockingtable
@@ -149,7 +152,7 @@ module SWTbahn
         set_route_points_signals(route)
         return route
     end
-    
+
     def route_is_unavailable_or_conflicted(route)
         # Check if the route has been granted (unavailable)
         if route.train != nil
@@ -193,6 +196,7 @@ module SWTbahn
                     return false;
                 end
             end
+            index = index + 1
         end
         return true
     end
