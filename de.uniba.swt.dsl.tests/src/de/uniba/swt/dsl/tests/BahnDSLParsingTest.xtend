@@ -4,24 +4,45 @@
 package de.uniba.swt.dsl.tests
 
 import com.google.inject.Inject
-import de.uniba.swt.dsl.bahnDSL.Model
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
+import de.uniba.swt.dsl.bahnDSL.ModuleObject
 
 @ExtendWith(InjectionExtension)
 @InjectWith(BahnDSLInjectorProvider)
 class BahnDSLParsingTest {
 	@Inject
-	ParseHelper<Model> parseHelper
+	ParseHelper<ModuleObject> parseHelper
 	
 	@Test
 	def void loadModel() {
 		val result = parseHelper.parse('''
-			Hello Xtext!
+			module SWTbahn
+			    aspects
+			        yellow 0x02
+			        green 0x01
+			        red 0x00
+			        on 0x00
+			        off 0x01
+			        normal 0x00
+			        reserve 0x01
+			    end
+			    boards
+			        master 0xDA000D680052EF
+			        lightcontrol 0x05000D6B0083EC
+			        onecontrol 0x05000D7500DBED
+			    end
+			    segments master
+			        seg1 0x00
+			        seg2 0x01
+			        seg3 0x02
+			        seg4 0x03
+			    end
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors

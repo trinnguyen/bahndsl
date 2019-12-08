@@ -1,9 +1,108 @@
 grammar de.uniba.swt.dsl.BahnDSL with org.eclipse.xtext.common.Terminals
 
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
 generate bahnDSL "http://www.uniba.de/swt/dsl/BahnDSL"
 
-Model:
-	greetings+=Greeting*;
+ModuleObject:
+	'module' name=ID
+		(properties+=ModuleProperty)*
+	'end';
 	
-Greeting:
-	'Hello' name=ID '!';
+ModuleProperty:
+	AspectsProperty 
+	| BoardsProperty 
+	| SegmentsProperty 
+	| SignalsProperty 
+	| PointsProperty 
+	| BlocksProperty 
+	| TrainsProperty 
+	| LayoutProperty 
+	| PlatformElement;
+
+AspectsProperty :
+	'aspects'
+		(items+=AspectElement)*
+	'end';
+BoardsProperty :
+	'boards'
+		(items+=BoardElement)*
+	'end';
+SegmentsProperty :
+	'segments' boardId=ID
+		(items+=SegmentElement)*
+	'end';
+SignalsProperty :
+	'signals' boardId=ID
+		(items+=SignalElement)*
+	'end';
+PointsProperty :
+	'points' boardId=ID
+		(items+=PointElement)*
+	'end';
+BlocksProperty :
+	'blocks'
+		(items+=BlockElement)*
+	'end';
+TrainsProperty :
+	'trains'
+		(items+=TrainElement)*
+	'end';
+LayoutProperty :
+	'layout'
+		(items+=LayoutElement)*
+	'end';
+PlatformElement :
+	'platform';
+		
+AspectElement :
+	id=ID value=HEX
+;
+
+BoardElement :
+	id=ID uniqueId=HEX
+;
+
+SegmentElement :
+	id=ID address=HEX
+;
+
+SignalElement :
+	id=ID number=HEX 
+		'aspects' (aspects+=[AspectElement])+
+		'initial' initial=[AspectElement] 
+;
+
+PointElement :
+	id=ID number=HEX
+		'aspects' (aspects+=[AspectElement])+
+		'initial' initial=[AspectElement]
+		'startseg' startseg=ID
+		'endseg' endseg=ID
+		('sideseg' sideseg=ID)?
+;
+
+BlockElement :
+	id=ID
+	'startbuffer' startbuffer=ID
+	'startsignal' startsignal=ID
+	'main' main=ID
+	'endbuffer' endbuffer=ID
+	'endsignal' endsignal=ID
+	'direction' direction=DIRECTION
+;
+
+TrainElement :
+	id=ID address=HEX
+;
+
+LayoutElement :
+	start=ID '<->' end=ID
+;
+
+enum DIRECTION:
+	Clockwise='clockwise' | AntiClockwise='anti-clockwise' | Bidirectional='bidirectional'
+;
+
+terminal HEX:
+	('0x'|'0X') ('0'..'9'|'a'..'f'|'A'..'F')+;
