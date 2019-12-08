@@ -9,5 +9,6 @@ generated/
 generated-sources/
 src-gen/
 xtend-gen/
+test-bin/
 .DS_Store
 *.xml_gen
