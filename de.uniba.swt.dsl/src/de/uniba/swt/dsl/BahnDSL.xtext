@@ -83,13 +83,19 @@ PointElement :
 ;
 
 BlockElement :
-	id=ID
-	'startbuffer' startbuffer=ID
-	'startsignal' startsignal=ID
-	'main' main=ID
-	'endbuffer' endbuffer=ID
-	'endsignal' endsignal=ID
-	'direction' direction=DIRECTION
+	BidirectionalBlockElement | ClockwiseBlockElement | AntiClockwiseBlockElement
+;
+
+BidirectionalBlockElement:
+	id=ID 'buffer' ':' startSeg=ID ',' startSignal=ID '<->' 'main' ':' mainSeg=ID '<->' 'buffer' ':' endSeg=ID ',' endSignal=ID
+;
+
+ClockwiseBlockElement:
+	id=ID 'buffer' ':' startSeg=ID ',' startSignal=ID '->' 'main' ':' mainSeg=ID
+;
+
+AntiClockwiseBlockElement:
+	id=ID 'main' ':' mainSeg=ID '<-' 'buffer' ':' endSeg=ID ',' endSignal=ID
 ;
 
 TrainElement :
