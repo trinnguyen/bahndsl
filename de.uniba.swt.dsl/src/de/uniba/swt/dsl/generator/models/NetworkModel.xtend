@@ -68,6 +68,13 @@ class NetworkModel {
 	long number
 	Set<Aspect> aspects
 	Aspect initialAspect
+	
+	override dumpYaml(String indent) {
+		val builder = new StringBuilder
+		builder.append(indent).append("- id: " + id).append("\n");
+		builder.append(indent).append("  number: " + number.hexString).append("\n");
+		return builder.toString
+	}
 }
 
 @Data class Point extends Element {
@@ -75,6 +82,13 @@ class NetworkModel {
 	long number
 	Set<Aspect> aspects
 	Aspect initialAspect
+	
+	override dumpYaml(String indent) {
+		val builder = new StringBuilder
+		builder.append(indent).append("- id: " + id).append("\n");
+		builder.append(indent).append("  number: " + number.hexString).append("\n");
+		return builder.toString
+	}
 }
 
 @Data class Aspect extends Element {

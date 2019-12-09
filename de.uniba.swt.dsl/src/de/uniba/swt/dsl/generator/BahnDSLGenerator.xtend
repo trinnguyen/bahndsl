@@ -84,6 +84,26 @@ class BahnDSLGenerator extends AbstractGenerator {
 			}
 		}
 		
+		// signals
+		if (signals !== null && signals.size > 0) {
+			val indent = SINGLE_INDENT
+			builder.append(indent).append("- id: " + signals.get(0).boardId).appendLine
+			builder.append(indent).append(indent).append("signals-board: ").appendLine
+			for (s: signals) {
+				builder.append(s.dumpYaml(indent + SINGLE_INDENT + SINGLE_INDENT));
+			}
+		}
+		
+		// points
+		if (points !== null && points.size > 0) {
+			val indent = SINGLE_INDENT
+			builder.append(indent).append("- id: " + points.get(0).boardId).appendLine
+			builder.append(indent).append(indent).append("points-board: ").appendLine
+			for (p: points) {
+				builder.append(p.dumpYaml(indent + SINGLE_INDENT + SINGLE_INDENT));
+			}
+		}
+		
 		return builder.toString
 	}
 	

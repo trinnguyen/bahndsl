@@ -69,17 +69,16 @@ SegmentElement :
 
 SignalElement :
 	id=ID number=HEX 
-		'aspects' (aspects+=[AspectElement])+
-		'initial' initial=[AspectElement] 
+		'aspects' (aspects+=ID)+
+		'initial' initial=ID 
 ;
 
 PointElement :
-	id=ID number=HEX
-		'aspects' (aspects+=[AspectElement])+
-		'initial' initial=[AspectElement]
-		'startseg' startseg=ID
-		'endseg' endseg=ID
-		('sideseg' sideseg=ID)?
+	id=ID number=HEX (pointAspects+=PointAspectElement)+ 'initial' initial=ID
+;
+
+PointAspectElement :
+	id=ID ':' segStart=ID direction=DIRECTION segEnd=ID
 ;
 
 BlockElement :
@@ -87,15 +86,15 @@ BlockElement :
 ;
 
 BidirectionalBlockElement:
-	id=ID 'buffer' ':' startSeg=ID ',' startSignal=ID '<->' 'main' ':' mainSeg=ID '<->' 'buffer' ':' endSeg=ID ',' endSignal=ID
+	id=ID 'buffer' ':' startSeg=ID ',' startSignal=ID directionStart=DIRECTION  'main' ':' mainSeg=ID directionEnd=DIRECTION  'buffer' ':' endSeg=ID ',' endSignal=ID
 ;
 
 ClockwiseBlockElement:
-	id=ID 'buffer' ':' startSeg=ID ',' startSignal=ID '->' 'main' ':' mainSeg=ID
+	id=ID 'buffer' ':' startSeg=ID ',' startSignal=ID direction=DIRECTION  'main' ':' mainSeg=ID
 ;
 
 AntiClockwiseBlockElement:
-	id=ID 'main' ':' mainSeg=ID '<-' 'buffer' ':' endSeg=ID ',' endSignal=ID
+	id=ID 'main' ':' mainSeg=ID direction=DIRECTION 'buffer' ':' endSeg=ID ',' endSignal=ID
 ;
 
 TrainElement :
@@ -107,7 +106,7 @@ LayoutElement :
 ;
 
 enum DIRECTION:
-	Clockwise='clockwise' | AntiClockwise='anti-clockwise' | Bidirectional='bidirectional'
+	Clockwise='->' | AntiClockwise='<-' | Bidirectional='<->'
 ;
 
 terminal HEX:
