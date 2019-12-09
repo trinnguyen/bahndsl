@@ -2,7 +2,7 @@ module SWTbahn2
 
     # interlocking procedure - required
     def interlocking_procedure(source_signal, destination_signal, train)
-        var route = find route from source_signal to destination_signal
+        var route = get route from source_signal to destination_signal
         if route is nil
             return nil
         end
@@ -18,7 +18,7 @@ module SWTbahn2
         end
         
         # block route
-        route.train = train
+        grant route to train
 
         # set points and signals
         set_route_points_signals(route)
@@ -43,13 +43,13 @@ module SWTbahn2
 
     def route_is_clear(route, train)
         # Signal at the route source has to be red (stop aspect)
-        if signal route.source is red
+        if get route entry signal is red
             return false
         end
 
         # Signals of tracks that intersect the route have to be red (stop aspect)
-        for signal in route.signals
-            if signal signal is not red
+        for flankSignal in flank route signals
+            if get signal is not red
                 return false
             end
         end
@@ -58,7 +58,7 @@ module SWTbahn2
         var index = 0
         for segment in route.path
             if segment is occupied
-                if index == 0 and segment is not occupied by train
+                if index is 0 and segment is not occupied by train
                     return false
                 end
             else
@@ -72,13 +72,14 @@ module SWTbahn2
     def set_route_points_signals(route)
         # Set points
         for point in route.points
-            if not (switch point point.point point.position)
+            var success = set point to position
+            if not success
                 return false
             end
         end
 
         # Set entry signal to green (proceed aspect)
-        if set signal route.source green
+        if set signal route.source to green
             # Set signal - invalid parameters
             return false
         end

@@ -27,27 +27,22 @@ module SWTbahn
 
     # define signals on a board, each board has ID, number and aspects
     signals lightcontrol
-        signal1 0x00
-            aspects yellow, green, red
-            initial red
-        signal2 0x01
-            aspects yellow, green, red
-            initial red
-        signal7 0x06
-            aspects 
-                green 0x02
-                red 0x09
-            end
-            initial red
-        signalends 0x12
-            aspects on, off
+        signal1 0x00 aspects yellow green red initial red
+        signalends 0x12 
+            aspects
+                on 0x00
+                off 0x01
             initial on
     end
 
     # define all points on a board, each point has ID, number and initial aspect, always has 2 aspects: normal and reserve
     points onecontrol
-        point1 0x00 normal:seg1->seg2 reverse:seg3->seg2 initial normal
-        point1 0x00 normal:seg1->seg2 reverse:seg3->seg4 initial normal
+        point1 0x00 
+            aspects 
+                normal 0x00:seg1->seg2
+                reverse 0x01:seg3->seg2
+            initial normal
+        point2 0x00 aspects normal:seg1->seg2 reverse:seg3->seg4 initial normal
     end
 
     # define all blocks by combining defined segments and signals
@@ -55,6 +50,7 @@ module SWTbahn
         block1 buffer:seg1, signal1 <-> main:seg2 <-> buffer:seg3, signal3
         block2 buffer:seg1, signal1 -> main:seg2
         block3 main:seg2 <- buffer: seg3, signal3
+        block4 main:seg2 <- buffer: seg3, signal3
     end
 
     # trains
@@ -63,10 +59,20 @@ module SWTbahn
 
     # layout
     layout
-    
+        block1 -- block2 -- point1.normal.start
+        point1.normal.end -> block3a -> point2.normal.start
+        point1.reverse.end -> block3b -> point2.reverse.start
+        point2.normal.end -> block5b -> point4.reverse.start
+        point2.reverse.end -> block5a -> point4.normal.start
+        point4.normal.end -> block6 -> block1
     end
 
-    # platform config
+    # required interlocking procedure
+    def interlocking_procedure(source_signal, destination_signal, train)
+        
+    end
+
+    # train station platform config
     platform
 
     # interlocking table
@@ -97,5 +103,6 @@ module SWTbahn
                 route8
                 route9
             end
+            train train1
     end
 end
