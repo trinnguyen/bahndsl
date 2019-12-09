@@ -49,30 +49,49 @@ class BahnDSLGenerator extends AbstractGenerator {
 			}
 			
 			// bidib_board_config
-			fsa.generateFile("bidib_board_config.yml", compileBoardConfig(network.boards))
+			fsa.generateFile("bidib_board_config.yml", dumpBoardConfig(network.name, network.boards))
 			
 			// bidib_track_config
-			fsa.generateFile("bidib_track_config.yml", compileTrackConfig(network.segments, network.signals, network.points))
+			fsa.generateFile("bidib_track_config.yml", dumpTrackConfig(network.segments, network.signals, network.points))
 			
 			// bidib_train_config
-			fsa.generateFile("bidib_train_config.yml", network.trains.compileTrainConfig)
+			fsa.generateFile("bidib_train_config.yml", dumpTrainConfig(network.trains))
 		}
 	}
 	
-	def compileBoardConfig(Set<Board> boards) {
-		val builder = new StringBuilder("# BiDiB board configuration").append("\n")
-		builder.append("boards:").append("\n")
+	def dumpBoardConfig(String name, Set<Board> boards) {
+		val builder = new StringBuilder("# BiDiB board configuration: " + name).appendLine
+		builder.append("boards:").appendLine
 		for (b: boards) {
-			var prefix = "  ";
-			builder.append(prefix).append("- id: " + b.id).append("\n");
-			builder.append(prefix).append("  unique-id: " + b.uniqueId.hexString).append("\n")
-			if (b.features !== null && b.features.size > 0) {
-				prefix += "  ";
-				for (f: b.features) {
-					builder.append(prefix).append("- number: " + f.number.hexString).append("\n")
-					builder.append(prefix).append("  value: " + f.value.hexString).append("\n")
-				}
+			builder.append(b.dumpYaml(SINGLE_INDENT))
+		}
+		return builder.toString
+	}
+	
+	val SINGLE_INDENT = "  "
+	
+	def dumpTrackConfig(Set<Segment> segments, Set<Signal> signals, Set<Point> points) {
+		val builder = new StringBuilder("# Track configuration").appendLine
+		builder.append("boards:").appendLine
+		
+		// segments
+		if (segments !== null && segments.size > 0) {
+			val indent = SINGLE_INDENT
+			builder.append(indent).append("- id: " + segments.get(0).boardId).appendLine
+			builder.append(indent).append(indent).append("segments: ").appendLine
+			for (s: segments) {
+				builder.append(s.dumpYaml(indent + SINGLE_INDENT + SINGLE_INDENT));
 			}
+		}
+		
+		return builder.toString
+	}
+	
+	def dumpTrainConfig(Set<Train> trains) {
+		val builder = new StringBuilder("# Train configuration").appendLine
+		builder.append("trains:").appendLine
+		for (t: trains) {
+			builder.append(t.dumpYaml(SINGLE_INDENT))
 		}
 		return builder.toString
 	}
@@ -190,6 +209,10 @@ class BahnDSLGenerator extends AbstractGenerator {
 	}
 	
 	def hexString(long value) {
-		return "0x" + (value < 16 ? "0" : "") + Long.toHexString(value).toUpperCase
+		Util.toHexString(value)
+	}
+	
+	def appendLine(StringBuilder builder) {
+		return builder.append("\n")
 	}
 }

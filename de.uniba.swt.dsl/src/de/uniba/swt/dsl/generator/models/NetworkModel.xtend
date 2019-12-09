@@ -17,11 +17,33 @@ class NetworkModel {
 
 @Data class Element {
 	String id
+	
+	def hexString(long value) {
+		Util.toHexString(value)
+	}
+	
+	def dumpYaml(String indent) {
+		return indent + "- id: " + id + "\n"
+	}
 }
 
 @Data class Board extends Element {
 	long uniqueId
 	Set<BoardFeature> features
+	
+	override dumpYaml(String indent) {
+		val builder = new StringBuilder
+		builder.append(indent).append("- id: " + id).append("\n");
+		builder.append(indent).append("  unique-id: " + uniqueId.hexString).append("\n")
+		if (features !== null && features.size > 0) {
+			val findent = indent + "  "
+			for (f: features) {
+				builder.append(findent).append("- number: " + f.number.hexString).append("\n")
+				builder.append(findent).append("  value: " + f.value.hexString).append("\n")
+			}
+		}
+		return builder.toString
+	}
 }
 
 @Data class BoardFeature {
@@ -32,6 +54,13 @@ class NetworkModel {
 @Data class Segment extends Element {
 	String boardId
 	long address
+	
+	override dumpYaml(String indent) {
+		val builder = new StringBuilder
+		builder.append(indent).append("- id: " + id).append("\n");
+		builder.append(indent).append("  address: " + address.hexString).append("\n");
+		return builder.toString
+	}
 }
 
 @Data class Signal extends Element {
@@ -54,6 +83,13 @@ class NetworkModel {
 
 @Data class Train extends Element {
 	long dccAddress
+	
+	override dumpYaml(String indent) {
+		val builder = new StringBuilder
+		builder.append(indent).append("- id: " + id).append("\n");
+		builder.append(indent).append("  dcc-address: " + dccAddress.hexString).append("\n");
+		return builder.toString
+	}
 }
 
 @Data class LayoutConnector {
