@@ -49,7 +49,7 @@ class BahnDSLGenerator extends AbstractGenerator {
 			}
 			
 			// bidib_board_config
-			fsa.generateFile("bidib_board_config.yml", network.compileBoardConfig)
+			fsa.generateFile("bidib_board_config.yml", compileBoardConfig(network.boards))
 			
 			// bidib_track_config
 			fsa.generateFile("bidib_track_config.yml", compileTrackConfig(network.segments, network.signals, network.points))
@@ -58,18 +58,36 @@ class BahnDSLGenerator extends AbstractGenerator {
 			fsa.generateFile("bidib_train_config.yml", network.trains.compileTrainConfig)
 		}
 	}
-		
+	
+	def compileBoardConfig(Set<Board> boards) {
+		val builder = new StringBuilder("# BiDiB board configuration").append("\n")
+		builder.append("boards:").append("\n")
+		for (b: boards) {
+			var prefix = "  ";
+			builder.append(prefix).append("- id: " + b.id).append("\n");
+			builder.append(prefix).append("  unique-id: " + b.uniqueId.hexString).append("\n")
+			if (b.features !== null && b.features.size > 0) {
+				prefix += "  ";
+				for (f: b.features) {
+					builder.append(prefix).append("- number: " + f.number.hexString).append("\n")
+					builder.append(prefix).append("  value: " + f.value.hexString).append("\n")
+				}
+			}
+		}
+		return builder.toString
+	}
+	
 	def compileBoardConfig(NetworkModel model) '''
 		# BiDiB board configuration
 		boards:
 		«FOR b:model.boards»
-		  - id: «b.id»
-		    unique-id: «b.uniqueId.hexString»
+		  «"  "»- id: «b.id»
+		  «"    "»unique-id: «b.uniqueId.hexString»
 		    «IF b.features !== null && b.features.size > 0»
-		    features:
+		  «"    "»features:
 		    «FOR f: b.features»
-		      - number: «f.number.hexString»
-		        value: «f.value.hexString»
+		    «"    "»- number: «f.number.hexString»
+		    «"      "»value: «f.value.hexString»
 		    «ENDFOR»
 		    «ENDIF»
 		«ENDFOR»
@@ -80,27 +98,27 @@ class BahnDSLGenerator extends AbstractGenerator {
 		boards:
 		«IF segments !== null && segments.size > 0»
 		  - id: «segments.get(0).boardId»
-		  	segments:
-		  	  «FOR s:segments»
-		  	    - id: «s.id»
-		  	      address: «s.address.hexString»
-		  	  «ENDFOR»
+		    segments:
+		    «FOR s:segments»
+		    - id: «s.id»
+		    address: «s.address.hexString»
+		    «ENDFOR»
 		«ENDIF»
 		«IF signals !== null && signals.size > 0»
 		  - id: «signals.get(0).boardId»
 		  	signals-board:
 		  	  «FOR s:signals»
-		  	    - id: «s.id»
-		  	      number: «s.number.hexString»
+		  	  - id: «s.id»
+		  	  number: «s.number.hexString»
 		  	  «ENDFOR»
 		«ENDIF»
 		«IF points !== null && points.size > 0»
 		  - id: «points.get(0).boardId»
 		  	points-board:
-		  	  «FOR p:points»
-		  	    - id: «p.id»
-		  	      number: «p.number.hexString»
-		  	  «ENDFOR»
+		  	«FOR p:points»
+		  	- id: «p.id»
+		  	number: «p.number.hexString»
+		  	«ENDFOR»
 		«ENDIF»
 	'''
 	
