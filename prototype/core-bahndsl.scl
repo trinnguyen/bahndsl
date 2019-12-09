@@ -70,23 +70,9 @@ module SWTbahn
 
     # define all blocks by combining defined segments and signals
     blocks
-        block1 
-            startbuffer seg1
-            startsignal signal1
-            main seg2
-            endbuffer seg3
-            endsignal signal3
-            direction bidirectional
-        block2
-            startbuffer seg1
-            startsignal signal1
-            main seg2
-            direction clockwise
-        block3
-            startbuffer seg3
-            startsignal signal3
-            main seg2
-            direction anti-clockwise
+        block1 buffer:seg1, signal1 <-> main:seg2 <-> buffer:seg3, signal3
+        block2 buffer:seg1, signal1 -> main:seg2
+        block3 main:seg2 <- buffer: seg3, signal3
     end
 
     # trains

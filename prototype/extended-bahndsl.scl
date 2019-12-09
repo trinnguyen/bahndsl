@@ -1,6 +1,0 @@
-# Extended BahnDSL with Syntactic sugar
-module ExtendedSWTbahn
-    block1 buffer:seg1, signal1 <-> main:seg2, signal2 <-> buffer:seg3, signal3
-    block2 buffer:seg1, signal1 -> main:seg2
-    block3 main:seg2 <- buffer: seg3, signal3
-end
