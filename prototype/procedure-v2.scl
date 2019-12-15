@@ -28,7 +28,7 @@ module SWTbahn2
 
     def route_is_unavailable_or_conflicted(route)
         # Check if the route has been granted (unavailable)
-        if route.train not nil
+        if route is not available
             return true
 
         # Check conflicts
@@ -72,7 +72,7 @@ module SWTbahn2
     def set_route_points_signals(route)
         # Set points
         for point in route.points
-            var success = set point to position
+            var success = set point to position # position can be normal/reserve
             if not success
                 return false
             end
