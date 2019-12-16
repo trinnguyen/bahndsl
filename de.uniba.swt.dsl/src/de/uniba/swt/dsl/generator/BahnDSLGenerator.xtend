@@ -3,20 +3,12 @@
  */
 package de.uniba.swt.dsl.generator
 
+import com.google.inject.Inject
+import de.uniba.swt.dsl.bahnDSL.ModuleObject
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
-import de.uniba.swt.dsl.bahnDSL.ModuleObject
-import de.uniba.swt.dsl.bahnDSL.BoardsProperty
-import de.uniba.swt.dsl.bahnDSL.SegmentsProperty
-import de.uniba.swt.dsl.bahnDSL.SignalsProperty
-import de.uniba.swt.dsl.bahnDSL.AspectsProperty
-import de.uniba.swt.dsl.bahnDSL.PointsProperty
-import de.uniba.swt.dsl.bahnDSL.TrainsProperty
-import de.uniba.swt.dsl.generator.models.*
-import java.util.Set
-import de.uniba.swt.dsl.generator.models.NetworkModel
 
 /**
  * Generates code from your model files on save.
@@ -25,214 +17,25 @@ import de.uniba.swt.dsl.generator.models.NetworkModel
  */
 class BahnDSLGenerator extends AbstractGenerator {
 
+	@Inject 
+	BidibYamlConfigGenerator bidibGenerator
+	
+	@Inject
+	ModelConverter modelConverter
+
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		var e = resource.contents.get(0)
 		if (e instanceof ModuleObject) {
-			var network = new NetworkModel()
-			network.name = e.name
-			for (property : e.properties) {
-				switch property {
-					// aspects
-					AspectsProperty:
-						network.aspects = convertAspects(property)	
-					BoardsProperty:
-						network.boards = convertBoards(property)
-					SegmentsProperty:
-						network.segments = convertSegments(property)
-					SignalsProperty:
-						network.signals = convertSignals(property)
-					PointsProperty:
-						network.points = convertPoints(property)
-					TrainsProperty:
-						network.trains = convertTrains(property)
-				}
-			}
+			val network = modelConverter.buildNetworkModel(e)
 			
 			// bidib_board_config
-			fsa.generateFile("bidib_board_config.yml", dumpBoardConfig(network.name, network.boards))
+			fsa.generateFile("bidib_board_config.yml", bidibGenerator.dumpBoardConfig(network.name, network.boards))
 			
 			// bidib_track_config
-			fsa.generateFile("bidib_track_config.yml", dumpTrackConfig(network.segments, network.signals, network.points))
+			fsa.generateFile("bidib_track_config.yml", bidibGenerator.dumpTrackConfig(network.name, network.segments, network.signals, network.points))
 			
 			// bidib_train_config
-			fsa.generateFile("bidib_train_config.yml", dumpTrainConfig(network.trains))
+			fsa.generateFile("bidib_train_config.yml", bidibGenerator.dumpTrainConfig(network.name, network.trains))
 		}
-	}
-	
-	def dumpBoardConfig(String name, Set<Board> boards) {
-		val builder = new StringBuilder("# BiDiB board configuration: " + name).appendLine
-		builder.append("boards:").appendLine
-		for (b: boards) {
-			builder.append(b.dumpYaml(SINGLE_INDENT))
-		}
-		return builder.toString
-	}
-	
-	val SINGLE_INDENT = "  "
-	
-	def dumpTrackConfig(Set<Segment> segments, Set<Signal> signals, Set<Point> points) {
-		val builder = new StringBuilder("# Track configuration").appendLine
-		builder.append("boards:").appendLine
-		
-		// segments
-		if (segments !== null && segments.size > 0) {
-			val indent = SINGLE_INDENT
-			builder.append(indent).append("- id: " + segments.get(0).boardId).appendLine
-			builder.append(indent).append(indent).append("segments: ").appendLine
-			for (s: segments) {
-				builder.append(s.dumpYaml(indent + SINGLE_INDENT + SINGLE_INDENT));
-			}
-		}
-		
-		// signals
-		if (signals !== null && signals.size > 0) {
-			val indent = SINGLE_INDENT
-			builder.append(indent).append("- id: " + signals.get(0).boardId).appendLine
-			builder.append(indent).append(indent).append("signals-board: ").appendLine
-			for (s: signals) {
-				builder.append(s.dumpYaml(indent + SINGLE_INDENT + SINGLE_INDENT));
-			}
-		}
-		
-		// points
-		if (points !== null && points.size > 0) {
-			val indent = SINGLE_INDENT
-			builder.append(indent).append("- id: " + points.get(0).boardId).appendLine
-			builder.append(indent).append(indent).append("points-board: ").appendLine
-			for (p: points) {
-				builder.append(p.dumpYaml(indent + SINGLE_INDENT + SINGLE_INDENT));
-			}
-		}
-		
-		return builder.toString
-	}
-	
-	def dumpTrainConfig(Set<Train> trains) {
-		val builder = new StringBuilder("# Train configuration").appendLine
-		builder.append("trains:").appendLine
-		for (t: trains) {
-			builder.append(t.dumpYaml(SINGLE_INDENT))
-		}
-		return builder.toString
-	}
-	
-	def compileBoardConfig(NetworkModel model) '''
-		# BiDiB board configuration
-		boards:
-		«FOR b:model.boards»
-		  «"  "»- id: «b.id»
-		  «"    "»unique-id: «b.uniqueId.hexString»
-		    «IF b.features !== null && b.features.size > 0»
-		  «"    "»features:
-		    «FOR f: b.features»
-		    «"    "»- number: «f.number.hexString»
-		    «"      "»value: «f.value.hexString»
-		    «ENDFOR»
-		    «ENDIF»
-		«ENDFOR»
-	'''
-	
-	def compileTrackConfig(Set<Segment> segments, Set<Signal> signals, Set<Point> points) '''
-		# Track configuration
-		boards:
-		«IF segments !== null && segments.size > 0»
-		  - id: «segments.get(0).boardId»
-		    segments:
-		    «FOR s:segments»
-		    - id: «s.id»
-		    address: «s.address.hexString»
-		    «ENDFOR»
-		«ENDIF»
-		«IF signals !== null && signals.size > 0»
-		  - id: «signals.get(0).boardId»
-		  	signals-board:
-		  	  «FOR s:signals»
-		  	  - id: «s.id»
-		  	  number: «s.number.hexString»
-		  	  «ENDFOR»
-		«ENDIF»
-		«IF points !== null && points.size > 0»
-		  - id: «points.get(0).boardId»
-		  	points-board:
-		  	«FOR p:points»
-		  	- id: «p.id»
-		  	number: «p.number.hexString»
-		  	«ENDFOR»
-		«ENDIF»
-	'''
-	
-	def compileTrainConfig(Set<Train> trains) '''
-		# Train configuration
-		trains:
-		«FOR t:trains»
-		  - id: «t.id»
-		    dcc-address: «t.dccAddress.hexString»
-		«ENDFOR»
-	'''
-		
-	def convertAspects(AspectsProperty property) {
-		return property.items.map[p | new Aspect(
-			p.id,
-			p.value.longValue
-		)].toSet
-	}
-		
-	def convertBoards(BoardsProperty property) {
-		return property.items.map[p | new Board(
-			p.id,
-			p.uniqueId.longValue,
-			null
-		)].toSet
-	}
-	
-	def convertSegments(SegmentsProperty property) {
-		return property.items.map[p | new Segment(
-			p.id,
-			property.boardId,
-			p.address.longValue
-		)].toSet
-	}
-	
-	def convertSignals(SignalsProperty property) {
-		return property.items.map[p | new Signal(
-			p.id,
-			property.boardId,
-			p.number.longValue,
-			null,
-			null
-		)].toSet
-	}
-	
-	def convertPoints(PointsProperty property) {
-		return property.items.map[p | new Point(
-			p.id,
-			property.boardId,
-			p.number.longValue,
-			null,
-			null
-		)].toSet
-	}
-	
-	def convertTrains(TrainsProperty property) {
-		return property.items.map[p | new Train(
-			p.id,
-			p.address.longValue
-		)].toSet
-	}
-	
-	def getLongValue(String value) {
-		if (value !== null && value.toLowerCase.startsWith("0x")) {
-			return Long.parseLong(value.substring(2), 16)
-		}
-		
-		return 0
-	}
-	
-	def hexString(long value) {
-		Util.toHexString(value)
-	}
-	
-	def appendLine(StringBuilder builder) {
-		return builder.append("\n")
 	}
 }
