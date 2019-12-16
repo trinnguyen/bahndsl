@@ -3,9 +3,15 @@
  */
 package de.uniba.swt.dsl
 
+import de.uniba.swt.dsl.conversion.BahnDslValueConverterService
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
  */
 class BahnDSLRuntimeModule extends AbstractBahnDSLRuntimeModule {
+	
+	override bindIValueConverterService() {
+		typeof(BahnDslValueConverterService)
+	}
+	
 }
