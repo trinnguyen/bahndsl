@@ -1,5 +1,57 @@
 module SWTbahn2
 
+    # interlocking table (compiled)
+    interlockingtable
+        route0
+            source signal3
+            destination signal6
+            direction anti-clockwise
+            path
+                seg31
+                seg30
+                seg29
+            end
+            points
+                point2 reverse
+            end
+            signals
+                signal5
+            end
+            conflicts
+                route1
+                route2
+                route3
+                route4
+                route5
+                route6
+                route7
+                route8
+                route9
+            end
+            train train1
+    end
+
+    # interlocking table (defined)
+    interlockingtable
+        route0
+            source block1
+            destination block5
+            direction anti-clockwise
+            path
+                block2
+                block3
+                block4
+            end
+            points
+                point2 reverse
+            end
+            conflicts
+                route1
+                route2
+            end
+            train train1
+    end
+
     # interlocking procedure - required
     def interlocking_procedure(source_signal, destination_signal, train)
         var route = get route from source_signal to destination_signal
@@ -58,7 +110,7 @@ module SWTbahn2
         var index = 0
         for segment in route.path
             if segment is occupied
-                if index is 0 and segment is not occupied by train
+                if index == 0 and segment is not occupied by train
                     return false
                 end
             else

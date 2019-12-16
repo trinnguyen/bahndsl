@@ -18,14 +18,14 @@ ModuleProperty:
 	| BlocksProperty 
 	| TrainsProperty 
 	| LayoutProperty 
-	| PlatformElement;
+	| PlatformProperty;
 
 AspectsProperty :
-	'aspects'
+	{AspectsProperty} 'aspects'
 		(items+=AspectElement)*
 	'end';
 BoardsProperty :
-	'boards'
+	{BoardsProperty} 'boards'
 		(items+=BoardElement)*
 	'end';
 SegmentsProperty :
@@ -41,26 +41,44 @@ PointsProperty :
 		(items+=PointElement)*
 	'end';
 BlocksProperty :
-	'blocks'
+	{BlocksProperty} 'blocks'
 		(items+=BlockElement)*
 	'end';
 TrainsProperty :
-	'trains'
+	{TrainsProperty} 'trains'
 		(items+=TrainElement)*
 	'end';
 LayoutProperty :
-	'layout'
+	{LayoutProperty} 'layout'
 		(items+=LayoutElement)*
 	'end';
-PlatformElement :
-	'platform';
+PlatformProperty :
+	{PlatformProperty} 'platform'
+		(items+=PlatformElement)*
+	'end';
+	
+PlatformElement: 
+	('length' length=INT) 
+	| ('length_unit' (lengthUnit=('cm'|'m'))) 
+	| ('weight_unit' (weightUnit=('gr'|'kg'))) 
+	| ('direction' (direction=('clockwise'|'anti-clockwise')))
+	| {PlatformElement} ('train_types' (trainTypes+=TrainType)*)
+;
 		
+TrainType:
+	'cargo' | 'passenger'
+;
+
 AspectElement :
-	id=ID value=HEX
+	id=AspectId value=HEX
 ;
 
 BoardElement :
-	id=ID uniqueId=HEX
+	id=ID uniqueId=HEX ('features' features+=BoardFeatureElement (',' features+=BoardFeatureElement)*)?
+;
+
+BoardFeatureElement:
+	number=HEX ':' value=HEX
 ;
 
 SegmentElement :
@@ -68,17 +86,39 @@ SegmentElement :
 ;
 
 SignalElement :
-	id=ID number=HEX 
-		'aspects' (aspects+=ID)+
-		'initial' initial=ID 
+	id=ID number=HEX 'aspects' (aspects+=AspectId (',' aspects+=AspectId)*) 'initial' initial=AspectId 
 ;
 
 PointElement :
-	id=ID number=HEX (pointAspects+=PointAspectElement)+ 'initial' initial=ID
+	id=ID number=HEX aspects=PointAspectsElement 'initial' initial=AspectId
 ;
 
-PointAspectElement :
-	id=ID ':' segStart=ID direction=DIRECTION segEnd=ID
+PointAspectsElement:
+	ReferencePointAspectsElement | OverridePointAspectsElement	
+;
+
+ReferencePointAspectsElement:
+	{ReferencePointAspectsElement} (referenceAspects+=ReferencePointAspectElement)*
+;
+
+OverridePointAspectsElement:
+	{OverridePointAspectsElement} 'aspects' (overrideAspects+=OverridePointAspectElement)+	
+;
+
+OverridePointAspectElement:
+	id=AspectId value=HEX ':' segments=PointSegment
+;
+
+ReferencePointAspectElement :
+	id=AspectId ':' segments=PointSegment
+;
+
+PointSegment:
+	segStart=ID direction=DIRECTION segEnd=ID
+;
+
+AspectId:
+	ID
 ;
 
 BlockElement :
@@ -98,17 +138,29 @@ AntiClockwiseBlockElement:
 ;
 
 TrainElement :
-	id=ID address=HEX
+	id=ID address=HEX 'steps' steps=INT 'calibration' (calibrations+=INT (',' calibrations+=INT)*) 'weight' weight=INT
+		'peripherals' (peripherals+=PeripheralElement)* 
+;
+
+PeripheralElement:
+	id=ID 'bit' bit=INT 'initial' initial=INT
 ;
 
 LayoutElement :
-	start=ID '<->' end=ID
+	(chains+=LayoutChainElement)+
+;
+
+LayoutChainElement:
+	ids+=LayoutId ('--' ids+=LayoutId)*
+;
+
+LayoutId:
+	objectId=ID ('.' prop=ID)?
 ;
 
 enum DIRECTION:
 	Clockwise='->' | AntiClockwise='<-' | Bidirectional='<->'
 ;
 
-terminal HEX:
 terminal HEX returns ecore::ELong:
 	('0x'|'0X') ('0'..'9'|'a'..'f'|'A'..'F')+;

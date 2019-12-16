@@ -42,7 +42,7 @@ module SWTbahn
                 normal 0x00:seg1->seg2
                 reverse 0x01:seg3->seg2
             initial normal
-        point2 0x00 aspects normal:seg1->seg2 reverse:seg3->seg4 initial normal
+        point2 0x00 aspects normal:seg1->seg2, seg3->seg4 reverse:seg1->seg4, seg3->seg2 initial normal
     end
 
     # define all blocks by combining defined segments and signals
@@ -55,54 +55,43 @@ module SWTbahn
 
     # trains
     trains
+        cargo_db 0x0001 steps 126 calibration 5, 15, 30, 45, 60, 75, 90, 105, 120 weight 100
+            peripherals
+                head_light bit 4 initial 1
+                cabin_light bit 0 initial 1
+        regional_odeg 0x0002 steps 126 calibration 5, 15, 30, 45, 60, 75, 90, 105, 120 weight 100
+            peripherals
+                head_light bit 4 initial 1
+                cabin_light bit 0 initial 1
+        regional_brengdirect 0x0004 steps 126 calibration 5, 15, 30, 45, 60, 75, 90, 105, 120 weight 100
+            peripherals
+                head_light bit 4 initial 1
+                cabin_light bit 0 initial 1
+        cargo_bayern 0x0005 steps 126 calibration 5, 15, 30, 45, 60, 75, 90, 105, 120 weight 100
+            peripherals
+                head_light bit 4 initial 1
+                cabin_light bit 0 initial 1
+        cargo_green 0x0006 steps 126 calibration 5, 15, 30, 45, 60, 75, 90, 105, 120 weight 100
+            peripherals
+                head_light bit 4 initial 1
     end
 
     # layout
     layout
-        block1 -- block2 -- point1.normal.start
-        point1.normal.end -> block3a -> point2.normal.start
-        point1.reverse.end -> block3b -> point2.reverse.start
-        point2.normal.end -> block5b -> point4.reverse.start
-        point2.reverse.end -> block5a -> point4.normal.start
-        point4.normal.end -> block6 -> block1
-    end
-
-    # required interlocking procedure
-    def interlocking_procedure(source_signal, destination_signal, train)
-        
+        block1 -- block2 -- point1.instart
+        point1.inend -- block3a -- point2.instart
+        point1.outend -- block3b -- point2.outstart
+        point2.inend -- block5b -- point4.outstart
+        point2.outend -- block5a -- point4.instart
+        point4.inend -- block6 -- block1
     end
 
     # train station platform config
     platform
-
-    # interlocking table
-    interlockingtable
-        route0
-            source signal3
-            destination signal6
-            direction anti-clockwise
-            path
-                seg31
-                seg30
-                seg29
-            end
-            points
-                point2 reverse
-            end
-            signals
-                signal5
-            end
-            conflicts
-                route1
-                route2
-                route3
-                route4
-                route5
-                route6
-                route7
-                route8
-                route9
-            end
-            train train1
+        length_unit cm
+        weight_unit gr
+        direction clockwise
+        train_types cargo, passenger
+        length 300
     end
 end
