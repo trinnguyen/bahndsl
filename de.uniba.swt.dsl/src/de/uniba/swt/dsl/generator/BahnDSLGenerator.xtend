@@ -32,7 +32,7 @@ class BahnDSLGenerator extends AbstractGenerator {
 			fsa.generateFile("bidib_board_config.yml", bidibGenerator.dumpBoardConfig(network.name, network.boards))
 			
 			// bidib_track_config
-			fsa.generateFile("bidib_track_config.yml", bidibGenerator.dumpTrackConfig(network.name, network.segments, network.signals, network.points))
+			fsa.generateFile("bidib_track_config.yml", bidibGenerator.dumpTrackConfig(network))
 			
 			// bidib_train_config
 			fsa.generateFile("bidib_train_config.yml", bidibGenerator.dumpTrainConfig(network.name, network.trains))

@@ -16,11 +16,12 @@ class BidibYamlConfigGenerator {
 		return builder.toString
 	}
 	
-	def dumpTrackConfig(String name, Set<Segment> segments, Set<Signal> signals, Set<Point> points) {
-		val builder = new StringBuilder("# Track configuration: " + name).appendLine
+	def dumpTrackConfig(NetworkModel network) {
+		val builder = new StringBuilder("# Track configuration: " + network.name).appendLine
 		builder.append("boards:").appendLine
 		
 		// segments
+		val segments = network.segments
 		if (segments !== null && segments.size > 0) {
 			val indent = Util.SINGLE_INDENT
 			builder.append(indent).append("- id: " + segments.get(0).boardId).appendLine
@@ -31,6 +32,7 @@ class BidibYamlConfigGenerator {
 		}
 		
 		// signals
+		val signals = network.signals
 		if (signals !== null && signals.size > 0) {
 			val indent = Util.SINGLE_INDENT
 			builder.append(indent).append("- id: " + signals.get(0).boardId).appendLine
@@ -41,6 +43,7 @@ class BidibYamlConfigGenerator {
 		}
 		
 		// points
+		val points = network.points
 		if (points !== null && points.size > 0) {
 			val indent = Util.SINGLE_INDENT
 			builder.append(indent).append("- id: " + points.get(0).boardId).appendLine
