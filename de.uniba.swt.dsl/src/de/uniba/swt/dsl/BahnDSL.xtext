@@ -86,7 +86,19 @@ SegmentElement :
 ;
 
 SignalElement :
-	id=ID number=HEX 'aspects' (aspects+=AspectId (',' aspects+=AspectId)*) 'initial' initial=AspectId 
+	id=ID number=HEX aspects=SignalAspectsElement 'initial' initial=AspectId 
+;
+
+SignalAspectsElement:
+	ReferenceSignalAspectsElement | OverrideSignalAspectsElement
+;
+
+ReferenceSignalAspectsElement:
+	{ReferenceSignalAspectsElement} (referenceAspects+=AspectId (',' referenceAspects+=AspectId)*)
+;
+
+OverrideSignalAspectsElement:
+	{OverrideSignalAspectsElement} 'aspects' (overrideAspects+=AspectElement)+	
 ;
 
 PointElement :

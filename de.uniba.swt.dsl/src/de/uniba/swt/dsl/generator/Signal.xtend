@@ -12,6 +12,18 @@ import java.util.Set
 		val builder = new StringBuilder
 		builder.append(indent).append("- id: " + id).appendLine
 		builder.append(indent).append("  number: " + number.hexString).appendLine
+		
+		if (aspects !== null && aspects.size > 0) {
+			builder.append(indent).appendIndent.append("aspects:").appendLine
+			for (aspect : aspects) {
+				builder.append(aspect.dumpYaml(Util.increaseIndent(Util.increaseIndent(indent))))
+			}
+		}
+		
+		if (initialAspect !== null) {
+			builder.append(indent).appendIndent.append("initial: " + initialAspect.value.hexString).appendLine
+		}
+		
 		return builder.toString
 	}
 }

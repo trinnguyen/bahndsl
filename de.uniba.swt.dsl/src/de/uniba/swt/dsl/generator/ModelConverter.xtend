@@ -3,16 +3,19 @@ package de.uniba.swt.dsl.generator
 import de.uniba.swt.dsl.bahnDSL.AspectsProperty
 import de.uniba.swt.dsl.bahnDSL.BoardsProperty
 import de.uniba.swt.dsl.bahnDSL.ModuleObject
+import de.uniba.swt.dsl.bahnDSL.OverridePointAspectsElement
+import de.uniba.swt.dsl.bahnDSL.OverrideSignalAspectsElement
+import de.uniba.swt.dsl.bahnDSL.PointAspectsElement
+import de.uniba.swt.dsl.bahnDSL.PointElement
 import de.uniba.swt.dsl.bahnDSL.PointsProperty
+import de.uniba.swt.dsl.bahnDSL.ReferencePointAspectsElement
+import de.uniba.swt.dsl.bahnDSL.ReferenceSignalAspectsElement
 import de.uniba.swt.dsl.bahnDSL.SegmentsProperty
+import de.uniba.swt.dsl.bahnDSL.SignalAspectsElement
+import de.uniba.swt.dsl.bahnDSL.SignalElement
 import de.uniba.swt.dsl.bahnDSL.SignalsProperty
 import de.uniba.swt.dsl.bahnDSL.TrainsProperty
-import de.uniba.swt.dsl.bahnDSL.PointElement
-import de.uniba.swt.dsl.bahnDSL.PointAspectsElement
-import de.uniba.swt.dsl.bahnDSL.OverridePointAspectsElement
-import de.uniba.swt.dsl.bahnDSL.ReferencePointAspectsElement
 import java.util.Set
-import de.uniba.swt.dsl.bahnDSL.ReferencePointAspectElement
 
 class ModelConverter {
 	
@@ -41,7 +44,7 @@ class ModelConverter {
 		}
 		
 		// second loop with aspects are already loaded
-		network.signals = convertSignals(signalsProp)
+		network.signals = convertSignals(signalsProp, network.aspects)
 		network.points = convertPoints(pointsProp, network.aspects)
 		
 		return network
@@ -71,14 +74,34 @@ class ModelConverter {
 		)].toSet
 	}
 	
-	def convertSignals(SignalsProperty property) {
-		return property.items.map[p | new Signal(
-			p.id,
-			property.boardId,
-			p.number,
-			null,
-			null
-		)].toSet
+	def convertSignals(SignalsProperty property, Set<Aspect> aspects) {
+		return property.items.map[p | convertToSignal(property.boardId, p, aspects)].toSet
+	}
+	
+	def convertToSignal(String boardId, SignalElement s, Set<Aspect> aspects) {
+		val resultAspects = convertToSignalAspects(s.aspects, aspects)
+		val initialAspect = findAspect(s.initial, resultAspects)
+		new Signal(
+			s.id,
+			boardId,
+			s.number,
+			resultAspects,
+			initialAspect
+		)
+	}
+	
+	def convertToSignalAspects(SignalAspectsElement elements, Set<Aspect> globalAspects) {
+		if (elements instanceof OverrideSignalAspectsElement) {
+			val overrideElements = elements as OverrideSignalAspectsElement;
+			return overrideElements.overrideAspects.map[a | new Aspect(a.id, a.value)].toSet
+		}
+		
+		if (elements instanceof ReferenceSignalAspectsElement) {
+			val refElements = elements as ReferenceSignalAspectsElement;
+			return refElements.referenceAspects.map[ra | findAspect(ra, globalAspects)].filter[a | a !== null].toSet
+		}
+		
+		throw new Exception("Invalid signal aspects")
 	}
 	
 	def convertPoints(PointsProperty property, Set<Aspect> aspects) {
