@@ -27,6 +27,8 @@
 		<module>de.uniba.swt.dsl.target</module>
 		<module>de.uniba.swt.dsl.tests</module>
 		<module>de.uniba.swt.dsl.ui.tests</module>
+		<module>de.uniba.swt.dsl.product</module>
+		<module>de.uniba.swt.dsl.product.rcp</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>
