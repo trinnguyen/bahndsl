@@ -25,5 +25,10 @@ install:jdk8:
   stage: deploy
   script:
     - 'mvn -f de.uniba.swt.dsl.parent/pom.xml $MAVEN_CLI_OPTS clean install'
+  artifacts:
+    paths:
+    - de.uniba.swt.dsl.parent/de.uniba.swt.dsl.product.rcp/target/products/BahnIDE-macosx.cocoa.x86_64.tar.gz
+    - de.uniba.swt.dsl.parent/de.uniba.swt.dsl.product.rcp/target/products/BahnIDE-linux.gtk.x86_64.tar.gz
+    - de.uniba.swt.dsl.parent/de.uniba.swt.dsl.product.rcp/target/products/BahnIDE-win32.win32.x86_64.zip
   only:
     - develop
