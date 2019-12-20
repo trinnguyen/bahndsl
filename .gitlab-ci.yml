@@ -14,15 +14,12 @@ cache:
   paths:
     - .m2/repository
 
-.verify: &verify
+verify:jdk8:
   stage: test
   script:
     - 'mvn $MAVEN_CLI_OPTS verify'
   except:
     - develop
-
-verify:jdk8:
-  <<: *verify
 
 deploy:jdk8:
   stage: deploy
