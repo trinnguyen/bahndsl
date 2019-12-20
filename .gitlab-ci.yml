@@ -22,7 +22,7 @@ verify:jdk8:
     - develop
 
 install:jdk8:
-  stage: install
+  stage: deploy
   script:
     - 'mvn -f de.uniba.swt.dsl.parent/pom.xml $MAVEN_CLI_OPTS clean install'
   only:
