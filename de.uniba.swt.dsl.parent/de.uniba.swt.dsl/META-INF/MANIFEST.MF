@@ -27,3 +27,5 @@ Export-Package: de.uniba.swt.dsl.serializer,
  de.uniba.swt.dsl.parser.antlr,
  de.uniba.swt.dsl.bahn.util
 Import-Package: org.apache.log4j
+Bundle-ClassPath: libs/lombok-1.18.10.jar,
+ .
