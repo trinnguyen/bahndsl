@@ -4,3 +4,5 @@ build:
 	mvn -f de.uniba.swt.dsl.parent clean install
 build-rcp:
 	mvn -f de.uniba.swt.dsl.parent -pl de.uniba.swt.dsl.product.rcp -am clean install
+build-core:
+	mvn -f de.uniba.swt.dsl.parent -pl de.uniba.swt.dsl -am clean install

@@ -1,18 +1,22 @@
 package de.uniba.swt.dsl.generator;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import java.util.List;
 
-@Getter @Setter @AllArgsConstructor 
 class Train extends Element {
 	private String id;
 	private long dccAddress;
 	private int speedSteps;
 	private List<Integer> calibration;
 	private List<TrainPeripheral> peripherals;
-	
+
+	public Train(String id, long dccAddress, int speedSteps, List<Integer> calibration, List<TrainPeripheral> peripherals) {
+		this.id = id;
+		this.dccAddress = dccAddress;
+		this.speedSteps = speedSteps;
+		this.calibration = calibration;
+		this.peripherals = peripherals;
+	}
+
 	@Override
 	public String dumpYaml(String indent) {
 		StringBuilder builder = new StringBuilder();
@@ -37,5 +41,45 @@ class Train extends Element {
 		}
 		
 		return builder.toString();
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public long getDccAddress() {
+		return dccAddress;
+	}
+
+	public void setDccAddress(long dccAddress) {
+		this.dccAddress = dccAddress;
+	}
+
+	public int getSpeedSteps() {
+		return speedSteps;
+	}
+
+	public void setSpeedSteps(int speedSteps) {
+		this.speedSteps = speedSteps;
+	}
+
+	public List<Integer> getCalibration() {
+		return calibration;
+	}
+
+	public void setCalibration(List<Integer> calibration) {
+		this.calibration = calibration;
+	}
+
+	public List<TrainPeripheral> getPeripherals() {
+		return peripherals;
+	}
+
+	public void setPeripherals(List<TrainPeripheral> peripherals) {
+		this.peripherals = peripherals;
 	}
 }

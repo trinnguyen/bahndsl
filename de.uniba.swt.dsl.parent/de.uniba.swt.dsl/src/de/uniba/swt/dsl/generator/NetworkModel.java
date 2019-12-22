@@ -1,7 +1,6 @@
 package de.uniba.swt.dsl.generator;
 
 import java.util.List;
-import lombok.Data;
 
 class NetworkModel {
 	public String name;
@@ -24,18 +23,18 @@ class NetworkModel {
 }
 
 
-@Data class LayoutConnector {
+class LayoutConnector {
 	
 }
 
-@Data class PlatformConfig {
+class PlatformConfig {
 	
 }
 
-@Data class Route {
+class Route {
 	
 }
 
-@Data class InterlockingTable {
+class InterlockingTable {
 	
 }

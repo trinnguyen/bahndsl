@@ -1,19 +1,22 @@
 package de.uniba.swt.dsl.generator;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.List;
 
-@Getter @Setter @AllArgsConstructor 
 class Signal extends Element {
 	private String id;
 	private String boardId;
 	private long number;
 	private List<Aspect> aspects;
 	private Aspect initialAspect;
-	
+
+	public Signal(String id, String boardId, long number, List<Aspect> aspects, Aspect initialAspect) {
+		this.id = id;
+		this.boardId = boardId;
+		this.number = number;
+		this.aspects = aspects;
+		this.initialAspect = initialAspect;
+	}
+
 	@Override
 	public String dumpYaml(String indent) {
 		StringBuilder builder = new StringBuilder();
@@ -32,5 +35,45 @@ class Signal extends Element {
 		}
 		
 		return builder.toString();
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getBoardId() {
+		return boardId;
+	}
+
+	public void setBoardId(String boardId) {
+		this.boardId = boardId;
+	}
+
+	public long getNumber() {
+		return number;
+	}
+
+	public void setNumber(long number) {
+		this.number = number;
+	}
+
+	public List<Aspect> getAspects() {
+		return aspects;
+	}
+
+	public void setAspects(List<Aspect> aspects) {
+		this.aspects = aspects;
+	}
+
+	public Aspect getInitialAspect() {
+		return initialAspect;
+	}
+
+	public void setInitialAspect(Aspect initialAspect) {
+		this.initialAspect = initialAspect;
 	}
 }

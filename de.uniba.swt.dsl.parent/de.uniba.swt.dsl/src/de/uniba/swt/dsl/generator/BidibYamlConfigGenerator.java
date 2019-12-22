@@ -1,14 +1,12 @@
 package de.uniba.swt.dsl.generator;
 
-import lombok.val;
-
 import java.util.List;
 
 class BidibYamlConfigGenerator {
 	
 	public String dumpBoardConfig(String name, List<Board> boards) {
 		// boards
-		val builder = new StringBuilder("# BiDiB board configuration: " + name).append(Util.LINE_BREAK);
+		StringBuilder builder = new StringBuilder("# BiDiB board configuration: " + name).append(Util.LINE_BREAK);
 		builder.append("boards:").append(Util.LINE_BREAK);
 		if (boards != null) {
 			for (Board b: boards) {
@@ -19,7 +17,7 @@ class BidibYamlConfigGenerator {
 	}
 	
 	String dumpTrackConfig(NetworkModel network) {
-		val builder = new StringBuilder("# Track configuration: " + network.name).append(Util.LINE_BREAK);
+		StringBuilder builder = new StringBuilder("# Track configuration: " + network.name).append(Util.LINE_BREAK);
 		builder.append("boards:").append(Util.LINE_BREAK);
 		
 		// segments
@@ -45,7 +43,7 @@ class BidibYamlConfigGenerator {
 		}
 		
 		// points
-		val points = network.points;
+		List<Point> points = network.points;
 		if (points != null && points.size() > 0) {
 			String indent = Util.SINGLE_INDENT;
 			builder.append(indent).append("- id: " + points.get(0).getBoardId()).append(Util.LINE_BREAK);
@@ -60,7 +58,7 @@ class BidibYamlConfigGenerator {
 	
 	String dumpTrainConfig(String name, List<Train> trains) {
 		// trains
-		val builder = new StringBuilder("# Train configuration: " + name).append(Util.LINE_BREAK);
+		StringBuilder builder = new StringBuilder("# Train configuration: " + name).append(Util.LINE_BREAK);
 		builder.append("trains:").append(Util.LINE_BREAK);
 		if (trains != null) {
 			for (Train t: trains) {

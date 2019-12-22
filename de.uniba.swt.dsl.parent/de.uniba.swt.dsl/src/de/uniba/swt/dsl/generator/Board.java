@@ -1,17 +1,18 @@
 package de.uniba.swt.dsl.generator;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.List;
 
-@Getter @Setter @AllArgsConstructor
 class Board extends Element {
 	private String id;
 	private long uniqueId;
 	private List<BoardFeature> features;
-	
+
+	public Board(String id, long uniqueId, List<BoardFeature> features) {
+		this.id = id;
+		this.uniqueId = uniqueId;
+		this.features = features;
+	}
+
 	@Override
 	public String dumpYaml(String indent) {
 		StringBuilder builder = new StringBuilder();
@@ -27,5 +28,29 @@ class Board extends Element {
 			}
 		}
 		return builder.toString();
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public long getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(long uniqueId) {
+		this.uniqueId = uniqueId;
+	}
+
+	public List<BoardFeature> getFeatures() {
+		return features;
+	}
+
+	public void setFeatures(List<BoardFeature> features) {
+		this.features = features;
 	}
 }
