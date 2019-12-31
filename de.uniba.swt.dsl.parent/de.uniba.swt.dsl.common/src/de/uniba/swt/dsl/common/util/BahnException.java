@@ -1,4 +1,4 @@
-package de.uniba.swt.dsl.util;
+package de.uniba.swt.dsl.common.util;
 
 public class BahnException extends RuntimeException {
 	

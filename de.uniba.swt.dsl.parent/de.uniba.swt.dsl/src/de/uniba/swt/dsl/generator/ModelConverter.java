@@ -16,7 +16,16 @@ import de.uniba.swt.dsl.bahn.SignalAspectsElement;
 import de.uniba.swt.dsl.bahn.SignalElement;
 import de.uniba.swt.dsl.bahn.SignalsProperty;
 import de.uniba.swt.dsl.bahn.TrainsProperty;
-import de.uniba.swt.dsl.util.BahnException;
+import de.uniba.swt.dsl.common.models.Aspect;
+import de.uniba.swt.dsl.common.models.Board;
+import de.uniba.swt.dsl.common.models.BoardFeature;
+import de.uniba.swt.dsl.common.models.NetworkModel;
+import de.uniba.swt.dsl.common.models.Point;
+import de.uniba.swt.dsl.common.models.Segment;
+import de.uniba.swt.dsl.common.models.Signal;
+import de.uniba.swt.dsl.common.models.Train;
+import de.uniba.swt.dsl.common.models.TrainPeripheral;
+import de.uniba.swt.dsl.common.util.BahnException;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -22,6 +22,7 @@
 	</properties>
 	<modules>
 		<module>de.uniba.swt.dsl</module>
+		<module>de.uniba.swt.dsl.common</module>
 		<module>de.uniba.swt.dsl.ide</module>
 		<module>de.uniba.swt.dsl.ui</module>
 		<module>de.uniba.swt.dsl.target</module>

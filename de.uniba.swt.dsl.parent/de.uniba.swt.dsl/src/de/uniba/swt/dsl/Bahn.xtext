@@ -65,8 +65,8 @@ PlatformElement:
 	| {PlatformElement} ('train_types' (trainTypes+=TrainType)*)
 ;
 		
-TrainType:
-	'cargo' | 'passenger'
+enum TrainType:
+	CARGO='cargo' | PASSENGER='passenger'
 ;
 
 AspectElement :

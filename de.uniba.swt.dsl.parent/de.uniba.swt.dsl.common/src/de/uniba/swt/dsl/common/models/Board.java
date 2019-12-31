@@ -1,8 +1,8 @@
-package de.uniba.swt.dsl.generator;
+package de.uniba.swt.dsl.common.models;
 
 import java.util.List;
 
-class Board extends Element {
+public class Board extends Element {
 	private String id;
 	private long uniqueId;
 	private List<BoardFeature> features;

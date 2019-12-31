@@ -12,6 +12,8 @@ import org.eclipse.xtext.generator.IGeneratorContext;
 import com.google.inject.Inject;
 
 import de.uniba.swt.dsl.bahn.ModuleObject;
+import de.uniba.swt.dsl.common.generator.yaml.BidibYamlConfigGenerator;
+import de.uniba.swt.dsl.common.models.NetworkModel;
 
 /**
  * Generates code from your model files on save.

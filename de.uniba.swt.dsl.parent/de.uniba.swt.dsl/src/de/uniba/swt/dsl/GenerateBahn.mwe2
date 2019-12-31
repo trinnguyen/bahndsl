@@ -43,14 +43,13 @@ Workflow {
 				generateDeprecationValidation = true
 			}
 			generator = {
-				generateXtendStub = true
+				generateXtendStub = false
+				generateJavaMain = true
 			}
 			junitSupport = {
 				junitVersion = "5"
+				generateStub = false
 			}
-			generator = {
-		        generateJavaMain = true
-		    }
 		}
 	}
 }

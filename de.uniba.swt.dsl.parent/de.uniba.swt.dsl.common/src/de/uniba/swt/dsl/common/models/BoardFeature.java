@@ -1,6 +1,6 @@
-package de.uniba.swt.dsl.generator;
+package de.uniba.swt.dsl.common.models;
 
-class BoardFeature {
+public class BoardFeature {
 	private long number;
 	private long value;
 

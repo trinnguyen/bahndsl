@@ -1,8 +1,8 @@
-package de.uniba.swt.dsl.generator;
+package de.uniba.swt.dsl.common.models;
 
 import java.util.List;
 
-class Point extends Element {
+public class Point extends Element {
 	private String id;
 	private String boardId;
 	private long number;

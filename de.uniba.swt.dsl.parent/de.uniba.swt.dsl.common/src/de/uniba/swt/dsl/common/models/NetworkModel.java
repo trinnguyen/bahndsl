@@ -1,8 +1,8 @@
-package de.uniba.swt.dsl.generator;
+package de.uniba.swt.dsl.common.models;
 
 import java.util.List;
 
-class NetworkModel {
+public class NetworkModel {
 	public String name;
 
 	public List<Aspect> aspects;

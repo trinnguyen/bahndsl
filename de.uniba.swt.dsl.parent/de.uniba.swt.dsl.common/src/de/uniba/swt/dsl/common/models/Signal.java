@@ -1,8 +1,8 @@
-package de.uniba.swt.dsl.generator;
+package de.uniba.swt.dsl.common.models;
 
 import java.util.List;
 
-class Signal extends Element {
+public class Signal extends Element {
 	private String id;
 	private String boardId;
 	private long number;

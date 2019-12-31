@@ -1,6 +1,6 @@
-package de.uniba.swt.dsl.generator;
+package de.uniba.swt.dsl.common.models;
 
-class Util {
+public class Util {
 	
 	public static String SINGLE_INDENT = "  ";
 	

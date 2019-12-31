@@ -1,8 +1,8 @@
-package de.uniba.swt.dsl.generator;
+package de.uniba.swt.dsl.common.models;
 
 import java.util.List;
 
-class Train extends Element {
+public class Train extends Element {
 	private String id;
 	private long dccAddress;
 	private int speedSteps;

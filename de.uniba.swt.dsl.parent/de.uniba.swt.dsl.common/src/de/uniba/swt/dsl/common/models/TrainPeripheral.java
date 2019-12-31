@@ -1,6 +1,6 @@
-package de.uniba.swt.dsl.generator;
+package de.uniba.swt.dsl.common.models;
 
-class TrainPeripheral extends Element {
+public class TrainPeripheral extends Element {
 	private String id;
 	private int bit;
 	private int initial;

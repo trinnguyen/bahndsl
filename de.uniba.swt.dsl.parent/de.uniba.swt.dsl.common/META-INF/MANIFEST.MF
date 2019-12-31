@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Common
+Bundle-SymbolicName: de.uniba.swt.dsl.common
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: de.uniba.swt.dsl.common
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: de.uniba.swt.dsl.common.generator.yaml,
+ de.uniba.swt.dsl.common.models,
+ de.uniba.swt.dsl.common.util

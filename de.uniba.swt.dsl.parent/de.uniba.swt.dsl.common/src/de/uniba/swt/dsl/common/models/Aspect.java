@@ -1,6 +1,6 @@
-package de.uniba.swt.dsl.generator;
+package de.uniba.swt.dsl.common.models;
 
-class Aspect extends Element {
+public class Aspect extends Element {
 	private String id;
 	private long value;
 

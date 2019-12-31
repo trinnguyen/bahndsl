@@ -1,6 +1,6 @@
-package de.uniba.swt.dsl.generator;
+package de.uniba.swt.dsl.common.models;
 
-class Segment extends Element {
+public class Segment extends Element {
 	private String id;
 	private String boardId;
 	private long address;

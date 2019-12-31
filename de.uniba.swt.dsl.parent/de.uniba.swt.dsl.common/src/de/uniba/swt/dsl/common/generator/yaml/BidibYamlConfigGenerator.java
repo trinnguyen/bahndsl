@@ -1,8 +1,10 @@
-package de.uniba.swt.dsl.generator;
+package de.uniba.swt.dsl.common.generator.yaml;
+
+import de.uniba.swt.dsl.common.models.*;
 
 import java.util.List;
 
-class BidibYamlConfigGenerator {
+public class BidibYamlConfigGenerator {
 	
 	public String dumpBoardConfig(String name, List<Board> boards) {
 		// boards
@@ -16,7 +18,7 @@ class BidibYamlConfigGenerator {
 		return builder.toString();
 	}
 	
-	String dumpTrackConfig(NetworkModel network) {
+	public String dumpTrackConfig(NetworkModel network) {
 		StringBuilder builder = new StringBuilder("# Track configuration: " + network.name).append(Util.LINE_BREAK);
 		builder.append("boards:").append(Util.LINE_BREAK);
 		
@@ -56,7 +58,7 @@ class BidibYamlConfigGenerator {
 		return builder.toString();
 	}
 	
-	String dumpTrainConfig(String name, List<Train> trains) {
+	public String dumpTrainConfig(String name, List<Train> trains) {
 		// trains
 		StringBuilder builder = new StringBuilder("# Train configuration: " + name).append(Util.LINE_BREAK);
 		builder.append("trains:").append(Util.LINE_BREAK);
