@@ -159,10 +159,6 @@ PeripheralElement:
 ;
 
 LayoutElement :
-	(chains+=LayoutChainElement)+
-;
-
-LayoutChainElement:
 	ids+=LayoutId ('--' ids+=LayoutId)*
 ;
 
