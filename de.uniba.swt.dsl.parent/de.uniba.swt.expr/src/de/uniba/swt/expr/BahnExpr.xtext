@@ -32,11 +32,15 @@ IterationVarDecl:
 ;
 
 VarDeclStmt returns Statement:
-	{VarDeclStmt} type=ValueType name=ID '=' expr=Expression 
+	{VarDeclStmt} type=ValueType name=ID ('[' cardinality=Expression ']')? assignment=VariableAssignment
 ;
 
 AssignmentStmt returns Statement:
-	name=ID '=' expr=Expression
+	{AssignmentStmt} referenceExpr=ValuedReferenceExpr assignment=VariableAssignment
+;
+
+VariableAssignment:
+	'=' ('{' arrExprs+=Expression (',' arrExprs+=Expression)* '}' | expr=Expression)
 ;
 
 Expression returns Expression:
