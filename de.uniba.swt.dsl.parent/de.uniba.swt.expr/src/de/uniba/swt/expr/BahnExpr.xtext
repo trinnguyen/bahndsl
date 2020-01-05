@@ -22,17 +22,21 @@ SelectionStmt returns Statement:
 ;
 
 IterationStmt returns Statement:
-	{IterationStmt} 'for' var=ID 'in' iterableObj=ID
+	{IterationStmt} 'for' var=IterationVarDecl 'in' referenceExpr=ValuedReferenceExpr
 		stmts=StatementList
 	'end'
 ;
 
+IterationVarDecl:
+	type=ValueType name=ID
+;
+
 VarDeclStmt returns Statement:
-	{VarDecl} type=ValueType name=ID '=' expr=Expression 
+	{VarDeclStmt} type=ValueType name=ID '=' expr=Expression 
 ;
 
 AssignmentStmt returns Statement:
-	name=ID '=' expr=Expression	
+	name=ID '=' expr=Expression
 ;
 
 Expression returns Expression:
