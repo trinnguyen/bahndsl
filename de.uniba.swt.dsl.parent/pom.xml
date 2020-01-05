@@ -30,6 +30,11 @@
 		<!-- <module>de.uniba.swt.dsl.ui.tests</module> -->
 		<module>de.uniba.swt.dsl.product</module>
 		<module>de.uniba.swt.dsl.product.rcp</module>
+		<!-- Epxr -->
+		<module>de.uniba.swt.expr</module>
+		<module>de.uniba.swt.expr.ide</module>
+		<module>de.uniba.swt.expr.ui</module>
+		<module>de.uniba.swt.expr.tests</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>
