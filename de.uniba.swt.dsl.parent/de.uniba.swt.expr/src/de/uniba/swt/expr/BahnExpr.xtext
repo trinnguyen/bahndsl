@@ -73,13 +73,14 @@ MultiplicativeExpr returns Expression:
 
 UnaryExpr returns Expression:
 	{UnaryExpr}op=UnaryOp expr=UnaryExpr
-	| FactorExpr
+	| PrimaryExpr
 ;
 
-FactorExpr:
+PrimaryExpr:
 	ParenthesizedExpr
 	| LiteralExpr
 	| ValuedReferenceExpr
+	| FunctionCallExpr
 ;
 
 ParenthesizedExpr:
@@ -97,6 +98,11 @@ ValuedReferenceExpr:
 		('.' propRef=ValuedReferenceExpr)?
 ;
 
+FunctionCallExpr:
+	'exec' name=ID
+	('()' | '(' params+=Expression (',' params+=Expression)* ')')
+;
+
 BooleanLiteral returns LiteralExpr:
 	{BooleanLiteral} boolValue=BOOLEAN
 ;
@@ -106,7 +112,7 @@ NumberLiteral:
 ;
 
 enum ValueType:
-	INT_TYPE='int' | FLOAT_TYPE = 'float' | BOOLEAN_TYPE = 'bool'
+	INT_TYPE='int' | FLOAT_TYPE = 'float' | BOOLEAN_TYPE = 'bool' | OBJECT_TYPE = 'var'
 ;
 
 terminal BOOLEAN returns ecore::EBoolean:
