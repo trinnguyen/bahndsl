@@ -8,7 +8,7 @@ expr-test:
 expr-generate:
 	mvn -pl de.uniba.swt.expr -o generate-sources
 expr-exec-test1:
-	mvn -pl de.uniba.swt.expr -o exec:java@generatormain -Dexec.args='output/expr/test1.bahnexpr'
+	mvn -pl de.uniba.swt.expr -o exec:java@generatormain -Dexec.args='samples/expr/interlocking1.bahnexpr' -Dtycho.mode=maven
 
 # Bahn projects
 bahn: bahn-install bahn-test

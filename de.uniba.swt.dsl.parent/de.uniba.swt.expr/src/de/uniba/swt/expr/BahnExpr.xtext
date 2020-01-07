@@ -5,7 +5,7 @@ generate bahnExpr "http://www.uniba.de/swt/expr/BahnExpr"
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 BahnExpr:
-	{BahnExpr} decls+=FuncDecl
+	{BahnExpr} (decls+=FuncDecl)*
 ;
 
 FuncDecl:
@@ -177,3 +177,6 @@ enum RelationalOp returns OperatorType:
 NUMBER hidden():
 	(INT ('.' INT)?)
 ;
+
+@Override 
+terminal SL_COMMENT : '#' !('\n'|'\r')* ('\r'? '\n')?;
