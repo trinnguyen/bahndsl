@@ -41,7 +41,7 @@ end
 
 def route_is_clear(var route, var train)
     # Signal at the route source has to be red (stop aspect)
-    if route.source.aspect == red
+    if route.source.aspect == "red"
         return false
     end
 

@@ -112,6 +112,7 @@ ParenthesizedExpr:
 LiteralExpr:
 	BooleanLiteral
 	| NumberLiteral
+	| StringLiteral
 	| NullLiteral
 ;
 
@@ -134,12 +135,16 @@ NumberLiteral:
 	{NumberLiteral} value=NUMBER
 ;
 
+StringLiteral:
+	{StringLiteral} value=STRING
+;
+
 NullLiteral:
 	'nil'
 ;
 
 enum ValueType:
-	INT_TYPE='int' | FLOAT_TYPE = 'float' | BOOLEAN_TYPE = 'bool' | OBJECT_TYPE = 'var'
+	INT_TYPE='int' | FLOAT_TYPE = 'float' | BOOLEAN_TYPE = 'bool' | STRING_TYPE = 'string' | OBJECT_TYPE = 'var'
 ;
 
 terminal BOOLEAN returns ecore::EBoolean:
@@ -180,3 +185,7 @@ NUMBER hidden():
 
 @Override 
 terminal SL_COMMENT : '#' !('\n'|'\r')* ('\r'? '\n')?;
+
+@Override
+terminal STRING returns ecore::EString:
+	'"' ( '\\' ('b'|'t'|'n'|'f'|'r'|'"'|"'"|'\\') | !('\\'|'"') )* '"';

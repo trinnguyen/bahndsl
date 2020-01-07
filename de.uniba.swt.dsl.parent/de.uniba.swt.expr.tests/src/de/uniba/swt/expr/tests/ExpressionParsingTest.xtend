@@ -171,6 +171,19 @@ class ExpressionParsingTest {
 	}
 
 	@Test
+	def void testStringLiteral() {
+		val result = parseHelper.parse('''
+			def test()
+				string aspectRed = "red"
+				string aspectReverse = "reverse"
+			end
+		''')
+		Assertions.assertNotNull(result)
+		val errors = result.eResource.errors
+		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+	}
+
+	@Test
 	def void testValuedReferenceExpr() {
 		val result = parseHelper.parse('''
 			def test()
