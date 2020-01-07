@@ -5,7 +5,7 @@ generate bahnExpr "http://www.uniba.de/swt/expr/BahnExpr"
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 BahnExpr:
-	decls+=FuncDecl
+	{BahnExpr} decls+=FuncDecl
 ;
 
 FuncDecl:
@@ -19,7 +19,7 @@ StatementList:
 ;
 
 Statement:
-	SelectionStmt | IterationStmt | VarDeclStmt | AssignmentStmt
+	SelectionStmt | IterationStmt | VarDeclStmt | AssignmentStmt | FunctionCallStmt | ReturnStmt
 ;
 
 SelectionStmt returns Statement:
@@ -51,6 +51,14 @@ ParamDecl:
 
 AssignmentStmt returns Statement:
 	{AssignmentStmt} referenceExpr=ValuedReferenceExpr assignment=VariableAssignment
+;
+
+FunctionCallStmt returns Statement:
+	{FunctionCallStmt} expr=FunctionCallExpr
+;
+
+ReturnStmt returns Statement:
+	{ReturnStmt}'return' expr=Expression
 ;
 
 VariableAssignment:
@@ -104,6 +112,7 @@ ParenthesizedExpr:
 LiteralExpr:
 	BooleanLiteral
 	| NumberLiteral
+	| NullLiteral
 ;
 
 ValuedReferenceExpr:
@@ -123,6 +132,10 @@ BooleanLiteral returns LiteralExpr:
 
 NumberLiteral:
 	{NumberLiteral} value=NUMBER
+;
+
+NullLiteral:
+	'nil'
 ;
 
 enum ValueType:
