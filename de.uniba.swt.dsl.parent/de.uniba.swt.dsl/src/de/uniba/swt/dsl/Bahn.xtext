@@ -18,7 +18,8 @@ ModuleProperty:
 	| BlocksProperty 
 	| TrainsProperty 
 	| LayoutProperty 
-	| PlatformProperty;
+	| PlatformProperty
+	| RouteProperty;
 
 AspectsProperty :
 	{AspectsProperty} 'aspects'
@@ -56,6 +57,10 @@ PlatformProperty :
 	{PlatformProperty} 'platform'
 		(items+=PlatformElement)*
 	'end';
+RouteProperty:
+	{RouteProperty} 'routes'
+		(items+=RouteElement)*
+	'end';
 	
 PlatformElement: 
 	('length' length=INT) 
@@ -63,6 +68,25 @@ PlatformElement:
 	| ('weight_unit' (weightUnit=('gr'|'kg'))) 
 	| ('direction' (direction=('clockwise'|'anti-clockwise')))
 	| {PlatformElement} ('train_types' (trainTypes+=TrainType)*)
+;
+
+RouteElement:
+	id=ID 
+	'source' source=ID 
+	'destination' destination=ID 
+	'direction' direction=DIRECTION 
+	'path' (segments+=ID)* 'end'
+	'points' points+=RoutePoint 'end'
+	'signals' signals+=ID 'end'
+	'conflicts' conflicts+=ID 'end'
+;
+
+RoutePoint:
+	'point2' aspect=POINT_ASPECT
+;
+
+enum POINT_ASPECT:
+	NORMAL='normal' | ASPECT='reverse'
 ;
 		
 enum TrainType:
