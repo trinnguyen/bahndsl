@@ -14,17 +14,15 @@ import de.uniba.swt.expr.bahnExpr.BahnExpr
 
 @ExtendWith(InjectionExtension)
 @InjectWith(BahnExprInjectorProvider)
-class VariableParsingTest {
+class FunctionCallExprParsingTest {
 	@Inject
 	ParseHelper<BahnExpr> parseHelper
 
 	@Test
-	def void testScalarVarDeclStmt() {
+	def void testEmptyFunctionCallExpr() {
 		val result = parseHelper.parse('''
 			def test()
-				int a = 3
-				float b = 4.5
-				bool c = true
+				var signals = exec getAllRoutes()
 			end
 		''')
 		Assertions.assertNotNull(result)
@@ -33,12 +31,10 @@ class VariableParsingTest {
 	}
 
 	@Test
-	def void testArrayVarDeclStmt() {
+	def void testSingleParamFunctionCallExpr() {
 		val result = parseHelper.parse('''
 			def test()
-				int a[2] = {3,4}
-				float b[1+ 2] = {4.5, 2, 4}
-				bool c[1] = {true}
+				var route = exec getRoute(routeId)
 			end
 		''')
 		Assertions.assertNotNull(result)
@@ -47,26 +43,10 @@ class VariableParsingTest {
 	}
 
 	@Test
-	def void testScalarAssignmentStmt() {
+	def void testParamsFunctionCallExpr() {
 		val result = parseHelper.parse('''
 			def test()
-				a = 3
-				b = 4.5
-				c = true
-			end
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
-	}
-
-	@Test
-	def void testArrayAssignmentStmt() {
-		val result = parseHelper.parse('''
-			def test()
-				a[2] = {3,4}
-				b[1+ 2] = {4.5, 2, 4}
-				c[1] = {true}
+				var route = exec getRouteFromTable(table, signal1, signal2)
 			end
 		''')
 		Assertions.assertNotNull(result)

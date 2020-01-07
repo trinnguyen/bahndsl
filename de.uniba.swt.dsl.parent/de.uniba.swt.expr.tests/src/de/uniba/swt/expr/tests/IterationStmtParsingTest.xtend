@@ -10,21 +10,23 @@ import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
-import de.uniba.swt.expr.bahnExpr.StatementList
+import de.uniba.swt.expr.bahnExpr.BahnExpr
 
 @ExtendWith(InjectionExtension)
 @InjectWith(BahnExprInjectorProvider)
 class IterationStmtParsingTest {
 	@Inject
-	ParseHelper<StatementList> parseHelper
+	ParseHelper<BahnExpr> parseHelper
 
 	@Test
 	def void testIterationStmt() {
 		val result = parseHelper.parse('''
-			int max = 0
-			for int a in array
-				if a > max
-					max = a
+			def test()
+				int max = 0
+				for int a in array
+					if a > max
+						max = a
+					end
 				end
 			end
 		''')

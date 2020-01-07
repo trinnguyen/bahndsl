@@ -10,23 +10,25 @@ import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
-import de.uniba.swt.expr.bahnExpr.StatementList
+import de.uniba.swt.expr.bahnExpr.BahnExpr
 
 @ExtendWith(InjectionExtension)
 @InjectWith(BahnExprInjectorProvider)
 class BahnExprParsingTest {
 	@Inject
-	ParseHelper<StatementList> parseHelper
+	ParseHelper<BahnExpr> parseHelper
 
 	@Test
 	def void testStatementList() {
 		val result = parseHelper.parse('''
-			int a = 3
-			int b = 4
-			if a > b
-				o = a
-			else
-				o = b
+			def test()
+				int a = 3
+				int b = 4
+				if a > b
+					o = a
+				else
+					o = b
+				end
 			end
 		''')
 		Assertions.assertNotNull(result)

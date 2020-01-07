@@ -10,18 +10,20 @@ import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
-import de.uniba.swt.expr.bahnExpr.StatementList
+import de.uniba.swt.expr.bahnExpr.BahnExpr
 
 @ExtendWith(InjectionExtension)
 @InjectWith(BahnExprInjectorProvider)
 class ExpressionParsingTest {
 	@Inject
-	ParseHelper<StatementList> parseHelper
+	ParseHelper<BahnExpr> parseHelper
 
 	@Test
 	def void testLogicalOrExpr() {
 		val result = parseHelper.parse('''
-			bool result = true || false
+			def test()
+				bool result = true || false
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -31,8 +33,10 @@ class ExpressionParsingTest {
 	@Test
 	def void testLogicalAndExpr() {
 		val result = parseHelper.parse('''
-			bool result = true && false
-			bool result = true && false || true
+			def test()
+				bool result = true && false
+				bool result = true && false || true
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -42,11 +46,13 @@ class ExpressionParsingTest {
 	@Test
 	def void testEqualityExpr() {
 		val result = parseHelper.parse('''
-			bool result1 = 3 == 4
-			result1 = 3 != 4
-			result2 = true == true
-			result3 = true != false
-			result4 = 1 == 2
+			def test()
+				bool result1 = 3 == 4
+				result1 = 3 != 4
+				result2 = true == true
+				result3 = true != false
+				result4 = 1 == 2
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -56,11 +62,13 @@ class ExpressionParsingTest {
 	@Test
 	def void testEqualityExprReference() {
 		val result = parseHelper.parse('''
-			bool result1 = 3 == 4
-			result1 = 3 != 4
-			result2 = true == true
-			result3 = true != false
-			result4 = 1 == 2
+			def test()
+				bool result1 = 3 == 4
+				result1 = 3 != 4
+				result2 = true == true
+				result3 = true != false
+				result4 = 1 == 2
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -70,10 +78,12 @@ class ExpressionParsingTest {
 	@Test
 	def void testRelationalExpr() {
 		val result = parseHelper.parse('''
-			bool success = 1 > 2
-			success = 1 <= 2
-			success = 1 > 2
-			success = 1 >= 2
+			def test()
+				bool success = 1 > 2
+				success = 1 <= 2
+				success = 1 > 2
+				success = 1 >= 2
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -83,9 +93,11 @@ class ExpressionParsingTest {
 	@Test
 	def void testAdditiveExpr() {
 		val result = parseHelper.parse('''
-			int a = 3 + 4
-			int b = 4 - 3
-			int c = 3 - 4 +5
+			def test()
+				int a = 3 + 4
+				int b = 4 - 3
+				int c = 3 - 4 +5
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -95,9 +107,11 @@ class ExpressionParsingTest {
 	@Test
 	def void testMultiplicativeExpr() {
 		val result = parseHelper.parse('''
-			int a = 3 * 4
-			int b = 4 / 3
-			float c = 3 * 4 / 5
+			def test()
+				int a = 3 * 4
+				int b = 4 / 3
+				float c = 3 * 4 / 5
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -107,8 +121,10 @@ class ExpressionParsingTest {
 	@Test
 	def void testUnaryExpr() {
 		val result = parseHelper.parse('''
-			int a = -3
-			bool result = !true
+			def test()
+				int a = -3
+				bool result = !true
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -118,8 +134,10 @@ class ExpressionParsingTest {
 	@Test
 	def void testParenthesizedExpr() {
 		val result = parseHelper.parse('''
-			int a = 5 * (3 + 4)
-			bool result = true || (false && true)
+			def test()
+				int a = 5 * (3 + 4)
+				bool result = true || (false && true)
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -129,8 +147,10 @@ class ExpressionParsingTest {
 	@Test
 	def void testBooleanLiteral() {
 		val result = parseHelper.parse('''
-			bool result = true
-			result = false
+			def test()
+				bool result = true
+				result = false
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -140,8 +160,10 @@ class ExpressionParsingTest {
 	@Test
 	def void testNumberLiteral() {
 		val result = parseHelper.parse('''
-			int a = 3
-			float b = 4.5
+			def test()
+				int a = 3
+				float b = 4.5
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -151,11 +173,13 @@ class ExpressionParsingTest {
 	@Test
 	def void testValuedReferenceExpr() {
 		val result = parseHelper.parse('''
-			float b = a * 5
-			b = a + 5
-			b = c || true
-			b = d == true
-			b = d > 3
+			def test()
+				float b = a * 5
+				b = a + 5
+				b = c || true
+				b = d == true
+				b = d > 3
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -165,11 +189,13 @@ class ExpressionParsingTest {
 	@Test
 	def void testArrayValuedReferenceExpr() {
 		val result = parseHelper.parse('''
-			float b = a[0] * 5
-			b = a[1] + 5
-			b = c[2] || true
-			b = d[3] == true
-			b = d[4] > 3
+			def test()
+				float b = a[0] * 5
+				b = a[1] + 5
+				b = c[2] || true
+				b = d[3] == true
+				b = d[4] > 3
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors
@@ -179,11 +205,13 @@ class ExpressionParsingTest {
 	@Test
 	def void testPropertyValuedReferenceExpr() {
 		val result = parseHelper.parse('''
-			float b = a.value * 5
-			b = a.value + 5
-			b = c.result || true
-			b = d.result == true
-			b = d.result > 3
+			def test()
+				float b = a.value * 5
+				b = a.value + 5
+				b = c.result || true
+				b = d.result == true
+				b = d.result > 3
+			end
 		''')
 		Assertions.assertNotNull(result)
 		val errors = result.eResource.errors

@@ -10,19 +10,21 @@ import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
-import de.uniba.swt.expr.bahnExpr.StatementList
+import de.uniba.swt.expr.bahnExpr.BahnExpr
 
 @ExtendWith(InjectionExtension)
 @InjectWith(BahnExprInjectorProvider)
 class SelectionStmtParsingTest {
 	@Inject
-	ParseHelper<StatementList> parseHelper
+	ParseHelper<BahnExpr> parseHelper
 
 	@Test
 	def void testIfOnly() {
 		val result = parseHelper.parse('''
-			if true
-				o = 1
+			def test()
+				if true
+					o = 1
+				end
 			end
 		''')
 		Assertions.assertNotNull(result)
@@ -33,10 +35,12 @@ class SelectionStmtParsingTest {
 	@Test
 	def void testIfWithElse() {
 		val result = parseHelper.parse('''
-			if true
-				o = 1
-			else
-				o = 2
+			def test()
+				if true
+					o = 1
+				else
+					o = 2
+				end
 			end
 		''')
 		Assertions.assertNotNull(result)
@@ -47,11 +51,13 @@ class SelectionStmtParsingTest {
 	@Test
 	def void testDanglingElse() {
 		val result = parseHelper.parse('''
-			if true
-				if false
-					o = 2
-				else 
-					o = 3
+			def test()
+				if true
+					if false
+						o = 2
+					else 
+						o = 3
+					end
 				end
 			end
 		''')
