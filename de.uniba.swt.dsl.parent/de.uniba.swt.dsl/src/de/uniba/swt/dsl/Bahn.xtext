@@ -196,3 +196,10 @@ enum DIRECTION:
 
 terminal HEX returns ecore::ELong:
 	('0x'|'0X') ('0'..'9'|'a'..'f'|'A'..'F')+;
+
+@Override 
+terminal SL_COMMENT : '#' !('\n'|'\r')* ('\r'? '\n')?;
+	
+@Override
+terminal STRING returns ecore::EString:
+	'"' ( '\\' ('b'|'t'|'n'|'f'|'r'|'"'|"'"|'\\') | !('\\'|'"') )* '"';
