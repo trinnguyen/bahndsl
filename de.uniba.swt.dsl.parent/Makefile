@@ -18,3 +18,7 @@ bahn-test:
 	mvn -pl de.uniba.swt.dsl.tests -o integration-test
 bahn-generate:
 	mvn -pl de.uniba.swt.dsl -o generate-sources
+
+# clean
+clean:
+	mvn -o clean

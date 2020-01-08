@@ -1,15 +1,15 @@
 def interlocking(var table, var srcSignal, var destSignal, var train)
-    var route = exec find_route(table, srcSignal, destSignal)
+    var route = find_route(table, srcSignal, destSignal)
     if route == nil
         return nil
     end
 
-    bool not_grantable = exec route_is_unavailable_or_conflicted(route)
+    bool not_grantable = route_is_unavailable_or_conflicted(route)
     if not_grantable
         return nil
     end
 
-    bool is_clear = exec route_is_clear(route, train)
+    bool is_clear = route_is_clear(route, train)
     if !is_clear
         return nil
     end
@@ -18,7 +18,7 @@ def interlocking(var table, var srcSignal, var destSignal, var train)
     route.train = train
 
     # set points and signals
-    exec set_route_points_signals(route)
+    set_route_points_signals(route)
 
     return route
 end
@@ -51,9 +51,10 @@ def route_is_clear(var route, var train)
     # All track segments on the route have to be clear
     int index = 0
     for var segment in route.path
-        if exec is_segment_occupied(segment)
+        if is_segment_occupied(segment)
             # Only the first track segment can be occupied, and only by the requesting train
-            if index == 0 && exec is_segment_occupied_by_train(train)
+            # Xtext Antlr
+            if index == 0 && is_segment_occupied_by_train(train)
                 return false
             end
         else
@@ -68,13 +69,13 @@ def set_route_points_signals(var route)
     # Set points
     for var point in route.points
         # position can be normal/reserve
-        if exec set_point_aspect(point, point.position)
+        if set_point_aspect(point, point.position)
             return false
         end
     end
 
     # Set entry signal to green (proceed aspect)
-    if exec set_signal_aspect(route.source, green)
+    if set_signal_aspect(route.source, "green")
         return false
     end
 

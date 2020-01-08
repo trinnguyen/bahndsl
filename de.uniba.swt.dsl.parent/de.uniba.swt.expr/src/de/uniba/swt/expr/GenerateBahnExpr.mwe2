@@ -48,6 +48,9 @@ Workflow {
 			}
 			parserGenerator = {
 				debugGrammar = true
+				options = {
+					backtrack = true
+				}
 			}
 		}
 	}
