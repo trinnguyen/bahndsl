@@ -14,5 +14,5 @@ Require-Bundle: de.uniba.swt.dsl.ui,
  org.eclipse.core.runtime,
  org.eclipse.xtext.ui.testing,
  org.eclipse.ui.workbench;resolution:=optional
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: de.uniba.swt.dsl.ui.tests;x-internal=true
