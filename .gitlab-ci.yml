@@ -14,14 +14,14 @@ cache:
   paths:
     - .m2/repository
 
-verify:jdk8:
+verify:jdk11:
   stage: test
   script:
     - 'mvn -f de.uniba.swt.dsl.parent/pom.xml $MAVEN_CLI_OPTS clean verify'
   except:
     - develop
 
-install:jdk8:
+install:jdk11:
   stage: deploy
   script:
     - 'mvn -f de.uniba.swt.dsl.parent/pom.xml $MAVEN_CLI_OPTS clean install'
