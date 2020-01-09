@@ -23,9 +23,13 @@
       <plugin id="de.uniba.swt.dsl.ide"/>
       <plugin id="de.uniba.swt.dsl.product"/>
       <plugin id="de.uniba.swt.dsl.ui"/>
+      <plugin id="de.uniba.swt.expr"/>
+      <plugin id="de.uniba.swt.expr.ide"/>
+      <plugin id="de.uniba.swt.expr.ui"/>
       <plugin id="io.github.classgraph"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
+      <plugin id="javax.xml"/>
       <plugin id="org.antlr.runtime"/>
       <plugin id="org.apache.batik.constants"/>
       <plugin id="org.apache.batik.css"/>

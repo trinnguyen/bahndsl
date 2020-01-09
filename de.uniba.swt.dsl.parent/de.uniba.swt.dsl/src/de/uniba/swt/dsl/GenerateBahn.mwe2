@@ -32,6 +32,7 @@ Workflow {
 		}
 		language = StandardLanguage {
 			name = "de.uniba.swt.dsl.Bahn"
+			referencedResource = "platform:/resource/de.uniba.swt.expr/model/generated/BahnExpr.genmodel"
 			fileExtensions = "bahn"
 
 			serializer = {
