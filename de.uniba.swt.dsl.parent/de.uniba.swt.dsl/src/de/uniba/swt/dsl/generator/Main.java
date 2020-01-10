@@ -8,6 +8,8 @@ import com.google.inject.Injector;
 import com.google.inject.Provider;
 import de.uniba.swt.dsl.BahnStandaloneSetup;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -30,9 +32,8 @@ public class Main {
 		
 		Injector injector = new BahnStandaloneSetup().createInjectorAndDoEMFRegistration();
 		Main main = injector.getInstance(Main.class);
-		
-		String outputFolder = args.length > 1 ? args[1] : null;
-		main.runGenerator(args[0], outputFolder);
+
+		main.runGenerator(args[0]);
 	}
 
 	@Inject
@@ -47,7 +48,11 @@ public class Main {
 	@Inject 
 	private JavaIoFileSystemAccess fileAccess;
 
-	protected void runGenerator(String string, String outputFolder) {
+	protected void runGenerator(String string) {
+		// load output
+		File file = new File(string);
+		String outputPath = Paths.get(file.getParent(), "src-gen").toAbsolutePath().toString();
+
 		// Load the resource
 		ResourceSet set = resourceSetProvider.get();
 		Resource resource = set.getResource(URI.createFileURI(string), true);
@@ -58,11 +63,11 @@ public class Main {
 			for (Issue issue : list) {
 				System.err.println(issue);
 			}
+			System.exit(1);
 			return;
 		}
 
 		// Configure and start the generator
-		String outputPath = (outputFolder != null && !outputFolder.isEmpty()) ? outputFolder : "src-gen";
 		fileAccess.setOutputPath(outputPath);
 		GeneratorContext context = new GeneratorContext();
 		context.setCancelIndicator(CancelIndicator.NullImpl);
