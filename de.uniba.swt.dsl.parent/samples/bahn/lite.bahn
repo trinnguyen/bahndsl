@@ -1,0 +1,5 @@
+module Lite
+    def interlocking_procedure(var source_signal, var destination_signal, var train)
+        
+    end
+end
