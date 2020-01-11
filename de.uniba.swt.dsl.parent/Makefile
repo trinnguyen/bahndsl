@@ -7,8 +7,8 @@ expr-test:
 	gradle de.uniba.swt.expr.tests:test
 expr-generate:
 	gradle de.uniba.swt.expr:generateXtextLanguage
-expr-exec-interlocking1:
-	gradle de.uniba.swt.expr:runGenerator --args='../samples/expr/interlocking1.bahnexpr'
+expr-web:
+	gradle de.uniba.swt.expr.web:jettyRun
 
 # Bahn projects
 bahn: bahn-build bahn-test
@@ -18,6 +18,8 @@ bahn-test:
 	gradle de.uniba.swt.dsl.tests:test
 bahn-generate:
 	gradle de.uniba.swt.dsl:generateXtextLanguage
+bahn-web:
+	gradle de.uniba.swt.dsl.web:jettyRun
 
 bahn-exec-expr:
 	gradle de.uniba.swt.dsl:runGenerator --args='../samples/bahn/expr.bahn'
@@ -29,3 +31,9 @@ bahn-exec-interlocking:
 # clean
 clean:
 	gradle clean
+
+# testing
+expr-exec-interlocking1:
+	gradle de.uniba.swt.expr:runGenerator --args='../samples/expr/interlocking1.bahnexpr'
+expr-exec-linking1:
+	gradle de.uniba.swt.expr:runGenerator --args='../samples/expr/linking1.bahnexpr'

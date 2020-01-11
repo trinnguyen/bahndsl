@@ -32,21 +32,25 @@ SelectionStmt returns Statement:
 ;
 
 IterationStmt returns Statement:
-	{IterationStmt} 'for' var=IterationVarDecl 'in' referenceExpr=ValuedReferenceExpr
+	{IterationStmt} 'for' var=VarDecl 'in' referenceExpr=ValuedReferenceExpr
 		stmts=StatementList
 	'end'
 ;
 
-IterationVarDecl:
-	type=ValueType name=ID
+VarDeclStmt returns Statement:
+	{VarDeclStmt} decl=VarDecl assignment=VariableAssignment
 ;
 
-VarDeclStmt returns Statement:
-	{VarDeclStmt} type=ValueType name=ID ('[' cardinality=Expression ']')? assignment=VariableAssignment
+VarDecl:
+	{VarDecl} type=ValueType name=ID (array?='[' cardinality=Expression ']')?
 ;
 
 ParamDecl:
-	type=ValueType name=ID
+	{ParamDecl} type=ValueType name=ID array?='[]'?
+;
+
+RefDecl:
+	VarDecl | ParamDecl
 ;
 
 AssignmentStmt returns Statement:
@@ -117,14 +121,14 @@ LiteralExpr:
 ;
 
 ValuedReferenceExpr:
-	name=ID 
+	name=[RefDecl]
 		('['indices+=Expression']')* 
 		('.' propRef=ValuedReferenceExpr)?
 ;
 
 FunctionCallExpr returns Expression:
-	name=ID
-	('()' | '(' params+=Expression (',' params+=Expression)* ')')
+	{FunctionCallExpr}
+	decl=[FuncDecl] ('()' | '(' params+=Expression (',' params+=Expression)* ')')
 ;
 
 BooleanLiteral returns LiteralExpr:

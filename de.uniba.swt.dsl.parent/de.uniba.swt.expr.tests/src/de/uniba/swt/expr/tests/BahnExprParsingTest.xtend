@@ -21,14 +21,13 @@ class BahnExprParsingTest {
 	@Test
 	def void testStatementList() {
 		val result = parseHelper.parse('''
-			def test()
-				int a = 3
-				int b = 4
-				if a > b
-					o = a
-				else
-					o = b
-				end
+			def sum(int a, int b)
+				int c = a + b
+				return c
+			end
+
+			def main()
+				return sum(3, 4)
 			end
 		''')
 		Assertions.assertNotNull(result)

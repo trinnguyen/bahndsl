@@ -1,0 +1,8 @@
+def max(int a)
+    int b = 0
+    return a + b
+end
+
+def main()
+    return max(3, 4)
+end
