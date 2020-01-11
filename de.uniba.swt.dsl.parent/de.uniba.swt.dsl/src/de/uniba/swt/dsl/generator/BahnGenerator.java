@@ -42,6 +42,10 @@ public class BahnGenerator extends AbstractGenerator {
 			
 			// bidib_train_config
 			fsa.generateFile("bidib_train_config.yml", bidibGenerator.dumpTrainConfig(network.name, network.trains));
+
+			// ast
+			String name = ((ModuleObject)e).getName();
+			fsa.generateFile(name + "_ast.txt", AstGenerator.dumpAst(resource.getContents().get(0), ""));
 		}
 	}
 }

@@ -3,6 +3,8 @@ grammar de.uniba.swt.dsl.Bahn with de.uniba.swt.expr.BahnExpr
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 generate bahn "http://www.uniba.de/swt/dsl/Bahn"
+import "http://www.uniba.de/swt/expr/BahnExpr" as bahnexpr
+
 
 ModuleObject:
 	'module' name=ID
@@ -67,6 +69,61 @@ RouteProperty:
 FuncDeclsProperty:
 	{FuncDeclsProperty} decls+=FuncDecl
 ;
+
+@Override 
+FunctionCallExpr returns bahnexpr::Expression:
+	super | GetFuncExpr | WaitFuncExpr | GrantRouteFuncExpr | SetAspectFuncExpr
+;
+
+GetFuncExpr returns BExpression:
+	{GetFuncExpr} 'get'
+	(
+		aspectObjectType=AspectObjectType aspectObjectId=PrimaryExpr
+	|
+		getRoute?='route from' srcSignalExpr=PrimaryExpr 'to' destSignalExpr=PrimaryExpr
+	)
+;
+
+WaitFuncExpr returns BExpression:
+	{WaitFuncExpr} 'wait' 'for' value=INT timeSpan=TimeSpanType
+;
+
+GrantRouteFuncExpr returns BExpression:
+	{GrantRouteFuncExpr} 'grant' routeExpr=PrimaryExpr 'to' trainExpr=PrimaryExpr
+;
+
+SetAspectFuncExpr returns BExpression:
+	{SetAspectFuncExpr} 
+	'set' aspectObjectType=AspectObjectType objectExpr=PrimaryExpr 'to' aspectExpr=PrimaryExpr
+;
+
+enum TimeSpanType:
+	SECONDS = 'seconds' | MINUTES = 'minutes' | HOURS = 'hours'
+;
+
+enum AspectObjectType:
+	POINT = 'point' | SIGNAL = 'signal'
+;
+
+@Override
+EqualityExpr returns Expression:
+	{EqualityExpr}leftExpr=RelationalExpr suffix=BEqualityExprSuffix?
+;
+
+BEqualityExprSuffix:
+	op=BEqualityOperator
+	(
+		occupiedBy?='occupied by'? rightExpr=RelationalExpr
+	|
+		routeAvailable?='available'
+	|
+		occupied?='occupied'
+	)
+;
+
+BEqualityOperator:
+	'is' isNot?='not'?
+;
 	
 PlatformElement: 
 	('length' length=INT) 
@@ -88,11 +145,7 @@ RouteElement:
 ;
 
 RoutePoint:
-	'point2' aspect=POINT_ASPECT
-;
-
-enum POINT_ASPECT:
-	NORMAL='normal' | ASPECT='reverse'
+	pointId=ID aspect=ID
 ;
 		
 enum TrainType:

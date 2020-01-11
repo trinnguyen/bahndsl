@@ -1,24 +1,31 @@
 
 # Expr projects
-expr: expr-install expr-test
-expr-install: 
-	mvn -pl de.uniba.swt.expr -o clean install
+expr: expr-build expr-test
+expr-build: 
+	gradle de.uniba.swt.expr:build
 expr-test:
-	mvn -pl de.uniba.swt.expr.tests -o integration-test
+	gradle de.uniba.swt.expr.tests:test
 expr-generate:
-	mvn -pl de.uniba.swt.expr -o generate-sources
-expr-exec-test1:
-	mvn -pl de.uniba.swt.expr -o exec:java@generatormain -Dexec.args='samples/expr/interlocking1.bahnexpr' -Dtycho.mode=maven
+	gradle de.uniba.swt.expr:generateXtextLanguage
+expr-exec-interlocking1:
+	gradle de.uniba.swt.expr:runGenerator --args='../samples/expr/interlocking1.bahnexpr'
 
 # Bahn projects
-bahn: bahn-install bahn-test
-bahn-install: 
-	mvn -pl de.uniba.swt.dsl -o clean install
+bahn: bahn-build bahn-test
+bahn-build: 
+	gradle de.uniba.swt.dsl:build
 bahn-test:
-	mvn -pl de.uniba.swt.dsl.tests -o integration-test
+	gradle de.uniba.swt.dsl.tests:test
 bahn-generate:
-	mvn -pl de.uniba.swt.dsl -o generate-sources
+	gradle de.uniba.swt.dsl:generateXtextLanguage
+
+bahn-exec-expr:
+	gradle de.uniba.swt.dsl:runGenerator --args='../samples/bahn/expr.bahn'
+bahn-exec-config:
+	gradle de.uniba.swt.dsl:runGenerator --args='../samples/bahn/config.bahn'
+bahn-exec-interlocking:
+	gradle de.uniba.swt.dsl:runGenerator --args='../samples/bahn/interlocking.bahn'
 
 # clean
 clean:
-	mvn -o clean
+	gradle clean

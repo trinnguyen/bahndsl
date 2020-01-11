@@ -26,6 +26,11 @@ task generateXtextLanguage(type: JavaExec) {
 	args += "rootPath=/${projectDir}/.."
 }
 
+task runGenerator(type: JavaExec) {
+	main = 'de.uniba.swt.expr.generator.Main'
+	classpath = sourceSets.main.runtimeClasspath
+}
+
 generateXtext.dependsOn(generateXtextLanguage)
 clean.dependsOn(cleanGenerateXtextLanguage)
 eclipse.classpath.plusConfigurations += [configurations.mwe2]

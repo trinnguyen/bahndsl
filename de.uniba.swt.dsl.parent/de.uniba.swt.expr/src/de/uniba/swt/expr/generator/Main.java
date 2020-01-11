@@ -7,6 +7,9 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import de.uniba.swt.expr.BahnExprStandaloneSetup;
+
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -44,6 +47,10 @@ public class Main {
 	private JavaIoFileSystemAccess fileAccess;
 
 	protected void runGenerator(String string) {
+		// load output
+		File file = new File(string);
+		String outputPath = Paths.get(file.getParent(), "src-gen").toAbsolutePath().toString();
+		
 		// Load the resource
 		ResourceSet set = resourceSetProvider.get();
 		Resource resource = set.getResource(URI.createFileURI(string), true);
@@ -58,7 +65,7 @@ public class Main {
 		}
 
 		// Configure and start the generator
-		fileAccess.setOutputPath("src-gen/");
+		fileAccess.setOutputPath(outputPath);
 		GeneratorContext context = new GeneratorContext();
 		context.setCancelIndicator(CancelIndicator.NullImpl);
 		generator.generate(resource, fileAccess, context);

@@ -98,7 +98,7 @@ UnaryExpr returns Expression:
 	| PrimaryExpr
 ;
 
-PrimaryExpr:
+PrimaryExpr returns Expression:
 	ParenthesizedExpr
 	| LiteralExpr
 	| ValuedReferenceExpr
@@ -113,7 +113,7 @@ LiteralExpr:
 	BooleanLiteral
 	| NumberLiteral
 	| StringLiteral
-	| NullLiteral
+	| {LiteralExpr} NullLiteral
 ;
 
 ValuedReferenceExpr:
@@ -122,7 +122,7 @@ ValuedReferenceExpr:
 		('.' propRef=ValuedReferenceExpr)?
 ;
 
-FunctionCallExpr:
+FunctionCallExpr returns Expression:
 	name=ID
 	('()' | '(' params+=Expression (',' params+=Expression)* ')')
 ;

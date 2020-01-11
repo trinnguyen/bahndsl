@@ -73,8 +73,11 @@ class ModelConverter {
 		
 		
 		// second loop with aspects are already loaded
-		network.signals = convertSignals(signalsProp, network.aspects);
-		network.points = convertPoints(pointsProp, network.aspects);
+		if (signalsProp != null)
+			network.signals = convertSignals(signalsProp, network.aspects);
+		
+		if (pointsProp != null)
+			network.points = convertPoints(pointsProp, network.aspects);
 		
 		return network;
 	}
