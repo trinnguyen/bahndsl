@@ -18,6 +18,9 @@ Workflow {
 				eclipsePlugin = {
 					enabled = true
 				}
+				web = {
+					enabled = true
+				}
 				createEclipseMetaData = true
 			}
 			code = {
