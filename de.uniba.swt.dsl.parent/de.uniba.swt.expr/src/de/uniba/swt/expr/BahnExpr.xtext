@@ -69,40 +69,40 @@ VariableAssignment:
 	'=' ('{' arrExprs+=Expression (',' arrExprs+=Expression)* '}' | expr=Expression)
 ;
 
-Expression returns Expression:
+Expression:
 	LogicalOrExpr
 ; 
 
-LogicalOrExpr returns Expression:
-	{LogicalOrExpr}leftExpr=LogicalAndExpr (ops+=OrOp rightExprs+=LogicalAndExpr)* 	
+LogicalOrExpr returns OpExpression:
+	LogicalAndExpr ({OpExpression.leftExpr=current} op=OrOp rightExpr=LogicalAndExpr)* 	
 ;
 
-LogicalAndExpr returns Expression:
-	{LogicalAndExpr}leftExpr=EqualityExpr (ops+=AndOp rightExprs+=EqualityExpr)*
+LogicalAndExpr returns OpExpression:
+	EqualityExpr ({OpExpression.leftExpr=current} op=AndOp rightExpr=EqualityExpr)*
 ;
 
-EqualityExpr returns Expression:
-	{EqualityExpr}leftExpr=RelationalExpr (ops+=EqualityOp rightExprs+=RelationalExpr)*
+EqualityExpr returns OpExpression:
+	RelationalExpr ({OpExpression.leftExpr=current} op=EqualityOp rightExpr=RelationalExpr)*
 ;
 
-RelationalExpr returns Expression:
-	{RelationalExpr}leftExpr=AdditiveExpr (ops+=RelationalOp rightExprs+=AdditiveExpr)*
+RelationalExpr returns OpExpression:
+	AdditiveExpr ({OpExpression.leftExpr=current} op=RelationalOp rightExpr=AdditiveExpr)*
 ;
 
-AdditiveExpr returns Expression:
-	{AdditiveExpr}leftExpr=MultiplicativeExpr (ops+=AddSubOp rightExprs+=MultiplicativeExpr)*
+AdditiveExpr returns OpExpression:
+	MultiplicativeExpr ({OpExpression.leftExpr=current} op=AddSubOp rightExpr=MultiplicativeExpr)*
 ;
 
-MultiplicativeExpr returns Expression:
-	{MultiplicativeExpr}leftExpr=UnaryExpr (ops+=MulDivOp rightExprs+=UnaryExpr)*
+MultiplicativeExpr returns OpExpression:
+	UnaryExpr ({OpExpression.leftExpr=current} op=MulDivOp rightExpr=UnaryExpr)*
 ;
 
-UnaryExpr returns Expression:
-	{UnaryExpr}op=UnaryOp expr=UnaryExpr
+UnaryExpr:
+	{UnaryExpr} unaryOp=UnaryOp expr=UnaryExpr
 	| PrimaryExpr
 ;
 
-PrimaryExpr returns Expression:
+PrimaryExpr:
 	ParenthesizedExpr
 	| LiteralExpr
 	| ValuedReferenceExpr
@@ -117,7 +117,7 @@ LiteralExpr:
 	BooleanLiteral
 	| NumberLiteral
 	| StringLiteral
-	| {LiteralExpr} NullLiteral
+	| NullLiteral
 ;
 
 ValuedReferenceExpr:
@@ -126,7 +126,7 @@ ValuedReferenceExpr:
 		('.' propRef=ValuedReferenceExpr)?
 ;
 
-FunctionCallExpr returns Expression:
+FunctionCallExpr:
 	{FunctionCallExpr}
 	decl=[FuncDecl] ('()' | '(' params+=Expression (',' params+=Expression)* ')')
 ;
@@ -144,7 +144,7 @@ StringLiteral:
 ;
 
 NullLiteral:
-	'nil'
+	{NullLiteral} 'nil'
 ;
 
 enum ValueType:
