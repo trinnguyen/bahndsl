@@ -5,4 +5,5 @@ end
 
 def main()
     int c = plus(3, 4)
+    bool a = c
 end

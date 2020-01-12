@@ -77,7 +77,10 @@ public class TypeComputingHelper {
     }
 
     private static ExprDataType computeFunctionCallDataType(FunctionCallExpr expr) {
-        //FIXME check function return
-        return ExprDataType.ScalarInt;
+        FuncDecl decl = expr.getDecl();
+        if (decl.isReturn())
+            return new ExprDataType(decl.getReturnType(), decl.isReturnArray());
+
+        return ExprDataType.Void;
     }
 }

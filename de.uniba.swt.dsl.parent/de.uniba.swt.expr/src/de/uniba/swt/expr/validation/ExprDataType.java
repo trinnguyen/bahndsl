@@ -14,6 +14,10 @@ public class ExprDataType {
 
     public static ExprDataType ScalarString = new ExprDataType(DataType.STRING_TYPE);
 
+    public static ExprDataType Void = new ExprDataType(true);
+
+    private boolean isVoid;
+
     private DataType dataType;
 
     private boolean isArray;
@@ -25,6 +29,18 @@ public class ExprDataType {
     public ExprDataType(DataType dataType, boolean isArray) {
         this.dataType = dataType;
         this.isArray = isArray;
+    }
+
+    public ExprDataType(boolean isVoid) {
+        this.isVoid = isVoid;
+    }
+
+    public boolean isVoid() {
+        return isVoid;
+    }
+
+    public void setVoid(boolean aVoid) {
+        isVoid = aVoid;
     }
 
     public DataType getDataType() {
@@ -43,34 +59,21 @@ public class ExprDataType {
         isArray = array;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ExprDataType that = (ExprDataType) o;
-        return isArray == that.isArray &&
-                dataType == that.dataType;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(dataType, isArray);
-    }
-
-    @Override
-    public java.lang.String toString() {
-        return "ExprDataType{" +
-                "dataType=" + dataType +
-                ", isArray=" + isArray +
-                '}';
-    }
-
     public boolean isScalarNumber() {
-        return (getDataType() == DataType.INT_TYPE || getDataType() == DataType.FLOAT_TYPE)
+        return !isVoid
+                && (getDataType() == DataType.INT_TYPE || getDataType() == DataType.FLOAT_TYPE)
                 && !isArray;
     }
 
+    public boolean isScalarBool() {
+        return !isVoid
+                &&getDataType() == DataType.BOOLEAN_TYPE && !isArray;
+    }
+
     public String displayTypeName() {
+        if (isVoid)
+            return "void";
+
         String res = dataType.getLiteral();
         if (isArray)
             res += "[]";
@@ -78,7 +81,28 @@ public class ExprDataType {
         return res;
     }
 
-    public boolean isScalarBool() {
-        return getDataType() == DataType.BOOLEAN_TYPE && !isArray;
+    @Override
+    public String toString() {
+        return displayTypeName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ExprDataType dataType1 = (ExprDataType) o;
+
+        if (isVoid != dataType1.isVoid) return false;
+        if (isArray != dataType1.isArray) return false;
+        return dataType == dataType1.dataType;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (isVoid ? 1 : 0);
+        result = 31 * result + dataType.hashCode();
+        result = 31 * result + (isArray ? 1 : 0);
+        return result;
     }
 }

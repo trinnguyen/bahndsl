@@ -9,7 +9,7 @@ BahnExpr:
 ;
 
 FuncDecl:
-	'def' name=ID ('()' | '(' paramDecls+=ParamDecl (',' paramDecls+=ParamDecl)* ')') (return?=':' returnType=DataType)?
+	'def' name=ID ('()' | '(' paramDecls+=ParamDecl (',' paramDecls+=ParamDecl)* ')') (return?=':' returnType=DataType returnArray?='[]'?)?
 		stmtList=StatementList
 	'end'
 ;

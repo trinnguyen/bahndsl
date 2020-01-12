@@ -15,7 +15,7 @@ class StatementValidator {
             ExprDataType declType = TypeComputingHelper.getDataType(stmt.getDecl());
             ExprDataType exprType = TypeComputingHelper.computeDataType(stmt.getAssignment().getExpr());
             if (!declType.equals(exprType)) {
-                throw new ValidationException("Type Error: Expected " + declType.displayTypeName(), BahnexprPackage.Literals.VAR_DECL_STMT__ASSIGNMENT);
+                throw new ValidationException("Type Error: Expression has type " + exprType.displayTypeName(), BahnexprPackage.Literals.VAR_DECL_STMT__ASSIGNMENT);
             }
         }
 
@@ -25,7 +25,7 @@ class StatementValidator {
             ExprDataType declType = TypeComputingHelper.computeDataType(stmt.getReferenceExpr());
             ExprDataType exprType = TypeComputingHelper.computeDataType(stmt.getAssignment().getExpr());
             if (!declType.equals(exprType)) {
-                throw new ValidationException("Type Error: Expected " + declType.displayTypeName(), BahnexprPackage.Literals.ASSIGNMENT_STMT__ASSIGNMENT);
+                throw new ValidationException("Type Error: Expression has type " + exprType.displayTypeName(), BahnexprPackage.Literals.ASSIGNMENT_STMT__ASSIGNMENT);
             }
         }
 

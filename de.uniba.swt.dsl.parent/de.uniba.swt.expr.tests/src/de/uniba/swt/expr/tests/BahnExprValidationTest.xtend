@@ -132,7 +132,7 @@ class BahnExprValidationTest {
 			def main()
 				int n = true
 			end
-        '''.parse.assertError(BahnexprPackage.Literals.VAR_DECL_STMT, null, "Expected int")
+        '''.parse.assertError(BahnexprPackage.Literals.VAR_DECL_STMT, null, "Expression has type bool")
     }
     
     @Test
@@ -142,7 +142,7 @@ class BahnExprValidationTest {
 				bool b = false
 			    b = 4
 			end
-        '''.parse.assertError(BahnexprPackage.Literals.ASSIGNMENT_STMT, null, "Expected bool")
+        '''.parse.assertError(BahnexprPackage.Literals.ASSIGNMENT_STMT, null, "Expression has type int")
     }
     
     @Test
@@ -151,7 +151,7 @@ class BahnExprValidationTest {
 			def main()
 				int n3 = true && false
 			end
-        '''.parse.assertError(BahnexprPackage.Literals.VAR_DECL_STMT, null, "Expected int")
+        '''.parse.assertError(BahnexprPackage.Literals.VAR_DECL_STMT, null, "Expression has type bool")
     }
     
     @Test
@@ -163,5 +163,18 @@ class BahnExprValidationTest {
 			    end
 			end
         '''.parse.assertError(BahnexprPackage.Literals.SELECTION_STMT, null, "Expected bool")
+    }
+    
+    @Test
+    def void testTypeFunctionCallExpr() {
+        '''
+			def plus(int a, int b): int
+			    return a + b
+			end
+			
+			def main()
+			    bool c = plus(3, 4)
+			end
+        '''.parse.assertError(BahnexprPackage.Literals.VAR_DECL_STMT, null, "Expression has type int")
     }
 }

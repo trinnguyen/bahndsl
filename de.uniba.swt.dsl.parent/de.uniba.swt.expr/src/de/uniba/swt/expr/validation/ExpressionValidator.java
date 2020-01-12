@@ -24,12 +24,12 @@ class ExpressionValidator {
 
             // ValuedReferenceExpr
             if (expr instanceof ValuedReferenceExpr) {
-                //FIXME ensure indicies are integer
+                //FIXME ensure array index is integer
             }
 
             // FunctionCallExpr
             if (expr instanceof FunctionCallExpr) {
-                //FIXME ensure function call with valid params
+                validateFunctionCallExpr((FunctionCallExpr)expr);
             }
         }
 
@@ -37,6 +37,10 @@ class ExpressionValidator {
         if (expr instanceof OpExpression) {
             validateOpExpression((OpExpression)expr);
         }
+    }
+
+    private static void validateFunctionCallExpr(FunctionCallExpr expr) {
+        //FIXME check params matching
     }
 
     /**
