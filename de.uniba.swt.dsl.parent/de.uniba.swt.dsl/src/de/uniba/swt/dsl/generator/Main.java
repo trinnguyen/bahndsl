@@ -14,6 +14,7 @@ import java.util.List;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.xtext.diagnostics.Severity;
 import org.eclipse.xtext.generator.GeneratorContext;
 import org.eclipse.xtext.generator.GeneratorDelegate;
 import org.eclipse.xtext.generator.JavaIoFileSystemAccess;
@@ -60,11 +61,17 @@ public class Main {
 		// Validate the resource
 		List<Issue> list = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
 		if (!list.isEmpty()) {
+			boolean anyError = false;
 			for (Issue issue : list) {
+				anyError = issue.getSeverity() == Severity.ERROR;
 				System.err.println(issue);
 			}
-			System.exit(1);
-			return;
+
+			// stop
+			if (anyError) {
+				System.exit(1);
+				return;
+			}
 		}
 
 		// Configure and start the generator

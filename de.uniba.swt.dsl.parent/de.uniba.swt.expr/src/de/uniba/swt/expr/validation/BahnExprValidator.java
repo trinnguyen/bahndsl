@@ -4,22 +4,32 @@
 package de.uniba.swt.expr.validation;
 
 
+import de.uniba.swt.expr.bahnexpr.Expression;
+import de.uniba.swt.expr.bahnexpr.Statement;
+import org.eclipse.xtext.validation.Check;
+
 /**
  * This class contains custom validation rules. 
  *
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 public class BahnExprValidator extends AbstractBahnExprValidator {
-	
-//	public static final INVALID_NAME = 'invalidName'
-//
-//	@Check
-//	public void checkGreetingStartsWithCapital(Greeting greeting) {
-//		if (!Character.isUpperCase(greeting.getName().charAt(0))) {
-//			warning("Name should start with a capital",
-//					BahnExprPackage.Literals.GREETING__NAME,
-//					INVALID_NAME);
-//		}
-//	}
-	
+
+    @Check
+    public void typeCheckingExpression(Expression expression) {
+        try {
+            ExpressionValidator.validate(expression);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingStatement(Statement statement) {
+        try {
+            StatementValidator.validate(statement);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
 }

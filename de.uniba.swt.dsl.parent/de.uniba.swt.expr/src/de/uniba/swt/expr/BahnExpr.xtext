@@ -9,7 +9,7 @@ BahnExpr:
 ;
 
 FuncDecl:
-	'def' name=ID ('()' | '(' paramDecls+=ParamDecl (',' paramDecls+=ParamDecl)* ')')
+	'def' name=ID ('()' | '(' paramDecls+=ParamDecl (',' paramDecls+=ParamDecl)* ')') (return?=':' returnType=DataType)?
 		stmtList=StatementList
 	'end'
 ;
@@ -42,11 +42,11 @@ VarDeclStmt returns Statement:
 ;
 
 VarDecl:
-	{VarDecl} type=ValueType name=ID (array?='[' cardinality=Expression ']')?
+	{VarDecl} type=DataType name=ID (array?='[' cardinality=Expression ']')?
 ;
 
 ParamDecl:
-	{ParamDecl} type=ValueType name=ID array?='[]'?
+	{ParamDecl} type=DataType name=ID array?='[]'?
 ;
 
 RefVarDecl:
@@ -90,7 +90,7 @@ RelationalExpr returns OpExpression:
 ;
 
 AdditiveExpr returns OpExpression:
-	MultiplicativeExpr ({OpExpression.leftExpr=current} op=AddSubOp rightExpr=MultiplicativeExpr)*
+	MultiplicativeExpr ({OpExpression.leftExpr=current} op=PlusMinusOp rightExpr=MultiplicativeExpr)*
 ;
 
 MultiplicativeExpr returns OpExpression:
@@ -122,7 +122,7 @@ LiteralExpr:
 ;
 
 ValuedReferenceExpr:
-	name=[RefVarDecl]
+	decl=[RefVarDecl]
 		('['indices+=Expression']')* 
 		('.' propRef=ValuedReferenceExpr)?
 ;
@@ -152,7 +152,7 @@ NullLiteral:
 	{NullLiteral} 'nil'
 ;
 
-enum ValueType:
+enum DataType:
 	INT_TYPE='int' | FLOAT_TYPE = 'float' | BOOLEAN_TYPE = 'bool' | STRING_TYPE = 'string' | OBJECT_TYPE = 'var'
 ;
 
@@ -160,7 +160,7 @@ terminal BOOLEAN returns ecore::EBoolean:
 	'true' | 'false'
 ;
 
-enum AddSubOp returns OperatorType:
+enum PlusMinusOp returns OperatorType:
 	PLUS = '+' | MINUS = '-'
 ;
 

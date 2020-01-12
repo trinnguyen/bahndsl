@@ -16,12 +16,12 @@ import org.eclipse.xtext.testing.validation.ValidationTestHelper
 @ExtendWith(InjectionExtension)
 @InjectWith(BahnExprInjectorProvider)
 class BahnExprParsingTest {
+
 	@Inject extension ParseHelper<BahnExpr>
-	@Inject extension ValidationTestHelper
 
 	@Test
 	def void testStatementList() {
-		'''
+		val result = '''
 			def sum(int a, int b)
 				int c = a + b
 				return c
@@ -30,6 +30,10 @@ class BahnExprParsingTest {
 			def main()
 				return sum(3, 4)
 			end
-		'''.parse.assertNoErrors
+		'''.parse
+
+		Assertions.assertNotNull(result)
+        val errors = result.eResource.errors
+        Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
 	}
 }

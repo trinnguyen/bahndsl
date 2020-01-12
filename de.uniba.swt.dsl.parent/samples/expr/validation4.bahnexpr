@@ -1,0 +1,8 @@
+# test func return
+def plus(int a, int b): int
+    return a + b
+end
+
+def main()
+    int c = plus(3, 4)
+end

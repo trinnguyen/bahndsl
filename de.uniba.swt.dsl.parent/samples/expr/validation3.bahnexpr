@@ -1,0 +1,17 @@
+# test typing
+def main()
+    int n = true
+    bool b = false
+    b = 4
+
+    # op
+    bool b1 = 3 + 4
+    int n1 = 3 == 4
+    int n2 = 3 > 4
+    bool n3 = true && false
+
+    # if
+    if 3
+        int i1 = 1
+    end
+end
