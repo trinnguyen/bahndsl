@@ -4,9 +4,11 @@
 package de.uniba.swt.expr.validation;
 
 
-import de.uniba.swt.expr.bahnexpr.Expression;
-import de.uniba.swt.expr.bahnexpr.Statement;
+import de.uniba.swt.expr.bahnexpr.*;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtext.validation.Check;
+
+import java.util.Objects;
 
 /**
  * This class contains custom validation rules. 
@@ -30,6 +32,15 @@ public class BahnExprValidator extends AbstractBahnExprValidator {
             StatementValidator.validate(statement);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void mainFuncRequired(BahnExpr bahnExpr) {
+        boolean hasMain = bahnExpr.getDecls() != null
+                && bahnExpr.getDecls().stream().anyMatch(d -> Objects.equals(d.getName().toLowerCase(), "main"));
+        if (!hasMain) {
+            error("Main function is required", BahnexprPackage.Literals.BAHN_EXPR__DECLS);
         }
     }
 }
