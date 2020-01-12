@@ -122,7 +122,6 @@ class ExpressionParsingTest {
 	def void testUnaryExpr() {
 		val result = parseHelper.parse('''
 			def test()
-				int a = -3
 				bool result = !true
 			end
 		''')
@@ -130,6 +129,19 @@ class ExpressionParsingTest {
 		val errors = result.eResource.errors
 		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
 	}
+
+	@Test
+    def void testSignedNumber() {
+        val result = parseHelper.parse('''
+            def test()
+                int a = -3
+                int a = -4
+            end
+        ''')
+        Assertions.assertNotNull(result)
+        val errors = result.eResource.errors
+        Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+    }
 
 	@Test
 	def void testParenthesizedExpr() {

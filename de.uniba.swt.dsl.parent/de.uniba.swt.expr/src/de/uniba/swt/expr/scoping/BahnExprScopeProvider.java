@@ -4,6 +4,21 @@
 package de.uniba.swt.expr.scoping;
 
 
+import de.uniba.swt.expr.bahnexpr.BahnexprPackage;
+import de.uniba.swt.expr.bahnexpr.FuncDecl;
+import de.uniba.swt.expr.bahnexpr.FunctionCallExpr;
+import de.uniba.swt.expr.bahnexpr.ValuedReferenceExpr;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.xtext.EcoreUtil2;
+import org.eclipse.xtext.scoping.IScope;
+import org.eclipse.xtext.scoping.Scopes;
+import org.eclipse.xtext.scoping.impl.FilteringScope;
+
+import java.util.Objects;
+
 /**
  * This class contains custom scoping description.
  * 
@@ -12,4 +27,33 @@ package de.uniba.swt.expr.scoping;
  */
 public class BahnExprScopeProvider extends AbstractBahnExprScopeProvider {
 
+    private static final Logger logger = LogManager.getLogger(BahnExprScopeProvider.class);
+
+    @Override
+    public IScope getScope(EObject context, EReference reference) {
+        logger.info(String.format("context: %s, reference: %s to: %s", context.eClass().getName(), reference.getName(), reference.getEReferenceType().getName()));
+
+        // function call, do not call main function
+        if (context instanceof FunctionCallExpr && reference == BahnexprPackage.Literals.FUNCTION_CALL_EXPR__DECL) {
+            EObject rootElement = EcoreUtil2.getRootContainer(context);
+            var candidates = EcoreUtil2.getAllContentsOfType(rootElement, FuncDecl.class);
+            IScope existingScope = Scopes.scopeFor(candidates);
+
+            // main function is excluded
+            return new FilteringScope(existingScope, e -> {
+                if (e != null && e.getEObjectOrProxy() instanceof FuncDecl) {
+                    FuncDecl funcDecl = (FuncDecl) e.getEObjectOrProxy();
+                    return !Objects.equals(funcDecl.getName(), "main");
+                }
+
+                return false;
+            });
+        }
+
+        if (context instanceof ValuedReferenceExpr) {
+
+        }
+
+        return super.getScope(context, reference);
+    }
 }

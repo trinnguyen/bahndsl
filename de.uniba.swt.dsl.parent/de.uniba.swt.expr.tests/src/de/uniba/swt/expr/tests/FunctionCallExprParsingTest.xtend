@@ -22,7 +22,7 @@ class FunctionCallExprParsingTest {
 	def void testEmptyFunctionCallExpr() {
 		val result = parseHelper.parse('''
 			def test()
-				var signals = exec getAllRoutes()
+				var signals = getAllRoutes()
 			end
 		''')
 		Assertions.assertNotNull(result)
@@ -34,7 +34,7 @@ class FunctionCallExprParsingTest {
 	def void testSingleParamFunctionCallExpr() {
 		val result = parseHelper.parse('''
 			def test()
-				var route = exec getRoute(routeId)
+				var route = getRoute(routeId)
 			end
 		''')
 		Assertions.assertNotNull(result)
@@ -46,7 +46,7 @@ class FunctionCallExprParsingTest {
 	def void testParamsFunctionCallExpr() {
 		val result = parseHelper.parse('''
 			def test()
-				var route = exec getRouteFromTable(table, signal1, signal2)
+				var route = getRouteFromTable(table, signal1, signal2)
 			end
 		''')
 		Assertions.assertNotNull(result)

@@ -71,7 +71,7 @@ FuncDeclsProperty:
 ;
 
 @Override 
-FunctionCallExpr returns bahnexpr::Expression:
+FunctionCallExpr returns bahnexpr::FunctionCallExpr:
 	super | GetFuncExpr | WaitFuncExpr | GrantRouteFuncExpr | SetAspectFuncExpr
 ;
 
@@ -252,6 +252,3 @@ LayoutId:
 enum DIRECTION:
 	Clockwise='->' | AntiClockwise='<-' | Bidirectional='<->'
 ;
-
-terminal HEX returns ecore::ELong:
-	('0x'|'0X') ('0'..'9'|'a'..'f'|'A'..'F')+;

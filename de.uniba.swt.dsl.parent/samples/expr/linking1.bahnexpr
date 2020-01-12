@@ -1,6 +1,7 @@
 def max(int a)
     int b = 0
     return a + b
+    main()
 end
 
 def main()

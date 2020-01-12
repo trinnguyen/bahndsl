@@ -1,4 +1,4 @@
-package de.uniba.swt.dsl.conversion;
+package de.uniba.swt.expr.converter;
 
 import org.eclipse.xtext.conversion.ValueConverterException;
 import org.eclipse.xtext.conversion.impl.AbstractLexerBasedConverter;

@@ -94,19 +94,19 @@ AdditiveExpr returns OpExpression:
 ;
 
 MultiplicativeExpr returns OpExpression:
-	UnaryExpr ({OpExpression.leftExpr=current} op=MulDivOp rightExpr=UnaryExpr)*
-;
-
-UnaryExpr:
-	{UnaryExpr} unaryOp=UnaryOp expr=UnaryExpr
-	| PrimaryExpr
+	PrimaryExpr ({OpExpression.leftExpr=current} op=MulDivOp rightExpr=PrimaryExpr)*
 ;
 
 PrimaryExpr:
-	ParenthesizedExpr
+    UnaryExpr
+	| ParenthesizedExpr
 	| LiteralExpr
 	| ValuedReferenceExpr
 	| FunctionCallExpr
+;
+
+UnaryExpr:
+	{UnaryExpr} '!' expr=PrimaryExpr
 ;
 
 ParenthesizedExpr:
@@ -116,6 +116,7 @@ ParenthesizedExpr:
 LiteralExpr:
 	BooleanLiteral
 	| NumberLiteral
+	| HexLiteral
 	| StringLiteral
 	| NullLiteral
 ;
@@ -137,6 +138,10 @@ BooleanLiteral returns LiteralExpr:
 
 NumberLiteral:
 	{NumberLiteral} value=NUMBER
+;
+
+HexLiteral:
+	{HexLiteral} value=HEX	
 ;
 
 StringLiteral:
@@ -163,10 +168,6 @@ enum MulDivOp returns OperatorType:
 	MULTIPLY = '*' | DIVISION = '/'
 ;
 
-enum UnaryOp:
-	NOT='!' | NEGATION="-"	
-;
-
 enum OrOp returns OperatorType:
 	OR = '||'
 ;
@@ -183,9 +184,12 @@ enum RelationalOp returns OperatorType:
 	GREATER='>' | LESS='<' | GREATER_OR_EQUAL='>=' | LES_OR_EQUAL='<='
 ;
 
-NUMBER hidden():
-	(INT ('.' INT)?)
+NUMBER returns ecore::EDouble:
+	'-'? INT ('.' INT)?
 ;
+
+terminal HEX returns ecore::ELong:
+	('0x'|'0X') ('0'..'9'|'a'..'f'|'A'..'F')+;
 
 @Override 
 terminal SL_COMMENT : '#' !('\n'|'\r')* ('\r'? '\n')?;

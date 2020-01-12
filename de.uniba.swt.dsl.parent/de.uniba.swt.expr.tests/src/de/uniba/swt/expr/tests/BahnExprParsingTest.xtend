@@ -11,16 +11,17 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 import de.uniba.swt.expr.bahnexpr.BahnExpr
+import org.eclipse.xtext.testing.validation.ValidationTestHelper
 
 @ExtendWith(InjectionExtension)
 @InjectWith(BahnExprInjectorProvider)
 class BahnExprParsingTest {
-	@Inject
-	ParseHelper<BahnExpr> parseHelper
+	@Inject extension ParseHelper<BahnExpr>
+	@Inject extension ValidationTestHelper
 
 	@Test
 	def void testStatementList() {
-		val result = parseHelper.parse('''
+		'''
 			def sum(int a, int b)
 				int c = a + b
 				return c
@@ -29,9 +30,6 @@ class BahnExprParsingTest {
 			def main()
 				return sum(3, 4)
 			end
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+		'''.parse.assertNoErrors
 	}
 }
