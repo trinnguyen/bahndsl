@@ -1,0 +1,11 @@
+# test variable and param reference
+def plus(int p1, int p2)
+    int p3 = p1 + p2
+    return p3
+end
+
+def main()
+    int i1 = 3
+    int i2 = 4
+    plus(i1, i2)
+end

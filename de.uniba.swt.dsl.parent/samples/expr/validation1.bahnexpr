@@ -1,0 +1,9 @@
+# test function call
+def max(int a, int b)
+    int c = a + b
+    return c
+end
+
+def main()
+    return max(3, 4)
+end
