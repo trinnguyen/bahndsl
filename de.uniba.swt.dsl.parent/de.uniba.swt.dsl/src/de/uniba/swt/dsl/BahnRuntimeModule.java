@@ -3,7 +3,7 @@
  */
 package de.uniba.swt.dsl;
 
-import de.uniba.swt.expr.converter.BahnExprValueConverterService;
+import de.uniba.swt.dsl.converter.BahnValueConverterService;
 import org.eclipse.xtext.conversion.IValueConverterService;
 
 /**
@@ -12,6 +12,6 @@ import org.eclipse.xtext.conversion.IValueConverterService;
 public class BahnRuntimeModule extends AbstractBahnRuntimeModule {
     @Override
     public Class<? extends IValueConverterService> bindIValueConverterService() {
-        return BahnExprValueConverterService.class;
+        return BahnValueConverterService.class;
     }
 }
