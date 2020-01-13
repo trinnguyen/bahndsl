@@ -3,16 +3,18 @@
  */
 package de.uniba.swt.expr.generator;
 
-import com.google.inject.Inject;
-import de.uniba.swt.expr.bahnexpr.BahnExpr;
-import de.uniba.swt.expr.bahnexpr.FuncDecl;
+import java.util.Objects;
+
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.generator.AbstractGenerator;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 import org.eclipse.xtext.generator.IGeneratorContext;
 
-import java.util.Objects;
+import com.google.inject.Inject;
+
+import de.uniba.swt.expr.bahnexpr.BahnExpr;
+import de.uniba.swt.expr.bahnexpr.FuncDecl;
 
 /**
  * Generates code from your model files on save.

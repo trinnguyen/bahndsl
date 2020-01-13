@@ -27,7 +27,9 @@ import de.uniba.swt.dsl.common.models.Train;
 import de.uniba.swt.dsl.common.models.TrainPeripheral;
 import de.uniba.swt.dsl.common.util.BahnException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 class ModelConverter {
@@ -84,7 +86,7 @@ class ModelConverter {
 	
 	
 	List<Aspect> convertAspects(AspectsProperty property) {
-		return property.getItems().stream().map(p -> new Aspect(p.getId(), p.getValue())).collect(Collectors.toList());
+		return property.getItems().stream().map(p -> new Aspect(p.getName(), p.getValue())).collect(Collectors.toList());
 	}
 		
 	List<Board> convertBoards(BoardsProperty property) {
@@ -109,7 +111,7 @@ class ModelConverter {
 	
 	Signal convertToSignal(String boardId, SignalElement s, List<Aspect> aspects) {
 		List<Aspect> resultAspects = convertToSignalAspects(s.getAspects(), aspects);
-		Aspect initialAspect = findAspect(s.getInitial(), resultAspects);
+		Aspect initialAspect = findAspect(s.getInitial().getName(), resultAspects);
 		return new Signal(
 			s.getId(),
 			boardId,
@@ -122,12 +124,12 @@ class ModelConverter {
 	List<Aspect> convertToSignalAspects(SignalAspectsElement elements, List<Aspect> globalAspects) {
 		if (elements instanceof OverrideSignalAspectsElement) {
 			OverrideSignalAspectsElement overrideElements = (OverrideSignalAspectsElement)elements;
-			return overrideElements.getOverrideAspects().stream().map(a -> new Aspect(a.getId(), a.getValue())).collect(Collectors.toList());
+			return overrideElements.getAspects().stream().map(a -> new Aspect(a.getName(), a.getValue())).collect(Collectors.toList());
 		}
 		
 		if (elements instanceof ReferenceSignalAspectsElement) {
 			ReferenceSignalAspectsElement refElements = (ReferenceSignalAspectsElement)elements;
-			return refElements.getReferenceAspects().stream().map(ra -> findAspect(ra, globalAspects)).filter(a -> a != null).collect(Collectors.toList());
+			return refElements.getAspects().stream().map(ra -> findAspect(ra.getName(), globalAspects)).filter(a -> a != null).collect(Collectors.toList());
 		}
 		
 		throw new BahnException("Invalid signal aspects");
@@ -139,7 +141,7 @@ class ModelConverter {
 	
 	Point convertToPoint(String boardId, PointElement p, List<Aspect> aspects) {
 		List<Aspect> resultAspects = convertToPointAspects(p.getAspects(), aspects);
-		Aspect initialAspect = findAspect(p.getInitial(), resultAspects);
+		Aspect initialAspect = findAspect(p.getInitial().getName(), resultAspects);
 		return new Point(
 			p.getId(),
 			boardId,
@@ -157,7 +159,7 @@ class ModelConverter {
 		
 		if (elements instanceof ReferencePointAspectsElement) {
 			ReferencePointAspectsElement refElements = (ReferencePointAspectsElement)elements;
-			return refElements.getReferenceAspects().stream().map(ra -> findAspect(ra.getId(), globalAspects)).filter(a -> a != null).collect(Collectors.toList());
+			return refElements.getReferenceAspects().stream().map(ra -> findAspect(ra.getId(), globalAspects)).filter(Objects::nonNull).collect(Collectors.toList());
 		}
 		
 		throw new BahnException("Invalid point aspects");
@@ -180,7 +182,7 @@ class ModelConverter {
 			t.getId(),
 			t.getAddress(),
 			t.getSteps(),
-			t.getCalibrations().stream().map(c -> new Integer(c)).collect(Collectors.toList()),
+			new ArrayList<Integer>(t.getCalibrations()),
 			t.getPeripherals().stream().map(p -> new TrainPeripheral(p.getId(), p.getBit(), p.getInitial())).collect(Collectors.toList())
 		)).collect(Collectors.toList());
 	}

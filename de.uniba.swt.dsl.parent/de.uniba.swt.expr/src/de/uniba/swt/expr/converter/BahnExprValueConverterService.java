@@ -1,9 +1,10 @@
 package de.uniba.swt.expr.converter;
 
-import com.google.inject.Inject;
 import org.eclipse.xtext.common.services.DefaultTerminalConverters;
 import org.eclipse.xtext.conversion.IValueConverter;
 import org.eclipse.xtext.conversion.ValueConverter;
+
+import com.google.inject.Inject;
 
 public class BahnExprValueConverterService extends DefaultTerminalConverters {
     @Inject

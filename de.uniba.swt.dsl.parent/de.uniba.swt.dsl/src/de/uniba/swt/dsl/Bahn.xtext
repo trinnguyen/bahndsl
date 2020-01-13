@@ -153,7 +153,7 @@ enum TrainType:
 ;
 
 AspectElement :
-	id=AspectId value=HEX
+	name=ID ':' value=HEX
 ;
 
 BoardElement :
@@ -169,7 +169,7 @@ SegmentElement :
 ;
 
 SignalElement :
-	id=ID number=HEX aspects=SignalAspectsElement 'initial' initial=AspectId 
+	id=ID number=HEX 'aspects' aspects=SignalAspectsElement 'end' 'initial' initial=[AspectElement] 
 ;
 
 SignalAspectsElement:
@@ -177,15 +177,15 @@ SignalAspectsElement:
 ;
 
 ReferenceSignalAspectsElement:
-	{ReferenceSignalAspectsElement} (referenceAspects+=AspectId (',' referenceAspects+=AspectId)*)
+	(aspects+=[AspectElement])+
 ;
 
 OverrideSignalAspectsElement:
-	{OverrideSignalAspectsElement} 'aspects' (overrideAspects+=AspectElement)+	
+	(aspects+=AspectElement)+
 ;
 
 PointElement :
-	id=ID number=HEX aspects=PointAspectsElement 'initial' initial=AspectId
+	id=ID number=HEX aspects=PointAspectsElement 'initial' initial=[AspectElement]
 ;
 
 PointAspectsElement:
@@ -201,19 +201,15 @@ OverridePointAspectsElement:
 ;
 
 OverridePointAspectElement:
-	id=AspectId value=HEX ':' segments=PointSegment
+	id=ID value=HEX ':' segments=PointSegment
 ;
 
 ReferencePointAspectElement :
-	id=AspectId ':' segments=PointSegment
+	id=ID ':' segments=PointSegment
 ;
 
 PointSegment:
 	segStart=ID direction=DIRECTION segEnd=ID
-;
-
-AspectId:
-	ID
 ;
 
 BlockElement :

@@ -4,7 +4,9 @@
 package de.uniba.swt.expr.scoping;
 
 
-import de.uniba.swt.expr.bahnexpr.*;
+import java.util.List;
+import java.util.Objects;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
@@ -14,9 +16,9 @@ import org.eclipse.xtext.scoping.IScope;
 import org.eclipse.xtext.scoping.Scopes;
 import org.eclipse.xtext.scoping.impl.FilteringScope;
 
-import java.awt.*;
-import java.util.List;
-import java.util.Objects;
+import de.uniba.swt.expr.bahnexpr.BahnexprPackage;
+import de.uniba.swt.expr.bahnexpr.FuncDecl;
+import de.uniba.swt.expr.bahnexpr.FunctionCallExpr;
 
 /**
  * This class contains custom scoping description.

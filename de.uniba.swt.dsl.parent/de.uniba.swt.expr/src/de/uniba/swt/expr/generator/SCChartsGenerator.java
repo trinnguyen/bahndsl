@@ -1,11 +1,12 @@
 package de.uniba.swt.expr.generator;
 
-import com.google.inject.Singleton;
-import de.uniba.swt.expr.bahnexpr.BahnExpr;
-import de.uniba.swt.expr.bahnexpr.FuncDecl;
+import java.util.Objects;
+
 import org.eclipse.emf.common.util.EList;
 
-import java.util.Objects;
+import com.google.inject.Singleton;
+
+import de.uniba.swt.expr.bahnexpr.FuncDecl;
 
 @Singleton
 public class SCChartsGenerator {

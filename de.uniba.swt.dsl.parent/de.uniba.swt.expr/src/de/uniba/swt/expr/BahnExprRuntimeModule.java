@@ -4,8 +4,9 @@
 package de.uniba.swt.expr;
 
 
-import de.uniba.swt.expr.converter.BahnExprValueConverterService;
 import org.eclipse.xtext.conversion.IValueConverterService;
+
+import de.uniba.swt.expr.converter.BahnExprValueConverterService;
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
