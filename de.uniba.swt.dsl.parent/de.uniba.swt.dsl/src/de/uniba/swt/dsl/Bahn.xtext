@@ -149,11 +149,11 @@ enum TrainType:
 ;
 
 AspectElement :
-	name=ID ':' value=HEX
+	name=ID value=HEX
 ;
 
 BoardElement :
-	name=ID uniqueId=HEX ('features' features+=BoardFeatureElement (',' features+=BoardFeatureElement)*)?
+	name=ID uniqueId=HEX ('features' (features+=BoardFeatureElement)+ 'end')?
 ;
 
 BoardFeatureElement:

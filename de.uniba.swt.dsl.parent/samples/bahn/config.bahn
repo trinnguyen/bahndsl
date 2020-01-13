@@ -1,11 +1,15 @@
 module config
     aspects
-        yellow:0x02
-        green:0x01
-        red:0x00
+        yellow 0x02
+        green 0x01
+        red 0x00
     end
     boards
-        master 0xDA000D680052EF features 0x03:0x14, 0x6E:0x00
+        master 0xDA000D680052EF 
+            features 
+                0x03:0x14 
+                0x6E:0x00 
+            end
         lightcontrol 0x05000D6B0083EC
         onecontrol 0x05000D7500DBED
     end
@@ -56,14 +60,14 @@ module config
         signal14 0x0B aspects green red end initial red
         signalends 0x12
             aspects
-                on:0x00
-                off:0x01
+                on 0x00
+                off 0x01
             end
             initial on
         lanterns 0x13
             aspects
-                on:0x00
-                off:0x01
+                on 0x00
+                off 0x01
             end
             initial on
     end
