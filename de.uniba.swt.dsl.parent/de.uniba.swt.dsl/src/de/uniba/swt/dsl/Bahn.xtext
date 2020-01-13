@@ -201,16 +201,17 @@ BlockElement :
 		(hasStart?='buffer' ':' startSeg=[SegmentElement] ',' startSignal=ID directionStart=DIRECTION)?  
 		'main' ':' mainSeg=[SegmentElement] 
 		(directionEnd=DIRECTION hasEnd?='buffer' ':' endSeg=[SegmentElement] ',' endSignal=[SignalElement])?
-		('length' length=Length)?
+		('length' length=Length)? &
 		('trains' (trainTypes+=TrainType)+ 'end')?
 ;
 
 TrainElement :
 	name=ID address=HEX 
 		'steps' steps=INT
-		('calibration' (calibrations+=INT)+ 'end')?
-		('weight' weight=Weight)?
-		('type' type=TrainType)?
+		('calibration' (calibrations+=INT)+ 'end')? &
+		('length' length=Length)? &
+		('weight' weight=Weight)? &
+		('type' type=TrainType)? &
 		('peripherals' (peripherals+=PeripheralElement)+ 'end')?
 ;
 
