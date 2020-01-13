@@ -181,31 +181,19 @@ OverrideSignalAspectsElement:
 ;
 
 PointElement :
-	name=ID number=HEX aspects=PointAspectsElement 'initial' initial=[AspectElement]
+	name=ID number=HEX 
+		'block' block=[BlockElement] 
+		'normal' normalAspect=PointAspectElement 
+		'reverse' reverseAspect=PointAspectElement 
+		'initial' initial=PointAspectType
 ;
 
-PointAspectsElement:
-	ReferencePointAspectsElement | OverridePointAspectsElement	
+PointAspectElement:
+	value=HEX ':' block1=[BlockElement] '--' block2=[BlockElement]
 ;
 
-ReferencePointAspectsElement:
-	{ReferencePointAspectsElement} (referenceAspects+=ReferencePointAspectElement)*
-;
-
-OverridePointAspectsElement:
-	{OverridePointAspectsElement} 'aspects' (overrideAspects+=OverridePointAspectElement)+	
-;
-
-OverridePointAspectElement:
-	name=ID value=HEX ':' segments=PointSegment
-;
-
-ReferencePointAspectElement :
-	name=ID ':' segments=PointSegment
-;
-
-PointSegment:
-	segStart=ID direction=DIRECTION segEnd=ID
+enum PointAspectType:
+	NORMAL = 'normal' | REVERSE = 'reverse'
 ;
 
 BlockElement :
@@ -214,7 +202,7 @@ BlockElement :
 		'main' ':' mainSeg=[SegmentElement] 
 		(directionEnd=DIRECTION hasEnd?='buffer' ':' endSeg=[SegmentElement] ',' endSignal=[SignalElement])?
 		('length' length=Length)?
-		('trains' (trains+=[TrainElement])+ 'end')?
+		('trains' (trainTypes+=TrainType)+ 'end')?
 ;
 
 TrainElement :
@@ -222,6 +210,7 @@ TrainElement :
 		'steps' steps=INT
 		('calibration' (calibrations+=INT)+ 'end')?
 		('weight' weight=Weight)?
+		('type' type=TrainType)?
 		('peripherals' (peripherals+=PeripheralElement)+ 'end')?
 ;
 

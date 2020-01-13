@@ -1,15 +1,13 @@
 package de.uniba.swt.dsl.generator;
 
+import com.google.common.collect.Lists;
 import de.uniba.swt.dsl.bahn.AspectsProperty;
 import de.uniba.swt.dsl.bahn.BoardsProperty;
 import de.uniba.swt.dsl.bahn.ModuleObject;
 import de.uniba.swt.dsl.bahn.ModuleProperty;
-import de.uniba.swt.dsl.bahn.OverridePointAspectsElement;
 import de.uniba.swt.dsl.bahn.OverrideSignalAspectsElement;
-import de.uniba.swt.dsl.bahn.PointAspectsElement;
 import de.uniba.swt.dsl.bahn.PointElement;
 import de.uniba.swt.dsl.bahn.PointsProperty;
-import de.uniba.swt.dsl.bahn.ReferencePointAspectsElement;
 import de.uniba.swt.dsl.bahn.ReferenceSignalAspectsElement;
 import de.uniba.swt.dsl.bahn.SegmentsProperty;
 import de.uniba.swt.dsl.bahn.SignalAspectsElement;
@@ -79,7 +77,7 @@ class ModelConverter {
 			network.signals = convertSignals(signalsProp, network.aspects);
 		
 		if (pointsProp != null)
-			network.points = convertPoints(pointsProp, network.aspects);
+			network.points = convertPoints(pointsProp);
 		
 		return network;
 	}
@@ -135,13 +133,13 @@ class ModelConverter {
 		throw new BahnException("Invalid signal aspects");
 	}
 	
-	List<Point> convertPoints(PointsProperty property, List<Aspect> aspects) {
-		return property.getItems().stream().map(p -> convertToPoint(property.getBoard().getName(), p, aspects)).collect(Collectors.toList());
+	List<Point> convertPoints(PointsProperty property) {
+		return property.getItems().stream().map(p -> convertToPoint(property.getBoard().getName(), p)).collect(Collectors.toList());
 	}
 	
-	Point convertToPoint(String boardId, PointElement p, List<Aspect> aspects) {
-		List<Aspect> resultAspects = convertToPointAspects(p.getAspects(), aspects);
-		Aspect initialAspect = findAspect(p.getInitial().getName(), resultAspects);
+	Point convertToPoint(String boardId, PointElement p) {
+		List<Aspect> resultAspects = createPointAspects(p);
+		Aspect initialAspect = findAspect(p.getInitial().getLiteral().toLowerCase(), resultAspects);
 		return new Point(
 			p.getName(),
 			boardId,
@@ -150,34 +148,24 @@ class ModelConverter {
 			initialAspect
 		);
 	}
-	
-	List<Aspect> convertToPointAspects(PointAspectsElement elements, List<Aspect> globalAspects) {
-		if (elements instanceof OverridePointAspectsElement) {
-			OverridePointAspectsElement overrideElements = (OverridePointAspectsElement)elements;
-			return overrideElements.getOverrideAspects().stream().map(a -> new Aspect(a.getName(), a.getValue())).collect(Collectors.toList());
-		}
-		
-		if (elements instanceof ReferencePointAspectsElement) {
-			ReferencePointAspectsElement refElements = (ReferencePointAspectsElement)elements;
-			return refElements.getReferenceAspects().stream().map(ra -> findAspect(ra.getName(), globalAspects)).filter(Objects::nonNull).collect(Collectors.toList());
-		}
-		
-		throw new BahnException("Invalid point aspects");
+
+	private List<Aspect> createPointAspects(PointElement pointElement)
+	{
+		return Lists.newArrayList(
+			new Aspect("normal", pointElement.getNormalAspect().getValue()),
+			new Aspect("reverse", pointElement.getReverseAspect().getValue())
+		);
 	}
 	
 	
-	Aspect findAspect(String id, List<Aspect> aspects) {
-		if (aspects != null) {
-			for (Aspect aspect : aspects) {
-				if (aspect.getId().equals(id))
-					return aspect;
-			}
-		}
-		
-		return null;
+	private Aspect findAspect(String id, List<Aspect> aspects) {
+		if (aspects == null)
+			return null;
+
+		return aspects.stream().filter(a -> a.getId().equalsIgnoreCase(id)).findFirst().orElse(null);
 	}
 	
-	List<Train> convertTrains(TrainsProperty property) {
+	private List<Train> convertTrains(TrainsProperty property) {
 		return property.getItems().stream().map(t -> new Train(
 			t.getName(),
 			t.getAddress(),

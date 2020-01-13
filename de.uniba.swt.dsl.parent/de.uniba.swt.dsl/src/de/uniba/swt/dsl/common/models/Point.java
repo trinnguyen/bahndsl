@@ -31,7 +31,7 @@ public class Point extends Element {
 		}
 		
 		if (initialAspect != null) {
-			builder.append(indent).append(Util.SINGLE_INDENT).append("initial: " + hexString(initialAspect.getValue())).append(Util.LINE_BREAK);
+			builder.append(indent).append(Util.SINGLE_INDENT).append("initial: " + initialAspect.getId()).append(Util.LINE_BREAK);
 		}
 		
 		return builder.toString();
