@@ -252,7 +252,3 @@ LayoutId:
 enum DIRECTION:
 	Clockwise='->' | AntiClockwise='<-' | Bidirectional='<->'
 ;
-
-@Override
-terminal HEX returns ecore::ELong:
-	('0x'|'0X') ('0'..'9'|'a'..'f'|'A'..'F')+;
