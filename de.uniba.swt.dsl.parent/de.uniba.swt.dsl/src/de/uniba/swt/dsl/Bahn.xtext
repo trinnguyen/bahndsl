@@ -210,16 +210,19 @@ PointSegment:
 
 BlockElement :
 	name=ID 
-		(hasStart?='buffer' ':' startSeg=[SegmentElement] ',' startSignal=ID
-		directionStart=DIRECTION)?  
+		(hasStart?='buffer' ':' startSeg=[SegmentElement] ',' startSignal=ID directionStart=DIRECTION)?  
 		'main' ':' mainSeg=[SegmentElement] 
-		(directionEnd=DIRECTION
-		hasEnd?='buffer' ':' endSeg=[SegmentElement] ',' endSignal=[SignalElement])?
+		(directionEnd=DIRECTION hasEnd?='buffer' ':' endSeg=[SegmentElement] ',' endSignal=[SignalElement])?
+		('length' length=Length)?
+		('trains' (trains+=[TrainElement])+ 'end')?
 ;
 
 TrainElement :
-	name=ID address=HEX 'steps' steps=INT 'calibration' (calibrations+=INT (',' calibrations+=INT)*) 'weight' weight=INT
-		'peripherals' (peripherals+=PeripheralElement)* 
+	name=ID address=HEX 
+		'steps' steps=INT
+		('calibration' (calibrations+=INT)+ 'end')?
+		('weight' weight=Weight)?
+		('peripherals' (peripherals+=PeripheralElement)+ 'end')?
 ;
 
 PeripheralElement:
@@ -232,6 +235,22 @@ LayoutElement :
 
 LayoutId:
 	name=ID
+;
+
+Length:
+	value=INT unit=LengthUnit
+;
+
+enum LengthUnit:
+	CENTIMETRE = 'cm' | METRE = 'm' | KILOMETRE = 'km'
+;
+
+Weight:
+	value=INT unit=WeightUnit
+;
+
+enum WeightUnit:
+	GRAM = 'g' | KILOGRAM = 'kg'| TON = 't'
 ;
 
 enum DIRECTION:
