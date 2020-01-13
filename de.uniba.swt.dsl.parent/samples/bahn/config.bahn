@@ -172,8 +172,14 @@ module config
     end
 
     layout
+        block1 -- blockPoint5 -- blockPlatform1
+        blockPoint5 -- blockPoint2 -- block2 -- blockPoint1 -- block3 -- blockPoint3 -- block5 -- blockPoint2
+        blockPoint1 -- block4 -- blockPoint4 -- blockPoint6 -- block1
+        blockPoint4 -- blockPoint3
+        blockPoint6 -- blockPoint7 -- blockPlatform2
+        blockPoint7 -- blockNone2
     end
 
-    def interlocking_procedure(string srcSignalId, string destSignalId, string trainId)
+    def interlockingProcedure(string srcSignalId, string destSignalId, string trainId)
     end
 end

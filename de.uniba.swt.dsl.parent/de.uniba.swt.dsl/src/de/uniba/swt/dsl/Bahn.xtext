@@ -219,11 +219,7 @@ PeripheralElement:
 ;
 
 LayoutElement :
-	ids+=LayoutId ('--' ids+=LayoutId)*
-;
-
-LayoutId:
-	name=ID
+	blocks+=[BlockElement] ('--' blocks+=[BlockElement])*
 ;
 
 Length:
