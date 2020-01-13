@@ -34,15 +34,15 @@ BoardsProperty :
 		(items+=BoardElement)*
 	'end';
 SegmentsProperty :
-	'segments' boardId=ID
+	'segments' board=[BoardElement]
 		(items+=SegmentElement)*
 	'end';
 SignalsProperty :
-	'signals' boardId=ID
+	'signals' board=[BoardElement]
 		(items+=SignalElement)*
 	'end';
 PointsProperty :
-	'points' boardId=ID
+	'points' board=[BoardElement]
 		(items+=PointElement)*
 	'end';
 BlocksProperty :
@@ -58,7 +58,7 @@ LayoutProperty :
 		(items+=LayoutElement)*
 	'end';
 PlatformProperty :
-	{PlatformProperty} 'platform'
+	{PlatformProperty} 'platforms'
 		(items+=PlatformElement)*
 	'end';
 RouteProperty:
@@ -134,18 +134,18 @@ PlatformElement:
 ;
 
 RouteElement:
-	id=ID 
-	'source' source=ID 
-	'destination' destination=ID 
+	name=ID 
+	'source' source=[SignalElement] 
+	'destination' destination=[SignalElement] 
 	'direction' direction=DIRECTION 
-	'path' (segments+=ID)* 'end'
+	'path' (segments+=[SegmentElement])* 'end'
 	'points' points+=RoutePoint 'end'
-	'signals' signals+=ID 'end'
-	'conflicts' conflicts+=ID 'end'
+	'signals' signals+=[SignalElement] 'end'
+	'conflicts' conflicts+=[RouteElement] 'end'
 ;
 
 RoutePoint:
-	pointId=ID aspect=ID
+	point=[PointElement] aspect=ID
 ;
 		
 enum TrainType:
@@ -157,7 +157,7 @@ AspectElement :
 ;
 
 BoardElement :
-	id=ID uniqueId=HEX ('features' features+=BoardFeatureElement (',' features+=BoardFeatureElement)*)?
+	name=ID uniqueId=HEX ('features' features+=BoardFeatureElement (',' features+=BoardFeatureElement)*)?
 ;
 
 BoardFeatureElement:
@@ -165,11 +165,11 @@ BoardFeatureElement:
 ;
 
 SegmentElement :
-	id=ID address=HEX
+	name=ID address=HEX
 ;
 
 SignalElement :
-	id=ID number=HEX 'aspects' aspects=SignalAspectsElement 'end' 'initial' initial=[AspectElement] 
+	name=ID number=HEX 'aspects' aspects=SignalAspectsElement 'end' 'initial' initial=[AspectElement] 
 ;
 
 SignalAspectsElement:
@@ -185,7 +185,7 @@ OverrideSignalAspectsElement:
 ;
 
 PointElement :
-	id=ID number=HEX aspects=PointAspectsElement 'initial' initial=[AspectElement]
+	name=ID number=HEX aspects=PointAspectsElement 'initial' initial=[AspectElement]
 ;
 
 PointAspectsElement:
@@ -201,11 +201,11 @@ OverridePointAspectsElement:
 ;
 
 OverridePointAspectElement:
-	id=ID value=HEX ':' segments=PointSegment
+	name=ID value=HEX ':' segments=PointSegment
 ;
 
 ReferencePointAspectElement :
-	id=ID ':' segments=PointSegment
+	name=ID ':' segments=PointSegment
 ;
 
 PointSegment:
@@ -213,28 +213,21 @@ PointSegment:
 ;
 
 BlockElement :
-	BidirectionalBlockElement | ClockwiseBlockElement | AntiClockwiseBlockElement
-;
-
-BidirectionalBlockElement:
-	id=ID 'buffer' ':' startSeg=ID ',' startSignal=ID directionStart=DIRECTION  'main' ':' mainSeg=ID directionEnd=DIRECTION  'buffer' ':' endSeg=ID ',' endSignal=ID
-;
-
-ClockwiseBlockElement:
-	id=ID 'buffer' ':' startSeg=ID ',' startSignal=ID direction=DIRECTION  'main' ':' mainSeg=ID
-;
-
-AntiClockwiseBlockElement:
-	id=ID 'main' ':' mainSeg=ID direction=DIRECTION 'buffer' ':' endSeg=ID ',' endSignal=ID
+	name=ID 
+		(hasStart?='buffer' ':' startSeg=[SegmentElement] ',' startSignal=ID
+		directionStart=DIRECTION)?  
+		'main' ':' mainSeg=[SegmentElement] 
+		(directionEnd=DIRECTION
+		hasEnd?='buffer' ':' endSeg=[SegmentElement] ',' endSignal=[SignalElement])?
 ;
 
 TrainElement :
-	id=ID address=HEX 'steps' steps=INT 'calibration' (calibrations+=INT (',' calibrations+=INT)*) 'weight' weight=INT
+	name=ID address=HEX 'steps' steps=INT 'calibration' (calibrations+=INT (',' calibrations+=INT)*) 'weight' weight=INT
 		'peripherals' (peripherals+=PeripheralElement)* 
 ;
 
 PeripheralElement:
-	id=ID 'bit' bit=INT 'initial' initial=INT
+	name=ID 'bit' bit=INT 'initial' initial=INT
 ;
 
 LayoutElement :
@@ -242,7 +235,7 @@ LayoutElement :
 ;
 
 LayoutId:
-	objectId=ID ('.' prop=ID)?
+	name=ID
 ;
 
 enum DIRECTION:

@@ -91,7 +91,7 @@ class ModelConverter {
 		
 	List<Board> convertBoards(BoardsProperty property) {
 		return property.getItems().stream().map(p -> new Board(
-			p.getId(),
+			p.getName(),
 			p.getUniqueId(),
 			p.getFeatures().stream().map(f -> new BoardFeature(f.getNumber(), f.getValue())).collect(Collectors.toList())
 		)).collect(Collectors.toList());
@@ -99,21 +99,21 @@ class ModelConverter {
 	
 	List<Segment> convertSegments(SegmentsProperty property) {
 		return property.getItems().stream().map(p -> new Segment(
-			p.getId(),
-			property.getBoardId(),
+			p.getName(),
+			property.getBoard().getName(),
 			p.getAddress()
 		)).collect(Collectors.toList());
 	}
 	
 	List<Signal> convertSignals(SignalsProperty property, List<Aspect> aspects) {
-		return property.getItems().stream().map(p -> convertToSignal(property.getBoardId(), p, aspects)).collect(Collectors.toList());
+		return property.getItems().stream().map(p -> convertToSignal(property.getBoard().getName(), p, aspects)).collect(Collectors.toList());
 	}
 	
 	Signal convertToSignal(String boardId, SignalElement s, List<Aspect> aspects) {
 		List<Aspect> resultAspects = convertToSignalAspects(s.getAspects(), aspects);
 		Aspect initialAspect = findAspect(s.getInitial().getName(), resultAspects);
 		return new Signal(
-			s.getId(),
+			s.getName(),
 			boardId,
 			s.getNumber(),
 			resultAspects,
@@ -136,14 +136,14 @@ class ModelConverter {
 	}
 	
 	List<Point> convertPoints(PointsProperty property, List<Aspect> aspects) {
-		return property.getItems().stream().map(p -> convertToPoint(property.getBoardId(), p, aspects)).collect(Collectors.toList());
+		return property.getItems().stream().map(p -> convertToPoint(property.getBoard().getName(), p, aspects)).collect(Collectors.toList());
 	}
 	
 	Point convertToPoint(String boardId, PointElement p, List<Aspect> aspects) {
 		List<Aspect> resultAspects = convertToPointAspects(p.getAspects(), aspects);
 		Aspect initialAspect = findAspect(p.getInitial().getName(), resultAspects);
 		return new Point(
-			p.getId(),
+			p.getName(),
 			boardId,
 			p.getNumber(),
 			resultAspects,
@@ -154,12 +154,12 @@ class ModelConverter {
 	List<Aspect> convertToPointAspects(PointAspectsElement elements, List<Aspect> globalAspects) {
 		if (elements instanceof OverridePointAspectsElement) {
 			OverridePointAspectsElement overrideElements = (OverridePointAspectsElement)elements;
-			return overrideElements.getOverrideAspects().stream().map(a -> new Aspect(a.getId(), a.getValue())).collect(Collectors.toList());
+			return overrideElements.getOverrideAspects().stream().map(a -> new Aspect(a.getName(), a.getValue())).collect(Collectors.toList());
 		}
 		
 		if (elements instanceof ReferencePointAspectsElement) {
 			ReferencePointAspectsElement refElements = (ReferencePointAspectsElement)elements;
-			return refElements.getReferenceAspects().stream().map(ra -> findAspect(ra.getId(), globalAspects)).filter(Objects::nonNull).collect(Collectors.toList());
+			return refElements.getReferenceAspects().stream().map(ra -> findAspect(ra.getName(), globalAspects)).filter(Objects::nonNull).collect(Collectors.toList());
 		}
 		
 		throw new BahnException("Invalid point aspects");
@@ -179,11 +179,11 @@ class ModelConverter {
 	
 	List<Train> convertTrains(TrainsProperty property) {
 		return property.getItems().stream().map(t -> new Train(
-			t.getId(),
+			t.getName(),
 			t.getAddress(),
 			t.getSteps(),
 			new ArrayList<Integer>(t.getCalibrations()),
-			t.getPeripherals().stream().map(p -> new TrainPeripheral(p.getId(), p.getBit(), p.getInitial())).collect(Collectors.toList())
+			t.getPeripherals().stream().map(p -> new TrainPeripheral(p.getName(), p.getBit(), p.getInitial())).collect(Collectors.toList())
 		)).collect(Collectors.toList());
 	}
 }

@@ -73,16 +73,21 @@ module config
     end
 
     blocks
+        block1 buffer:seg20,signal10 <-> main:seg19 <-> buffer:seg18,signal5
+        block2 buffer:seg7,signal4 <-> main:seg6 <-> buffer:seg5,signal3
+        block3 buffer:seg3,signal2 <-> main:seg2 <-> buffer:seg1,signal1
+        block4 buffer:seg16,signal12 <-> main:seg15 <-> buffer:seg14,signal7
+        block5 buffer:seg11,signal6 <-> main:seg10 <-> buffer:seg9,signal5
+    end
 
+    platforms
     end
 
     trains
+
     end
 
     layout
-    end
-
-    platform
     end
 
     def interlocking_procedure(string srcSignalId, string destSignalId, string trainId)
