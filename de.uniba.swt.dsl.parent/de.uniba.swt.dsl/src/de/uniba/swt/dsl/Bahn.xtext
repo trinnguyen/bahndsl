@@ -78,9 +78,11 @@ FunctionCallExpr returns bahnexpr::FunctionCallExpr:
 GetFuncExpr returns BExpression:
 	{GetFuncExpr} 'get'
 	(
-		aspectObjectType=AspectObjectType aspectObjectId=PrimaryExpr
-	|
-		getRoute?='route from' srcSignalExpr=PrimaryExpr 'to' destSignalExpr=PrimaryExpr
+		(signal?='signal' expr=PrimaryExpr)
+		|
+		(point?='point' expr=PrimaryExpr)
+		|
+		(route?='route' 'from' srcSignalExpr=PrimaryExpr 'to' destSignalExpr=PrimaryExpr)
 	)
 ;
 
@@ -94,20 +96,30 @@ GrantRouteFuncExpr returns BExpression:
 
 SetAspectFuncExpr returns BExpression:
 	{SetAspectFuncExpr} 
-	'set' aspectObjectType=AspectObjectType objectExpr=PrimaryExpr 'to' aspectExpr=PrimaryExpr
+	'set' 
+	(
+		(signal?='signal' expr=PrimaryExpr 'to' aspectId=PrimaryExpr)
+		|
+		(point?='point' expr=PrimaryExpr 'to' pointAspectType=PointAspectType)
+	)
 ;
 
 enum TimeSpanType:
 	SECONDS = 'seconds' | MINUTES = 'minutes' | HOURS = 'hours'
 ;
 
-enum AspectObjectType:
-	POINT = 'point' | SIGNAL = 'signal'
-;
-
 @Override
 EqualityExpr returns Expression:
 	{EqualityExpr}leftExpr=RelationalExpr suffix=BEqualityExprSuffix?
+;
+
+@Override
+LiteralExpr returns bahnexpr::LiteralExpr:
+	super | PointAspectLiteral
+;
+
+PointAspectLiteral:
+	value=PointAspectType
 ;
 
 BEqualityExprSuffix:

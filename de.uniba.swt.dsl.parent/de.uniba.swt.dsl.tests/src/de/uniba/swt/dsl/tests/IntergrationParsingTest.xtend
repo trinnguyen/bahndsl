@@ -29,6 +29,7 @@ class IntergrationParsingTest {
 					# set aspect
 					set signal sig1 to red
 					set point point1 to normal
+					set point point1 to reverse
 
 					# get aspect
 					var pAspect = get point point1

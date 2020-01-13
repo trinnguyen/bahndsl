@@ -1,9 +1,4 @@
 module SWTbahnLite
-    aspects
-        yellow 0x02
-        green 0x01
-        red 0x00
-    end
     boards
         master 0xDA000D680052EF 
             features 
@@ -45,6 +40,12 @@ module SWTbahnLite
         seg29 0x1C
     end
 
+    aspects
+        yellow 0x02
+        green 0x01
+        red 0x00
+    end
+    
     signals lightcontrol
         signal1 0x00 aspects yellow green red end initial red
         signal2 0x01 aspects yellow green red end initial red
