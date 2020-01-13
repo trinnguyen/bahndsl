@@ -3,10 +3,16 @@
  */
 package de.uniba.swt.expr.generator;
 
+import com.google.inject.Inject;
+import de.uniba.swt.expr.bahnexpr.BahnExpr;
+import de.uniba.swt.expr.bahnexpr.FuncDecl;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.generator.AbstractGenerator;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 import org.eclipse.xtext.generator.IGeneratorContext;
+
+import java.util.Objects;
 
 /**
  * Generates code from your model files on save.
@@ -15,8 +21,18 @@ import org.eclipse.xtext.generator.IGeneratorContext;
  */
 public class BahnExprGenerator extends AbstractGenerator {
 
+	@Inject
+	SCChartsGenerator generator;
+
 	@Override
 	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		fsa.generateFile("ast.txt", AstGenerator.dumpAst(resource.getContents().get(0), ""));
+
+		EObject e = resource.getContents().get(0);
+		if (e instanceof BahnExpr) {
+			// find entry func
+			FuncDecl mainDecl = ((BahnExpr) e).getDecls().stream().filter(f -> Objects.equals(f.getName().toLowerCase(), "main")).findFirst().orElse(null);
+			fsa.generateFile("interlocking.sctx", generator.generateModel(((BahnExpr) e).getDecls()));
+		}
 	}
 }

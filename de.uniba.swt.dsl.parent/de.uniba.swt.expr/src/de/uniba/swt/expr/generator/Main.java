@@ -47,6 +47,9 @@ public class Main {
 	@Inject 
 	private JavaIoFileSystemAccess fileAccess;
 
+	@Inject
+	private SCChartsGenerator scchartsGenerator;
+
 	protected void runGenerator(String string) {
 		// load output
 		File file = new File(string);
