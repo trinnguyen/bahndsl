@@ -126,11 +126,7 @@ BEqualityOperator:
 ;
 	
 PlatformElement: 
-	('length' length=INT) 
-	| ('length_unit' (lengthUnit=('cm'|'m'))) 
-	| ('weight_unit' (weightUnit=('gr'|'kg'))) 
-	| ('direction' (direction=('clockwise'|'anti-clockwise')))
-	| {PlatformElement} ('train_types' (trainTypes+=TrainType)*)
+	name=ID block=[BlockElement]
 ;
 
 RouteElement:

@@ -73,14 +73,25 @@ module config
     end
 
     blocks
+        # Regular blocks
         block1 buffer:seg20,signal10 <-> main:seg19 <-> buffer:seg18,signal5
         block2 buffer:seg7,signal4 <-> main:seg6 <-> buffer:seg5,signal3
         block3 buffer:seg3,signal2 <-> main:seg2 <-> buffer:seg1,signal1
         block4 buffer:seg16,signal12 <-> main:seg15 <-> buffer:seg14,signal7
         block5 buffer:seg11,signal6 <-> main:seg10 <-> buffer:seg9,signal5
+
+        # block5a buffer:seg11,signal6 -> main:seg10
+        # block5b main:seg10 -> buffer:seg9,signal5
+        # block5c main:seg10
+
+        # Platform blocks
+        block6 buffer:seg29,signal15 -> main:seg28 <-> buffer:seg27,signal14
+        block7 buffer:seg25,signal12 -> main:seg24 <-> buffer:seg23, signal11
     end
 
     platforms
+        platform1 block6
+        platform1 block7
     end
 
     trains
