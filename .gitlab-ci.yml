@@ -25,6 +25,7 @@ install:jdk11:
   stage: deploy
   script:
     - 'mvn -f de.uniba.swt.dsl.parent/pom.xml $MAVEN_CLI_OPTS clean install'
+    - 'sudo apt-get update -y && sudo apt-get install -y xattr'
     - 'sh post-build.sh'
   artifacts:
     paths:
