@@ -17,5 +17,6 @@ xattr -c *.app
 
 # zip back
 echo "Package macOS product back"
+rm BahnIDE-macosx.cocoa.x86_64.tar.gz
 tar zcf BahnIDE-macosx.cocoa.x86_64.tar.gz *.app
 rm -rf *.app
