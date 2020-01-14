@@ -13,7 +13,7 @@ cd build
 # unzip and remove extended attributes
 echo "Fix damanged macOS package"
 tar xzf BahnIDE-macosx.cocoa.x86_64.tar.gz
-xattr -c *.app
+xattr -d $(xattr *.app) *.app
 
 # zip back
 echo "Package macOS product back"
