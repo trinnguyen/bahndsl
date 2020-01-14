@@ -8,6 +8,10 @@ Respository for Masters thesis on BahnDSL: A Domain-Specific Language for Config
 - [Linux: BahnIDE-linux.gtk.x86_64.tar.gz](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/build/BahnIDE-linux.gtk.x86_64.tar.gz?job=install:jdk11)
 - [Windows: BahnIDE-win32.win32.x86_64.zip](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/build/BahnIDE-win32.win32.x86_64.zip?job=install:jdk11)
 
+### Fix damaged macOS application
+- Run command line: `xattr -c "Bahn IDE.app"`
+
+
 ## Requirements
 - Java SE 11 ([Download OpenJDK 11](https://adoptopenjdk.net/index.html?variant=openjdk11&jvmVariant=hotspot))
 
