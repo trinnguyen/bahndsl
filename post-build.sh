@@ -10,10 +10,12 @@ cp de.uniba.swt.dsl.parent/de.uniba.swt.dsl.product.rcp/target/products/BahnIDE-
 cp de.uniba.swt.dsl.parent/de.uniba.swt.dsl.product.rcp/target/products/BahnIDE-win32.win32.x86_64.zip ./build/BahnIDE-win32.win32.x86_64.zip
 
 cd build
-# unzip and remove extended attributes
-echo "Fix damanged macOS package"
+# unzip 
 tar xzf BahnIDE-macosx.cocoa.x86_64.tar.gz
-xattr -d $(xattr *.app) *.app
+
+#remove extended attributes
+#echo "Fix damanged macOS package"
+#xattr -d $(xattr *.app) *.app
 
 # zip back
 echo "Package macOS product back"
