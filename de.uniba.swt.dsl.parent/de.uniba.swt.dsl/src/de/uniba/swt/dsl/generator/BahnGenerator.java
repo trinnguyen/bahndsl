@@ -11,7 +11,7 @@ import org.eclipse.xtext.generator.IGeneratorContext;
 
 import com.google.inject.Inject;
 
-import de.uniba.swt.dsl.bahn.ModuleObject;
+import de.uniba.swt.dsl.bahn.RootModule;
 import de.uniba.swt.dsl.common.generator.yaml.BidibYamlConfigGenerator;
 import de.uniba.swt.dsl.common.models.NetworkModel;
 
@@ -31,8 +31,8 @@ public class BahnGenerator extends AbstractGenerator {
 	@Override
 	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		EObject e = resource.getContents().get(0);
-		if (e instanceof ModuleObject) {
-			NetworkModel network = modelConverter.buildNetworkModel((ModuleObject)e);
+		if (e instanceof RootModule) {
+			NetworkModel network = modelConverter.buildNetworkModel((RootModule)e);
 			
 			// bidib_board_config
 			fsa.generateFile("bidib_board_config.yml", bidibGenerator.dumpBoardConfig(network.name, network.boards));
@@ -44,7 +44,7 @@ public class BahnGenerator extends AbstractGenerator {
 			fsa.generateFile("bidib_train_config.yml", bidibGenerator.dumpTrainConfig(network.name, network.trains));
 
 			// ast
-			String name = ((ModuleObject)e).getName();
+			String name = ((RootModule)e).getName();
 			fsa.generateFile(name + "_ast.txt", AstGenerator.dumpAst(resource.getContents().get(0), ""));
 		}
 	}

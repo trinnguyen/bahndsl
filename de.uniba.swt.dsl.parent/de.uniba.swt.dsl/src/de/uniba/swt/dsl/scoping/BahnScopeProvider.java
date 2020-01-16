@@ -4,6 +4,21 @@
 package de.uniba.swt.dsl.scoping;
 
 
+import de.uniba.swt.dsl.bahn.BahnPackage;
+import de.uniba.swt.dsl.bahn.FuncDecl;
+import de.uniba.swt.dsl.bahn.FunctionCallExpr;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.xtext.EcoreUtil2;
+import org.eclipse.xtext.scoping.IScope;
+import org.eclipse.xtext.scoping.Scopes;
+import org.eclipse.xtext.scoping.impl.FilteringScope;
+
+import java.util.List;
+import java.util.Objects;
+
 /**
  * This class contains custom scoping description.
  * 
@@ -11,5 +26,31 @@ package de.uniba.swt.dsl.scoping;
  * on how and when to use it.
  */
 public class BahnScopeProvider extends AbstractBahnScopeProvider {
+    private static final Logger logger = LogManager.getLogger(BahnScopeProvider.class);
 
+    @Override
+    public IScope getScope(EObject context, EReference reference) {
+        logger.debug(String.format("context: %s, reference: %s to: %s", context.eClass().getName(), reference.getName(), reference.getEReferenceType().getName()));
+
+        // function call, do not call main function
+        if (context instanceof FunctionCallExpr && reference == BahnPackage.Literals.FUNCTION_CALL_EXPR__DECL) {
+            // main function is excluded
+            return new FilteringScope(getScopes(context, FuncDecl.class), e -> {
+                if (e != null && e.getEObjectOrProxy() instanceof FuncDecl) {
+                    FuncDecl funcDecl = (FuncDecl) e.getEObjectOrProxy();
+                    return !Objects.equals(funcDecl.getName(), "main");
+                }
+
+                return false;
+            });
+        }
+
+        return super.getScope(context, reference);
+    }
+
+    private <T extends EObject> IScope getScopes(EObject context, Class<T> type) {
+        EObject rootElement = EcoreUtil2.getRootContainer(context);
+        List<T> candidates = EcoreUtil2.getAllContentsOfType(rootElement, type);
+        return Scopes.scopeFor(candidates);
+    }
 }

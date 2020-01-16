@@ -1,0 +1,10 @@
+module validation
+    def max(int a, int b)
+        int c = a + b
+        return c
+    end
+
+    def run()
+        return max(3, 4)
+    end
+end

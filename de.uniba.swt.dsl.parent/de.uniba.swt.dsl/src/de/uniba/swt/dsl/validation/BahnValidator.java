@@ -4,22 +4,43 @@
 package de.uniba.swt.dsl.validation;
 
 
+import de.uniba.swt.dsl.bahn.Expression;
+import de.uniba.swt.dsl.bahn.Statement;
+import org.eclipse.xtext.validation.Check;
+
+import java.util.Objects;
+
 /**
  * This class contains custom validation rules. 
  *
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 public class BahnValidator extends AbstractBahnValidator {
-	
-//	public static final INVALID_NAME = 'invalidName'
-//
-//	@Check
-//	public void checkGreetingStartsWithCapital(Greeting greeting) {
-//		if (!Character.isUpperCase(greeting.getName().charAt(0))) {
-//			warning("Name should start with a capital",
-//					BahnPackage.Literals.GREETING__NAME,
-//					INVALID_NAME);
-//		}
-//	}
-	
+
+    @Check
+    public void typeCheckingExpression(Expression expression) {
+        try {
+            ExpressionValidator.validate(expression);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingStatement(Statement statement) {
+        try {
+            StatementValidator.validate(statement);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+//    @Check
+//    public void mainFuncRequired(BahnExpr bahnExpr) {
+//        boolean hasMain = bahnExpr.getDecls() != null
+//                && bahnExpr.getDecls().stream().anyMatch(d -> Objects.equals(d.getName().toLowerCase(), "main"));
+//        if (!hasMain) {
+//            error("Main function is required", BahnexprPackage.Literals.BAHN_EXPR__DECLS);
+//        }
+//    }
 }

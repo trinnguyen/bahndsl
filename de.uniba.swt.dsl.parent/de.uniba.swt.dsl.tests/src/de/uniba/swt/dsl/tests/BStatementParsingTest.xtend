@@ -4,95 +4,80 @@
 package de.uniba.swt.dsl.tests
 
 import com.google.inject.Inject
-import de.uniba.swt.dsl.bahn.ModuleObject
+import de.uniba.swt.dsl.bahn.RootModule
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
 @ExtendWith(InjectionExtension)
 @InjectWith(BahnInjectorProvider)
 class BStatementParsingTest {
-	@Inject
-	ParseHelper<ModuleObject> parseHelper
+	
+	@Inject extension ParseHelper<RootModule>
+	@Inject extension ParserTestHelper
 	
 	@Test
 	def void testGrantRouteStmt() {
-		val result = parseHelper.parse('''
+		'''
 			module expr
 				def inter()
 					grant route1 to cargo_green
 				end
 			end
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+		'''.parse.assertNoParsingErrors
 	}
 
 	@Test
 	def void testSetAspectSignalStmt() {
-		val result = parseHelper.parse('''
+		'''
 			module expr
 				def inter()
 					set signal sig1 to red
 				end
 			end
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+		'''.parse.assertNoParsingErrors
 	}
 
 	@Test
 	def void testSetAspectPointStmt() {
-		val result = parseHelper.parse('''
+		'''
 			module expr
 				def inter()
 					set point point1 to normal
 				end
 			end
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+		'''.parse.assertNoParsingErrors
 	}
 
 	@Test
 	def void getGetSignalEqual() {
-		val result = parseHelper.parse('''
+		'''
 			module expr
 				def inter()
 					bool isRed = get signal sig1 is red
 					bool isNotGreen = get signal sig1 is not green
 				end
 			end
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+		'''.parse.assertNoParsingErrors
 	}
 
 	@Test
 	def void getGetPointEqual() {
-		val result = parseHelper.parse('''
+		'''
 			module expr
 				def inter()
 					bool isNormal = get point point1 is normal
 					bool isNotReverse = get point point2 is not reverse
 				end
 			end
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+		'''.parse.assertNoParsingErrors
 	}
 
 	@Test
 	def void testWaitStmt() {
-		val result = parseHelper.parse('''
+		'''
 			module expr
 				def inter()
 					wait for 3 seconds
@@ -100,68 +85,53 @@ class BStatementParsingTest {
 					wait for 1 hours
 				end
 			end
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+		'''.parse.assertNoParsingErrors
 	}
 
 	@Test
 	def void testSegmentOccupied() {
-		val result = parseHelper.parse('''
+		'''
 			module expr
 				def inter()
 					bool isOc = seg1 is occupied
 					bool isNotOc = seg1 is not occupied
 				end
 			end
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+		'''.parse.assertNoParsingErrors
 	}
 
 	@Test
 	def void testSegmentOccupiedByTrain() {
-		val result = parseHelper.parse('''
+		'''
 			module expr
 				def inter()
 					bool isOc = seg1 is occupied by train
 					bool isNotOc = seg1 is not occupied by train
 				end
 			end
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+		'''.parse.assertNoParsingErrors
 	}
 
 	@Test
 	def void testRouteAvailable() {
-		val result = parseHelper.parse('''
+		'''
 			module expr
 				def inter()
 					bool r1 = route1 is available
 					bool r2 = route1 is not available
 				end
 			end
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+		'''.parse.assertNoParsingErrors
 	}
 
 	@Test
 	def void testGetRouteBySignal() {
-		val result = parseHelper.parse('''
+		'''
 			module expr
 				def inter()
 					var r1 = get route from sig1 to sig2
 				end
 			end
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+		'''.parse.assertNoParsingErrors
 	}
 }
