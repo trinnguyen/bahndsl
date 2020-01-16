@@ -69,19 +69,6 @@ FuncDeclsProperty:
 	{FuncDeclsProperty} decls+=FuncDecl
 ;
 
-BEqualityExpr returns BExpression:
-	{EqualityExpr}leftExpr=ValuedReferenceExpr suffix=BEqualityExprSuffix?
-;
-
-BEqualityExprSuffix:
-	'is' isNot?='not'?
-	(
-		routeAvailable?='available'
-	|
-		occupied?='occupied' by?='by'? (rightExpr=RelationalExpr)?
-	)
-;
-
 GetFuncExpr returns BExpression:
 	{GetFuncExpr} 'get'
 	(
@@ -312,8 +299,25 @@ LogicalAndExpr returns OpExpression:
 ;
 
 EqualityExpr returns OpExpression:
-	RelationalExpr ({OpExpression.leftExpr=current} op=EqualityOp rightExpr=RelationalExpr)*
+	BEqualityExpr ({OpExpression.leftExpr=current} op=EqualityOp rightExpr=BEqualityExpr)*
 ;
+
+
+BEqualityExpr returns OpExpression:
+	RelationalExpr ({BEqualityExpr.leftExpr=current} suffix=BEqualityExprSuffix)?
+;
+
+BEqualityExprSuffix:
+	'is' isNot?='not'?
+	(
+		rightExpr=PrimaryExpr
+	|
+		routeAvailable?='available'
+	|
+		occupied?='occupied' (by?='by' rightExpr=PrimaryExpr)?
+	)
+;
+
 
 RelationalExpr returns OpExpression:
 	AdditiveExpr ({OpExpression.leftExpr=current} op=RelationalOp rightExpr=AdditiveExpr)*
@@ -330,7 +334,7 @@ MultiplicativeExpr returns OpExpression:
 PrimaryExpr:
     UnaryExpr
 	| ParenthesizedExpr
-	| LiteralExpr
+	| LiteralExpr 
 	| ValuedReferenceExpr
 	| FunctionCallExpr
 ;

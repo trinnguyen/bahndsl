@@ -1,6 +1,6 @@
 module validation
     def max(int a, int b)
-        int c = a + b
+        int c = a + 4 - 4 * 5
         return c
     end
 
