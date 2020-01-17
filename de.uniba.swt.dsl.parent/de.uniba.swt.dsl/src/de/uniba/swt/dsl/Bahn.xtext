@@ -21,7 +21,7 @@ ModuleProperty:
 	| LayoutProperty 
 	| PlatformProperty
 	| RouteProperty
-	| FuncDeclsProperty
+	| FuncDecl
 	;
 
 AspectsProperty :
@@ -64,12 +64,8 @@ RouteProperty:
 	{RouteProperty} 'routes'
 		(items+=RouteElement)*
 	'end';
-	
-FuncDeclsProperty:
-	{FuncDeclsProperty} decls+=FuncDecl
-;
 
-GetFuncExpr returns BExpression:
+GetFuncExpr returns BehaviourExpr:
 	{GetFuncExpr} 'get'
 	(
 		(signal?='signal' expr=PrimaryExpr)
@@ -80,15 +76,15 @@ GetFuncExpr returns BExpression:
 	)
 ;
 
-WaitFuncExpr returns BExpression:
+WaitFuncExpr returns BehaviourExpr:
 	{WaitFuncExpr} 'wait' 'for' value=INT timeSpan=TimeSpanType
 ;
 
-GrantRouteFuncExpr returns BExpression:
+GrantRouteFuncExpr returns BehaviourExpr:
 	{GrantRouteFuncExpr} 'grant' routeExpr=PrimaryExpr 'to' trainExpr=PrimaryExpr
 ;
 
-SetAspectFuncExpr returns BExpression:
+SetAspectFuncExpr returns BehaviourExpr:
 	{SetAspectFuncExpr} 
 	'set' 
 	(

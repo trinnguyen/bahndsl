@@ -3,6 +3,7 @@
  */
 package de.uniba.swt.dsl.generator;
 
+import de.uniba.swt.dsl.normalization.BahnNormalizationProvider;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.generator.AbstractGenerator;
@@ -28,11 +29,22 @@ public class BahnGenerator extends AbstractGenerator {
 	@Inject
 	ModelConverter modelConverter;
 
+	@Inject
+	BahnNormalizationProvider normalizationProvider;
+
+	@Override
+	public void beforeGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
+		RootModule rootModule = getRootModule(input);
+		if (rootModule != null) {
+			normalizationProvider.normalize(rootModule);
+		}
+	}
+
 	@Override
 	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-		EObject e = resource.getContents().get(0);
-		if (e instanceof RootModule) {
-			NetworkModel network = modelConverter.buildNetworkModel((RootModule)e);
+		RootModule rootModule = getRootModule(resource);
+		if (rootModule != null) {
+			NetworkModel network = modelConverter.buildNetworkModel(rootModule);
 			
 			// bidib_board_config
 			fsa.generateFile("bidib_board_config.yml", bidibGenerator.dumpBoardConfig(network.name, network.boards));
@@ -44,8 +56,16 @@ public class BahnGenerator extends AbstractGenerator {
 			fsa.generateFile("bidib_train_config.yml", bidibGenerator.dumpTrainConfig(network.name, network.trains));
 
 			// ast
-			String name = ((RootModule)e).getName();
+			String name = (rootModule.getName());
 			fsa.generateFile(name + "_ast.txt", AstGenerator.dumpAst(resource.getContents().get(0), ""));
 		}
+	}
+
+	private RootModule getRootModule(Resource resource) {
+		EObject e = resource.getContents().get(0);
+		if (e instanceof RootModule)
+			return (RootModule)e;
+
+		return null;
 	}
 }
