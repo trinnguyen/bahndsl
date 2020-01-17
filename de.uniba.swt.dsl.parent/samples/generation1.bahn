@@ -1,7 +1,7 @@
 module generation1
-    def math()
-        int a = 3;
-        int b = 4;
-        int c = a + b
+    def mathexpr(int a, int b) : int
+        int tmp1 = 1
+        tmp1 = tmp1 + a
+        return tmp1 * b
     end
 end

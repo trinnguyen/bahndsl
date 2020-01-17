@@ -1,0 +1,120 @@
+package de.uniba.swt.dsl.common.generator.sccharts.builder;
+
+import de.uniba.swt.dsl.bahn.*;
+
+public class ExpressionTextualBuilder extends TextualBuilder {
+
+    public static String buildString(Expression expression) {
+        var builder = new ExpressionTextualBuilder();
+        builder.generateExpr(expression);
+        return builder.build();
+    }
+
+    private void generateExpr(Expression expression) {
+        if (expression instanceof OpExpression) {
+            generateExpr((OpExpression) expression);
+        }
+    }
+
+    private void generateExpr(OpExpression expression) {
+        // BEqualityExpr
+        if (expression instanceof BEqualityExpr) {
+            generateExpr((BEqualityExpr) expression);
+        }
+
+        // primary
+        if (expression instanceof PrimaryExpr) {
+            generateExpr((PrimaryExpr) expression);
+            return;
+        }
+
+        // op again
+        generateExpr(expression.getLeftExpr());
+        generateOp(expression.getOp());
+
+        if (expression.getRightExpr() != null) {
+            generateExpr(expression.getRightExpr());
+        }
+    }
+
+    private void generateExpr(BEqualityExpr expression) {
+        //TODO generateBEqualityExpr
+    }
+
+    /**
+     * UnaryExpr
+     * | ParenthesizedExpr
+     * | LiteralExpr
+     * | ValuedReferenceExpr
+     * | FunctionCallExpr
+     * @param expression expression
+     */
+    private void generateExpr(PrimaryExpr expression) {
+        // UnaryExpr
+        if (expression instanceof UnaryExpr) {
+            append("!");
+            generateExpr(((UnaryExpr) expression).getExpr());
+            return;
+        }
+
+        // ParenthesizedExpr
+        if (expression instanceof ParenthesizedExpr) {
+            append("(");
+            generateExpr(((ParenthesizedExpr) expression).getExpr());
+            append(")");
+            return;
+        }
+
+        // LiteralExpr
+        if (expression instanceof LiteralExpr) {
+            generateExpr((LiteralExpr)expression);
+            return;
+        }
+
+        // ValuedReferenceExpr
+        if (expression instanceof ValuedReferenceExpr) {
+            append(((ValuedReferenceExpr) expression).getDecl().getName());
+            return;
+        }
+
+        // FunctionCallExpr
+        //TODO fix function call expr
+    }
+
+    /**
+     * BooleanLiteral
+     * 	| NumberLiteral
+     * 	| HexLiteral
+     * 	| StringLiteral
+     * 	| NullLiteral
+     * 	| PointAspectLiteral
+     * @param expr expression
+     */
+    private void generateExpr(LiteralExpr expr) {
+        if (expr instanceof BooleanLiteral) {
+            append(((BooleanLiteral) expr).isBoolValue() ? "true" : "false");
+            return;
+        }
+
+        if (expr instanceof NumberLiteral) {
+            var val = ((NumberLiteral) expr).getValue();
+            append(String.valueOf(val));
+            return;
+        }
+
+        if (expr instanceof HexLiteral) {
+            //TODO hex
+        }
+
+        if (expr instanceof StringLiteral) {
+            append("\"").append(((StringLiteral) expr).getValue()).append("\"");
+            return;
+        }
+
+        //TODO NULL and PostAspect
+    }
+
+    private void generateOp(OperatorType op) {
+        append(op.toString());
+    }
+}

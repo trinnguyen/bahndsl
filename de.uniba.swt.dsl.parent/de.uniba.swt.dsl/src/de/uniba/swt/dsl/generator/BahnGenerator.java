@@ -3,6 +3,7 @@
  */
 package de.uniba.swt.dsl.generator;
 
+import de.uniba.swt.dsl.common.generator.sccharts.SCChartsGenerator;
 import de.uniba.swt.dsl.normalization.BahnNormalizationProvider;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -32,6 +33,9 @@ public class BahnGenerator extends AbstractGenerator {
 	@Inject
 	BahnNormalizationProvider normalizationProvider;
 
+	@Inject
+	SCChartsGenerator scChartsGenerator;
+
 	@Override
 	public void beforeGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		RootModule rootModule = getRootModule(input);
@@ -44,6 +48,10 @@ public class BahnGenerator extends AbstractGenerator {
 	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		RootModule rootModule = getRootModule(resource);
 		if (rootModule != null) {
+			// ast
+			fsa.generateFile(rootModule.getName() + "_ast.txt", AstGenerator.dumpAst(resource.getContents().get(0), ""));
+
+			// YAML
 			NetworkModel network = modelConverter.buildNetworkModel(rootModule);
 			
 			// bidib_board_config
@@ -55,9 +63,8 @@ public class BahnGenerator extends AbstractGenerator {
 			// bidib_train_config
 			fsa.generateFile("bidib_train_config.yml", bidibGenerator.dumpTrainConfig(network.name, network.trains));
 
-			// ast
-			String name = (rootModule.getName());
-			fsa.generateFile(name + "_ast.txt", AstGenerator.dumpAst(resource.getContents().get(0), ""));
+			// SCCharts
+			fsa.generateFile(rootModule.getName() + "_sccharts.sctx", scChartsGenerator.generate(rootModule));
 		}
 	}
 
