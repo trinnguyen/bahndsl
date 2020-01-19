@@ -35,7 +35,7 @@ class BahnValidationTest {
             def interproc()
                 plus(1, -2)
             end
-            def plus(int a, int b)
+            def plus(int a, int b):int
                 return a + b
             end end
         '''.parse.assertNoErrors
