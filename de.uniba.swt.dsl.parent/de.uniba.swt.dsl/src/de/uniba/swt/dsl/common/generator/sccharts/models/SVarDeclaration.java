@@ -68,4 +68,17 @@ public class SVarDeclaration {
     public void setCardinalityExprs(List<Expression> cardinalityExprs) {
         this.cardinalityExprs = cardinalityExprs;
     }
+
+    @Override
+    public String toString() {
+        return "SVarDeclaration{" +
+                "isInput=" + isInput +
+                ", isOutput=" + isOutput +
+                ", name='" + name + '\'' +
+                ", dataType=" + dataType +
+                ", cardinality=" + cardinality +
+                ", initialExpr=" + initialExpr +
+                ", cardinalityExprs=" + cardinalityExprs +
+                '}';
+    }
 }
