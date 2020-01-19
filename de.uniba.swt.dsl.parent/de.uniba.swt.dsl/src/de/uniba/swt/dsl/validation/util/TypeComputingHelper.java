@@ -1,9 +1,10 @@
-package de.uniba.swt.dsl.validation;
+package de.uniba.swt.dsl.validation.util;
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.validation.ExprDataType;
 
 public class TypeComputingHelper {
-    public static ExprDataType computeDataType(Expression expr) throws ValidationException {
+    public static ExprDataType computeDataType(Expression expr) {
         // PrimaryExpr
         if (expr instanceof PrimaryExpr) {
 
@@ -82,5 +83,9 @@ public class TypeComputingHelper {
             return new ExprDataType(decl.getReturnType(), decl.isReturnArray());
 
         return ExprDataType.Void;
+    }
+
+    public static boolean isValidType(ExprDataType computedType, ExprDataType dataType) {
+        return computedType != null && computedType.equals(dataType);
     }
 }

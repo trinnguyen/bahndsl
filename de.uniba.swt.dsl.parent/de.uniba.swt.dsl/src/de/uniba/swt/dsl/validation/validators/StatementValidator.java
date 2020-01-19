@@ -1,8 +1,11 @@
-package de.uniba.swt.dsl.validation;
+package de.uniba.swt.dsl.validation.validators;
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.validation.ExprDataType;
+import de.uniba.swt.dsl.validation.util.TypeComputingHelper;
+import de.uniba.swt.dsl.validation.util.ValidationException;
 
-class StatementValidator {
+public class StatementValidator {
 
     /**
      * validate an statment

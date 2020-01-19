@@ -5,10 +5,13 @@ package de.uniba.swt.dsl.validation;
 
 
 import de.uniba.swt.dsl.bahn.Expression;
+import de.uniba.swt.dsl.bahn.FuncDecl;
 import de.uniba.swt.dsl.bahn.Statement;
+import de.uniba.swt.dsl.validation.util.ValidationException;
+import de.uniba.swt.dsl.validation.validators.DeclValidator;
+import de.uniba.swt.dsl.validation.validators.ExpressionValidator;
+import de.uniba.swt.dsl.validation.validators.StatementValidator;
 import org.eclipse.xtext.validation.Check;
-
-import java.util.Objects;
 
 /**
  * This class contains custom validation rules. 
@@ -30,6 +33,15 @@ public class BahnValidator extends AbstractBahnValidator {
     public void typeCheckingStatement(Statement statement) {
         try {
             StatementValidator.validate(statement);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingFuncDecl(FuncDecl funcDecl) {
+        try {
+            DeclValidator.validateFuncDecl(funcDecl);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }

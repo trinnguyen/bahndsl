@@ -1,12 +1,17 @@
-package de.uniba.swt.dsl.validation;
+package de.uniba.swt.dsl.validation.validators;
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.validation.ExprDataType;
+import de.uniba.swt.dsl.validation.util.ExprUtil;
+import de.uniba.swt.dsl.validation.util.OperatorTypeHelper;
+import de.uniba.swt.dsl.validation.util.TypeComputingHelper;
+import de.uniba.swt.dsl.validation.util.ValidationException;
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-class ExpressionValidator {
+public class ExpressionValidator {
 
     /**
      * validate an expression
@@ -25,7 +30,7 @@ class ExpressionValidator {
 
             // ValuedReferenceExpr
             if (expr instanceof ValuedReferenceExpr) {
-                //FIXME ensure array index is integer
+                validateValuedReferenceExpr((ValuedReferenceExpr)expr);
             }
 
             // FunctionCallExpr
@@ -37,6 +42,12 @@ class ExpressionValidator {
         // OpExpression: ensure both side having the same type
         if (expr instanceof OpExpression) {
             validateOpExpression((OpExpression)expr);
+        }
+    }
+
+    private static void validateValuedReferenceExpr(ValuedReferenceExpr expr) throws ValidationException {
+        if (expr.getPropRef() != null) {
+            throw new ValidationException("Not supported: property is not yet supported", BahnPackage.Literals.VALUED_REFERENCE_EXPR__PROP_REF);
         }
     }
 

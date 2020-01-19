@@ -1,4 +1,4 @@
-package de.uniba.swt.dsl.validation;
+package de.uniba.swt.dsl.validation.util;
 
 import de.uniba.swt.dsl.bahn.OperatorType;
 
