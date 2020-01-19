@@ -18,7 +18,7 @@ public class StateTextualBuilder extends TextualBuilder {
     }
 
     private void generateRootState() {
-        append("scchart").append(rootState.getId()).append("{");
+        append("scchart").append(rootState.getId()).append("{").append(LINE_BREAK);
 
         // variables
         generateVarDecls(rootState.getDeclarations());

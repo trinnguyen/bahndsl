@@ -9,6 +9,11 @@ public class StateTable {
     private final static String ID_PREFIX = "S";
     private TreeMap<String, Integer> mapId = new TreeMap<>();
 
+    int incre = 0;
+    public String nextStateId() {
+        return ID_PREFIX + (incre++);
+    }
+
     public State nextState(State state) {
         String curId = state != null ? state.getId() : null;
 

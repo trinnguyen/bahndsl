@@ -51,7 +51,8 @@ public class BahnNormalizationProvider {
             if (stmt instanceof SelectionStmt) {
                 normalize(((SelectionStmt) stmt).getExpr());
                 normalize(((SelectionStmt) stmt).getThenStmts());
-                normalize(((SelectionStmt) stmt).getElseStmts());
+                if (((SelectionStmt) stmt).getElseStmts() != null)
+                    normalize(((SelectionStmt) stmt).getElseStmts());
                 continue;
             }
 

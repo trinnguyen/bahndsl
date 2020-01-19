@@ -14,6 +14,13 @@ public class State {
     private RootState referenceState;
     private List<Expression> referenceBindingExprs = new ArrayList<>();
 
+    public State() {
+    }
+
+    public State(String id) {
+        this.id = id;
+    }
+
     public String getId() {
         return id;
     }

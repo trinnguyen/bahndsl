@@ -5,6 +5,13 @@ public class Transition extends Action {
     private boolean immediate;
     private State targetState;
 
+    public Transition() {
+    }
+
+    public Transition(State targetState) {
+        this.targetState = targetState;
+    }
+
     public boolean isDeferred() {
         return isDeferred;
     }

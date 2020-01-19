@@ -6,10 +6,12 @@ import de.uniba.swt.dsl.common.generator.sccharts.builder.SCChartsTextualBuilder
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
 import de.uniba.swt.dsl.common.util.LogHelper;
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.EList;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SCChartsGenerator {
@@ -84,20 +86,8 @@ public class SCChartsGenerator {
     }
 
     private void updateModel(FuncDecl funcDecl, RootState model) {
-        // generate states based on statement list
-        State currentState = null;
-        State nextState = null;
-        for (Statement stmt : funcDecl.getStmtList().getStmts()) {
-            currentState = stateTable.nextState(currentState);
-            nextState = stateTable.nextState(currentState);
-            model.getStates().add(currentState);
-            updateState(model, currentState, nextState, stmt);
-        }
-
-        // add last state
-        if (nextState != null) {
-            model.getStates().add(nextState);
-        }
+        var states = createStates(model.getDeclarations(), funcDecl.getStmtList());
+        model.getStates().addAll(states);
 
         // mark first and last
         if (!model.getStates().isEmpty()) {
@@ -106,27 +96,79 @@ public class SCChartsGenerator {
         }
     }
 
+    private List<State> createStates(List<SVarDeclaration> declarations, StatementList statementList) {
+        // generate states based on statement list
+        State currentState = null;
+        State nextState = null;
+        List<State> states = new ArrayList<>();
+        for (Statement stmt : statementList.getStmts()) {
+            // last state
+            currentState = Objects.requireNonNullElseGet(nextState, () -> new State(stateTable.nextStateId()));
+
+            // next state is always new
+            nextState = new State(stateTable.nextStateId());
+
+            // update current state
+            states.add(currentState);
+            updateState(states, declarations, currentState, nextState, stmt);
+        }
+
+        // add last state
+        if (nextState != null) {
+            states.add(nextState);
+        }
+        return states;
+    }
+
     /**
      * SelectionStmt | IterationStmt | VarDeclStmt | AssignmentStmt | FunctionCallStmt | ReturnStmt
-     * @param superState
+     * @param states
+     * @param declarations
      * @param state
      * @param nextState
      * @param stmt
      */
-    private void updateState(SuperState superState, State state, State nextState, Statement stmt) {
-        // transition
-        var transition = new Transition();
-        transition.setTargetState(nextState);
-        state.getOutgoingTransitions().add(transition);
+    private void updateState(List<State> states, List<SVarDeclaration> declarations, State state, State nextState, Statement stmt) {
 
-        // function call
+        // function call -> reference
         updateStateReferenceCallIfNeeded(state, stmt);
 
-        // effect
+        // if..else
+        if (stmt instanceof SelectionStmt) {
+            SelectionStmt selectionStmt = (SelectionStmt)stmt;
+            var condition = selectionStmt.getExpr();
+            states.addAll(generateBranchingStates(declarations, state, nextState, selectionStmt.getThenStmts(), condition));
+
+            // else branch
+            if (selectionStmt.getElseStmts() != null) {
+                states.addAll(generateBranchingStates(declarations, state, nextState, selectionStmt.getElseStmts(), null));
+            } else {
+                state.getOutgoingTransitions().add(new Transition(nextState));
+            }
+            return;
+        }
+
+        // transition
+        var transition = new Transition(nextState);
+        state.getOutgoingTransitions().add(transition);
         if (state.getReferenceState() == null) {
-            var effect = generateEffect(superState.getDeclarations(), stmt);
+            var effect = generateEffect(declarations, stmt);
             transition.setEffects(List.of(effect));
         }
+    }
+
+    private List<State> generateBranchingStates(List<SVarDeclaration> declarations, State state, State nextState, StatementList stateList, Expression condition) {
+        List<State> states = createStates(declarations, stateList);
+        if (states.size() > 0) {
+            var tran = new Transition(states.get(0));
+            if (condition != null)
+                tran.setTrigger(condition);
+            state.getOutgoingTransitions().add(tran);
+
+            // go to nex state
+            states.get(states.size() - 1).getOutgoingTransitions().add(new Transition(nextState));
+        }
+        return states;
     }
 
     private void updateStateReferenceCallIfNeeded(State state, Statement stmt) {

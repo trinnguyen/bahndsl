@@ -1,0 +1,25 @@
+module generation3
+    def run()
+        int a = max_num(3,4)
+        bool result = is_even(a)
+    end
+    def max_num(int a, int b): int
+        int c = 0
+        if a > b
+            c = a
+        else
+            c = b
+        end
+
+        return c
+    end
+
+    def is_even(int a): bool
+        bool result = false
+        if a / 2 == 0
+            result = true
+        end
+
+        return result
+    end
+end

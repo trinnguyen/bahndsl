@@ -1,4 +1,4 @@
-module generation1
+module generation2
     def math(int a, int b, int c) : int
         int tmp = plus(a, b)
         tmp = minus(tmp, c)
