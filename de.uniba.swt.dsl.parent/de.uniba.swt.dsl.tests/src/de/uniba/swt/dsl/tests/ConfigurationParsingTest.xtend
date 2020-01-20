@@ -11,15 +11,39 @@ import org.junit.jupiter.api.^extension.ExtendWith
 
 @ExtendWith(InjectionExtension)
 @InjectWith(BahnInjectorProvider)
-
 class ConfigurationParsingTest {
 	@Inject extension ParseHelper<RootModule>
 	@Inject extension ParserTestHelper
 	
 	@Test
+	def void testSegmentWithLength() {
+		'''
+			module test
+				segments master
+					seg1 0x00 length 34cm
+				end
+			end
+		'''.parse.assertNoParsingErrors
+	}
+	
+	@Test
+	def void testBlock() {
+		'''
+			module test
+				blocks
+					block2 buffer:seg7,signal4 <-> main:seg6 <-> buffer:seg5,signal3 
+						trains
+							cargo passenger 
+						end
+				end
+			end
+		'''.parse.assertNoParsingErrors
+	}
+	
+	@Test
 	def void testPeripheralsProperty() {
 		'''
-			module lite
+			module test
 				 peripherals lightcontrol
 				         lanterns 0x13
 				             aspects
