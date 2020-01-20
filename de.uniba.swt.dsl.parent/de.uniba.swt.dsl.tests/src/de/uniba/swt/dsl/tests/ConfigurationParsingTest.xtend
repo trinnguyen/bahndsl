@@ -61,6 +61,21 @@ class ConfigurationParsingTest {
 	}
 	
 	@Test
+	def void testPoint() {
+		'''
+			module test
+				points onecontrol
+					point1 0x00 
+					block blockPoint1
+					normal 0x01 block2 -- block3
+					reverse 0x00 block2 -- block4
+					initial normal
+				end
+			end
+		'''.parse.assertNoParsingErrors
+	}
+	
+	@Test
 	def void testPeripheralsProperty() {
 		'''
 			module test

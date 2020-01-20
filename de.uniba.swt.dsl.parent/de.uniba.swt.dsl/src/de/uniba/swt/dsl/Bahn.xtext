@@ -170,7 +170,7 @@ PointElement :
 ;
 
 PointAspectElement:
-	value=HEX ':' block1=[BlockElement] '--' block2=[BlockElement]
+	value=HEX block1=[BlockElement] '--' block2=[BlockElement]
 ;
 
 enum PointAspectType:
