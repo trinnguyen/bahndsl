@@ -1,0 +1,15 @@
+module generation1
+    def run()
+        int t1 = maxFunc(1,2)
+        int t2 = maxFunc(3,4)
+        int t3 = 0
+        t3 = maxFunc(6, 7)
+        clear_route()
+    end
+    def maxFunc(int a, int b): int
+        return a
+    end
+
+    def clear_route()
+    end
+end

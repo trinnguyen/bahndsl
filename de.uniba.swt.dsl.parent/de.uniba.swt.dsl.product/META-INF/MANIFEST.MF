@@ -15,4 +15,4 @@ Require-Bundle: javax.inject;bundle-version="0.0.0",
  org.eclipse.e4.core.contexts;bundle-version="0.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Import-Package: javax.annotation;version="0.0.0"
-Automatic-Module-Name: de.uniba.swt.product
+Automatic-Module-Name: de.uniba.swt.dsl.product

@@ -3,7 +3,7 @@ package de.uniba.swt.dsl.generator;
 import com.google.common.collect.Lists;
 import de.uniba.swt.dsl.bahn.AspectsProperty;
 import de.uniba.swt.dsl.bahn.BoardsProperty;
-import de.uniba.swt.dsl.bahn.ModuleObject;
+import de.uniba.swt.dsl.bahn.RootModule;
 import de.uniba.swt.dsl.bahn.ModuleProperty;
 import de.uniba.swt.dsl.bahn.OverrideSignalAspectsElement;
 import de.uniba.swt.dsl.bahn.PointElement;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 class ModelConverter {
 	
-	public NetworkModel buildNetworkModel(ModuleObject e) {
+	public NetworkModel buildNetworkModel(RootModule e) {
 		
 		SignalsProperty signalsProp = null;
 		PointsProperty pointsProp = null;

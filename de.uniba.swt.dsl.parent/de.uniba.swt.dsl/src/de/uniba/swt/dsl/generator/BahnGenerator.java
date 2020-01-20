@@ -3,6 +3,8 @@
  */
 package de.uniba.swt.dsl.generator;
 
+import de.uniba.swt.dsl.common.generator.sccharts.SCChartsGenerator;
+import de.uniba.swt.dsl.normalization.BahnNormalizationProvider;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.generator.AbstractGenerator;
@@ -11,7 +13,7 @@ import org.eclipse.xtext.generator.IGeneratorContext;
 
 import com.google.inject.Inject;
 
-import de.uniba.swt.dsl.bahn.ModuleObject;
+import de.uniba.swt.dsl.bahn.RootModule;
 import de.uniba.swt.dsl.common.generator.yaml.BidibYamlConfigGenerator;
 import de.uniba.swt.dsl.common.models.NetworkModel;
 
@@ -28,11 +30,29 @@ public class BahnGenerator extends AbstractGenerator {
 	@Inject
 	ModelConverter modelConverter;
 
+	@Inject
+	BahnNormalizationProvider normalizationProvider;
+
+	@Inject
+	SCChartsGenerator scChartsGenerator;
+
+	@Override
+	public void beforeGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
+		RootModule rootModule = getRootModule(input);
+		if (rootModule != null) {
+			normalizationProvider.normalize(rootModule);
+		}
+	}
+
 	@Override
 	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-		EObject e = resource.getContents().get(0);
-		if (e instanceof ModuleObject) {
-			NetworkModel network = modelConverter.buildNetworkModel((ModuleObject)e);
+		RootModule rootModule = getRootModule(resource);
+		if (rootModule != null) {
+			// ast
+			fsa.generateFile(rootModule.getName() + "_ast.txt", AstGenerator.dumpAst(resource.getContents().get(0), ""));
+
+			// YAML
+			NetworkModel network = modelConverter.buildNetworkModel(rootModule);
 			
 			// bidib_board_config
 			fsa.generateFile("bidib_board_config.yml", bidibGenerator.dumpBoardConfig(network.name, network.boards));
@@ -43,9 +63,16 @@ public class BahnGenerator extends AbstractGenerator {
 			// bidib_train_config
 			fsa.generateFile("bidib_train_config.yml", bidibGenerator.dumpTrainConfig(network.name, network.trains));
 
-			// ast
-			String name = ((ModuleObject)e).getName();
-			fsa.generateFile(name + "_ast.txt", AstGenerator.dumpAst(resource.getContents().get(0), ""));
+			// SCCharts
+			fsa.generateFile(rootModule.getName() + "_sccharts.sctx", scChartsGenerator.generate(rootModule));
 		}
+	}
+
+	private RootModule getRootModule(Resource resource) {
+		EObject e = resource.getContents().get(0);
+		if (e instanceof RootModule)
+			return (RootModule)e;
+
+		return null;
 	}
 }

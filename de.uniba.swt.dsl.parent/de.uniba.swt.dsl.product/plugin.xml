@@ -10,7 +10,7 @@
             name="de.uniba.swt.dsl.product">
          <property
                name="applicationCSS"
-               value="platform:/plugin/de.uniba.swt.product/css/default.css">
+               value="platform:/plugin/de.uniba.swt.dsl.product/css/default.css">
          </property>
          <property
                name="appName"
