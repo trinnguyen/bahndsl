@@ -16,6 +16,7 @@ ModuleProperty:
 	| SegmentsProperty 
 	| SignalsProperty 
 	| PointsProperty 
+	| PeripheralsProperty
 	| BlocksProperty 
 	| TrainsProperty 
 	| LayoutProperty 
@@ -43,6 +44,10 @@ SignalsProperty :
 PointsProperty :
 	'points' board=[BoardElement]
 		(items+=PointElement)*
+	'end';
+PeripheralsProperty:
+	'peripherals' board=[BoardElement]
+		(items+=SignalElement)*
 	'end';
 BlocksProperty :
 	{BlocksProperty} 'blocks'
@@ -189,10 +194,10 @@ TrainElement :
 		('length' length=Length)? &
 		('weight' weight=Weight)? &
 		('type' type=TrainType)? &
-		('peripherals' (peripherals+=PeripheralElement)+ 'end')?
+		('peripherals' (peripherals+=TrainPeripheral)+ 'end')?
 ;
 
-PeripheralElement:
+TrainPeripheral:
 	name=ID 'bit' bit=INT 'initial' initial=INT
 ;
 
