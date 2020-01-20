@@ -41,6 +41,26 @@ class ConfigurationParsingTest {
 	}
 	
 	@Test
+	def void testRoute() {
+		'''
+			module test
+				routes
+			    	route1
+			    		source signal1
+			    		destination signal2
+			    		path seg1 seg2 end
+			    		points 
+			    			point1 normal 
+			    			point2 reverse 
+						end
+			    		signals signal3 signal4 end
+			    		conflicts route2 route3 end
+			    end
+			end
+		'''.parse.assertNoParsingErrors
+	}
+	
+	@Test
 	def void testPeripheralsProperty() {
 		'''
 			module test

@@ -114,16 +114,15 @@ PlatformElement:
 RouteElement:
 	name=ID 
 	'source' source=[SignalElement] 
-	'destination' destination=[SignalElement] 
-	'direction' direction=DIRECTION 
+	'destination' destination=[SignalElement]
 	'path' (segments+=[SegmentElement])* 'end'
-	'points' points+=RoutePoint 'end'
-	'signals' signals+=[SignalElement] 'end'
-	'conflicts' conflicts+=[RouteElement] 'end'
+	'points' (points+=RoutePoint)* 'end'
+	'signals' (signals+=[SignalElement])* 'end'
+	'conflicts' (conflicts+=[RouteElement])* 'end'
 ;
 
 RoutePoint:
-	point=[PointElement] aspect=ID
+	point=[PointElement] aspect=PointAspectType
 ;
 		
 enum TrainType:
@@ -143,7 +142,7 @@ BoardFeatureElement:
 ;
 
 SegmentElement :
-	name=ID address=HEX
+	name=ID address=HEX 'length' length=Length
 ;
 
 SignalElement :
@@ -183,7 +182,6 @@ BlockElement :
 		(hasStart?='buffer' ':' startSeg=[SegmentElement] ',' startSignal=ID directionStart=DIRECTION)?  
 		'main' ':' mainSeg=[SegmentElement] 
 		(directionEnd=DIRECTION hasEnd?='buffer' ':' endSeg=[SegmentElement] ',' endSignal=[SignalElement])?
-		('length' length=Length)? &
 		('trains' (trainTypes+=TrainType)+ 'end')?
 ;
 
