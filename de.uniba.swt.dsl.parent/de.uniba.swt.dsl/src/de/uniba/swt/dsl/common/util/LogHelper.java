@@ -2,6 +2,7 @@ package de.uniba.swt.dsl.common.util;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,6 +16,13 @@ public class LogHelper {
 
         if (object instanceof Iterable<?>)
             return printCollection((Collection<?>)object);
+
+        if (object instanceof Map<?,?>) {
+            return printCollection(((Map<?,?>)object).entrySet());
+        }
+
+        if (object instanceof Stream<?>)
+            return printStream((Stream<?>) object);
 
         return object.toString();
     }

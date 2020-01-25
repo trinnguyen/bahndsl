@@ -4,12 +4,11 @@
 package de.uniba.swt.dsl.validation;
 
 
-import de.uniba.swt.dsl.bahn.Expression;
-import de.uniba.swt.dsl.bahn.FuncDecl;
-import de.uniba.swt.dsl.bahn.Statement;
+import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.validation.util.ValidationException;
 import de.uniba.swt.dsl.validation.validators.DeclValidator;
 import de.uniba.swt.dsl.validation.validators.ExpressionValidator;
+import de.uniba.swt.dsl.validation.validators.LayoutValidator;
 import de.uniba.swt.dsl.validation.validators.StatementValidator;
 import org.eclipse.xtext.validation.Check;
 
@@ -42,6 +41,15 @@ public class BahnValidator extends AbstractBahnValidator {
     public void typeCheckingFuncDecl(FuncDecl funcDecl) {
         try {
             DeclValidator.validateFuncDecl(funcDecl);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+    
+    @Check
+    public void layoutValidation(LayoutReference reference) {
+        try {
+            LayoutValidator.validateReference(reference);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }

@@ -200,7 +200,13 @@ TrainPeripheral:
 ;
 
 LayoutElement :
-	blocks+=[BlockElement] ('--' blocks+=[BlockElement])*
+	blocks+=LayoutReference ('--' blocks+=LayoutReference)*
+;
+
+LayoutReference:
+	elem=[BlockElement] '.' prop=ID
+	|
+	elem=[SignalElement]
 ;
 
 Length:
