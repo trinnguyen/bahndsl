@@ -1,10 +1,34 @@
 package de.uniba.swt.dsl.validation.validators;
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.common.layout.*;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.validation.util.ValidationException;
 
+import java.util.List;
+
 public class LayoutValidator {
+
+    private NetworkLayoutBuilder layoutBuilder;
+    private NetworkValidator validator;
+
+    public LayoutValidator() {
+        layoutBuilder = new NetworkLayoutBuilder();
+        validator = new NetworkValidator();
+    }
+
+    public void validateLayout(LayoutProperty layoutProp) throws CompositeLayoutException {
+        // 1. Build vertices
+        NetworkLayout networkLayout = null;
+        try {
+            networkLayout = layoutBuilder.build(layoutProp);
+        } catch (LayoutException e) {
+            throw new CompositeLayoutException(List.of(e));
+        }
+
+        // 2. Validation
+        validator.checkWelformness(networkLayout);
+    }
 
     public static void validateReference(LayoutReference reference) throws ValidationException {
         if (reference.getElem() instanceof SignalElement) {

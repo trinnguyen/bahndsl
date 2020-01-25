@@ -10,14 +10,18 @@ public class NetworkValidator {
     private NetworkLayout networkLayout;
     private Set<String> validElements = new HashSet<>();
 
-    public void checkWelformness(NetworkLayout networkLayout) {
+    public void checkWelformness(NetworkLayout networkLayout) throws CompositeLayoutException {
         this.networkLayout = networkLayout;
-        validate();
+
+        // 1. validate connectors
+        validatConnectors();
+
+        // 2. ensure all vertices are reachable
     }
 
-    private void validate() {
+    private void validatConnectors() throws CompositeLayoutException {
         validElements.clear();
-        List<String> errors = new ArrayList<>();
+        List<LayoutException> errors = new ArrayList<>();
         for (var vertex : networkLayout.getVertices()) {
             for (var member : vertex.getMembers()) {
                 try {
@@ -33,14 +37,14 @@ public class NetworkValidator {
                             break;
                     }
                 } catch (LayoutException exception) {
-                    errors.add(exception.getMessage());
+                    errors.add(exception);
                 }
             }
         }
 
         // throw errors
         if (errors.size() > 0) {
-            throw new RuntimeException(String.join("\n", errors));
+            throw new CompositeLayoutException(errors);
         }
     }
 

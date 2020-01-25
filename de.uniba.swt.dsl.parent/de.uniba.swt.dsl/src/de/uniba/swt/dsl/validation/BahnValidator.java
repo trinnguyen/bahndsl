@@ -5,6 +5,8 @@ package de.uniba.swt.dsl.validation;
 
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.common.layout.CompositeLayoutException;
+import de.uniba.swt.dsl.common.layout.LayoutException;
 import de.uniba.swt.dsl.validation.util.ValidationException;
 import de.uniba.swt.dsl.validation.validators.DeclValidator;
 import de.uniba.swt.dsl.validation.validators.ExpressionValidator;
@@ -47,11 +49,23 @@ public class BahnValidator extends AbstractBahnValidator {
     }
     
     @Check
-    public void layoutValidation(LayoutReference reference) {
+    public void validateLayoutReference(LayoutReference reference) {
         try {
             LayoutValidator.validateReference(reference);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void validateNetworkLayout(LayoutProperty layoutProperty) {
+        try {
+            LayoutValidator validator = new LayoutValidator();
+            validator.validateLayout(layoutProperty);
+        } catch (CompositeLayoutException compositeExp) {
+            for (LayoutException exp : compositeExp.getExceptions()) {
+                error(exp.getMessage(), BahnPackage.Literals.LAYOUT_PROPERTY__ITEMS);
+            }
         }
     }
 
