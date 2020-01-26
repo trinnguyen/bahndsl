@@ -1,5 +1,6 @@
 package de.uniba.swt.dsl.common.layout;
 
+import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.layout.models.SignalVertexMember;
 import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.graph.BlockEdge;
@@ -18,10 +19,10 @@ public class RoutesFinder {
 
     private Stack<AbstractEdge> currentEdges = new Stack<>();
     private Stack<LayoutVertex> currentVertices = new Stack<>();
-    private Set<Stack<AbstractEdge>> paths = new HashSet<>();
-    private Map<LayoutVertex, Boolean> flagsOnPath = new HashMap<>();
+    private Set<Route> routes = new HashSet<>();
+    private Set<LayoutVertex> flagsOnPath = new HashSet<>();
 
-    public Set<Stack<AbstractEdge>> findAllRoutes(NetworkLayout networkLayout, String srcSignalKey, String destSignalKey) {
+    public Set<Route> findAllRoutes(NetworkLayout networkLayout, String srcSignalKey, String destSignalKey) {
 
         this.networkLayout = networkLayout;
         this.srcSignal = networkLayout.findVertex(srcSignalKey);
@@ -34,11 +35,11 @@ public class RoutesFinder {
         // clear
         currentEdges.clear();
         currentVertices.clear();
-        paths.clear();
+        routes.clear();
 
         // start finding
         dfs(srcSignal, null);
-        return paths;
+        return routes;
     }
 
     private void dfs(LayoutVertex vertex, AbstractEdge edge) {
@@ -75,7 +76,7 @@ public class RoutesFinder {
 
         // add to the path
         currentVertices.push(vertex);
-        flagsOnPath.put(vertex, true);
+        flagsOnPath.add(vertex);
 
         // terminate when same
         if (vertex.equals(destSignal)) {
@@ -83,7 +84,7 @@ public class RoutesFinder {
         } else {
             for (var e : networkLayout.incidentEdges(vertex)) {
                 var w = e.getDestVertex();
-                if (!flagsOnPath.containsKey(w)) {
+                if (!flagsOnPath.contains(w)) {
                     dfs(w, e);
                 }
             }
@@ -94,7 +95,7 @@ public class RoutesFinder {
         if (!currentEdges.isEmpty()) {
             currentEdges.pop();
         }
-        flagsOnPath.put(vertex, false);
+        flagsOnPath.remove(vertex);
     }
 
     private boolean isSameSwitch(AbstractEdge prevEdge, AbstractEdge edge) {
@@ -106,6 +107,6 @@ public class RoutesFinder {
     }
 
     private void terminateCurrentPath() {
-        paths.add((Stack<AbstractEdge>) currentEdges.clone());
+        routes.add(new Route(srcMember.getName(), destMember.getName(), (Stack<AbstractEdge>) currentEdges.clone()));
     }
 }

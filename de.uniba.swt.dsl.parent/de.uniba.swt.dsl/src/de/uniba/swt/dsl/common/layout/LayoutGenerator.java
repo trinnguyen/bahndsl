@@ -3,11 +3,12 @@ package de.uniba.swt.dsl.common.layout;
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.layout.models.*;
 import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
+import de.uniba.swt.dsl.common.util.LogHelper;
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class LayoutGenerator {
@@ -36,23 +37,35 @@ public class LayoutGenerator {
 			fsa.generateFile(rootModule.getName() + "_diagram.dot", dotExporter.render(rootModule.getName(), graph));
 
 			// find all routes
-			var routes = routesFinder.findAllRoutes(networkLayout, "sig3", "sig2");
-			logger.info(printRoutes(routes));
+			var signals = getAllSignals(rootModule);
+			List<Route> routes = new ArrayList<>();
+			if (signals != null) {
+				for (int i = 0; i < signals.size(); i++) {
+					for (int j = 0; j < signals.size(); j++) {
+						if (i == j)
+							continue;
+
+						var src = signals.get(i).getName();
+						var dest = signals.get(j).getName();
+						var paths = routesFinder.findAllRoutes(networkLayout, src, dest);
+						if (paths != null && !paths.isEmpty()) {
+							routes.addAll(paths);
+						}
+					}
+				}
+
+			}
+
+			logger.info(LogHelper.printObject(routes));
 
 		} catch (LayoutException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private String printRoutes(Set<Stack<AbstractEdge>> routes) {
-		return "routes " + routes.size()+ ": {\n" +
-				routes
-						.stream()
-						.map(r -> r
-								.stream()
-								.map(Object::toString)
-								.collect(Collectors.joining(" -> ")))
-						.collect(Collectors.joining("\n"))
-				+ "\n}";
+	private EList<SignalElement> getAllSignals(RootModule rootModule) {
+		var signalsProp = rootModule.getProperties().stream().filter(p -> p instanceof SignalsProperty).map(p -> (SignalsProperty)p).findFirst();
+		return signalsProp.map(SignalsProperty::getItems).orElse(null);
+
 	}
 }
