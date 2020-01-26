@@ -14,13 +14,6 @@ cache:
   paths:
     - .m2/repository
 
-verify:jdk11:
-  stage: test
-  script:
-    - 'mvn -f de.uniba.swt.dsl.parent/pom.xml $MAVEN_CLI_OPTS clean verify'
-  except:
-    - develop
-
 install:jdk11:
   stage: deploy
   script:
@@ -33,5 +26,3 @@ install:jdk11:
     - build/BahnIDE-linux.gtk.x86_64.tar.gz
     - build/BahnIDE-win32.win32.x86_64.zip
     expire_in: 1 week
-  only:
-    - develop
