@@ -28,7 +28,7 @@ public class LayoutGenerator {
 		try {
 			// network
 			var networkLayout = networkLayoutBuilder.build(layoutProp);
-			logger.info(networkLayout);
+			logger.debug(networkLayout);
 
 			// generate graph
 			var graph = networkLayout.generateGraph();
@@ -56,7 +56,7 @@ public class LayoutGenerator {
 
 			}
 
-			logger.info(LogHelper.printObject(routes));
+			logger.debug(LogHelper.printObject(routes));
 
 		} catch (LayoutException e) {
 			throw new RuntimeException(e);
@@ -66,6 +66,5 @@ public class LayoutGenerator {
 	private EList<SignalElement> getAllSignals(RootModule rootModule) {
 		var signalsProp = rootModule.getProperties().stream().filter(p -> p instanceof SignalsProperty).map(p -> (SignalsProperty)p).findFirst();
 		return signalsProp.map(SignalsProperty::getItems).orElse(null);
-
 	}
 }

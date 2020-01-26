@@ -6,10 +6,13 @@ import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.graph.BlockEdge;
 import de.uniba.swt.dsl.common.layout.models.graph.LayoutVertex;
 import de.uniba.swt.dsl.common.layout.models.graph.SwitchEdge;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 public class RoutesFinder {
+
+    private final static Logger logger = Logger.getLogger(RoutesFinder.class);
 
     private NetworkLayout networkLayout;
     private SignalVertexMember srcMember;
@@ -23,7 +26,6 @@ public class RoutesFinder {
     private Set<LayoutVertex> flagsOnPath = new HashSet<>();
 
     public Set<Route> findAllRoutes(NetworkLayout networkLayout, String srcSignalKey, String destSignalKey) {
-
         this.networkLayout = networkLayout;
         this.srcSignal = networkLayout.findVertex(srcSignalKey);
         this.destSignal = networkLayout.findVertex(destSignalKey);
@@ -49,24 +51,25 @@ public class RoutesFinder {
             // check same switch
             if (!currentEdges.isEmpty()) {
                 var prevEdge = currentEdges.peek();
-                if (isSameSwitch(prevEdge, edge))
+                if (isSameSwitch(prevEdge, edge)) {
                     return;
+                }
             }
 
             // check attached signal: out
-            if (edge.getEdgeType() == AbstractEdge.EdgeType.Block) {
-                BlockEdge blockEdge = (BlockEdge) edge;
-
-                // skip if outgoing edge is the block edge in which the signal attach to
-                if (currentVertices.peek().equals(srcSignal)) {
-                    if (srcMember.getConnectedBlock().equals(blockEdge.getBlockElement()))
-                        return;
+            if (currentVertices.peek().equals(srcSignal) && edge.getEdgeType() == AbstractEdge.EdgeType.Block) {
+                if (srcMember.getConnectedBlock().equals(((BlockEdge)edge).getBlockElement())) {
+                    return;
                 }
+            }
 
-                // skip if incoming edge is not the block edge in which the signal attach to
-                if (vertex.equals(destSignal)) {
-                    if (!destMember.getConnectedBlock().equals(blockEdge.getBlockElement()))
-                        return;
+            // skip if incoming edge is not the block edge in which the signal attach to
+            if (vertex.equals(destSignal)) {
+                // skip if reaching signal via point
+                if (edge.getEdgeType() != AbstractEdge.EdgeType.Block ||
+                        !destMember.getConnectedBlock().equals(((BlockEdge)edge).getBlockElement())
+                ) {
+                    return;
                 }
             }
 

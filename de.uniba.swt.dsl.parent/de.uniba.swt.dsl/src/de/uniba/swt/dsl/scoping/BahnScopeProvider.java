@@ -36,8 +36,6 @@ public class BahnScopeProvider extends AbstractBahnScopeProvider {
 
     @Override
     public IScope getScope(EObject context, EReference reference) {
-        logger.debug(String.format("context: %s, reference: %s to: %s", context.eClass().getName(), reference.getName(), reference.getEReferenceType().getName()));
-
         // function call, do not call main function
         if (context instanceof FunctionCallExpr && reference == BahnPackage.Literals.FUNCTION_CALL_EXPR__DECL) {
             // main function is excluded
