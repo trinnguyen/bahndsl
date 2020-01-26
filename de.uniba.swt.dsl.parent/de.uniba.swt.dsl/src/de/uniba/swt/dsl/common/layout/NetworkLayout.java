@@ -1,12 +1,11 @@
 package de.uniba.swt.dsl.common.layout;
 
-import com.google.inject.internal.cglib.core.$ObjectSwitchCallback;
 import de.uniba.swt.dsl.common.layout.models.*;
+import de.uniba.swt.dsl.common.layout.models.graph.*;
 import de.uniba.swt.dsl.common.util.LogHelper;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class NetworkLayout implements LayoutGraph {
     private List<LayoutVertex> vertices = new ArrayList<>();
@@ -69,22 +68,28 @@ public class NetworkLayout implements LayoutGraph {
 
     @Override
     public Set<LayoutVertex> adjacentVertices(LayoutVertex vertex) {
+        return incidentEdges(vertex).stream().map(AbstractEdge::getDestVertex).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<AbstractEdge> incidentEdges(LayoutVertex vertex) {
         return vertex.getMembers()
                 .stream()
                 .filter(member -> member.isSegmentBlock() || member.isPoint())
-                .map(this::findConnectedVertex)
+                .map(member -> findEdges(vertex, member))
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet());
     }
 
-    private Set<LayoutVertex> findConnectedVertex(VertexMember member) {
+    private Set<AbstractEdge> findEdges(LayoutVertex vertex, VertexMember member) {
         // segment block: platform, block
         if (member.isSegmentBlock()) {
             var blockMember = (BlockVertexMember) member;
             var newEndpoint = blockMember.getEndpoint() == BlockVertexMember.BlockEndpoint.Up ?
                     BlockVertexMember.BlockEndpoint.Down :
                     BlockVertexMember.BlockEndpoint.Up;
-            return Set.of(findVertex(blockMember.generateKey(newEndpoint)));
+            var dest = findVertex(blockMember.generateKey(newEndpoint));
+            return Set.of(new BlockEdge(blockMember.getBlock(), vertex, dest));
         }
 
         // point: switch
@@ -92,11 +97,30 @@ public class NetworkLayout implements LayoutGraph {
             var switchMember = (SwitchVertexMember) member;
             var connectedEndpoints = switchMember.getConnectedEndpoints();
             return connectedEndpoints.stream()
-                    .map(e -> findVertex(switchMember.generateKey(e)))
+                    .map(e -> {
+                        var v = findVertex(switchMember.generateKey(e));
+                        return new SwitchEdge(switchMember.getBlock(),
+                                getAspect(switchMember.getEndpoint(), e),
+                                vertex,
+                                v);
+                    })
                     .collect(Collectors.toSet());
         }
 
         throw new RuntimeException("Member is not supported for edge: " + member);
+    }
+
+    private SwitchEdge.Aspect getAspect(SwitchVertexMember.PointEndpoint srcEndpoint, SwitchVertexMember.PointEndpoint destEndPoint) {
+        var set = Set.of(srcEndpoint, destEndPoint);
+        if (set.contains(SwitchVertexMember.PointEndpoint.Stem)) {
+            if (set.contains(SwitchVertexMember.PointEndpoint.Normal)) {
+                return SwitchEdge.Aspect.Normal;
+            }
+
+            return SwitchEdge.Aspect.Reverse;
+        }
+
+        return null;
     }
 
     public void addMissingBlockVertices() {

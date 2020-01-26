@@ -1,7 +1,7 @@
 package de.uniba.swt.dsl.common.layout.validators;
 
 import de.uniba.swt.dsl.common.layout.NetworkLayout;
-import de.uniba.swt.dsl.common.layout.models.LayoutVertex;
+import de.uniba.swt.dsl.common.layout.models.graph.LayoutVertex;
 
 import java.util.HashMap;
 import java.util.Map;

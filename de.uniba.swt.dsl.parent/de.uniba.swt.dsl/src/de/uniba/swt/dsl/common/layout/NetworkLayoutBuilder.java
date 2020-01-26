@@ -2,6 +2,7 @@ package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.layout.models.*;
+import de.uniba.swt.dsl.common.layout.models.graph.LayoutVertex;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import org.apache.log4j.Logger;
 

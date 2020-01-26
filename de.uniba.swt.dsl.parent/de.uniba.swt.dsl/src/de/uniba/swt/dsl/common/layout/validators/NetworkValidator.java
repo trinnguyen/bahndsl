@@ -77,8 +77,11 @@ public class NetworkValidator {
         if (validElements.contains(member.getName()))
             return;
 
-        var endpoints = member.getConnectedEndpoints();
-        endpoints.add(member.getEndpoint());
+        var endpoints = Set.of(
+                SwitchVertexMember.PointEndpoint.Stem,
+                SwitchVertexMember.PointEndpoint.Normal,
+                SwitchVertexMember.PointEndpoint.Reverse
+        );
 
         // find vertices
         var countItems = endpoints.stream()

@@ -65,23 +65,8 @@ public class SwitchVertexMember extends AbstractPointVertexMember {
     }
 
     public Set<PointEndpoint> getConnectedEndpoints() {
-        var endpoints = new HashSet<PointEndpoint>();
-
-        switch (this.getEndpoint()) {
-            case Normal:
-                endpoints.add(SwitchVertexMember.PointEndpoint.Stem);
-                endpoints.add(SwitchVertexMember.PointEndpoint.Reverse);
-                break;
-            case Reverse:
-                endpoints.add(SwitchVertexMember.PointEndpoint.Stem);
-                endpoints.add(SwitchVertexMember.PointEndpoint.Normal);
-                break;
-            default:
-                endpoints.add(SwitchVertexMember.PointEndpoint.Normal);
-                endpoints.add(SwitchVertexMember.PointEndpoint.Reverse);
-                break;
-        }
-
-        return endpoints;
+        return this.getEndpoint() == PointEndpoint.Stem ?
+                Set.of(SwitchVertexMember.PointEndpoint.Normal, PointEndpoint.Reverse) :
+                Set.of(PointEndpoint.Stem);
     }
 }

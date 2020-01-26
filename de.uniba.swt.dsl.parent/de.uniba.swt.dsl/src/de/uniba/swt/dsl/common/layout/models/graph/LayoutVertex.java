@@ -1,8 +1,11 @@
-package de.uniba.swt.dsl.common.layout.models;
+package de.uniba.swt.dsl.common.layout.models.graph;
+
+import de.uniba.swt.dsl.common.layout.models.VertexMember;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class LayoutVertex {
     private List<VertexMember> members = new ArrayList<>();
@@ -50,6 +53,10 @@ public class LayoutVertex {
     @Override
     public String toString() {
         return "{" + members + "}";
+    }
+
+    public Optional<VertexMember> findMember(String key) {
+        return getMembers().stream().filter(member -> member.getKey().equalsIgnoreCase(key)).findFirst();
     }
 }
 
