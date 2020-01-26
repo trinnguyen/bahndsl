@@ -36,7 +36,10 @@ public class NetworkValidator {
                             checkSignal((SignalVertexMember) member);
                             break;
                         case Switch:
-                            checkPoint((SwitchVertexMember) member);
+                            checkSwitch((SwitchVertexMember) member);
+                            break;
+                        case Crossing:
+                            checkCrossing((CrossingVertexMember) member);
                             break;
                         default:
                             checkBlock((BlockVertexMember) member);
@@ -72,7 +75,7 @@ public class NetworkValidator {
         validElements.add(member.getName());
     }
 
-    private void checkPoint(SwitchVertexMember member) throws LayoutException {
+    private void checkSwitch(SwitchVertexMember member) throws LayoutException {
 
         if (validElements.contains(member.getName()))
             return;
@@ -90,6 +93,30 @@ public class NetworkValidator {
                 .distinct().count();
         if (countItems != 3) {
             throw new LayoutException("Point must connect to 3 different blocks: " + member.getName());
+        }
+
+        // mark as validated
+        validElements.add(member.getName());
+    }
+
+    private void checkCrossing(CrossingVertexMember member) throws LayoutException {
+        if (validElements.contains(member.getName()))
+            return;
+
+        var endpoints = Set.of(
+                CrossingVertexMember.CrossingEndpoint.Down1,
+                CrossingVertexMember.CrossingEndpoint.Down2,
+                CrossingVertexMember.CrossingEndpoint.Up1,
+                CrossingVertexMember.CrossingEndpoint.Up2
+        );
+
+        // find vertices
+        var countItems = endpoints.stream()
+                .map(e -> networkLayout.findVertex(member.generateKey(e)))
+                .filter(Objects::nonNull)
+                .distinct().count();
+        if (countItems != 4) {
+            throw new LayoutException("Crossing must connect to 4 different blocks: " + member.getName());
         }
 
         // mark as validated

@@ -129,7 +129,22 @@ public class NetworkLayout implements LayoutGraph {
                     .map(e -> {
                         var v = findVertex(switchMember.generateKey(e));
                         return new SwitchEdge(switchMember.getBlock(),
-                                getAspect(switchMember.getEndpoint(), e),
+                                getSwitchAspect(switchMember.getEndpoint(), e),
+                                vertex,
+                                v);
+                    })
+                    .collect(Collectors.toSet());
+        }
+
+        // point: crossing
+        if (member.getType() == VertexMemberType.Crossing) {
+            var crossingMember = (CrossingVertexMember) member;
+            var connectedEndpoints = crossingMember.getConnectedEndpoints();
+            return connectedEndpoints.stream()
+                    .map(e -> {
+                        var v = findVertex(crossingMember.generateKey(e));
+                        return new CrossingEdge(crossingMember.getBlock(),
+                                getCrossingAspect(crossingMember.getEndpoint(), e),
                                 vertex,
                                 v);
                     })
@@ -139,7 +154,34 @@ public class NetworkLayout implements LayoutGraph {
         throw new RuntimeException("Member is not supported for edge: " + member);
     }
 
-    private SwitchEdge.Aspect getAspect(SwitchVertexMember.PointEndpoint srcEndpoint, SwitchVertexMember.PointEndpoint destEndPoint) {
+    private CrossingEdge.Aspect getCrossingAspect(CrossingVertexMember.CrossingEndpoint src, CrossingVertexMember.CrossingEndpoint dst) {
+        switch (src) {
+            case Down1:
+                if (dst == CrossingVertexMember.CrossingEndpoint.Up2)
+                    return CrossingEdge.Aspect.Normal1;
+                if (dst == CrossingVertexMember.CrossingEndpoint.Up1)
+                    return CrossingEdge.Aspect.Reverse1;
+            case Down2:
+                if (dst == CrossingVertexMember.CrossingEndpoint.Up1)
+                    return CrossingEdge.Aspect.Normal2;
+                if (dst == CrossingVertexMember.CrossingEndpoint.Up2)
+                    return CrossingEdge.Aspect.Reverse2;
+            case Up1:
+                if (dst == CrossingVertexMember.CrossingEndpoint.Down2)
+                    return CrossingEdge.Aspect.Normal2;
+                if (dst == CrossingVertexMember.CrossingEndpoint.Down1)
+                    return CrossingEdge.Aspect.Reverse1;
+            case Up2:
+                if (dst == CrossingVertexMember.CrossingEndpoint.Down1)
+                    return CrossingEdge.Aspect.Normal1;
+                if (dst == CrossingVertexMember.CrossingEndpoint.Down2)
+                    return CrossingEdge.Aspect.Reverse2;
+        }
+
+        throw new RuntimeException("Invalid crossing aspect connector: " + src + " -- " + dst);
+    }
+
+    private SwitchEdge.Aspect getSwitchAspect(SwitchVertexMember.PointEndpoint srcEndpoint, SwitchVertexMember.PointEndpoint destEndPoint) {
         var set = Set.of(srcEndpoint, destEndPoint);
         if (set.contains(SwitchVertexMember.PointEndpoint.Stem)) {
             if (set.contains(SwitchVertexMember.PointEndpoint.Normal)) {

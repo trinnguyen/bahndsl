@@ -49,11 +49,14 @@ public class LayoutValidator {
             }
 
             prop = prop.toLowerCase();
-            if (!BahnConstants.POINT_PROPS.contains(prop)
-                    && !BahnConstants.BLOCK_PROPS.contains(prop)) {
-                var hint = String.join(",", BahnConstants.POINT_PROPS)
+            if (!BahnConstants.BLOCK_PROPS.contains(prop)
+                    && !BahnConstants.SWITCH_PROPS.contains(prop)
+                    && !BahnConstants.CROSSING_PROPS.contains(prop)) {
+                var hint = String.join(",", BahnConstants.BLOCK_PROPS)
                         + " or "
-                        + String.join(",", BahnConstants.BLOCK_PROPS);
+                        + String.join(",", BahnConstants.SWITCH_PROPS)
+                        + " or "
+                        + String.join(",", BahnConstants.CROSSING_PROPS);
                 throw new ValidationException("Invalid connector property, use: " + hint, BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
             }
 

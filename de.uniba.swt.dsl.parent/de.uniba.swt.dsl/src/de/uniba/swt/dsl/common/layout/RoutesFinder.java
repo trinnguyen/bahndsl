@@ -57,7 +57,7 @@ public class RoutesFinder {
             // check same switch
             if (!currentEdges.isEmpty()) {
                 var prevEdge = currentEdges.peek();
-                if (isSameSwitch(prevEdge, edge)) {
+                if (isSamePoint(prevEdge, edge)) {
                     return;
                 }
             }
@@ -107,10 +107,14 @@ public class RoutesFinder {
         flagsOnPath.remove(vertex);
     }
 
-    private boolean isSameSwitch(AbstractEdge prevEdge, AbstractEdge edge) {
+    private boolean isSamePoint(AbstractEdge prevEdge, AbstractEdge edge) {
         if (prevEdge.getEdgeType() == AbstractEdge.EdgeType.Switch &&
                 edge.getEdgeType() == AbstractEdge.EdgeType.Switch)
             return ((SwitchEdge)prevEdge).getBlockElement().equals(((SwitchEdge)edge).getBlockElement());
+
+        if (prevEdge.getEdgeType() == AbstractEdge.EdgeType.Crossing &&
+                edge.getEdgeType() == AbstractEdge.EdgeType.Crossing)
+            return ((CrossingEdge)prevEdge).getBlockElement().equals(((CrossingEdge)edge).getBlockElement());
 
         return false;
     }

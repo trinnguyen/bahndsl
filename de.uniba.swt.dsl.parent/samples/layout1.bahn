@@ -1,4 +1,4 @@
-module layout0
+module layout1
 	boards
 		master 0x01
 	end
@@ -17,25 +17,25 @@ module layout0
 	end
 	blocks
 		# blocks
-		b1 main:seg1
-		b2 main:seg1
-		b3 main:seg1
-		b4 main:seg1
-		b5 main:seg1
+		b1 main seg1
+		b2 main seg1
+		b3 main seg1
+		b4 main seg1
+		b5 main seg1
 
 		# platforms
-		pl1 main:seg1
-		pl2 main:seg1
-		plt1 main:seg1
+		pl1 main seg1
+		pl2 main seg1
+		plt1 main seg1
 
 		# points
-		p1 main:seg1
-		p2 main:seg1
-		p3 main:seg1
-		p4 main:seg1
-		p5 main:seg1
-		p6 main:seg1
-		p7 main:seg1
+		p1 main seg1
+		p2 main seg1
+		p3 main seg1
+		p4 main seg1
+		p5 main seg1
+		p6 main seg1
+		p7 main seg1
 	end
 
 	layout

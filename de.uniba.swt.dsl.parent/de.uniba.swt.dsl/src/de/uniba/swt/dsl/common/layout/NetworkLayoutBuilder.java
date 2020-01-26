@@ -69,8 +69,11 @@ public class NetworkLayoutBuilder {
     }
 
     private VertexMember convertToVertexMember(LayoutReference ref) {
-        if (isPoint(ref))
+        if (isSwitch(ref))
             return new SwitchVertexMember((BlockElement) ref.getElem(), ref.getProp());
+
+        if (isCrossing(ref))
+            return new CrossingVertexMember((BlockElement) ref.getElem(), ref.getProp());
 
         return new BlockVertexMember((BlockElement) ref.getElem(), ref.getProp());
     }
@@ -83,9 +86,15 @@ public class NetworkLayoutBuilder {
         return ref.getElem() instanceof BlockElement;
     }
 
-    private boolean isPoint(LayoutReference ref) {
+    private boolean isSwitch(LayoutReference ref) {
         return ref.getElem() instanceof BlockElement
                 && ref.getProp() != null
-                && BahnConstants.POINT_PROPS.contains(ref.getProp().toLowerCase());
+                && BahnConstants.SWITCH_PROPS.contains(ref.getProp().toLowerCase());
+    }
+
+    private boolean isCrossing(LayoutReference ref) {
+        return ref.getElem() instanceof BlockElement
+                && ref.getProp() != null
+                && BahnConstants.CROSSING_PROPS.contains(ref.getProp().toLowerCase());
     }
 }

@@ -1,8 +1,8 @@
 package de.uniba.swt.dsl.common.layout.models;
 
 import de.uniba.swt.dsl.bahn.BlockElement;
+import de.uniba.swt.dsl.common.util.BahnConstants;
 
-import java.util.HashSet;
 import java.util.Set;
 
 abstract class AbstractPointVertexMember extends AbstractBlockVertexMember {
@@ -55,9 +55,9 @@ public class SwitchVertexMember extends AbstractPointVertexMember {
 
     private static PointEndpoint convertToPointEndpoint(String prop) {
         switch (prop.toLowerCase()) {
-            case "straight":
+            case BahnConstants.SWITCH_STRAIGHT:
                 return PointEndpoint.Normal;
-            case "side":
+            case BahnConstants.SWITCH_SIDE:
                 return PointEndpoint.Reverse;
             default:
                 return PointEndpoint.Stem;

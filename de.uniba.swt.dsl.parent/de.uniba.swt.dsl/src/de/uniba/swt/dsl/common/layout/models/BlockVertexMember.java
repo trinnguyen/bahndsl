@@ -36,6 +36,11 @@ public class BlockVertexMember extends AbstractBlockVertexMember {
     }
 
     @Override
+    public VertexMemberType getType() {
+        return VertexMemberType.Block;
+    }
+
+    @Override
     public String getKey() {
         return generateKey(getEndpoint());
     }

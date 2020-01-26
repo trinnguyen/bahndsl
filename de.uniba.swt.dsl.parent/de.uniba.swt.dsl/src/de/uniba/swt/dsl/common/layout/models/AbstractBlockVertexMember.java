@@ -21,9 +21,4 @@ public abstract class AbstractBlockVertexMember extends VertexMember {
     public String getName() {
         return block.getName();
     }
-
-    @Override
-    public VertexMemberType getType() {
-        return VertexMemberType.Block;
-    }
 }
