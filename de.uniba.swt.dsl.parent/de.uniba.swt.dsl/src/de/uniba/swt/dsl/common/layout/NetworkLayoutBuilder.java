@@ -23,20 +23,17 @@ public class NetworkLayoutBuilder {
                     var members = convertToVertexMembers(layoutElement.getBlocks().get(i),
                             layoutElement.getBlocks().get(++i));
 
-                    // check if duplicating
-                    LayoutVertex vertex = networkLayout.findVertex(members.get(0));
-                    LayoutVertex finalVertex = vertex;
-                    if (members.stream().skip(1).allMatch(member -> {
-                        var tmpVertex = networkLayout.findVertex(member);
-                        return tmpVertex != null && tmpVertex.equals(finalVertex);
-                    })) {
-                        logger.warn("Duplicated layout connector");
-                    } else {
-                        if (vertex == null) {
-                            vertex = networkLayout.addNewVertex();
-                        }
-                        networkLayout.addMembersToVertex(members, vertex);
+                    // find or add
+                    LayoutVertex vertex = null;
+                    for (VertexMember member : members) {
+                        vertex = networkLayout.findVertex(member);
+                        if (vertex != null)
+                            break;
                     }
+                    if (vertex == null) {
+                        vertex = networkLayout.addNewVertex();
+                    }
+                    networkLayout.addMembersToVertex(members, vertex);
                 }
             }
         }

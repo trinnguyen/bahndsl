@@ -30,9 +30,9 @@ module layout2
 	    b3.down -- p1.up1
 	    b4.down -- p1.up2
 
-	    b1.down -- sig1
-	    b2.up -- sig2
-	    b3.up -- sig3
-	    b4.down -- sig4
+	    sig1 -- b1.down
+	    sig2 -- b2.up
+	    sig3 -- b3.up
+	    sig4 -- b4.down
 	end
 end
