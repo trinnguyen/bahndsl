@@ -2,13 +2,11 @@ package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.layout.models.*;
-import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
 import de.uniba.swt.dsl.common.util.LogHelper;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
-import java.util.*;
 import java.util.stream.Collectors;
 
 public class LayoutGenerator {
@@ -18,7 +16,7 @@ public class LayoutGenerator {
 	private NetworkLayoutBuilder networkLayoutBuilder = new NetworkLayoutBuilder();
 	private NetworkRoutesExplorer routesExplorer = new NetworkRoutesExplorer();
 	private DotExporter dotExporter = new DotExporter();
-	private InterlockingYAMLExporter yamlExporter = new InterlockingYAMLExporter();
+	private InterlockingYamlExporter yamlExporter = new InterlockingYamlExporter();
 
 	public void run(IFileSystemAccess2 fsa, RootModule rootModule) {
 		var layoutProp = rootModule.getProperties().stream().filter(p -> p instanceof LayoutProperty).map(p -> (LayoutProperty)p).findFirst();
@@ -46,7 +44,7 @@ public class LayoutGenerator {
 			logger.debug(LogHelper.printObject(routes));
 
 			// generate yaml
-			fsa.generateFile(rootModule.getName() + "_interlocking_table.yml", yamlExporter.generate(routes));
+			fsa.generateFile("interlocking_table.yml", yamlExporter.generate(routes));
 
 		} catch (LayoutException e) {
 			throw new RuntimeException(e);
