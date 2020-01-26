@@ -25,6 +25,11 @@ public class BlockEdge extends AbstractEdge {
     }
 
     @Override
+    public String getKey() {
+        return blockElement.getName().toLowerCase();
+    }
+
+    @Override
     public String toString() {
         return blockElement.getName();
     }

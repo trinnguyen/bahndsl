@@ -43,4 +43,6 @@ public abstract class AbstractEdge {
         return getEdgeType() == EdgeType.Switch
                 || getEdgeType() == EdgeType.Crossing;
     }
+
+    public abstract String getKey();
 }

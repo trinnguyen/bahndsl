@@ -41,6 +41,11 @@ public class SwitchEdge extends AbstractEdge {
     }
 
     @Override
+    public String getKey() {
+        return (blockElement.getName() + "." + getAspect().toString()).toLowerCase();
+    }
+
+    @Override
     public String toString() {
         return blockElement.getName() + "." + aspect.toString().toLowerCase();
     }

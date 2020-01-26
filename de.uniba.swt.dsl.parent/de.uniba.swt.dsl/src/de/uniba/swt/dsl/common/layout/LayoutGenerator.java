@@ -16,19 +16,26 @@ public class LayoutGenerator {
 
 	private NetworkLayoutBuilder networkLayoutBuilder = new NetworkLayoutBuilder();
 	private RoutesFinder routesFinder = new RoutesFinder();
+	private DotExporter dotExporter = new DotExporter();
 
 	public void run(IFileSystemAccess2 fsa, RootModule rootModule) {
 		var layoutProp = rootModule.getProperties().stream().filter(p -> p instanceof LayoutProperty).map(p -> (LayoutProperty)p).findFirst();
-		layoutProp.ifPresent(moduleProperty -> buildLayout(rootModule, moduleProperty));
+		layoutProp.ifPresent(moduleProperty -> buildLayout(fsa, rootModule, moduleProperty));
 	}
 
-	private void buildLayout(RootModule rootModule, LayoutProperty layoutProp) {
+	private void buildLayout(IFileSystemAccess2 fsa, RootModule rootModule, LayoutProperty layoutProp) {
 		try {
 			// network
 			var networkLayout = networkLayoutBuilder.build(layoutProp);
 			logger.info(networkLayout);
 
-			// find all route
+			// generate graph
+			var graph = networkLayout.generateGraph();
+
+			// generate dot layout
+			fsa.generateFile(rootModule.getName() + "_diagram.dot", dotExporter.render(rootModule.getName(), graph));
+
+			// find all routes
 			var routes = routesFinder.findAllRoutes(networkLayout, "sig3", "sig2");
 			logger.info(printRoutes(routes));
 
