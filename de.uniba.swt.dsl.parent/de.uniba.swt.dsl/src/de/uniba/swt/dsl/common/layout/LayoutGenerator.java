@@ -16,8 +16,9 @@ public class LayoutGenerator {
 	private final static Logger logger = Logger.getLogger(LayoutGenerator.class);
 
 	private NetworkLayoutBuilder networkLayoutBuilder = new NetworkLayoutBuilder();
-	private RoutesFinder routesFinder = new RoutesFinder();
+	private NetworkRoutesExplorer routesExplorer = new NetworkRoutesExplorer();
 	private DotExporter dotExporter = new DotExporter();
+	private InterlockingYAMLExporter yamlExporter = new InterlockingYAMLExporter();
 
 	public void run(IFileSystemAccess2 fsa, RootModule rootModule) {
 		var layoutProp = rootModule.getProperties().stream().filter(p -> p instanceof LayoutProperty).map(p -> (LayoutProperty)p).findFirst();
@@ -32,31 +33,20 @@ public class LayoutGenerator {
 
 			// generate graph
 			var graph = networkLayout.generateGraph();
-
-			// generate dot layout
 			fsa.generateFile(rootModule.getName() + "_diagram.dot", dotExporter.render(rootModule.getName(), graph));
 
 			// find all routes
 			var signals = getAllSignals(rootModule);
-			List<Route> routes = new ArrayList<>();
-			if (signals != null) {
-				for (int i = 0; i < signals.size(); i++) {
-					for (int j = 0; j < signals.size(); j++) {
-						if (i == j)
-							continue;
-
-						var src = signals.get(i).getName();
-						var dest = signals.get(j).getName();
-						var paths = routesFinder.findAllRoutes(networkLayout, src, dest);
-						if (paths != null && !paths.isEmpty()) {
-							routes.addAll(paths);
-						}
-					}
-				}
-
+			if (signals == null) {
+				logger.warn("No defined signal");
+				return;
 			}
 
+			var routes = routesExplorer.findAllRoutes(networkLayout, signals.stream().map(SignalElement::getName).collect(Collectors.toSet()));
 			logger.debug(LogHelper.printObject(routes));
+
+			// generate yaml
+			fsa.generateFile(rootModule.getName() + "_interlocking_table.yml", yamlExporter.generate(routes));
 
 		} catch (LayoutException e) {
 			throw new RuntimeException(e);

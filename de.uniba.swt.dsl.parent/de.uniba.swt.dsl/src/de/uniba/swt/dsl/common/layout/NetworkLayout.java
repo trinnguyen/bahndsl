@@ -65,7 +65,6 @@ public class NetworkLayout implements LayoutGraph {
     public String toString() {
         return "NetworkLayout {" + "\n" +
                 "vertices=" + LogHelper.printObject(vertices) + "\n" +
-                ", mapVertices=" + LogHelper.printObject(mapVertices) + "\n" +
                 '}';
     }
 

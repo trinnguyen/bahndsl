@@ -3,6 +3,8 @@ package de.uniba.swt.dsl.common.layout.models.graph;
 import de.uniba.swt.dsl.bahn.BlockElement;
 import de.uniba.swt.dsl.bahn.PointElement;
 
+import java.util.Objects;
+
 public class SwitchEdge extends AbstractEdge {
 
     public enum Aspect {
@@ -43,6 +45,24 @@ public class SwitchEdge extends AbstractEdge {
     @Override
     public String getKey() {
         return (blockElement.getName() + "." + getAspect().toString()).toLowerCase();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SwitchEdge that = (SwitchEdge) o;
+
+        if (!Objects.equals(blockElement, that.blockElement)) return false;
+        return aspect == that.aspect;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = blockElement != null ? blockElement.hashCode() : 0;
+        result = 31 * result + (aspect != null ? aspect.hashCode() : 0);
+        return result;
     }
 
     @Override

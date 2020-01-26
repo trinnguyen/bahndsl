@@ -25,10 +25,16 @@ public class RoutesFinder {
     private Set<Route> routes = new HashSet<>();
     private Set<LayoutVertex> flagsOnPath = new HashSet<>();
 
-    public Set<Route> findAllRoutes(NetworkLayout networkLayout, String srcSignalKey, String destSignalKey) {
+    public Set<Route> findRoutes(NetworkLayout networkLayout, String srcSignalKey, String destSignalKey) {
         this.networkLayout = networkLayout;
         this.srcSignal = networkLayout.findVertex(srcSignalKey);
         this.destSignal = networkLayout.findVertex(destSignalKey);
+
+        // check if having layout
+        if (srcSignal == null || destSignal == null) {
+            logger.warn("Source or destination signal is not modelled in the layout: " + srcSignalKey + " -> " + destSignalKey);
+            return null;
+        }
 
         // find member
         this.srcMember = (SignalVertexMember)this.srcSignal.findMember(srcSignalKey).get();
