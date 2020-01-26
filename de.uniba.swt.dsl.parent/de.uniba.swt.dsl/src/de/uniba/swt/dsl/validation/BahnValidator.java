@@ -5,8 +5,8 @@ package de.uniba.swt.dsl.validation;
 
 
 import de.uniba.swt.dsl.bahn.*;
-import de.uniba.swt.dsl.common.layout.CompositeLayoutException;
-import de.uniba.swt.dsl.common.layout.LayoutException;
+import de.uniba.swt.dsl.common.layout.models.CompositeLayoutException;
+import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.validation.util.ValidationException;
 import de.uniba.swt.dsl.validation.validators.DeclValidator;
 import de.uniba.swt.dsl.validation.validators.ExpressionValidator;

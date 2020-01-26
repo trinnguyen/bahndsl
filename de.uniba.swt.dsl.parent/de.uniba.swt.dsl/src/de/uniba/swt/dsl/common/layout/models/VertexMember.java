@@ -1,11 +1,5 @@
 package de.uniba.swt.dsl.common.layout.models;
 
-import de.uniba.swt.dsl.bahn.BlockElement;
-import de.uniba.swt.dsl.bahn.SignalElement;
-import org.eclipse.emf.ecore.EObject;
-
-import java.util.Objects;
-
 public abstract class VertexMember {
 
     protected VertexMember() {
@@ -20,6 +14,15 @@ public abstract class VertexMember {
     @Override
     public String toString() {
         return getKey() + "(" + getType() + ")";
+    }
+
+    public boolean isSegmentBlock(){
+        var type = getType();
+        return type == VertexMemberType.Block || type == VertexMemberType.Platform;
+    }
+
+    public boolean isPoint() {
+        return getType() == VertexMemberType.Switch || getType() == VertexMemberType.Crossing;
     }
 }
 

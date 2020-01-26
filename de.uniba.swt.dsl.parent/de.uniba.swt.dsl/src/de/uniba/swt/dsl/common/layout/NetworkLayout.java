@@ -1,12 +1,14 @@
 package de.uniba.swt.dsl.common.layout;
 
-import de.uniba.swt.dsl.common.layout.models.LayoutVertex;
-import de.uniba.swt.dsl.common.layout.models.VertexMember;
+import com.google.inject.internal.cglib.core.$ObjectSwitchCallback;
+import de.uniba.swt.dsl.common.layout.models.*;
 import de.uniba.swt.dsl.common.util.LogHelper;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class NetworkLayout {
+public class NetworkLayout implements LayoutGraph {
     private List<LayoutVertex> vertices = new ArrayList<>();
     private Map<String, LayoutVertex> mapVertices = new TreeMap<>();
 
@@ -20,18 +22,6 @@ public class NetworkLayout {
 
     public List<LayoutVertex> getVertices() {
         return vertices;
-    }
-
-    public void setVertices(List<LayoutVertex> vertices) {
-        this.vertices = vertices;
-    }
-
-    public Map<String, LayoutVertex> getMapVertices() {
-        return mapVertices;
-    }
-
-    public void setMapVertices(Map<String, LayoutVertex> mapVertices) {
-        this.mapVertices = mapVertices;
     }
 
     public void addMembersToVertex(List<VertexMember> members, LayoutVertex vertex) {
@@ -57,11 +47,77 @@ public class NetworkLayout {
         return null;
     }
 
+    public LayoutVertex findVertex(String memberKey) {
+        if (mapVertices.containsKey(memberKey)) {
+            return mapVertices.get(memberKey);
+        }
+
+        return null;
+    }
+
+    public boolean hasVertex(String memberKey) {
+        return mapVertices.containsKey(memberKey);
+    }
+
     @Override
     public String toString() {
         return "NetworkLayout {" + "\n" +
                 "vertices=" + LogHelper.printObject(vertices) + "\n" +
                 ", mapVertices=" + LogHelper.printObject(mapVertices) + "\n" +
                 '}';
+    }
+
+    @Override
+    public Set<LayoutVertex> adjacentVertices(LayoutVertex vertex) {
+        return vertex.getMembers()
+                .stream()
+                .filter(member -> member.isSegmentBlock() || member.isPoint())
+                .map(this::findConnectedVertex)
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<LayoutVertex> findConnectedVertex(VertexMember member) {
+        // segment block: platform, block
+        if (member.isSegmentBlock()) {
+            var blockMember = (BlockVertexMember) member;
+            var newEndpoint = blockMember.getEndpoint() == BlockVertexMember.BlockEndpoint.Up ?
+                    BlockVertexMember.BlockEndpoint.Down :
+                    BlockVertexMember.BlockEndpoint.Up;
+            return Set.of(findVertex(blockMember.generateKey(newEndpoint)));
+        }
+
+        // point: switch
+        if (member.getType() == VertexMemberType.Switch) {
+            var switchMember = (SwitchVertexMember) member;
+            var connectedEndpoints = switchMember.getConnectedEndpoints();
+            return connectedEndpoints.stream()
+                    .map(e -> findVertex(switchMember.generateKey(e)))
+                    .collect(Collectors.toSet());
+        }
+
+        throw new RuntimeException("Member is not supported for edge: " + member);
+    }
+
+    public void addMissingBlockVertices() {
+        Set<LayoutVertex> set = new HashSet<>();
+        for (var vertex : this.getVertices()) {
+            for (var member : vertex.getMembers()) {
+                if (member.isSegmentBlock()) {
+                    var blockVertexMember = (BlockVertexMember) member;
+                    var endpoint = blockVertexMember.getEndpoint() == BlockVertexMember.BlockEndpoint.Up ?
+                            BlockVertexMember.BlockEndpoint.Down :
+                            BlockVertexMember.BlockEndpoint.Up;
+
+                    if (!hasVertex(blockVertexMember.generateKey(endpoint))) {
+                        var newVertex = new LayoutVertex();
+                        set.add(newVertex);
+
+                        this.addMembersToVertex(List.of(blockVertexMember.generateMember(endpoint)), newVertex);
+                    }
+                }
+            }
+        }
+        this.getVertices().addAll(set);
     }
 }

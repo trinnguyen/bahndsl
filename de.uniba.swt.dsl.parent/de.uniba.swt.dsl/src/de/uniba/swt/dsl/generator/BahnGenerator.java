@@ -15,7 +15,7 @@ import com.google.inject.Inject;
 
 import de.uniba.swt.dsl.bahn.RootModule;
 import de.uniba.swt.dsl.common.generator.yaml.BidibYamlConfigGenerator;
-import de.uniba.swt.dsl.common.layout.LayoutProvider;
+import de.uniba.swt.dsl.common.layout.LayoutGenerator;
 import de.uniba.swt.dsl.common.models.NetworkModel;
 
 /**
@@ -38,7 +38,7 @@ public class BahnGenerator extends AbstractGenerator {
 	SCChartsGenerator scChartsGenerator;
 	
 	@Inject
-	LayoutProvider layoutProvider;
+	LayoutGenerator layoutGenerator;
 
 	@Override
 	public void beforeGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
@@ -71,7 +71,7 @@ public class BahnGenerator extends AbstractGenerator {
 			fsa.generateFile(rootModule.getName() + "_sccharts.sctx", scChartsGenerator.generate(rootModule));
 			
 			// layout
-			layoutProvider.run(fsa, rootModule);
+			layoutGenerator.run(fsa, rootModule);
 		}
 	}
 

@@ -2,6 +2,9 @@ package de.uniba.swt.dsl.validation.validators;
 
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.layout.*;
+import de.uniba.swt.dsl.common.layout.models.CompositeLayoutException;
+import de.uniba.swt.dsl.common.layout.models.LayoutException;
+import de.uniba.swt.dsl.common.layout.validators.NetworkValidator;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.validation.util.ValidationException;
 

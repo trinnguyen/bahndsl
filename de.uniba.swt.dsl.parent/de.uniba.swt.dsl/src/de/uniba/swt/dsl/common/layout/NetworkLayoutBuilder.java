@@ -4,7 +4,6 @@ import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.layout.models.*;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import org.apache.log4j.Logger;
-import org.eclipse.emf.common.util.EList;
 
 import java.util.List;
 
@@ -41,6 +40,8 @@ public class NetworkLayoutBuilder {
             }
         }
 
+        // add missing vertex for block
+        networkLayout.addMissingBlockVertices();
         return networkLayout;
     }
 
@@ -68,7 +69,7 @@ public class NetworkLayoutBuilder {
 
     private VertexMember convertToVertexMember(LayoutReference ref) {
         if (isPoint(ref))
-            return new PointVertexMember((BlockElement) ref.getElem(), ref.getProp());
+            return new SwitchVertexMember((BlockElement) ref.getElem(), ref.getProp());
 
         return new BlockVertexMember((BlockElement) ref.getElem(), ref.getProp());
     }

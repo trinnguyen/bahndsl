@@ -2,25 +2,16 @@ package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.layout.models.*;
-import de.uniba.swt.dsl.common.models.Signal;
-import de.uniba.swt.dsl.common.util.BahnConstants;
-import de.uniba.swt.dsl.common.util.LogHelper;
 import org.apache.log4j.Logger;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.xtext.formatting.IFormatterExtension;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
-import javax.sound.sampled.BooleanControl;
-import java.util.*;
-
-public class LayoutProvider {
+public class LayoutGenerator {
 	
-	private final static Logger logger = Logger.getLogger(LayoutProvider.class);
+	private final static Logger logger = Logger.getLogger(LayoutGenerator.class);
 
 	private NetworkLayoutBuilder networkLayoutBuilder;
 
-	public LayoutProvider() {
+	public LayoutGenerator() {
 		networkLayoutBuilder = new NetworkLayoutBuilder();
 	}
 

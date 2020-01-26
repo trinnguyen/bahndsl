@@ -1,5 +1,8 @@
-package de.uniba.swt.dsl.common.layout;
+package de.uniba.swt.dsl.common.layout.validators;
 
+import de.uniba.swt.dsl.common.layout.models.CompositeLayoutException;
+import de.uniba.swt.dsl.common.layout.models.LayoutException;
+import de.uniba.swt.dsl.common.layout.NetworkLayout;
 import de.uniba.swt.dsl.common.layout.models.*;
 
 
@@ -7,19 +10,22 @@ import java.util.*;
 
 public class NetworkValidator {
 
-    private NetworkLayout networkLayout;
     private Set<String> validElements = new HashSet<>();
+    private LayoutGraphValidator graphValidator = new LayoutGraphValidator();
+    private NetworkLayout networkLayout;
 
     public void checkWelformness(NetworkLayout networkLayout) throws CompositeLayoutException {
         this.networkLayout = networkLayout;
 
         // 1. validate connectors
-        validatConnectors();
+        validateConnectors();
 
         // 2. ensure all vertices are reachable
+        if (!graphValidator.isStrongConnected(networkLayout))
+            throw new CompositeLayoutException("Network layout is not strongly connected");
     }
 
-    private void validatConnectors() throws CompositeLayoutException {
+    private void validateConnectors() throws CompositeLayoutException {
         validElements.clear();
         List<LayoutException> errors = new ArrayList<>();
         for (var vertex : networkLayout.getVertices()) {
@@ -29,8 +35,8 @@ public class NetworkValidator {
                         case Signal:
                             checkSignal((SignalVertexMember) member);
                             break;
-                        case Point:
-                            checkPoint((PointVertexMember) member);
+                        case Switch:
+                            checkPoint((SwitchVertexMember) member);
                             break;
                         default:
                             checkBlock((BlockVertexMember) member);
@@ -53,22 +59,12 @@ public class NetworkValidator {
             return;
 
         var vertex = networkLayout.findVertex(member);
-        LayoutVertex tmpVertex = null;
+        var endpoint = member.getEndpoint() == BlockVertexMember.BlockEndpoint.Up ?
+                BlockVertexMember.BlockEndpoint.Down :
+                BlockVertexMember.BlockEndpoint.Up;
+        var tmpVertex = networkLayout.findVertex(member.generateKey(endpoint));
 
-        switch (member.getEndpoint()) {
-            case Up:
-                tmpVertex = networkLayout.findVertex(member.createBlockMember(BlockVertexMember.BlockEndpoint.Down));
-                break;
-            case Down:
-                tmpVertex = networkLayout.findVertex(member.createBlockMember(BlockVertexMember.BlockEndpoint.Up));
-                break;
-        }
-
-        if (vertex == null && tmpVertex == null) {
-            throw new LayoutException("Block must connect to at least one block: " + member.getName());
-        }
-
-        if (vertex != null && vertex.equals(tmpVertex)) {
+        if (vertex == null || tmpVertex == null || vertex.equals(tmpVertex)) {
             throw new LayoutException("Block must connect to 2 different blocks: " + member.getName());
         }
 
@@ -76,38 +72,19 @@ public class NetworkValidator {
         validElements.add(member.getName());
     }
 
-    private void checkPoint(PointVertexMember member) throws LayoutException {
+    private void checkPoint(SwitchVertexMember member) throws LayoutException {
 
         if (validElements.contains(member.getName()))
             return;
 
-        var endpoints = new HashSet<PointVertexMember.PointEndpoint>();
+        var endpoints = member.getConnectedEndpoints();
         endpoints.add(member.getEndpoint());
 
-        switch (member.getEndpoint()) {
-            case Normal:
-                endpoints.add(PointVertexMember.PointEndpoint.Stem);
-                endpoints.add(PointVertexMember.PointEndpoint.Reverse);
-                break;
-            case Reverse:
-                endpoints.add(PointVertexMember.PointEndpoint.Stem);
-                endpoints.add(PointVertexMember.PointEndpoint.Normal);
-                break;
-            default:
-                endpoints.add(PointVertexMember.PointEndpoint.Normal);
-                endpoints.add(PointVertexMember.PointEndpoint.Reverse);
-                break;
-        }
-
         // find vertices
-        var countItems = endpoints.stream().map(e -> {
-            if (e == member.getEndpoint()) {
-                return networkLayout.findVertex(member);
-            }
-
-            var tmpMem = member.createMember(e);
-            return networkLayout.findVertex(tmpMem);
-        }).filter(Objects::nonNull).distinct().count();
+        var countItems = endpoints.stream()
+                .map(e -> networkLayout.findVertex(member.generateKey(e)))
+                .filter(Objects::nonNull)
+                .distinct().count();
         if (countItems != 3) {
             throw new LayoutException("Point must connect to 3 different blocks: " + member.getName());
         }

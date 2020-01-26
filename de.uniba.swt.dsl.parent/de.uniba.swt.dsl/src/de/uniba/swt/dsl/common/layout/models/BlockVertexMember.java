@@ -4,10 +4,6 @@ import de.uniba.swt.dsl.bahn.BlockElement;
 
 public class BlockVertexMember extends AbstractBlockVertexMember {
 
-    public BlockVertexMember createBlockMember(BlockEndpoint endpoint) {
-        return new BlockVertexMember(getBlock(), endpoint);
-    }
-
     public enum BlockEndpoint {
         Up,
         Down
@@ -41,6 +37,14 @@ public class BlockVertexMember extends AbstractBlockVertexMember {
 
     @Override
     public String getKey() {
-        return getName() + "." + getEndpoint().toString().toLowerCase();
+        return generateKey(getEndpoint());
+    }
+
+    public String generateKey(BlockEndpoint endpoint) {
+        return getName() + "." + endpoint.toString().toLowerCase();
+    }
+
+    public BlockVertexMember generateMember(BlockEndpoint endpoint) {
+        return new BlockVertexMember(this.getBlock(), endpoint);
     }
 }
