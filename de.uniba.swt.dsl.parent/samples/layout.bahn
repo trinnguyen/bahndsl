@@ -1,0 +1,74 @@
+module layout0
+	boards
+		master 0x01
+	end
+	segments master
+		seg1 0x01 length 11cm
+	end
+	aspects
+		red 0x01
+	end
+	signals master
+		sig1 0x01 aspects red end initial red
+		sig2 0x01 aspects red end initial red
+		sig3 0x01 aspects red end initial red
+		sig4 0x01 aspects red end initial red
+		sig5 0x01 aspects red end initial red
+	end
+	blocks
+		# blocks
+		b1 main:seg1
+		b2 main:seg1
+		b3 main:seg1
+		b4 main:seg1
+		b5 main:seg1
+
+		# platforms
+		pl1 main:seg1
+		pl2 main:seg1
+		plt1 main:seg1
+
+		# points
+		p1 main:seg1
+		p2 main:seg1
+		p3 main:seg1
+		p4 main:seg1
+		p5 main:seg1
+		p6 main:seg1
+		p7 main:seg1
+	end
+
+	layout
+	    b1.up -- p5.stem
+	    b1.down -- p6.stem
+
+	    b2.down -- p2.stem
+	    b2.up -- p1.stem
+
+	    b3.down -- p1.straight
+	    b3.up -- p3.straight
+
+	    b4.down -- p4.stem
+	    b4.up -- p1.side
+
+	    b5.down -- p3.stem
+	    b5.up -- p2.straight
+
+	    pl1.down -- p5.straight
+	    pl2.down -- p7.stem
+	    plt1.down -- p7.straight
+
+        # signals
+        b3.up -- sig1
+        b3.down -- sig2
+        b2.up -- sig3
+        b2.down -- sig4
+	    b1.up -- sig5
+
+        # points
+        p5.side -- p2.side
+        p6.straight -- p4.straight
+        p6.side -- p7.side
+        p3.side -- p4.side
+	end
+end

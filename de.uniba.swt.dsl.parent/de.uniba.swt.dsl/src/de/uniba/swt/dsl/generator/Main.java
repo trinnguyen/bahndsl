@@ -11,6 +11,9 @@ import de.uniba.swt.dsl.BahnStandaloneSetup;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -50,6 +53,7 @@ public class Main {
 	private JavaIoFileSystemAccess fileAccess;
 
 	protected void runGenerator(String string) {
+		Logger.getRootLogger().setLevel(Level.DEBUG);
 		// load output
 		File file = new File(string);
 		String outputPath = Paths.get(file.getParent(), "src-gen").toAbsolutePath().toString();

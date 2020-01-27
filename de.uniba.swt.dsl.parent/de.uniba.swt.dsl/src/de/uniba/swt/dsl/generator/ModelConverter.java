@@ -151,10 +151,14 @@ class ModelConverter {
 
 	private List<Aspect> createPointAspects(PointElement pointElement)
 	{
-		return Lists.newArrayList(
-			new Aspect("normal", pointElement.getNormalAspect().getValue()),
-			new Aspect("reverse", pointElement.getReverseAspect().getValue())
+		return List.of(
+			new Aspect("normal", pointElement.getNormalValue()),
+			new Aspect("reverse", pointElement.getReverseValue())
 		);
+//		return Lists.newArrayList(
+//			new Aspect("normal", pointElement.getNormalAspect().getValue()),
+//			new Aspect("reverse", pointElement.getReverseAspect().getValue())
+//		);
 	}
 	
 	

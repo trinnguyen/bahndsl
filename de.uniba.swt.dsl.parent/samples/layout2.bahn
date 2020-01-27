@@ -1,0 +1,38 @@
+module layout2
+	boards
+		master 0x01
+	end
+	segments master
+		seg1 0x01 length 11cm
+	end
+	aspects
+		red 0x01
+	end
+	signals master
+		sig1 0x01 aspects red end initial red
+		sig2 0x01 aspects red end initial red
+		sig3 0x01 aspects red end initial red
+		sig4 0x01 aspects red end initial red
+	end
+	blocks
+		b1 main seg1
+		b2 main seg1
+		b3 main seg1
+		b4 main seg1
+
+		# switch
+		p1 main seg1
+	end
+
+	layout
+	    b1.up -- p1.down1
+	    b2.up -- p1.down2
+	    b3.down -- p1.up1
+	    b4.down -- p1.up2
+
+	    sig1 -- b1.down
+	    sig2 -- b2.up
+	    sig3 -- b3.up
+	    sig4 -- b4.down
+	end
+end
