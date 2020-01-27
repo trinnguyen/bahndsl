@@ -167,4 +167,82 @@ class BahnValidationTest {
 			end end
         '''.parse.assertError(BahnPackage.Literals.VAR_DECL_STMT, null, "Expression has type int")
     }
+    
+    @Test
+    def void testLayoutSwitch() {
+		'''
+			module test
+				boards
+					master 0x00
+				end
+				segments master
+					seg1 0x00 length 11cm
+				end
+				blocks
+					b1 main seg1
+					b2 main seg1
+					b3 main seg1
+					p1 main seg1
+				end
+				layout
+					b1.up -- p1.stem
+				    b2.up -- p1.straight
+				    b3.down -- p1.side
+				end
+			end
+		'''.parse.assertNoErrors
+	}
+	
+	@Test
+	def void testLayoutCrossing() {
+		'''
+			module test
+				boards
+					master 0x00
+				end
+				segments master
+					seg1 0x00 length 11cm
+				end
+				blocks
+					b1 main seg1
+					b2 main seg1
+					b3 main seg1
+					b4 main seg1
+					p1 main seg1
+				end
+				layout
+					b1.up -- p1.down1
+				    b2.up -- p1.down2
+				    b3.down -- p1.up1
+				    b4.down -- p1.up2
+				end
+			end
+		'''.parse.assertNoErrors
+	}
+	
+	@Test
+	def void testLayoutSignal() {
+		'''
+			module test
+				aspects
+					red 0x00
+				end
+				boards
+					master 0x00
+				end
+				segments master
+					seg1 0x00 length 11cm
+				end
+				signals master
+					sig1 0x00 aspects red end initial red
+				end
+				blocks
+					b1 main seg1
+				end
+				layout
+				    sig1 -- b1.down
+				end
+			end
+		'''.parse.assertNoErrors
+	}
 }

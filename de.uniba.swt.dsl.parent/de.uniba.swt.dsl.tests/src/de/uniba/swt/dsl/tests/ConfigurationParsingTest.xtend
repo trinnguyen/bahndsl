@@ -31,10 +31,48 @@ class ConfigurationParsingTest {
 		'''
 			module test
 				blocks
-					block2 buffer:seg7,signal4 <-> main:seg6 <-> buffer:seg5,signal3 
+					block2 overlap seg7 main seg6 overlap seg5 
 						trains
 							cargo passenger 
 						end
+				end
+			end
+		'''.parse.assertNoParsingErrors
+	}
+	
+	def void testLayoutSwitch() {
+		'''
+			module test
+				layout
+					b1.up -- p1.stem
+				    b2.up -- p1.straight
+				    b3.down -- p1.side
+				end
+			end
+		'''.parse.assertNoParsingErrors
+	}
+	
+	@Test
+	def void testLayoutCrossing() {
+		'''
+			module test
+				layout
+					b1.up -- p1.down1
+				    b2.up -- p1.down2
+				    b3.down -- p1.up1
+				    b4.down -- p1.up2
+				end
+			end
+		'''.parse.assertNoParsingErrors
+	}
+	
+	@Test
+	def void testLayoutSignal() {
+		'''
+			module test
+				layout
+				    sig1 -- b1.down
+				    sig2 -- b2.up
 				end
 			end
 		'''.parse.assertNoParsingErrors
@@ -67,8 +105,8 @@ class ConfigurationParsingTest {
 				points onecontrol
 					point1 0x00 
 					block blockPoint1
-					normal 0x01 block2 -- block3
-					reverse 0x00 block2 -- block4
+					normal 0x01
+					reverse 0x00
 					initial normal
 				end
 			end
