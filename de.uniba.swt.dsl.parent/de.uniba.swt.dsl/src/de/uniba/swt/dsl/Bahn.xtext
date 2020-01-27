@@ -206,7 +206,7 @@ LayoutReference:
 ;
 
 Length:
-	value=INT unit=LengthUnit
+	value=NUMBER unit=LengthUnit
 ;
 
 enum LengthUnit:
@@ -214,7 +214,7 @@ enum LengthUnit:
 ;
 
 Weight:
-	value=INT unit=WeightUnit
+	value=NUMBER unit=WeightUnit
 ;
 
 enum WeightUnit:
