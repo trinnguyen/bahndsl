@@ -1,13 +1,11 @@
 package de.uniba.swt.dsl.common.layout;
 
-import de.uniba.swt.dsl.common.generator.sccharts.builder.TextualBuilder;
 import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.graph.BlockEdge;
 import de.uniba.swt.dsl.common.layout.models.graph.SwitchEdge;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class InterlockingYamlExporter {
 
@@ -58,11 +56,7 @@ public class InterlockingYamlExporter {
         indentLevel++;
         for (int i = 0; i < blocks.size(); i++) {
             var block = blocks.get(i);
-            if (i == blocks.size() - 1) {
-                appendLine(SPACE+ "end: %s", block.getBlockElement().getName());
-            } else {
-                appendLine("- id: %s", block.getBlockElement().getName());
-            }
+            appendLine("- id: %s", block.getBlockElement().getName());
         }
         indentLevel--;
 

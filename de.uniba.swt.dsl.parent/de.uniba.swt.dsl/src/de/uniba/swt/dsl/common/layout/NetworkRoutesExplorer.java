@@ -27,7 +27,7 @@ public class NetworkRoutesExplorer {
                 var paths = routesFinder.findRoutes(networkLayout, src, dest);
                 if (paths != null && !paths.isEmpty()) {
                     for (Route path : paths) {
-                        path.setId("route" + (id++));
+                        path.setId(String.valueOf(id++));
                         routes.add(path);
                     }
                 }
