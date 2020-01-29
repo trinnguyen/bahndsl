@@ -171,9 +171,9 @@ enum PointAspectType:
 
 BlockElement:
 	name=ID 
-		(hasStart?='overlap' startSeg=[SegmentElement])?  
+		('overlap' overlaps+=[SegmentElement])?
 		'main' mainSeg=[SegmentElement] 
-		(hasEnd?='overlap' endSeg=[SegmentElement])?
+		('overlap' overlaps+=[SegmentElement])?
 		('trains' (trainTypes+=TrainType)+ 'end')?
 ;
 

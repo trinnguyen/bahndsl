@@ -1,5 +1,11 @@
 package de.uniba.swt.dsl.common.layout.models.graph;
 
+import de.uniba.swt.dsl.bahn.SegmentElement;
+import de.uniba.swt.dsl.bahn.TrackSection;
+
+import java.util.List;
+import java.util.Objects;
+
 public abstract class AbstractEdge {
     public enum EdgeType {
         Block,
@@ -45,4 +51,29 @@ public abstract class AbstractEdge {
     }
 
     public abstract String getKey();
+
+    public abstract List<SegmentElement> getSegments();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractEdge)) return false;
+
+        AbstractEdge that = (AbstractEdge) o;
+
+        if (!Objects.equals(srcVertex, that.srcVertex)) return false;
+        return Objects.equals(destVertex, that.destVertex);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = srcVertex != null ? srcVertex.hashCode() : 0;
+        result = 31 * result + (destVertex != null ? destVertex.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return getKey();
+    }
 }

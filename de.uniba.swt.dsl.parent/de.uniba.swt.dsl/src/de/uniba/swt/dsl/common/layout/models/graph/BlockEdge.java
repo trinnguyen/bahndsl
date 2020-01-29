@@ -1,7 +1,10 @@
 package de.uniba.swt.dsl.common.layout.models.graph;
 
 import de.uniba.swt.dsl.bahn.BlockElement;
+import de.uniba.swt.dsl.bahn.SegmentElement;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class BlockEdge extends AbstractEdge {
@@ -29,6 +32,20 @@ public class BlockEdge extends AbstractEdge {
     @Override
     public String getKey() {
         return blockElement.getName().toLowerCase();
+    }
+
+    @Override
+    public List<SegmentElement> getSegments() {
+        List<SegmentElement> segments = new ArrayList<>(blockElement.getOverlaps().size() + 1);
+        if (blockElement.getOverlaps().size() > 0)
+        {
+            segments.add(blockElement.getOverlaps().get(0));
+        }
+        segments.add(blockElement.getMainSeg());
+        for (int i = 1; i < blockElement.getOverlaps().size(); i++) {
+            segments.add(blockElement.getOverlaps().get(i));
+        }
+        return segments;
     }
 
     @Override

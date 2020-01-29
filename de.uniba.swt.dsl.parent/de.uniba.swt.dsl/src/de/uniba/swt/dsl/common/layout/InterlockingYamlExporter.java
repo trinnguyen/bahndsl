@@ -1,11 +1,14 @@
 package de.uniba.swt.dsl.common.layout;
 
+import de.uniba.swt.dsl.bahn.PointElement;
+import de.uniba.swt.dsl.bahn.TrackSection;
 import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.graph.BlockEdge;
 import de.uniba.swt.dsl.common.layout.models.graph.SwitchEdge;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InterlockingYamlExporter {
 
@@ -30,20 +33,9 @@ public class InterlockingYamlExporter {
     private void generateRoute(Route route) {
 
         // prepare
-        List<SwitchEdge> points = new ArrayList<>();
-        List<BlockEdge> blocks = new ArrayList<>();
-        for (AbstractEdge edge : route.getEdges()) {
-            if (edge.getEdgeType() == AbstractEdge.EdgeType.Switch) {
-                points.add((SwitchEdge)edge);
-                continue;
-            }
 
-            if (edge.getEdgeType() == AbstractEdge.EdgeType.Block) {
-                blocks.add((BlockEdge)edge);
-            }
-        }
 
-        // generate
+        // generate signals
         indentLevel = 1;
         appendLine("- id: %s", route.getId());
 
@@ -51,12 +43,22 @@ public class InterlockingYamlExporter {
         appendLine("source: %s", route.getSrcSignal());
         appendLine("destination: %s", route.getDestSignal());
 
-        // segment
+        // segment (blocks and points)
         appendLine("path:");
         indentLevel++;
-        for (int i = 0; i < blocks.size(); i++) {
-            var block = blocks.get(i);
-            appendLine("- id: %s", block.getBlockElement().getName());
+        List<SwitchEdge> points = new ArrayList<>();
+        String cmtPath = route.getEdges().stream().map(AbstractEdge::getKey).collect(Collectors.joining(" -> "));
+        appendLine("# %s", cmtPath);
+        for (AbstractEdge edge : route.getEdges()) {
+            // cache points
+            if (edge.getEdgeType() == AbstractEdge.EdgeType.Switch) {
+                points.add((SwitchEdge)edge);
+            }
+
+            // render
+            edge.getSegments().forEach(segmentElement -> {
+                appendLine("- id: %s", segmentElement.getName());
+            });
         }
         indentLevel--;
 
