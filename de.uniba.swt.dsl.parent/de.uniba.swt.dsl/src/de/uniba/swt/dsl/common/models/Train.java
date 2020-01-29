@@ -4,12 +4,12 @@ import java.util.List;
 
 public class Train extends Element {
 	private String id;
-	private long dccAddress;
+	private String dccAddress;
 	private int speedSteps;
 	private List<Integer> calibration;
 	private List<TrainPeripheral> peripherals;
 
-	public Train(String id, long dccAddress, int speedSteps, List<Integer> calibration, List<TrainPeripheral> peripherals) {
+	public Train(String id, String dccAddress, int speedSteps, List<Integer> calibration, List<TrainPeripheral> peripherals) {
 		this.id = id;
 		this.dccAddress = dccAddress;
 		this.speedSteps = speedSteps;
@@ -20,16 +20,16 @@ public class Train extends Element {
 	@Override
 	public String dumpYaml(String indent) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(indent).append("- id: " + id).append(Util.LINE_BREAK);
+		builder.append(indent).append("- id: ").append(id).append(Util.LINE_BREAK);
 		
 		String findent = Util.increaseIndent(indent);
-		builder.append(findent).append("dcc-address: " + hexString(dccAddress)).append(Util.LINE_BREAK);
-		builder.append(findent).append("dcc-speed-steps: " + speedSteps).append(Util.LINE_BREAK);
+		builder.append(findent).append("dcc-address: ").append(dccAddress).append(Util.LINE_BREAK);
+		builder.append(findent).append("dcc-speed-steps: ").append(speedSteps).append(Util.LINE_BREAK);
 		
 		if (calibration != null && calibration.size() > 0) {
 			builder.append(findent).append("calibration: ").append(Util.LINE_BREAK);
 			for (Integer cal : calibration) {
-				builder.append(findent).append(Util.SINGLE_INDENT).append("- " + cal).append(Util.LINE_BREAK);
+				builder.append(findent).append(Util.SINGLE_INDENT).append("- ").append(cal).append(Util.LINE_BREAK);
 			}
 		}
 		
@@ -51,11 +51,11 @@ public class Train extends Element {
 		this.id = id;
 	}
 
-	public long getDccAddress() {
+	public String getDccAddress() {
 		return dccAddress;
 	}
 
-	public void setDccAddress(long dccAddress) {
+	public void setDccAddress(String dccAddress) {
 		this.dccAddress = dccAddress;
 	}
 

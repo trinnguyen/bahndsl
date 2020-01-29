@@ -3,15 +3,9 @@
  */
 package de.uniba.swt.dsl;
 
-import de.uniba.swt.dsl.converter.BahnValueConverterService;
-import org.eclipse.xtext.conversion.IValueConverterService;
-
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
  */
 public class BahnRuntimeModule extends AbstractBahnRuntimeModule {
-    @Override
-    public Class<? extends IValueConverterService> bindIValueConverterService() {
-        return BahnValueConverterService.class;
-    }
+
 }

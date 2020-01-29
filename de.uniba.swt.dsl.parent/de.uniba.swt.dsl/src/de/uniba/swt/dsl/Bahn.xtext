@@ -424,7 +424,7 @@ NUMBER returns ecore::EDouble:
 	'-'? INT ('.' INT)?
 ;
 
-terminal HEX returns ecore::ELong:
+terminal HEX returns ecore::EString:
 	('0x'|'0X') ('0'..'9'|'a'..'f'|'A'..'F')+;
 
 @Override

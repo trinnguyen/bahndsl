@@ -5,11 +5,11 @@ import java.util.List;
 public class Point extends Element {
 	private String id;
 	private String boardId;
-	private long number;
+	private String number;
 	private List<Aspect> aspects;
 	private Aspect initialAspect;
 
-	public Point(String id, String boardId, long number, List<Aspect> aspects, Aspect initialAspect) {
+	public Point(String id, String boardId, String number, List<Aspect> aspects, Aspect initialAspect) {
 		this.id = id;
 		this.boardId = boardId;
 		this.number = number;
@@ -21,7 +21,7 @@ public class Point extends Element {
 	public String dumpYaml(String indent) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(indent).append("- id: " + id).append(Util.LINE_BREAK);
-		builder.append(indent).append(Util.SINGLE_INDENT).append("number: " + hexString(number)).append(Util.LINE_BREAK);
+		builder.append(indent).append(Util.SINGLE_INDENT).append("number: " + number).append(Util.LINE_BREAK);
 		
 		if (aspects != null && aspects.size() > 0) {
 			builder.append(indent).append(Util.SINGLE_INDENT).append("aspects:").append(Util.LINE_BREAK);
@@ -53,11 +53,11 @@ public class Point extends Element {
 		this.boardId = boardId;
 	}
 
-	public long getNumber() {
+	public String getNumber() {
 		return number;
 	}
 
-	public void setNumber(long number) {
+	public void setNumber(String number) {
 		this.number = number;
 	}
 

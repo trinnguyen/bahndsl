@@ -1,27 +1,27 @@
 package de.uniba.swt.dsl.common.models;
 
 public class BoardFeature {
-	private long number;
-	private long value;
+	private String number;
+	private String value;
 
-	public BoardFeature(long number, long value) {
+	public BoardFeature(String number, String value) {
 		this.number = number;
 		this.value = value;
 	}
 
-	public long getNumber() {
+	public String getNumber() {
 		return number;
 	}
 
-	public void setNumber(long number) {
+	public void setNumber(String number) {
 		this.number = number;
 	}
 
-	public long getValue() {
+	public String getValue() {
 		return value;
 	}
 
-	public void setValue(long value) {
+	public void setValue(String value) {
 		this.value = value;
 	}
 }

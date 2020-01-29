@@ -3,9 +3,9 @@ package de.uniba.swt.dsl.common.models;
 public class Segment extends Element {
 	private String id;
 	private String boardId;
-	private long address;
+	private String address;
 
-	public Segment(String id, String boardId, long address) {
+	public Segment(String id, String boardId, String address) {
 		this.id = id;
 		this.boardId = boardId;
 		this.address = address;
@@ -13,10 +13,8 @@ public class Segment extends Element {
 
 	@Override
 	public String dumpYaml(String indent) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(indent).append("- id: " + id).append(Util.LINE_BREAK);
-		builder.append(indent).append("  address: " + hexString(address)).append(Util.LINE_BREAK);
-		return builder.toString();
+		return indent + "- id: " + id + Util.LINE_BREAK +
+				indent + "  address: " + address + Util.LINE_BREAK;
 	}
 
 	public String getId() {
@@ -35,11 +33,11 @@ public class Segment extends Element {
 		this.boardId = boardId;
 	}
 
-	public long getAddress() {
+	public String getAddress() {
 		return address;
 	}
 
-	public void setAddress(long address) {
+	public void setAddress(String address) {
 		this.address = address;
 	}
 }

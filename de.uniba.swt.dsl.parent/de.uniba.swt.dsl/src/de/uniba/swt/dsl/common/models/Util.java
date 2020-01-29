@@ -7,7 +7,7 @@ public class Util {
 	public static String LINE_BREAK = "\n";
 	
 	public static String toHexString(long value) {
-		return "0x" + (value < 16 ? "0" : "") + Long.toHexString(value).toUpperCase();
+		return String.format("0x%04X", value);
 	}
 	
 	public static String increaseIndent(String value) {
