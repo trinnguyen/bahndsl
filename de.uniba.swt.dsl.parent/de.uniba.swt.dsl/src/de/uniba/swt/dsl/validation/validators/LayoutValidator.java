@@ -41,20 +41,16 @@ public class LayoutValidator {
             throw new ValidationException("Signal should have no connector property", BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
         }
 
-        if (reference.getElem() instanceof BlockElement) {
-            // only a subset of property is allowed
+        if (reference.getElem() instanceof PointElement) {
             var prop = reference.getProp();
             if (prop == null || prop.isEmpty()) {
                 throw new ValidationException("Missing connector property", BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
             }
 
             prop = prop.toLowerCase();
-            if (!BahnConstants.BLOCK_PROPS.contains(prop)
-                    && !BahnConstants.SWITCH_PROPS.contains(prop)
+            if (!BahnConstants.SWITCH_PROPS.contains(prop)
                     && !BahnConstants.CROSSING_PROPS.contains(prop)) {
-                var hint = String.join(",", BahnConstants.BLOCK_PROPS)
-                        + " or "
-                        + String.join(",", BahnConstants.SWITCH_PROPS)
+                var hint = String.join(",", BahnConstants.SWITCH_PROPS)
                         + " or "
                         + String.join(",", BahnConstants.CROSSING_PROPS);
                 throw new ValidationException("Invalid connector property, use: " + hint, BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
@@ -63,6 +59,22 @@ public class LayoutValidator {
             return;
         }
 
-        throw new ValidationException("Connector is allowed for signal and block only, unexpected " + reference.getElem().getClass().getSimpleName(), BahnPackage.Literals.LAYOUT_REFERENCE__ELEM);
+        if (reference.getElem() instanceof BlockElement) {
+            // only a subset of property is allowed
+            var prop = reference.getProp();
+            if (prop == null || prop.isEmpty()) {
+                throw new ValidationException("Missing connector property", BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
+            }
+
+            prop = prop.toLowerCase();
+            if (!BahnConstants.BLOCK_PROPS.contains(prop)) {
+                var hint = String.join(",", BahnConstants.BLOCK_PROPS);
+                throw new ValidationException("Invalid connector property, use: " + hint, BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
+            }
+
+            return;
+        }
+
+        throw new ValidationException("Connector is allowed for signal, point, block and platform only, unexpected " + reference.getElem().getClass().getSimpleName(), BahnPackage.Literals.LAYOUT_REFERENCE__ELEM);
     }
 }

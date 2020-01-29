@@ -128,7 +128,7 @@ public class NetworkLayout implements LayoutGraph {
             return connectedEndpoints.stream()
                     .map(e -> {
                         var v = findVertex(switchMember.generateKey(e));
-                        return new SwitchEdge(switchMember.getBlock(),
+                        return new SwitchEdge(switchMember.getPointElement(),
                                 getSwitchAspect(switchMember.getEndpoint(), e),
                                 vertex,
                                 v);
@@ -143,7 +143,7 @@ public class NetworkLayout implements LayoutGraph {
             return connectedEndpoints.stream()
                     .map(e -> {
                         var v = findVertex(crossingMember.generateKey(e));
-                        return new CrossingEdge(crossingMember.getBlock(),
+                        return new CrossingEdge(crossingMember.getPointElement(),
                                 getCrossingAspect(crossingMember.getEndpoint(), e),
                                 vertex,
                                 v);

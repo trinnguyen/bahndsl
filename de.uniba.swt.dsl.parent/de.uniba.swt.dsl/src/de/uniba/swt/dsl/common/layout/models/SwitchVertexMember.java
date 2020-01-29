@@ -1,14 +1,30 @@
 package de.uniba.swt.dsl.common.layout.models;
 
 import de.uniba.swt.dsl.bahn.BlockElement;
+import de.uniba.swt.dsl.bahn.PointElement;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 
 import java.util.Set;
 
-abstract class AbstractPointVertexMember extends AbstractBlockVertexMember {
+abstract class AbstractPointVertexMember extends VertexMember {
 
-    public AbstractPointVertexMember(BlockElement block) {
-        super(block);
+    private PointElement pointElement;
+
+    public AbstractPointVertexMember(PointElement pointElement) {
+        this.pointElement = pointElement;
+    }
+
+    public PointElement getPointElement() {
+        return pointElement;
+    }
+
+    public void setPointElement(PointElement pointElement) {
+        this.pointElement = pointElement;
+    }
+
+    @Override
+    public String getName() {
+        return pointElement.getName();
     }
 }
 
@@ -22,12 +38,12 @@ public class SwitchVertexMember extends AbstractPointVertexMember {
 
     private PointEndpoint endpoint;
 
-    public SwitchVertexMember(BlockElement block, String prop) {
-        this(block, convertToPointEndpoint(prop));
+    public SwitchVertexMember(PointElement point, String prop) {
+        this(point, convertToPointEndpoint(prop));
     }
 
-    public SwitchVertexMember(BlockElement block, PointEndpoint endpoint) {
-        super(block);
+    public SwitchVertexMember(PointElement point, PointEndpoint endpoint) {
+        super(point);
         this.endpoint = endpoint;
     }
 

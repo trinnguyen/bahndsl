@@ -56,7 +56,7 @@ public class DotExporter {
 
     private String getColor(AbstractEdge edgeValue) {
         if (edgeValue.getEdgeType() == AbstractEdge.EdgeType.Switch) {
-            return getPointColor(((SwitchEdge)edgeValue).getBlockElement().getName());
+            return getPointColor(((SwitchEdge)edgeValue).getPointElement().getName());
         }
 
         return "black";

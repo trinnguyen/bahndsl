@@ -53,6 +53,10 @@ BlocksProperty :
 	{BlocksProperty} 'blocks'
 		(items+=BlockElement)*
 	'end';
+PlatformProperty :
+	{PlatformProperty} 'platforms'
+		(items+=BlockElement)*
+	'end';
 TrainsProperty :
 	{TrainsProperty} 'trains'
 		(items+=TrainElement)*
@@ -60,10 +64,6 @@ TrainsProperty :
 LayoutProperty :
 	{LayoutProperty} 'layout'
 		(items+=LayoutElement)*
-	'end';
-PlatformProperty :
-	{PlatformProperty} 'platforms'
-		(items+=PlatformElement)*
 	'end';
 RouteProperty:
 	{RouteProperty} 'routes'
@@ -105,10 +105,6 @@ enum TimeSpanType:
 
 PointAspectLiteral:
 	value=PointAspectType
-;
-	
-PlatformElement: 
-	name=ID block=[BlockElement]
 ;
 
 RouteElement:
@@ -161,9 +157,9 @@ OverrideSignalAspectsElement:
 	(aspects+=AspectElement)+
 ;
 
-PointElement :
+PointElement:
 	name=ID number=HEX 
-		'block' block=[BlockElement]
+		'segment' mainSeg=[SegmentElement]
 		'normal' normalValue=HEX
 		'reverse' reverseValue=HEX 
 		'initial' initial=PointAspectType
@@ -173,7 +169,7 @@ enum PointAspectType:
 	NORMAL = 'normal' | REVERSE = 'reverse'
 ;
 
-BlockElement :
+BlockElement:
 	name=ID 
 		(hasStart?='overlap' startSeg=[SegmentElement])?  
 		'main' mainSeg=[SegmentElement] 
@@ -195,12 +191,16 @@ TrainPeripheral:
 	name=ID 'bit' bit=INT 'initial' initial=INT
 ;
 
+TrackSection:
+	BlockElement | PointElement
+;
+
 LayoutElement :
 	blocks+=LayoutReference ('--' blocks+=LayoutReference)*
 ;
 
 LayoutReference:
-	elem=[BlockElement] '.' prop=ID
+	elem=[TrackSection] '.' prop=ID
 	|
 	elem=[SignalElement]
 ;

@@ -110,11 +110,11 @@ public class RoutesFinder {
     private boolean isSamePoint(AbstractEdge prevEdge, AbstractEdge edge) {
         if (prevEdge.getEdgeType() == AbstractEdge.EdgeType.Switch &&
                 edge.getEdgeType() == AbstractEdge.EdgeType.Switch)
-            return ((SwitchEdge)prevEdge).getBlockElement().equals(((SwitchEdge)edge).getBlockElement());
+            return ((SwitchEdge)prevEdge).getPointElement().equals(((SwitchEdge)edge).getPointElement());
 
         if (prevEdge.getEdgeType() == AbstractEdge.EdgeType.Crossing &&
                 edge.getEdgeType() == AbstractEdge.EdgeType.Crossing)
-            return ((CrossingEdge)prevEdge).getBlockElement().equals(((CrossingEdge)edge).getBlockElement());
+            return ((CrossingEdge)prevEdge).getPointElement().equals(((CrossingEdge)edge).getPointElement());
 
         return false;
     }

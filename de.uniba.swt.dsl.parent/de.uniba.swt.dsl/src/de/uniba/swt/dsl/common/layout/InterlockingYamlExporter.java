@@ -64,7 +64,7 @@ public class InterlockingYamlExporter {
         appendLine("points:");
         indentLevel++;
         for (SwitchEdge point : points) {
-            appendLine("- id: %s", point.getBlockElement().getName());
+            appendLine("- id: %s", point.getPointElement().getName());
             indentLevel++;
             appendLine("position: %s", point.getAspect().toString().toLowerCase());
             indentLevel--;

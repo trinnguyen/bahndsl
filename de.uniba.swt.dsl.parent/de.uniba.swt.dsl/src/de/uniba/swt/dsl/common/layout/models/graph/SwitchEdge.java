@@ -1,6 +1,5 @@
 package de.uniba.swt.dsl.common.layout.models.graph;
 
-import de.uniba.swt.dsl.bahn.BlockElement;
 import de.uniba.swt.dsl.bahn.PointElement;
 
 import java.util.Objects;
@@ -12,21 +11,21 @@ public class SwitchEdge extends AbstractEdge {
         Reverse
     }
 
-    private BlockElement blockElement;
+    private PointElement pointElement;
     private Aspect aspect;
 
-    public SwitchEdge(BlockElement blockElement, Aspect aspect, LayoutVertex srcVertex, LayoutVertex destVertex) {
+    public SwitchEdge(PointElement pointElement, Aspect aspect, LayoutVertex srcVertex, LayoutVertex destVertex) {
         super(srcVertex, destVertex);
-        this.blockElement = blockElement;
+        this.pointElement = pointElement;
         this.aspect = aspect;
     }
 
-    public BlockElement getBlockElement() {
-        return blockElement;
+    public PointElement getPointElement() {
+        return pointElement;
     }
 
-    public void setBlockElement(BlockElement blockElement) {
-        this.blockElement = blockElement;
+    public void setPointElement(PointElement pointElement) {
+        this.pointElement = pointElement;
     }
 
     public Aspect getAspect() {
@@ -44,7 +43,7 @@ public class SwitchEdge extends AbstractEdge {
 
     @Override
     public String getKey() {
-        return (blockElement.getName() + "." + getAspect().toString()).toLowerCase();
+        return (pointElement.getName() + "." + getAspect().toString()).toLowerCase();
     }
 
     @Override
@@ -54,19 +53,19 @@ public class SwitchEdge extends AbstractEdge {
 
         SwitchEdge that = (SwitchEdge) o;
 
-        if (!Objects.equals(blockElement, that.blockElement)) return false;
+        if (!Objects.equals(pointElement, that.pointElement)) return false;
         return aspect == that.aspect;
     }
 
     @Override
     public int hashCode() {
-        int result = blockElement != null ? blockElement.hashCode() : 0;
+        int result = pointElement != null ? pointElement.hashCode() : 0;
         result = 31 * result + (aspect != null ? aspect.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return blockElement.getName() + "." + aspect.toString().toLowerCase();
+        return pointElement.getName() + "." + aspect.toString().toLowerCase();
     }
 }

@@ -1,19 +1,20 @@
 package de.uniba.swt.dsl.common.layout.models;
 
 import de.uniba.swt.dsl.bahn.BlockElement;
+import de.uniba.swt.dsl.bahn.PointElement;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 
 import java.util.Set;
 
 public class CrossingVertexMember extends AbstractPointVertexMember {
 
-    public CrossingVertexMember(BlockElement block, String prop) {
-        super(block);
+    public CrossingVertexMember(PointElement point, String prop) {
+        super(point);
         this.endpoint = convertToEndpoint(prop);
     }
 
-    public CrossingVertexMember(BlockElement block, CrossingEndpoint endpoint) {
-        super(block);
+    public CrossingVertexMember(PointElement point, CrossingEndpoint endpoint) {
+        super(point);
         this.endpoint = endpoint;
     }
 

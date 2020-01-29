@@ -1,9 +1,8 @@
 package de.uniba.swt.dsl.common.layout;
 
-import de.uniba.swt.dsl.bahn.BlockElement;
+import de.uniba.swt.dsl.bahn.PointElement;
 import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.graph.LayoutVertex;
-import de.uniba.swt.dsl.common.layout.models.graph.SwitchEdge;
 
 public class CrossingEdge extends AbstractEdge {
     public enum Aspect {
@@ -13,21 +12,21 @@ public class CrossingEdge extends AbstractEdge {
         Reverse2,
     }
 
-    private BlockElement blockElement;
+    private PointElement pointElement;
     private Aspect aspect;
 
-    public CrossingEdge(BlockElement blockElement, Aspect aspect, LayoutVertex srcVertex, LayoutVertex destVertex) {
+    public CrossingEdge(PointElement pointElement, Aspect aspect, LayoutVertex srcVertex, LayoutVertex destVertex) {
         super(srcVertex, destVertex);
-        this.blockElement = blockElement;
+        this.pointElement = pointElement;
         this.aspect = aspect;
     }
 
-    public BlockElement getBlockElement() {
-        return blockElement;
+    public PointElement getPointElement() {
+        return pointElement;
     }
 
-    public void setBlockElement(BlockElement blockElement) {
-        this.blockElement = blockElement;
+    public void setpointElement(PointElement pointElement) {
+        this.pointElement = pointElement;
     }
 
     public Aspect getAspect() {
@@ -45,13 +44,13 @@ public class CrossingEdge extends AbstractEdge {
 
         CrossingEdge that = (CrossingEdge) o;
 
-        if (blockElement != null ? !blockElement.equals(that.blockElement) : that.blockElement != null) return false;
+        if (pointElement != null ? !pointElement.equals(that.pointElement) : that.pointElement != null) return false;
         return aspect == that.aspect;
     }
 
     @Override
     public int hashCode() {
-        int result = blockElement != null ? blockElement.hashCode() : 0;
+        int result = pointElement != null ? pointElement.hashCode() : 0;
         result = 31 * result + (aspect != null ? aspect.hashCode() : 0);
         return result;
     }
@@ -63,7 +62,7 @@ public class CrossingEdge extends AbstractEdge {
 
     @Override
     public String getKey() {
-        return (blockElement.getName() + "." + getAspect().toString()).toLowerCase();
+        return (pointElement.getName() + "." + getAspect().toString()).toLowerCase();
     }
 
     @Override
