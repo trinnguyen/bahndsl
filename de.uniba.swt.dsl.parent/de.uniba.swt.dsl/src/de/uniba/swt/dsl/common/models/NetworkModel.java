@@ -1,23 +1,24 @@
 package de.uniba.swt.dsl.common.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NetworkModel {
 	public String name;
 
-	public List<Aspect> aspects;
+	public List<Aspect> aspects = new ArrayList<>();
 
-	public List<Board> boards;
+	public List<Board> boards = new ArrayList<>();
 
-	public List<Segment> segments;
+	public List<Segment> segments = new ArrayList<>();
 
-	public List<Signal> signals;
+	public List<SignalBoard> signalBoards = new ArrayList<>();
 
-	public List<Point> points;
+	public List<PointBoard> pointBoards = new ArrayList<>();
 
-	public List<Train> trains;
+	public List<Train> trains = new ArrayList<>();
 
-	public List<LayoutConnector> connectors;
+	public List<LayoutConnector> connectors = new ArrayList<>();
 
 	public PlatformConfig platformConfig;
 }

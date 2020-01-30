@@ -34,24 +34,22 @@ public class BidibYamlConfigGenerator {
 		}
 		
 		// signals
-		List<Signal> signals = network.signals;
-		if (signals != null && signals.size() > 0) {
+		for (SignalBoard signalBoard : network.signalBoards) {
 			String indent = Util.SINGLE_INDENT;
-			builder.append(indent).append("- id: " + signals.get(0).getBoardId()).append(Util.LINE_BREAK);
+			builder.append(indent).append("- id: " + signalBoard.boardName).append(Util.LINE_BREAK);
 			builder.append(indent).append(indent).append("signals-board: ").append(Util.LINE_BREAK);
-			for (Signal s: signals) {
+			for (Signal s: signalBoard.signals) {
 				builder.append(s.dumpYaml(indent + Util.SINGLE_INDENT + Util.SINGLE_INDENT));
 			}
 		}
 		
 		// points
-		List<Point> points = network.points;
-		if (points != null && points.size() > 0) {
+		for (PointBoard pointBoard : network.pointBoards) {
 			String indent = Util.SINGLE_INDENT;
-			builder.append(indent).append("- id: " + points.get(0).getBoardId()).append(Util.LINE_BREAK);
+			builder.append(indent).append("- id: " + pointBoard.boardName).append(Util.LINE_BREAK);
 			builder.append(indent).append(indent).append("points-board: ").append(Util.LINE_BREAK);
-			for (Point p: points) {
-				builder.append(p.dumpYaml(indent + Util.SINGLE_INDENT + Util.SINGLE_INDENT));
+			for (Point point : pointBoard.points) {
+				builder.append(point.dumpYaml(indent + Util.SINGLE_INDENT + Util.SINGLE_INDENT));
 			}
 		}
 		

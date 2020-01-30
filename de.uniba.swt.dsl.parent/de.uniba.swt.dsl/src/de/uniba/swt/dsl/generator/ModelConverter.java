@@ -14,15 +14,7 @@ import de.uniba.swt.dsl.bahn.SignalAspectsElement;
 import de.uniba.swt.dsl.bahn.SignalElement;
 import de.uniba.swt.dsl.bahn.SignalsProperty;
 import de.uniba.swt.dsl.bahn.TrainsProperty;
-import de.uniba.swt.dsl.common.models.Aspect;
-import de.uniba.swt.dsl.common.models.Board;
-import de.uniba.swt.dsl.common.models.BoardFeature;
-import de.uniba.swt.dsl.common.models.NetworkModel;
-import de.uniba.swt.dsl.common.models.Point;
-import de.uniba.swt.dsl.common.models.Segment;
-import de.uniba.swt.dsl.common.models.Signal;
-import de.uniba.swt.dsl.common.models.Train;
-import de.uniba.swt.dsl.common.models.TrainPeripheral;
+import de.uniba.swt.dsl.common.models.*;
 import de.uniba.swt.dsl.common.util.BahnException;
 
 import java.util.ArrayList;
@@ -33,10 +25,6 @@ import java.util.stream.Collectors;
 class ModelConverter {
 	
 	public NetworkModel buildNetworkModel(RootModule e) {
-		
-		SignalsProperty signalsProp = null;
-		PointsProperty pointsProp = null;
-		
 		NetworkModel network = new NetworkModel();
 		network.name = e.getName();
 		for (ModuleProperty property : e.getProperties()) {
@@ -61,24 +49,17 @@ class ModelConverter {
 			}
 			
 			if (property instanceof SignalsProperty) {
-				signalsProp = (SignalsProperty)property;
+				var signalsProp = (SignalsProperty)property;
+				network.signalBoards.add(new SignalBoard(signalsProp.getBoard().getName(), convertSignals(signalsProp, network.aspects)));
 				continue;
 			}
 			
 			if (property instanceof PointsProperty) {
-				pointsProp = (PointsProperty)property;
-				continue;
+				var pointsProp = (PointsProperty)property;
+				network.pointBoards.add(new PointBoard(pointsProp.getBoard().getName(), convertPoints(pointsProp)));
 			}
 		}
-		
-		
-		// second loop with aspects are already loaded
-		if (signalsProp != null)
-			network.signals = convertSignals(signalsProp, network.aspects);
-		
-		if (pointsProp != null)
-			network.points = convertPoints(pointsProp);
-		
+
 		return network;
 	}
 	
