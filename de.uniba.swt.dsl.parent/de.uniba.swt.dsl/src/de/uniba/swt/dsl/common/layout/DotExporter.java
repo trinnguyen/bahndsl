@@ -51,17 +51,15 @@ public class DotExporter {
 
             // build directed if needed
             if (edgeValue instanceof BlockEdge) {
-                String name = ((BlockEdge) edgeValue).getBlockElement().getName();
+                var blockEdge = (BlockEdge) edgeValue;
+                String name = blockEdge.getBlockElement().getName();
                 var direction = networkLayout.getBlockDirection(name);
                 if (direction != BlockDirection.Bidirectional) {
-                    BlockVertexMember srcMem = findBlockVertexMember(edgeValue.getSrcVertex(), name);
-                    BlockVertexMember desMem = findBlockVertexMember(edgeValue.getDestVertex(), name);
-                    if (srcMem != null && desMem != null) {
-                        if ((direction == BlockDirection.DownUp && srcMem.getEndpoint() == BlockVertexMember.BlockEndpoint.Up)
-                        || (direction == BlockDirection.UpDown && srcMem.getEndpoint() == BlockVertexMember.BlockEndpoint.Down)) {
-                            srcNode = edgeValue.getDestVertex();
-                            desNode = edgeValue.getSrcVertex();
-                        }
+                    BlockVertexMember.BlockEndpoint srcEndpoint = blockEdge.getSrcEndpoint();
+                    if ((direction == BlockDirection.DownUp && srcEndpoint== BlockVertexMember.BlockEndpoint.Up)
+                            || (direction == BlockDirection.UpDown && srcEndpoint == BlockVertexMember.BlockEndpoint.Down)) {
+                        srcNode = edgeValue.getDestVertex();
+                        desNode = edgeValue.getSrcVertex();
                     }
                     isDirected = true;
                 }
@@ -97,14 +95,6 @@ public class DotExporter {
 
         builder.append("}");
         return builder.toString();
-    }
-
-    private BlockVertexMember findBlockVertexMember(LayoutVertex vertex, String name) {
-        return vertex.getMembers()
-                .stream()
-                .filter(m -> m instanceof BlockVertexMember && name.equalsIgnoreCase(((BlockVertexMember) m).getBlock().getName()))
-                .map(m -> ((BlockVertexMember) m))
-                .findFirst().orElse(null);
     }
 
     private String getColor(AbstractEdge edgeValue) {
