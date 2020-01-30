@@ -1,6 +1,7 @@
 package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.common.layout.models.BlockDirection;
+import de.uniba.swt.dsl.common.layout.models.BlockVertexMember;
 import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.layout.models.SignalVertexMember;
 import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
@@ -47,7 +48,13 @@ public class RoutesFinder {
         routes.clear();
 
         // start finding
-        dfs(srcSignal, null);
+        if (NetworkLayoutUtil.validateSignalDirection(networkLayout, srcSignal, srcMember)) {
+            dfs(srcSignal, null);
+        } else {
+            logger.debug(String.format("No route from signal %s due to direction constraint (%s)",
+                    srcMember.getName(),
+                    srcMember.getConnectedBlock().getName()));
+        }
         return routes;
     }
 
@@ -55,39 +62,8 @@ public class RoutesFinder {
         // ensure doesn't travel in the same point or back to current block
         if (edge != null) {
 
-            // ensure block edge direction is allowed
-            if (edge instanceof BlockEdge) {
-                var blockEdge = (BlockEdge) edge;
-                var direction = networkLayout.getBlockDirection(blockEdge.getBlockElement().getName());
-                if (direction != BlockDirection.Bidirectional && direction != blockEdge.getDirection()) {
-                    return;
-                }
-            }
-
-            // check same switch
-            if (!currentEdges.isEmpty()) {
-                var prevEdge = currentEdges.peek();
-                if (isSamePoint(prevEdge, edge)) {
-                    return;
-                }
-            }
-
-            // check attached signal: out
-            if (currentVertices.peek().equals(srcSignal) && edge instanceof BlockEdge) {
-                if (srcMember.getConnectedBlock().equals(((BlockEdge)edge).getBlockElement())) {
-                    return;
-                }
-            }
-
-            // skip if incoming edge is not the block edge in which the signal attach to
-            if (vertex.equals(destSignal)) {
-                // skip if reaching signal via point
-                if (!(edge instanceof BlockEdge) ||
-                        !destMember.getConnectedBlock().equals(((BlockEdge)edge).getBlockElement())
-                ) {
-                    return;
-                }
-            }
+            if (!validateEdge(vertex, edge))
+                return;
 
             // add edge
             currentEdges.add(edge);
@@ -115,6 +91,44 @@ public class RoutesFinder {
             currentEdges.pop();
         }
         flagsOnPath.remove(vertex);
+    }
+
+    private boolean validateEdge(LayoutVertex vertex, AbstractEdge edge) {
+        // check attached signal: out
+        if (currentVertices.peek().equals(srcSignal)) {
+            // prevent going back to the attached block
+            if (edge instanceof BlockEdge) {
+                if (srcMember.getConnectedBlock().equals(((BlockEdge) edge).getBlockElement())) {
+                    return false;
+                }
+            }
+        }
+
+        // ensure block edge direction is allowed
+        if (edge instanceof BlockEdge) {
+            var blockEdge = (BlockEdge) edge;
+            var direction = networkLayout.getBlockDirection(blockEdge.getBlockElement().getName());
+            if (direction != BlockDirection.Bidirectional && direction != blockEdge.getDirection()) {
+                return false;
+            }
+        }
+
+        // check same switch
+        if (!currentEdges.isEmpty()) {
+            var prevEdge = currentEdges.peek();
+            if (isSamePoint(prevEdge, edge)) {
+                return false;
+            }
+        }
+
+        // skip if incoming edge is not the block edge in which the signal attach to
+        if (vertex.equals(destSignal)) {
+            // skip if reaching signal via point
+            return edge instanceof BlockEdge &&
+                    destMember.getConnectedBlock().equals(((BlockEdge) edge).getBlockElement());
+        }
+
+        return true;
     }
 
     private boolean isSamePoint(AbstractEdge prevEdge, AbstractEdge edge) {

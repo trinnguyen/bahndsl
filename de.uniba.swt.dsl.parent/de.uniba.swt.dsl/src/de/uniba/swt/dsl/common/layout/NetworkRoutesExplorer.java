@@ -17,6 +17,8 @@ public class NetworkRoutesExplorer {
             if (networkLayout.findVertex(src) == null)
                 continue;
 
+            //TODO check signal direction
+
             for (var dest : signals) {
                 if (src.equalsIgnoreCase(dest))
                     continue;
