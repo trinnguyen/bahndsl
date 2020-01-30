@@ -9,7 +9,7 @@ public class NetworkRoutesExplorer {
     private RoutesFinder routesFinder = new RoutesFinder();
 
     public List<Route> findAllRoutes(NetworkLayout networkLayout, Set<String> signals) {
-        int id = 1;
+        int id = 0;
         List<Route> routes = new ArrayList<>();
 
         // find all
