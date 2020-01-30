@@ -1,10 +1,9 @@
 package de.uniba.swt.dsl.common.layout;
 
 import com.google.common.graph.ValueGraph;
-import de.uniba.swt.dsl.common.layout.models.SignalVertexMember;
-import de.uniba.swt.dsl.common.layout.models.VertexMember;
-import de.uniba.swt.dsl.common.layout.models.VertexMemberType;
+import de.uniba.swt.dsl.common.layout.models.*;
 import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
+import de.uniba.swt.dsl.common.layout.models.graph.BlockEdge;
 import de.uniba.swt.dsl.common.layout.models.graph.LayoutVertex;
 import de.uniba.swt.dsl.common.layout.models.graph.SwitchEdge;
 
@@ -15,9 +14,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DotExporter {
-    public String render(String name, ValueGraph<LayoutVertex, AbstractEdge> graph) {
+    public String render(NetworkLayout networkLayout, ValueGraph<LayoutVertex, AbstractEdge> graph) {
         StringBuilder builder = new StringBuilder();
-        builder.append("graph G {").append("\n").append("rankdir=LR").append("\n");
+        builder.append("digraph G {").append("\n").append("rankdir=LR").append("\n");
 
         builder.append("\n");
 
@@ -29,6 +28,7 @@ public class DotExporter {
                     .filter(m -> m.getType() == VertexMemberType.Signal)
                     .findFirst()
                     .ifPresentOrElse(member -> {
+                        // signal
                         builder.append("[label=\"").append(member.getKey()).append("\", shape=proteinstab, color=red]");
             }, () -> {
                         builder.append("[label=\"\", shape=point]");
@@ -39,19 +39,72 @@ public class DotExporter {
 
         builder.append("\n");
 
+        StringBuilder directedBuilder = new StringBuilder();
+        StringBuilder undirectedBuilder = new StringBuilder();
         // edges
         for (var edge : graph.edges()) {
-            var edgeValue = graph.edgeValue(edge).get();
-            builder.append(String.format("%s -- %s [label=\"%s\", color=%s];",
-                    generateNodeId(edge.nodeU()),
-                    generateNodeId(edge.nodeV()),
+            AbstractEdge edgeValue = graph.edgeValue(edge).get();
+
+            var srcNode = edgeValue.getSrcVertex();
+            var desNode = edgeValue.getDestVertex();
+            boolean isDirected = false;
+
+            // build directed if needed
+            if (edgeValue instanceof BlockEdge) {
+                String name = ((BlockEdge) edgeValue).getBlockElement().getName();
+                var direction = networkLayout.getBlockDirection(name);
+                if (direction != BlockDirection.Bidirectional) {
+                    BlockVertexMember srcMem = findBlockVertexMember(edgeValue.getSrcVertex(), name);
+                    BlockVertexMember desMem = findBlockVertexMember(edgeValue.getDestVertex(), name);
+                    if (srcMem != null && desMem != null) {
+                        if ((direction == BlockDirection.DownUp && srcMem.getEndpoint() == BlockVertexMember.BlockEndpoint.Up)
+                        || (direction == BlockDirection.UpDown && srcMem.getEndpoint() == BlockVertexMember.BlockEndpoint.Down)) {
+                            srcNode = edgeValue.getDestVertex();
+                            desNode = edgeValue.getSrcVertex();
+                        }
+                    }
+                    isDirected = true;
+                }
+            }
+
+            // build str
+            String msg = String.format("\t%s -> %s [label=\"%s\", color=%s]\n",
+                    generateNodeId(srcNode),
+                    generateNodeId(desNode),
                     edgeValue.toString(),
-                    getColor(edgeValue)));
-            builder.append("\n");
+                    getColor(edgeValue));
+
+            // undirected
+            if (isDirected) {
+                directedBuilder.append(msg);
+            } else {
+                undirectedBuilder.append(msg);
+            }
         }
+
+        // build directed
+        if (directedBuilder.length() > 0) {
+            builder.append("subgraph grdirected {\n");
+            builder.append(directedBuilder);
+            builder.append("}\n");
+        }
+
+        // build undirected
+        builder.append("subgraph undirected {\n");
+        builder.append("\tedge [dir=none]\n");
+        builder.append(undirectedBuilder);
+        builder.append("}\n");
 
         builder.append("}");
         return builder.toString();
+    }
+
+    private BlockVertexMember findBlockVertexMember(LayoutVertex vertex, String name) {
+        return vertex.getMembers()
+                .stream()
+                .filter(m -> m instanceof BlockVertexMember && name.equalsIgnoreCase(((BlockVertexMember) m).getBlock().getName()))
+                .map(m -> ((BlockVertexMember) m))
+                .findFirst().orElse(null);
     }
 
     private String getColor(AbstractEdge edgeValue) {

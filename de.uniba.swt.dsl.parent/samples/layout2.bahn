@@ -1,7 +1,15 @@
 module layout2
 	boards
-		master 0x01
-	end
+        master 0xDA000D680052EF
+            features
+                0x03:0x14
+                0x6E:0x00
+            end
+        lightcontrol 0x05000D6B0083EC
+        onecontrol 0x05000D7500DBED
+        regional_brengdirect 0x0004
+        cargo_bayern 0x0005
+    end
 	segments master
 		seg1 0x01 length 11cm
 	end

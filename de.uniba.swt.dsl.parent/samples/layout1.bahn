@@ -42,11 +42,10 @@ module layout1
 	    b1.up -- p5.stem
 	    b1.down -- p6.stem
 
-	    p2.stem -- b2.down -- b2.up -- p1.stem
-	    p1.straight -- b3.down -> b3.up -- p3.straight
+	    p2.stem -- b2.down -> b2.up -- p1.stem
+	    p3.straight -- b3.up -> b3.down -- p1.straight
 
-	    b4.down -- p4.stem
-	    b4.up -- p1.side
+	    p4.stem -- b4.down -- b4.up -- p1.side
 
 	    b5.down -- p3.stem
 	    b5.up -- p2.straight
@@ -60,7 +59,7 @@ module layout1
         b3.down -- sig2
         b2.up -- sig3
         b2.down -- sig4
-	    b1.up -- sig5
+	    b5.up -- sig5
 
         # points
         p5.side -- p2.side

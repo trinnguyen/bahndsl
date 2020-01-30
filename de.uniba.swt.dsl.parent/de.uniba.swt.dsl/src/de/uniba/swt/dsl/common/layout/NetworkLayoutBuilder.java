@@ -26,7 +26,7 @@ public class NetworkLayoutBuilder {
                     var members = convertToVertexMembers(layoutElement.getBlocks().get(i),
                             layoutElement.getBlocks().get(++i));
 
-                    // check if block directed, update id having direction, otherwise skip
+                    // check if all are same block, update direction and skip
                     if (updateBlockDirection(networkLayout, members, isDirected))
                         continue;
 
