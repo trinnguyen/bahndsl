@@ -14,6 +14,9 @@ public class BahnConstants {
     public static final String CROSSING_DOWN_1 = "down1";
     public static final String CROSSING_DOWN_2 = "down2";
 
+    public static final String CONNECTOR_UNDIRECTED = "--";
+    public static final String CONNECTOR_DIRECTED = "->";
+
     public static final Set<String> BLOCK_PROPS;
 
     public static final Set<String> SWITCH_PROPS;

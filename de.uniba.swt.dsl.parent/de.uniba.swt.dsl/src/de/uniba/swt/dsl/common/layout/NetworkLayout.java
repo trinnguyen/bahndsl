@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 public class NetworkLayout implements LayoutGraph {
     private List<LayoutVertex> vertices = new ArrayList<>();
     private Map<String, LayoutVertex> mapVertices = new TreeMap<>();
+    private Map<String, BlockDirection> blockDirectionMap = new TreeMap<>();
 
     public NetworkLayout() {
     }
@@ -214,5 +215,13 @@ public class NetworkLayout implements LayoutGraph {
             }
         }
         this.getVertices().addAll(set);
+    }
+
+    public BlockDirection getBlockDirection(String name) {
+        return blockDirectionMap.getOrDefault(name, BlockDirection.Bidirectional);
+    }
+
+    public void setBlockDirection(String name, BlockDirection direction) {
+        blockDirectionMap.put(name, direction);
     }
 }

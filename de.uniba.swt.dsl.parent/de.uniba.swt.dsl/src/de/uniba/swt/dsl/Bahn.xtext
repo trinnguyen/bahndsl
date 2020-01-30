@@ -196,7 +196,7 @@ TrackSection:
 ;
 
 LayoutElement :
-	blocks+=LayoutReference ('--' blocks+=LayoutReference)*
+	blocks+=LayoutReference (connectors+=('--'|'->') blocks+=LayoutReference)*
 ;
 
 LayoutReference:

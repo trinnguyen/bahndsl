@@ -42,11 +42,8 @@ module layout1
 	    b1.up -- p5.stem
 	    b1.down -- p6.stem
 
-	    b2.down -- p2.stem
-	    b2.up -- p1.stem
-
-	    b3.down -- p1.straight
-	    b3.up -- p3.straight
+	    p2.stem -- b2.down -- b2.up -- p1.stem
+	    p1.straight -- b3.down -> b3.up -- p3.straight
 
 	    b4.down -- p4.stem
 	    b4.up -- p1.side

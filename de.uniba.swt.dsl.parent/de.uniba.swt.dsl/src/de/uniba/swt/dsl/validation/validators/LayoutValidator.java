@@ -33,6 +33,37 @@ public class LayoutValidator {
         validator.checkWelformness(networkLayout);
     }
 
+    public static void validateElement(LayoutElement element) throws ValidationException {
+        for (int i = 0; i < element.getConnectors().size(); i++) {
+            var isDirected = BahnConstants.CONNECTOR_DIRECTED.equalsIgnoreCase(element.getConnectors().get(i));
+            if (isDirected) {
+                // prev element
+                LayoutReference leftRef = element.getBlocks().get(i);
+                LayoutReference rightRef = element.getBlocks().get(i+1);
+
+                if (!(leftRef.getElem() instanceof BlockElement)
+                        || !(rightRef.getElem() instanceof BlockElement)) {
+                    throw new ValidationException("Direction is allowed for block only", BahnPackage.Literals.LAYOUT_ELEMENT__CONNECTORS);
+                }
+
+                if (!leftRef.getElem().equals(rightRef.getElem())) {
+                    throw new ValidationException("Direction must be configured on the same block", BahnPackage.Literals.LAYOUT_ELEMENT__CONNECTORS);
+                }
+
+                if (!isBlockProp(leftRef.getProp())
+                        || !isBlockProp(rightRef.getProp())
+                        || leftRef.getProp().equalsIgnoreCase(rightRef.getProp())) {
+                    var hint = String.join(",", BahnConstants.BLOCK_PROPS);
+                    throw new ValidationException("Invalid connector property, use: " + hint, BahnPackage.Literals.LAYOUT_ELEMENT__CONNECTORS);
+                }
+            }
+        }
+    }
+
+    private static boolean isBlockProp(String prop) {
+        return BahnConstants.BLOCK_PROPS.contains(prop.toLowerCase());
+    }
+
     public static void validateReference(LayoutReference reference) throws ValidationException {
         if (reference.getElem() instanceof SignalElement) {
             if (reference.getProp() == null)

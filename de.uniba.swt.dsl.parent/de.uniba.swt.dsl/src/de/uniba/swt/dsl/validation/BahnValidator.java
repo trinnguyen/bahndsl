@@ -47,6 +47,15 @@ public class BahnValidator extends AbstractBahnValidator {
             error(e.getMessage(), e.getFeature());
         }
     }
+
+    @Check
+    public void validateLayoutElement(LayoutElement element) {
+        try {
+            LayoutValidator.validateElement(element);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
     
     @Check
     public void validateLayoutReference(LayoutReference reference) {
