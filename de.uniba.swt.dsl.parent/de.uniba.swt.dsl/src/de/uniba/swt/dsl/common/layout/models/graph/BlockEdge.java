@@ -2,6 +2,7 @@ package de.uniba.swt.dsl.common.layout.models.graph;
 
 import de.uniba.swt.dsl.bahn.BlockElement;
 import de.uniba.swt.dsl.bahn.SegmentElement;
+import de.uniba.swt.dsl.common.layout.models.BlockDirection;
 import de.uniba.swt.dsl.common.layout.models.BlockVertexMember;
 
 import java.util.ArrayList;
@@ -75,6 +76,12 @@ public class BlockEdge extends AbstractEdge {
 
     public BlockVertexMember.BlockEndpoint getDestEndpoint() {
         return findBlockVertexMember(getSrcVertex()).getEndpoint();
+    }
+
+    public BlockDirection getDirection() {
+        return getSrcEndpoint() == BlockVertexMember.BlockEndpoint.Up
+                ? BlockDirection.UpDown
+                : BlockDirection.DownUp;
     }
 
     private BlockVertexMember findBlockVertexMember(LayoutVertex vertex) {

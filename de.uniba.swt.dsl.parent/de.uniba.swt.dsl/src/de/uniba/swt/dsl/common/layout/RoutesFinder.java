@@ -1,5 +1,6 @@
 package de.uniba.swt.dsl.common.layout;
 
+import de.uniba.swt.dsl.common.layout.models.BlockDirection;
 import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.layout.models.SignalVertexMember;
 import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
@@ -54,6 +55,15 @@ public class RoutesFinder {
         // ensure doesn't travel in the same point or back to current block
         if (edge != null) {
 
+            // ensure block edge direction is allowed
+            if (edge instanceof BlockEdge) {
+                var blockEdge = (BlockEdge) edge;
+                var direction = networkLayout.getBlockDirection(blockEdge.getBlockElement().getName());
+                if (direction != BlockDirection.Bidirectional && direction != blockEdge.getDirection()) {
+                    return;
+                }
+            }
+
             // check same switch
             if (!currentEdges.isEmpty()) {
                 var prevEdge = currentEdges.peek();
@@ -63,7 +73,7 @@ public class RoutesFinder {
             }
 
             // check attached signal: out
-            if (currentVertices.peek().equals(srcSignal) && edge.getEdgeType() == AbstractEdge.EdgeType.Block) {
+            if (currentVertices.peek().equals(srcSignal) && edge instanceof BlockEdge) {
                 if (srcMember.getConnectedBlock().equals(((BlockEdge)edge).getBlockElement())) {
                     return;
                 }
@@ -72,7 +82,7 @@ public class RoutesFinder {
             // skip if incoming edge is not the block edge in which the signal attach to
             if (vertex.equals(destSignal)) {
                 // skip if reaching signal via point
-                if (edge.getEdgeType() != AbstractEdge.EdgeType.Block ||
+                if (!(edge instanceof BlockEdge) ||
                         !destMember.getConnectedBlock().equals(((BlockEdge)edge).getBlockElement())
                 ) {
                     return;

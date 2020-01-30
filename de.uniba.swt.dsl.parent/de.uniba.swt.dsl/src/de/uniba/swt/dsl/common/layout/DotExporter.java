@@ -52,12 +52,11 @@ public class DotExporter {
             // build directed if needed
             if (edgeValue instanceof BlockEdge) {
                 var blockEdge = (BlockEdge) edgeValue;
-                String name = blockEdge.getBlockElement().getName();
-                var direction = networkLayout.getBlockDirection(name);
+                var direction = networkLayout.getBlockDirection(blockEdge.getBlockElement().getName());
+
+                // swap
                 if (direction != BlockDirection.Bidirectional) {
-                    BlockVertexMember.BlockEndpoint srcEndpoint = blockEdge.getSrcEndpoint();
-                    if ((direction == BlockDirection.DownUp && srcEndpoint== BlockVertexMember.BlockEndpoint.Up)
-                            || (direction == BlockDirection.UpDown && srcEndpoint == BlockVertexMember.BlockEndpoint.Down)) {
+                    if (blockEdge.getDirection() != direction) {
                         srcNode = edgeValue.getDestVertex();
                         desNode = edgeValue.getSrcVertex();
                     }
