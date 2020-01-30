@@ -1,6 +1,5 @@
 package de.uniba.swt.dsl.common.layout;
 
-import com.google.inject.internal.cglib.proxy.$Factory;
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.layout.models.*;
 import de.uniba.swt.dsl.common.layout.models.graph.LayoutVertex;
