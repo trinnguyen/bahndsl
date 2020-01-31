@@ -80,7 +80,7 @@ public class SCChartsGenerator {
         }
 
         // all variables
-        logger.info("state declarations: " + LogHelper.printObject(superState.getDeclarations()));
+        logger.debug("state declarations: " + LogHelper.printObject(superState.getDeclarations()));
 
         return superState;
     }
@@ -252,7 +252,7 @@ public class SCChartsGenerator {
     }
 
     private SVarDeclaration findVarDecl(List<SVarDeclaration> declarations, String name) {
-        logger.info("findVarDecl: " + name);
+        logger.debug("findVarDecl: " + name);
         return declarations.stream()
                 .filter(d -> d.getName().equals(name))
                 .findAny()

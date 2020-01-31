@@ -67,8 +67,6 @@ public class Main {
 	private JavaIoFileSystemAccess fileAccess;
 
 	protected boolean runGenerator(String filePath, String outputPath) {
-		Logger.getRootLogger().setLevel(Level.DEBUG);
-
 		// load output
 		File file = new File(filePath);
 		if (outputPath == null || outputPath.isEmpty())
