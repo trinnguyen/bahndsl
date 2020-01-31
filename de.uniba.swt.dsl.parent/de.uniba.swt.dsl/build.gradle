@@ -1,3 +1,20 @@
+// BEGIN: Generate bahnc command line application
+plugins {
+	id 'application'
+}
+application {
+	mainClassName = 'de.uniba.swt.dsl.generator.Main'
+}
+distributions {
+	main {
+		distributionBaseName = "bahnc"
+	}
+}
+tasks.withType(CreateStartScripts) {
+	applicationName = "bahnc"
+}
+// END
+
 dependencies {
 	compile "org.eclipse.xtext:org.eclipse.xtext:${xtextVersion}"
 	compile "org.eclipse.xtext:org.eclipse.xtext.xbase:${xtextVersion}"

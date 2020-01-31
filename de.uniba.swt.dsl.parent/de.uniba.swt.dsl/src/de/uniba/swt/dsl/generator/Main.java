@@ -6,6 +6,7 @@ package de.uniba.swt.dsl.generator;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
+import com.google.inject.internal.util.$Nullable;
 import de.uniba.swt.dsl.BahnStandaloneSetup;
 
 import java.io.File;
@@ -30,14 +31,27 @@ public class Main {
 
 	public static void main(String[] args) {
 		if (args.length == 0) {
-			System.err.println("Aborting: no path to EMF resource provided!");
+			showHelp();
 			return;
 		}
 		
 		Injector injector = new BahnStandaloneSetup().createInjectorAndDoEMFRegistration();
 		Main main = injector.getInstance(Main.class);
 
-		main.runGenerator(args[0]);
+		String outputPath = args.length > 1 ? args[1] : null;
+		boolean success = main.runGenerator(args[0], outputPath);
+		if (!success) {
+			System.exit(1);
+		}
+	}
+
+	private static void showHelp() {
+		String builder = "OVERVIEW: Bahn compiler\n\n" +
+				"USAGE: bahnc file [output]\n\n" +
+				"EXAMPLE: \n" +
+				"\tbahnc example.bahn\n" +
+				"\tbahnc example.bahn output/src-gen\n";
+		System.out.println(builder);
 	}
 
 	@Inject
@@ -52,15 +66,17 @@ public class Main {
 	@Inject 
 	private JavaIoFileSystemAccess fileAccess;
 
-	protected void runGenerator(String string) {
+	protected boolean runGenerator(String filePath, String outputPath) {
 		Logger.getRootLogger().setLevel(Level.DEBUG);
+
 		// load output
-		File file = new File(string);
-		String outputPath = Paths.get(file.getParent(), "src-gen").toAbsolutePath().toString();
+		File file = new File(filePath);
+		if (outputPath == null || outputPath.isEmpty())
+			outputPath = Paths.get(file.getAbsoluteFile().getParent(), "src-gen").toAbsolutePath().toString();
 
 		// Load the resource
 		ResourceSet set = resourceSetProvider.get();
-		Resource resource = set.getResource(URI.createFileURI(string), true);
+		Resource resource = set.getResource(URI.createFileURI(filePath), true);
 
 		// Validate the resource
 		List<Issue> list = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
@@ -73,8 +89,7 @@ public class Main {
 
 			// stop
 			if (anyError) {
-				System.exit(1);
-				return;
+				return false;
 			}
 		}
 
@@ -84,6 +99,7 @@ public class Main {
 		context.setCancelIndicator(CancelIndicator.NullImpl);
 		generator.generate(resource, fileAccess, context);
 
-		System.out.println("Code generation finished.");
+		System.out.println(String.format("Code generation finished: %s", outputPath));
+		return true;
 	}
 }
