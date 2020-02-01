@@ -1,0 +1,53 @@
+{
+    "name": "bahn-language",
+    "displayName": "Bahn Language",
+    "description": "Bahn support for VS Code",
+    "version": "0.0.1",
+    "publisher": "uniba-swt",
+    "engines": {
+        "vscode": "^1.41.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "activationEvents": [
+        "onLanguage:bahn"
+    ],
+    "main": "out/extension",
+    "contributes": {
+        "languages": [
+            {
+                "id": "bahn",
+                "aliases": [
+                    "Bahn",
+                    "bahn"
+                ],
+                "extensions": [
+                    "bahn"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "bahn",
+                "scopeName": "source.bahn",
+                "path": "./syntaxes/bahn.tmLanguage.json"
+            }
+        ]
+    },
+    "dependencies": {
+        "vscode-languageclient": "^5.2.1"
+    },
+    "devDependencies": {
+        "vscode": "^1.1.35",
+        "typescript": "^3.3.400",
+        "@types/node": "^11.13.2"
+    },
+    "scripts": {
+        "prepublish": "node ./node_modules/vscode/bin/install && tsc -p ./src",
+        "compile": "tsc -p ./src",
+        "watch": "tsc -w -p ./src",
+        "update-vscode": "node ./node_modules/vscode/bin/install"
+    }
+}

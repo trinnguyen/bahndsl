@@ -6,6 +6,14 @@ dependencies {
 
 apply plugin: 'application'
 mainClassName = "org.eclipse.xtext.ide.server.ServerLauncher"
+distributions {
+	main {
+		distributionBaseName = "bahn-ide-server"
+	}
+}
+tasks.withType(CreateStartScripts) {
+	applicationName = "bahn-ide-server"
+}
 
 //this is an eclipse plugin project
 eclipseClasspath.enabled=false

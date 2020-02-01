@@ -5,12 +5,12 @@ Respository for Masters thesis on BahnDSL: A Domain-Specific Language for Config
 ## Download latest artifacts
 
 ### Bahn IDE
-- [macOS: BahnIDE-macosx.cocoa.x86_64.tar.gz](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/build/BahnIDE-macosx.cocoa.x86_64.tar.gz?job=install:jdk11)
-- [Linux: BahnIDE-linux.gtk.x86_64.tar.gz](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/build/BahnIDE-linux.gtk.x86_64.tar.gz?job=install:jdk11)
-- [Windows: BahnIDE-win32.win32.x86_64.zip](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/build/BahnIDE-win32.win32.x86_64.zip?job=install:jdk11)
+- [macOS: BahnIDE-macosx.cocoa.x86_64.tar.gz](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/BahnIDE-macosx.cocoa.x86_64.tar.gz?job=maven-rcp)
+- [Linux: BahnIDE-linux.gtk.x86_64.tar.gz](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/BahnIDE-linux.gtk.x86_64.tar.gz?job=maven-rcp)
+- [Windows: BahnIDE-win32.win32.x86_64.zip](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/BahnIDE-win32.win32.x86_64.zip?job=maven-rcp)
 
 ### bahnc (Bahn Compiler CLI)
-- [macOS/Linux/Windows: bahnc-1.0.0-SNAPSHOT.zip](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/build/bahnc-1.0.0-SNAPSHOT.zip?job=install:jdk11)
+- [macOS/Linux/Windows: bahnc-1.0.0-SNAPSHOT.zip](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/bahnc-1.0.0-SNAPSHOT.zip?job=gradle-compiler-ide)
 
 ### Fix damaged macOS application
 - Run command line: `xattr -c "Bahn IDE.app"`

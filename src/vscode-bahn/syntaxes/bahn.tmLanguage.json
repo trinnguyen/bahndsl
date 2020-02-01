@@ -1,0 +1,41 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Bahn",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#comments"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [{
+				"name": "keyword.control.bahn",
+				"match": "\\b(module|end|aspects|end|boards|end|segments|end|signals|end|points|end|peripherals|end|blocks|end|platforms|end|trains|end|layout|end|routes|end|get|signal|point|route|from|to|wait|for|grant|to|set|signal|to|point|to|seconds|minutes|hours|source|destination|path|end|points|end|signals|end|conflicts|end|cargo|passenger|features|end|length|aspects|end|initial|segment|normal|reverse|initial|normal|reverse|overlap|main|overlap|trains|end|steps|calibration|end|length|weight|type|peripherals|end|bit|initial|cm|m|km|g|kg|t|def|end|if|else|end|for|in|end|return|is|not|available|occupied|by|nil|int|float|bool|string|var|true|false)\\b"
+			}]
+		},
+		"strings": {
+			"name": "string.quoted.double.bahn",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.bahn",
+					"match": "\\\\."
+				}
+			]
+		}
+		,
+		"comments": {
+			"name": "comment.line.double-dash.bahn",
+			"begin": "#",
+			"end": "$\n?"
+		}
+	},
+	"scopeName": "source.bahn"
+}
