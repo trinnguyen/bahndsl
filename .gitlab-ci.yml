@@ -5,20 +5,20 @@ cache:
   paths:
     - .m2/repository
 
-maven-rcp:
+gradle-compiler-ide:
   stage: deploy
   script:
-    - 'sh src/build-maven-rcp.sh'
     - 'sh src/build-gradle.sh'
   artifacts:
     paths:
     - src/build/
     expire_in: 1 week
-
-gradle-compiler-ide:
+    
+maven-rcp:
   stage: deploy
   script:
-    - 'sh build-gradle.sh'
+    - 'sh src/build-maven-rcp.sh'
+    - 'sh src/build-gradle.sh'
   artifacts:
     paths:
     - src/build/
