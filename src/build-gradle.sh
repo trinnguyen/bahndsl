@@ -9,3 +9,4 @@ cd build
 
 # copy the file
 cp ../de.uniba.swt.dsl/build/distributions/*.zip ./
+cp ../de.uniba.swt.dsl.ide/build/distributions/*.zip ./
