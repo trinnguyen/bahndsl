@@ -1,5 +1,7 @@
 #!/bin/bash
-gradlew build
+cd "$(dirname "$0")"
+./gradlew de.uniba.swt.dsl:build
+./gradlew de.uniba.swt.dsl.ide:build
 
 # build folder
 mkdir build
