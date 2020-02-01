@@ -13,12 +13,11 @@ gradle-compiler-ide:
     paths:
     - src/build/
     expire_in: 1 week
-    
+
 maven-rcp:
   stage: deploy
   script:
     - 'sh src/build-maven-rcp.sh'
-    - 'sh src/build-gradle.sh'
   artifacts:
     paths:
     - src/build/
