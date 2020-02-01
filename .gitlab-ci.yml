@@ -10,7 +10,7 @@ deploy-rcp-compiler:
   script:
     - 'sh src/build-gradle.sh'
     - 'sh src/build-maven-rcp.sh'
-    - 'sh src/build-node-vscode.sh'
+    # - 'sh src/build-node-vscode.sh'
   artifacts:
     paths:
     - src/build/
