@@ -7,14 +7,14 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="org.eclipse.ui.ide.workbench"
-            name="de.uniba.swt.dsl.product">
+            name="Bahn IDE">
          <property
                name="applicationCSS"
                value="platform:/plugin/de.uniba.swt.dsl.product/css/default.css">
          </property>
          <property
                name="appName"
-               value="de.uniba.swt.dsl.product">
+               value="Bahn IDE">
          </property>
       </product>
    </extension>
