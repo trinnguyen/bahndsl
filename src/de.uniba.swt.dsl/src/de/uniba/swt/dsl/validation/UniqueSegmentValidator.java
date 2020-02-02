@@ -17,7 +17,7 @@ public class UniqueSegmentValidator {
                 .filter(obj -> obj instanceof TrackSection && !obj.equals(section))
                 .findFirst();
         if (object.isPresent()) {
-            throw new ValidationException(String.format("Segment %s is already used in other place %s", section.getMainSeg().getName(), ((TrackSection)object.get()).getName()), BahnPackage.Literals.TRACK_SECTION__MAIN_SEG);
+            throw new ValidationException(String.format("Segment %s is already used in another track section %s", section.getMainSeg().getName(), ((TrackSection)object.get()).getName()), BahnPackage.Literals.TRACK_SECTION__MAIN_SEG);
         }
     }
 }

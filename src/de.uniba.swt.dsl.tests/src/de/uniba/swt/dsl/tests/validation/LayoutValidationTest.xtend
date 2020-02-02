@@ -153,14 +153,17 @@ class LayoutValidationTest {
 				end
 				segments master
 					seg1 0x00 length 11cm
+					seg2 0x01 length 11cm
+					seg3 0x02 length 11cm
+					seg4 0x03 length 11cm
 				end
 				points master
 				    p1 0x00 segment seg1 normal 0x00 reverse 0x00 initial normal
 				end
 				blocks
-					b1 main seg1
-					b2 main seg1
-					b3 main seg1
+					b1 main seg2
+					b2 main seg3
+					b3 main seg4
 				end
 				layout
 					b1.up -- p1.stem
@@ -180,15 +183,19 @@ class LayoutValidationTest {
 				end
 				segments master
 					seg1 0x00 length 11cm
+					seg2 0x01 length 11cm
+					seg3 0x02 length 11cm
+					seg4 0x03 length 11cm
+					seg5 0x04 length 11cm
 				end
 				points master
 				    p1 0x00 segment seg1 normal 0x00 reverse 0x00 initial normal
 				end
 				blocks
-					b1 main seg1
-					b2 main seg1
-					b3 main seg1
-					b4 main seg1
+					b1 main seg2
+					b2 main seg3
+					b3 main seg4
+					b4 main seg5
 				end
 				layout
 					b1.up -- p1.down1
@@ -235,15 +242,19 @@ class LayoutValidationTest {
 				end
 				segments master
 					seg1 0x00 length 11cm
+					seg2 0x01 length 11cm
+					seg3 0x02 length 11cm
+					seg4 0x03 length 11cm
+					seg5 0x04 length 11cm
 				end
 				crossings
 				    c1 segment seg1
 				end
 				blocks
-					b1 main seg1
-					b2 main seg1
-					b3 main seg1
-					b4 main seg1
+					b1 main seg2
+					b2 main seg3
+					b3 main seg4
+					b4 main seg5
 				end
 				layout
 					b1.up -- c1.down1
