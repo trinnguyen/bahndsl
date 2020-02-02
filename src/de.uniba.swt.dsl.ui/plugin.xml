@@ -431,4 +431,61 @@
 			type="text">
 		</fileTypes>
 	</extension>
+	<extension
+		point="org.eclipse.ui.newWizards">
+		<category id="de.uniba.swt.dsl.ui.category" name="Bahn">
+		</category>
+		<wizard
+			category="de.uniba.swt.dsl.ui.category"
+			class="de.uniba.swt.dsl.ui.BahnExecutableExtensionFactory:org.eclipse.xtext.ui.wizard.template.TemplateNewProjectWizard"
+			id="de.uniba.swt.dsl.ui.wizard.BahnNewProjectWizard"
+			name="Bahn Project"
+			icon="icons/new_Bahn_proj.gif"
+			project="true">
+		</wizard>
+	</extension>
+	<extension
+		point="org.eclipse.xtext.ui.projectTemplate">
+		<projectTemplateProvider
+			class="de.uniba.swt.dsl.ui.BahnExecutableExtensionFactory:de.uniba.swt.dsl.ui.wizard.BahnProjectTemplateProvider"
+			grammarName="de.uniba.swt.dsl.Bahn">
+		</projectTemplateProvider>
+	</extension>
+	<extension
+		point="org.eclipse.ui.perspectiveExtensions">
+		<perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
+			<newWizardShortcut id="de.uniba.swt.dsl.ui.wizard.BahnNewProjectWizard"/>
+		</perspectiveExtension>
+		<perspectiveExtension targetID="org.eclipse.jdt.ui.JavaPerspective">
+			<newWizardShortcut id="de.uniba.swt.dsl.ui.wizard.BahnNewProjectWizard"/>
+		</perspectiveExtension>
+	</extension>
+	<extension
+		point="org.eclipse.ui.newWizards">
+		<category id="de.uniba.swt.dsl.ui.category" name="Bahn">
+		</category>
+		<wizard
+			category="de.uniba.swt.dsl.ui.category"
+			class="de.uniba.swt.dsl.ui.BahnExecutableExtensionFactory:org.eclipse.xtext.ui.wizard.template.TemplateNewFileWizard"
+			id="de.uniba.swt.dsl.ui.wizard.BahnNewFileWizard"
+			name="Bahn File"
+			icon="icons/new_Bahn_file.png">
+		</wizard>
+	</extension>
+	<extension
+		point="org.eclipse.xtext.ui.fileTemplate">
+		<fileTemplateProvider
+			class="de.uniba.swt.dsl.ui.BahnExecutableExtensionFactory:de.uniba.swt.dsl.ui.wizard.BahnFileTemplateProvider"
+			grammarName="de.uniba.swt.dsl.Bahn">
+		</fileTemplateProvider>
+	</extension>
+	<extension
+		point="org.eclipse.ui.perspectiveExtensions">
+		<perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
+			<newWizardShortcut id="de.uniba.swt.dsl.ui.wizard.BahnNewFileWizard"/>
+		</perspectiveExtension>
+		<perspectiveExtension targetID="org.eclipse.jdt.ui.JavaPerspective">
+			<newWizardShortcut id="de.uniba.swt.dsl.ui.wizard.BahnNewFileWizard"/>
+		</perspectiveExtension>
+	</extension>
 </plugin>

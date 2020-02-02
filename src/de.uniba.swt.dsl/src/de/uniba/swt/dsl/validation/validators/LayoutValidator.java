@@ -21,6 +21,9 @@ public class LayoutValidator {
     }
 
     public void validateLayout(LayoutProperty layoutProp) throws CompositeLayoutException {
+    	if (layoutProp.getItems().isEmpty())
+    		return;
+    	
         // 1. Build vertices
         NetworkLayout networkLayout = null;
         try {

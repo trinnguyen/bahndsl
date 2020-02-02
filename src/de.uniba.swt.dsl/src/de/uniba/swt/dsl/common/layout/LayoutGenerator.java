@@ -24,6 +24,9 @@ public class LayoutGenerator {
 	}
 
 	private void buildLayout(IFileSystemAccess2 fsa, RootModule rootModule, LayoutProperty layoutProp) {
+		if (layoutProp.getItems().isEmpty())
+			return;
+		
 		try {
 			// network
 			var networkLayout = networkLayoutBuilder.build(layoutProp);
