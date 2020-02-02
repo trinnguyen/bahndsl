@@ -5,15 +5,17 @@ import de.uniba.swt.dsl.bahn.SignalElement;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.models.Signal;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class LayoutVertex {
+    private final String id = UUID.randomUUID().toString();
     private List<AbstractVertexMember> members = new ArrayList<>();
 
     public LayoutVertex() {
+    }
+
+    public String getId() {
+        return id;
     }
 
     public LayoutVertex(List<AbstractVertexMember> members) {

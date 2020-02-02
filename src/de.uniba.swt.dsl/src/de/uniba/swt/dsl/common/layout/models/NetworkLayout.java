@@ -96,23 +96,30 @@ public class NetworkLayout implements LayoutGraph {
                 .allowsSelfLoops(false)
                 .build();
 
-        Map<String, Boolean> visitedEdges = new HashMap<>();
-        dfsGraph(graph, visitedEdges, getVertices().get(0));
+        Set<String> visitedEdges = new HashSet<>();
+        Set<String> visitedVertices = new HashSet<>();
+        for (LayoutVertex vertex : getVertices()) {
+            dfsGraph(graph, visitedVertices, visitedEdges, vertex);
+        }
         return graph;
     }
 
-    private void dfsGraph(MutableValueGraph<LayoutVertex, AbstractEdge> graph, Map<String, Boolean> visitedEdges, LayoutVertex vertex) {
+    private void dfsGraph(MutableValueGraph<LayoutVertex, AbstractEdge> graph, Set<String> visitedVertices, Set<String> visitedEdges, LayoutVertex vertex) {
+        if (visitedVertices.contains(vertex.getId()))
+            return;;
+
+        visitedVertices.add(vertex.getId());
         for (AbstractEdge edge : incidentEdges(vertex)) {
             // check if visited
-            if (visitedEdges.containsKey(edge.getKey()))
+            if (visitedEdges.contains(edge.getKey()))
                 continue;
-            visitedEdges.put(edge.getKey(), true);
+            visitedEdges.add(edge.getKey());
 
             // put
             graph.putEdgeValue(edge.getSrcVertex(), edge.getDestVertex(), edge);
 
             // go deep
-            dfsGraph(graph, visitedEdges, edge.getDestVertex());
+            dfsGraph(graph, visitedVertices, visitedEdges, edge.getDestVertex());
         }
     }
 
