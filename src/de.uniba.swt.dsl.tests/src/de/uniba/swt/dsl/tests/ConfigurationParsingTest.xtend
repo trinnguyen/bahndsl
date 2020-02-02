@@ -53,7 +53,7 @@ class ConfigurationParsingTest {
 	}
 	
 	@Test
-	def void testLayoutCrossing() {
+	def void testLayoutDoubleSlipSwitch() {
 		'''
 			module test
 				layout

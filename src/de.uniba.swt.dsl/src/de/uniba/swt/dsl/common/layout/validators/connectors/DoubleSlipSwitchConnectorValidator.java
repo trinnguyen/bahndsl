@@ -30,7 +30,7 @@ public class DoubleSlipSwitchConnectorValidator extends AbstractConnectorValidat
                 .filter(Objects::nonNull)
                 .distinct().count();
         if (countItems != 4) {
-            throw new LayoutException("Crossing must connect to 4 different blocks: " + member.getName());
+            throw new LayoutException("DoubleSlipSwitch must connect to 4 different blocks: " + member.getName());
         }
     }
 }

@@ -169,7 +169,7 @@ class LayoutValidationTest {
 	}
 	
 	@Test
-	def void testLayoutCrossing() {
+	def void testLayoutDoubleSlipSwitch() {
 		'''
 			module test
 				boards

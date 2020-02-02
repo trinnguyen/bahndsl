@@ -141,15 +141,15 @@ public class NetworkLayout implements LayoutGraph {
                     .collect(Collectors.toSet());
         }
 
-        // point: crossing
+        // point: doubleSlipSwitch
         if (member.getType() == VertexMemberType.DoubleSlipSwitch) {
-            var crossingMember = (DoubleSlipSwitchVertexMember) member;
-            var connectedEndpoints = crossingMember.getConnectedEndpoints();
+            var doubleSlipSwitchMember = (DoubleSlipSwitchVertexMember) member;
+            var connectedEndpoints = doubleSlipSwitchMember.getConnectedEndpoints();
             return connectedEndpoints.stream()
                     .map(e -> {
-                        var v = findVertex(crossingMember.generateKey(e));
-                        return new DoubleSlipSwitchEdge(crossingMember.getPointElement(),
-                                getCrossingAspect(crossingMember.getEndpoint(), e),
+                        var v = findVertex(doubleSlipSwitchMember.generateKey(e));
+                        return new DoubleSlipSwitchEdge(doubleSlipSwitchMember.getPointElement(),
+                                getDoubleSlipSwitchAspect(doubleSlipSwitchMember.getEndpoint(), e),
                                 vertex,
                                 v);
                     })
@@ -159,7 +159,7 @@ public class NetworkLayout implements LayoutGraph {
         throw new RuntimeException("Member is not supported for edge: " + member);
     }
 
-    private DoubleSlipSwitchEdge.Aspect getCrossingAspect(DoubleSlipSwitchVertexMember.Endpoint src, DoubleSlipSwitchVertexMember.Endpoint dst) {
+    private DoubleSlipSwitchEdge.Aspect getDoubleSlipSwitchAspect(DoubleSlipSwitchVertexMember.Endpoint src, DoubleSlipSwitchVertexMember.Endpoint dst) {
         switch (src) {
             case Down1:
                 if (dst == DoubleSlipSwitchVertexMember.Endpoint.Up2)
@@ -183,7 +183,7 @@ public class NetworkLayout implements LayoutGraph {
                     return DoubleSlipSwitchEdge.Aspect.Reverse2;
         }
 
-        throw new RuntimeException("Invalid crossing aspect connector: " + src + " -- " + dst);
+        throw new RuntimeException("Invalid doubleSlipSwitch aspect connector: " + src + " -- " + dst);
     }
 
     private StandardSwitchEdge.Aspect getSwitchAspect(StandardSwitchVertexMember.Endpoint srcEndpoint, StandardSwitchVertexMember.Endpoint destEndPoint) {

@@ -108,7 +108,7 @@ public class NetworkLayoutBuilder {
         if (isSwitch(ref))
             return new StandardSwitchVertexMember((PointElement) ref.getElem(), ref.getProp());
 
-        if (isCrossing(ref))
+        if (isDoubleSlipSwitch(ref))
             return new DoubleSlipSwitchVertexMember((PointElement) ref.getElem(), ref.getProp());
 
         return new BlockVertexMember((BlockElement) ref.getElem(), ref.getProp());
@@ -128,7 +128,7 @@ public class NetworkLayoutBuilder {
                 && BahnConstants.STANDARD_SWITCH_PROPS.contains(ref.getProp().toLowerCase());
     }
 
-    private boolean isCrossing(LayoutReference ref) {
+    private boolean isDoubleSlipSwitch(LayoutReference ref) {
         return ref.getElem() instanceof PointElement
                 && ref.getProp() != null
                 && BahnConstants.DOUBLE_SLIP_SWITCH_PROPS.contains(ref.getProp().toLowerCase());
