@@ -8,6 +8,7 @@ import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.^extension.ExtendWith
 import de.uniba.swt.dsl.bahn.RootModule
 import org.eclipse.xtext.testing.validation.ValidationTestHelper
@@ -77,6 +78,7 @@ class LayoutValidationTest {
 		'''.parse.assertError(BahnPackage.Literals.LAYOUT_PROPERTY, null, "Block direction is already defined")
     }
     
+	@Disabled
     @Test
     def void testErrorNotConnected() {
         '''
@@ -99,6 +101,7 @@ class LayoutValidationTest {
 			end
 		'''.parse.assertError(BahnPackage.Literals.LAYOUT_PROPERTY, null, "Network layout is not strongly connected")
     }
+
     @Test
     def void testErrorBlockConnector() {
         '''
@@ -218,6 +221,35 @@ class LayoutValidationTest {
 				end
 				layout
 				    sig1 -- b1.down
+				end
+			end
+		'''.parse.assertNoErrors
+	}
+
+	@Test
+	def void testLayoutCrossing() {
+		'''
+			module test
+				boards
+					master 0x00
+				end
+				segments master
+					seg1 0x00 length 11cm
+				end
+				crossings
+				    c1 segment seg1
+				end
+				blocks
+					b1 main seg1
+					b2 main seg1
+					b3 main seg1
+					b4 main seg1
+				end
+				layout
+					b1.up -- c1.down1
+					b2.up -- c1.down2
+					b3.down -- c1.up1
+					b4.down -- c1.up2
 				end
 			end
 		'''.parse.assertNoErrors

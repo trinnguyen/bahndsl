@@ -11,7 +11,8 @@ public abstract class AbstractEdge {
         Block,
         Platform,
         SingleSwitch,
-        DoubleSlipSwitch
+        DoubleSlipSwitch,
+        Crossing
     }
 
     private LayoutVertex srcVertex;

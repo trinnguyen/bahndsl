@@ -1,16 +1,16 @@
-package de.uniba.swt.dsl.common.layout.validators;
+package de.uniba.swt.dsl.validation.validators;
 
-import de.uniba.swt.dsl.bahn.*;
-import de.uniba.swt.dsl.common.layout.*;
+import de.uniba.swt.dsl.bahn.LayoutProperty;
+import de.uniba.swt.dsl.common.layout.NetworkLayoutBuilder;
 import de.uniba.swt.dsl.common.layout.models.CompositeLayoutException;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.layout.validators.NetworkValidator;
-import de.uniba.swt.dsl.common.util.BahnConstants;
-import de.uniba.swt.dsl.validation.util.ValidationException;
 
+import javax.inject.Singleton;
 import java.util.List;
 
+@Singleton
 public class BahnLayoutValidator {
 
     private NetworkLayoutBuilder layoutBuilder;
@@ -22,9 +22,9 @@ public class BahnLayoutValidator {
     }
 
     public void validateLayout(LayoutProperty layoutProp) throws CompositeLayoutException {
-    	if (layoutProp.getItems().isEmpty())
-    		return;
-    	
+        if (layoutProp.getItems().isEmpty())
+            return;
+
         // 1. Build vertices
         NetworkLayout networkLayout = null;
         try {
@@ -36,13 +36,5 @@ public class BahnLayoutValidator {
         // 2. Validation
         if (networkLayout != null && networkLayout.hasEdge())
             validator.checkWelformness(networkLayout);
-    }
-
-    public static void validateElement(LayoutElement element) throws ValidationException {
-        LayoutElementValidator.validateElement(element);
-    }
-
-    public static void validateReference(LayoutReference reference) throws ValidationException {
-        LayoutElementValidator.validateReference(reference);
     }
 }

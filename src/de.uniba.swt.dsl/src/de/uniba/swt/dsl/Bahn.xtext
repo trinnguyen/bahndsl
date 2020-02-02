@@ -17,7 +17,8 @@ ModuleProperty:
 	| SignalsProperty 
 	| PointsProperty 
 	| PeripheralsProperty
-	| BlocksProperty 
+	| BlocksProperty
+	| CrossingsProperty
 	| TrainsProperty 
 	| LayoutProperty 
 	| PlatformProperty
@@ -52,6 +53,10 @@ PeripheralsProperty:
 BlocksProperty :
 	{BlocksProperty} 'blocks'
 		(items+=BlockElement)*
+	'end';
+CrossingsProperty:
+    'crossings'
+		(items+=CrossingElement)*
 	'end';
 PlatformProperty :
 	{PlatformProperty} 'platforms'
@@ -178,6 +183,10 @@ BlockElement:
 		('trains' (trainTypes+=TrainType)+ 'end')?
 ;
 
+CrossingElement:
+    name=ID 'segment' mainSeg=[SegmentElement]
+;
+
 TrainElement :
 	name=ID address=HEX 
 		'steps' steps=INT
@@ -193,7 +202,7 @@ TrainPeripheral:
 ;
 
 TrackSection:
-	BlockElement | PointElement
+	BlockElement | PointElement | CrossingElement
 ;
 
 LayoutElement :

@@ -7,19 +7,25 @@ package de.uniba.swt.dsl.validation;
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.layout.models.CompositeLayoutException;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
+import de.uniba.swt.dsl.common.layout.validators.LayoutElementValidator;
 import de.uniba.swt.dsl.validation.util.ValidationException;
+import de.uniba.swt.dsl.validation.validators.BahnLayoutValidator;
 import de.uniba.swt.dsl.validation.validators.DeclValidator;
 import de.uniba.swt.dsl.validation.validators.ExpressionValidator;
-import de.uniba.swt.dsl.common.layout.validators.BahnLayoutValidator;
 import de.uniba.swt.dsl.validation.validators.StatementValidator;
 import org.eclipse.xtext.validation.Check;
 
+import javax.inject.Inject;
+
 /**
- * This class contains custom validation rules. 
- *
+ * This class contains custom validation rules.
+ * <p>
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 public class BahnValidator extends AbstractBahnValidator {
+
+    @Inject
+    BahnLayoutValidator layoutValidator;
 
     @Check
     public void typeCheckingExpression(Expression expression) {
@@ -51,7 +57,7 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void validateLayoutElement(LayoutElement element) {
         try {
-            BahnLayoutValidator.validateElement(element);
+            LayoutElementValidator.validateElement(element);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
@@ -60,7 +66,7 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void validateLayoutReference(LayoutReference reference) {
         try {
-            BahnLayoutValidator.validateReference(reference);
+            LayoutElementValidator.validateReference(reference);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
@@ -69,8 +75,7 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void validateNetworkLayout(LayoutProperty layoutProperty) {
         try {
-            BahnLayoutValidator validator = new BahnLayoutValidator();
-            validator.validateLayout(layoutProperty);
+            layoutValidator.validateLayout(layoutProperty);
         } catch (CompositeLayoutException compositeExp) {
             for (LayoutException exp : compositeExp.getExceptions()) {
                 error(exp.getMessage(), BahnPackage.Literals.LAYOUT_PROPERTY__ITEMS);

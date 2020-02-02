@@ -5,5 +5,5 @@ public enum VertexMemberType {
     Block,
     StandardSwitch,
     DoubleSlipSwitch,
-    Platform
+    Crossing
 }

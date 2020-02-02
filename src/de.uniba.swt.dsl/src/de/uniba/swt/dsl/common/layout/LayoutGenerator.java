@@ -1,8 +1,12 @@
 package de.uniba.swt.dsl.common.layout;
 
-import de.uniba.swt.dsl.bahn.*;
-import de.uniba.swt.dsl.common.layout.models.*;
+import de.uniba.swt.dsl.bahn.LayoutProperty;
+import de.uniba.swt.dsl.bahn.RootModule;
+import de.uniba.swt.dsl.bahn.SignalElement;
+import de.uniba.swt.dsl.bahn.SignalsProperty;
+import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.util.LogHelper;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
@@ -28,6 +32,7 @@ public class LayoutGenerator {
 			return;
 		
 		try {
+			Logger.getRootLogger().setLevel(Level.DEBUG);
 			// network
 			var networkLayout = networkLayoutBuilder.build(layoutProp);
 			logger.debug(networkLayout);

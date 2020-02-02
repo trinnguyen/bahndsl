@@ -19,14 +19,10 @@ public class DoubleSlipSwitchVertexMember extends AbstractSwitchVertexMember {
         Up2
     }
 
-    private Endpoint endpoint;
+    private final Endpoint endpoint;
 
     public Endpoint getEndpoint() {
         return endpoint;
-    }
-
-    public void setEndpoint(Endpoint endpoint) {
-        this.endpoint = endpoint;
     }
 
     @Override

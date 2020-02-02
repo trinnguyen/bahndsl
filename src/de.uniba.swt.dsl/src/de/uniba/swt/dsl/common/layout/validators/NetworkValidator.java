@@ -3,16 +3,15 @@ package de.uniba.swt.dsl.common.layout.validators;
 import de.uniba.swt.dsl.common.layout.models.CompositeLayoutException;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
-import de.uniba.swt.dsl.common.layout.models.vertex.*;
+import de.uniba.swt.dsl.common.layout.models.vertex.VertexMemberType;
 import de.uniba.swt.dsl.common.layout.validators.connectors.*;
-
 
 import java.util.*;
 
 public class NetworkValidator {
 
     private Set<String> cacheElements = new HashSet<>();
-    private GraphValidator graphValidator = new GraphValidator();
+    private GraphStrongConnectedChecker graphValidator = new GraphStrongConnectedChecker();
     private NetworkLayout networkLayout;
     private Map<VertexMemberType, AbstractConnectorValidator> validators;
 
@@ -20,7 +19,8 @@ public class NetworkValidator {
         validators = Map.of(
                 VertexMemberType.Block, new BlockConnectorValidator(),
                 VertexMemberType.StandardSwitch, new StandardSwitchConnectorValidator(),
-                VertexMemberType.DoubleSlipSwitch, new DoubleSlipSwitchConnectorValidator());
+                VertexMemberType.DoubleSlipSwitch, new DoubleSlipSwitchConnectorValidator(),
+                VertexMemberType.Crossing, new CrossingConnectorValidator());
     }
 
     public void checkWelformness(NetworkLayout networkLayout) throws CompositeLayoutException {
@@ -30,8 +30,8 @@ public class NetworkValidator {
         validateConnectors();
 
         // 2. ensure all vertices are reachable
-        if (!graphValidator.isStrongConnected(networkLayout))
-            throw new CompositeLayoutException("Network layout is not strongly connected");
+//        if (!graphValidator.isStrongConnected(networkLayout))
+//            throw new CompositeLayoutException("Network layout is not strongly connected");
     }
 
     private void validateConnectors() throws CompositeLayoutException {

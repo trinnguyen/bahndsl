@@ -6,7 +6,7 @@ import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GraphValidator {
+public class GraphStrongConnectedChecker {
     private NetworkLayout networkLayout;
     private Map<LayoutVertex, Boolean> visitedVertices = new HashMap<>();
 

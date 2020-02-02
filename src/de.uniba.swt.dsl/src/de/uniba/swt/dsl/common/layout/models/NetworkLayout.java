@@ -3,18 +3,18 @@ package de.uniba.swt.dsl.common.layout.models;
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
-import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
-import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
-import de.uniba.swt.dsl.common.layout.models.edge.DoubleSlipSwitchEdge;
-import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
-import de.uniba.swt.dsl.common.layout.models.graph.*;
+import de.uniba.swt.dsl.common.layout.models.edge.*;
+import de.uniba.swt.dsl.common.layout.models.graph.LayoutGraph;
 import de.uniba.swt.dsl.common.layout.models.vertex.*;
 import de.uniba.swt.dsl.common.util.LogHelper;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class NetworkLayout implements LayoutGraph {
+    private final static Logger logger = Logger.getLogger(NetworkLayout.class);
+
     private List<LayoutVertex> vertices = new ArrayList<>();
     private Map<String, LayoutVertex> mapVertices = new TreeMap<>();
     private Map<String, BlockDirection> blockDirectionMap = new TreeMap<>();
@@ -80,9 +80,10 @@ public class NetworkLayout implements LayoutGraph {
 
     @Override
     public Set<AbstractEdge> incidentEdges(LayoutVertex vertex) {
+        logger.debug("incidentEdges: " + vertex);
         return vertex.getMembers()
                 .stream()
-                .filter(member -> member.isSegmentBlock() || member.isPoint())
+                .filter(member -> member.getType() != VertexMemberType.Signal)
                 .map(member -> findEdges(vertex, member))
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet());
@@ -116,6 +117,7 @@ public class NetworkLayout implements LayoutGraph {
     }
 
     private Set<AbstractEdge> findEdges(LayoutVertex vertex, AbstractVertexMember member) {
+        logger.debug(String.format("find vertex: %s \n\t %s", vertex, member));
         // segment block: platform, block
         if (member.isSegmentBlock()) {
             var blockMember = (BlockVertexMember) member;
@@ -156,7 +158,27 @@ public class NetworkLayout implements LayoutGraph {
                     .collect(Collectors.toSet());
         }
 
+        // crossing
+        if (member.getType() == VertexMemberType.Crossing) {
+            var crossingMem = (CrossingVertexMember) member;
+            var v = findVertex(crossingMem.generateKey(crossingMem.getConnectedEndpoint()));
+            return Set.of(new CrossingEdge(crossingMem.getCrossing(),
+                    getCrossingAspect(crossingMem.getEndpoint()),
+                    vertex,
+                    v));
+        }
+
         throw new RuntimeException("Member is not supported for edge: " + member);
+    }
+
+    private CrossingEdge.Aspect getCrossingAspect(CrossingVertexMember.Endpoint src) {
+        switch (src) {
+            case Down1:
+            case Up2:
+                return CrossingEdge.Aspect.Line1;
+            default:
+                return CrossingEdge.Aspect.Line2;
+        }
     }
 
     private DoubleSlipSwitchEdge.Aspect getDoubleSlipSwitchAspect(DoubleSlipSwitchVertexMember.Endpoint src, DoubleSlipSwitchVertexMember.Endpoint dst) {

@@ -1,10 +1,11 @@
 package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.bahn.*;
-import de.uniba.swt.dsl.common.layout.models.*;
+import de.uniba.swt.dsl.common.layout.models.BlockDirection;
+import de.uniba.swt.dsl.common.layout.models.LayoutException;
+import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.layout.models.vertex.*;
 import de.uniba.swt.dsl.common.util.BahnConstants;
-import org.apache.log4j.Logger;
 
 import java.util.List;
 
@@ -111,6 +112,9 @@ public class NetworkLayoutBuilder {
         if (isDoubleSlipSwitch(ref))
             return new DoubleSlipSwitchVertexMember((PointElement) ref.getElem(), ref.getProp());
 
+        if (isCrossing(ref))
+            return new CrossingVertexMember((CrossingElement) ref.getElem(), ref.getProp());
+
         return new BlockVertexMember((BlockElement) ref.getElem(), ref.getProp());
     }
 
@@ -120,6 +124,10 @@ public class NetworkLayoutBuilder {
 
     private boolean isBlock(LayoutReference ref) {
         return ref.getElem() instanceof BlockElement;
+    }
+
+    private boolean isCrossing(LayoutReference ref) {
+        return ref.getElem() instanceof CrossingElement;
     }
 
     private boolean isSwitch(LayoutReference ref) {

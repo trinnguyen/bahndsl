@@ -18,7 +18,7 @@ public abstract class AbstractVertexMember {
 
     public boolean isSegmentBlock(){
         var type = getType();
-        return type == VertexMemberType.Block || type == VertexMemberType.Platform;
+        return type == VertexMemberType.Block;
     }
 
     public boolean isPoint() {

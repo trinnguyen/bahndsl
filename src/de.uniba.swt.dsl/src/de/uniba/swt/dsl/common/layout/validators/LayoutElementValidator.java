@@ -4,14 +4,17 @@ import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.validation.util.ValidationException;
 
-class LayoutElementValidator {
+import java.util.HashSet;
+import java.util.Set;
+
+public class LayoutElementValidator {
     public static void validateElement(LayoutElement element) throws ValidationException {
         for (int i = 0; i < element.getConnectors().size(); i++) {
             var isDirected = BahnConstants.CONNECTOR_DIRECTED.equalsIgnoreCase(element.getConnectors().get(i));
             if (isDirected) {
                 // prev element
                 LayoutReference leftRef = element.getBlocks().get(i);
-                LayoutReference rightRef = element.getBlocks().get(i+1);
+                LayoutReference rightRef = element.getBlocks().get(i + 1);
 
                 if (!(leftRef.getElem() instanceof BlockElement)
                         || !(rightRef.getElem() instanceof BlockElement)) {
@@ -37,47 +40,35 @@ class LayoutElementValidator {
     }
 
     public static void validateReference(LayoutReference reference) throws ValidationException {
+        var prop = reference.getProp();
         if (reference.getElem() instanceof SignalElement) {
-            if (reference.getProp() == null)
+            if (prop == null)
                 return;
 
             throw new ValidationException("Signal should have no connector property", BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
         }
 
+        Set<String> allowedProps = null;
         if (reference.getElem() instanceof PointElement) {
-            var prop = reference.getProp();
-            if (prop == null || prop.isEmpty()) {
-                throw new ValidationException("Missing connector property", BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
-            }
-
-            prop = prop.toLowerCase();
-            if (!BahnConstants.STANDARD_SWITCH_PROPS.contains(prop)
-                    && !BahnConstants.DOUBLE_SLIP_SWITCH_PROPS.contains(prop)) {
-                var hint = String.join(",", BahnConstants.STANDARD_SWITCH_PROPS)
-                        + " or "
-                        + String.join(",", BahnConstants.DOUBLE_SLIP_SWITCH_PROPS);
-                throw new ValidationException("Invalid connector property, use: " + hint, BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
-            }
-
-            return;
+            allowedProps = new HashSet<>();
+            allowedProps.addAll(BahnConstants.STANDARD_SWITCH_PROPS);
+            allowedProps.addAll(BahnConstants.DOUBLE_SLIP_SWITCH_PROPS);
+        } else if (reference.getElem() instanceof BlockElement) {
+            allowedProps = BahnConstants.BLOCK_PROPS;
+        } else if (reference.getElem() instanceof CrossingElement) {
+            allowedProps = BahnConstants.CROSSING_PROPS;
         }
 
-        if (reference.getElem() instanceof BlockElement) {
-            // only a subset of property is allowed
-            var prop = reference.getProp();
-            if (prop == null || prop.isEmpty()) {
-                throw new ValidationException("Missing connector property", BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
-            }
-
-            prop = prop.toLowerCase();
-            if (!BahnConstants.BLOCK_PROPS.contains(prop)) {
-                var hint = String.join(",", BahnConstants.BLOCK_PROPS);
-                throw new ValidationException("Invalid connector property, use: " + hint, BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
-            }
-
-            return;
+        // validate
+        if (prop == null || prop.isEmpty()) {
+            throw new ValidationException("Missing connector property", BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
         }
 
-        throw new ValidationException("Connector is allowed for signal, point, block and platform only, unexpected " + reference.getElem().getClass().getSimpleName(), BahnPackage.Literals.LAYOUT_REFERENCE__ELEM);
+        if (allowedProps == null || allowedProps.isEmpty())
+            throw new ValidationException("Connector is allowed for signal, point, block, platform, crossing, unexpected " + reference.getElem().getClass().getSimpleName(), BahnPackage.Literals.LAYOUT_REFERENCE__ELEM);
+
+        if (!allowedProps.contains(prop)) {
+            throw new ValidationException("Invalid connector property, use: " + String.join(",", allowedProps), BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
+        }
     }
 }
