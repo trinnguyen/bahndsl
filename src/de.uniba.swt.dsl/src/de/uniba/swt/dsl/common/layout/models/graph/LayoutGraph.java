@@ -1,6 +1,8 @@
 package de.uniba.swt.dsl.common.layout.models.graph;
 
 import com.google.common.graph.ValueGraph;
+import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
+import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
 
 import java.util.Set;
 

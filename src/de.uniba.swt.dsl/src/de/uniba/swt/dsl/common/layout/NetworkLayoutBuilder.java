@@ -2,14 +2,13 @@ package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.layout.models.*;
-import de.uniba.swt.dsl.common.layout.models.graph.LayoutVertex;
+import de.uniba.swt.dsl.common.layout.models.vertex.*;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import org.apache.log4j.Logger;
 
 import java.util.List;
 
 public class NetworkLayoutBuilder {
-    private final static Logger logger = Logger.getLogger(NetworkLayoutBuilder.class);
 
     public NetworkLayout build(LayoutProperty layoutProp) throws LayoutException {
         NetworkLayout networkLayout = new NetworkLayout();
@@ -31,7 +30,7 @@ public class NetworkLayoutBuilder {
 
                     // find or add to vertex
                     LayoutVertex vertex = null;
-                    for (VertexMember member : members) {
+                    for (AbstractVertexMember member : members) {
                         vertex = networkLayout.findVertex(member);
                         if (vertex != null)
                             break;
@@ -49,7 +48,7 @@ public class NetworkLayoutBuilder {
         return networkLayout;
     }
 
-    private List<VertexMember> convertToVertexMembers(LayoutReference firstRef, LayoutReference secondRef) throws LayoutException {
+    private List<AbstractVertexMember> convertToVertexMembers(LayoutReference firstRef, LayoutReference secondRef) throws LayoutException {
         if (isSignal(firstRef)) {
             if (!isBlock(secondRef)) {
                 throw new LayoutException("Signal can only connect to a block");
@@ -71,7 +70,7 @@ public class NetworkLayoutBuilder {
         return List.of(convertToVertexMember(firstRef), convertToVertexMember(secondRef));
     }
 
-    private boolean updateBlockDirection(NetworkLayout networkLayout, List<VertexMember> members, boolean isDirected) throws LayoutException {
+    private boolean updateBlockDirection(NetworkLayout networkLayout, List<AbstractVertexMember> members, boolean isDirected) throws LayoutException {
         if (members.stream().anyMatch(m -> !(m instanceof BlockVertexMember)))
             return false;
 
@@ -105,12 +104,12 @@ public class NetworkLayoutBuilder {
         return true;
     }
 
-    private VertexMember convertToVertexMember(LayoutReference ref) {
+    private AbstractVertexMember convertToVertexMember(LayoutReference ref) {
         if (isSwitch(ref))
-            return new SwitchVertexMember((PointElement) ref.getElem(), ref.getProp());
+            return new StandardSwitchVertexMember((PointElement) ref.getElem(), ref.getProp());
 
         if (isCrossing(ref))
-            return new CrossingVertexMember((PointElement) ref.getElem(), ref.getProp());
+            return new DoubleSlipSwitchVertexMember((PointElement) ref.getElem(), ref.getProp());
 
         return new BlockVertexMember((BlockElement) ref.getElem(), ref.getProp());
     }
@@ -126,12 +125,12 @@ public class NetworkLayoutBuilder {
     private boolean isSwitch(LayoutReference ref) {
         return ref.getElem() instanceof PointElement
                 && ref.getProp() != null
-                && BahnConstants.SWITCH_PROPS.contains(ref.getProp().toLowerCase());
+                && BahnConstants.STANDARD_SWITCH_PROPS.contains(ref.getProp().toLowerCase());
     }
 
     private boolean isCrossing(LayoutReference ref) {
         return ref.getElem() instanceof PointElement
                 && ref.getProp() != null
-                && BahnConstants.CROSSING_PROPS.contains(ref.getProp().toLowerCase());
+                && BahnConstants.DOUBLE_SLIP_SWITCH_PROPS.contains(ref.getProp().toLowerCase());
     }
 }

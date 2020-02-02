@@ -1,7 +1,7 @@
-package de.uniba.swt.dsl.common.layout.models.graph;
+package de.uniba.swt.dsl.common.layout.models.edge;
 
 import de.uniba.swt.dsl.bahn.SegmentElement;
-import de.uniba.swt.dsl.bahn.TrackSection;
+import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
 
 import java.util.List;
 import java.util.Objects;
@@ -10,8 +10,8 @@ public abstract class AbstractEdge {
     public enum EdgeType {
         Block,
         Platform,
-        Switch,
-        Crossing
+        SingleSwitch,
+        DoubleSlipSwitch
     }
 
     private LayoutVertex srcVertex;
@@ -46,8 +46,8 @@ public abstract class AbstractEdge {
     }
 
     public boolean isPoint() {
-        return getEdgeType() == EdgeType.Switch
-                || getEdgeType() == EdgeType.Crossing;
+        return getEdgeType() == EdgeType.SingleSwitch
+                || getEdgeType() == EdgeType.DoubleSlipSwitch;
     }
 
     public abstract String getKey();

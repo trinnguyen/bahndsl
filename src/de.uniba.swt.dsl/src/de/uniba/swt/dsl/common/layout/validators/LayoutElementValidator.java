@@ -1,41 +1,10 @@
-package de.uniba.swt.dsl.validation.validators;
+package de.uniba.swt.dsl.common.layout.validators;
 
 import de.uniba.swt.dsl.bahn.*;
-import de.uniba.swt.dsl.common.layout.*;
-import de.uniba.swt.dsl.common.layout.models.CompositeLayoutException;
-import de.uniba.swt.dsl.common.layout.models.LayoutException;
-import de.uniba.swt.dsl.common.layout.validators.NetworkValidator;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.validation.util.ValidationException;
 
-import java.util.List;
-
-public class LayoutValidator {
-
-    private NetworkLayoutBuilder layoutBuilder;
-    private NetworkValidator validator;
-
-    public LayoutValidator() {
-        layoutBuilder = new NetworkLayoutBuilder();
-        validator = new NetworkValidator();
-    }
-
-    public void validateLayout(LayoutProperty layoutProp) throws CompositeLayoutException {
-    	if (layoutProp.getItems().isEmpty())
-    		return;
-    	
-        // 1. Build vertices
-        NetworkLayout networkLayout = null;
-        try {
-            networkLayout = layoutBuilder.build(layoutProp);
-        } catch (LayoutException e) {
-            throw new CompositeLayoutException(List.of(e));
-        }
-
-        // 2. Validation
-        validator.checkWelformness(networkLayout);
-    }
-
+class LayoutElementValidator {
     public static void validateElement(LayoutElement element) throws ValidationException {
         for (int i = 0; i < element.getConnectors().size(); i++) {
             var isDirected = BahnConstants.CONNECTOR_DIRECTED.equalsIgnoreCase(element.getConnectors().get(i));
@@ -82,11 +51,11 @@ public class LayoutValidator {
             }
 
             prop = prop.toLowerCase();
-            if (!BahnConstants.SWITCH_PROPS.contains(prop)
-                    && !BahnConstants.CROSSING_PROPS.contains(prop)) {
-                var hint = String.join(",", BahnConstants.SWITCH_PROPS)
+            if (!BahnConstants.STANDARD_SWITCH_PROPS.contains(prop)
+                    && !BahnConstants.DOUBLE_SLIP_SWITCH_PROPS.contains(prop)) {
+                var hint = String.join(",", BahnConstants.STANDARD_SWITCH_PROPS)
                         + " or "
-                        + String.join(",", BahnConstants.CROSSING_PROPS);
+                        + String.join(",", BahnConstants.DOUBLE_SLIP_SWITCH_PROPS);
                 throw new ValidationException("Invalid connector property, use: " + hint, BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
             }
 

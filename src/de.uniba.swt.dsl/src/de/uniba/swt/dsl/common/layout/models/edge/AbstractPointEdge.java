@@ -1,8 +1,8 @@
-package de.uniba.swt.dsl.common.layout.models.graph;
+package de.uniba.swt.dsl.common.layout.models.edge;
 
 import de.uniba.swt.dsl.bahn.PointElement;
 import de.uniba.swt.dsl.bahn.SegmentElement;
-import de.uniba.swt.dsl.bahn.TrackSection;
+import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
 
 import java.util.List;
 import java.util.Objects;

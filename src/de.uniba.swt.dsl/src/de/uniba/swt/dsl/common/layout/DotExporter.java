@@ -2,13 +2,13 @@ package de.uniba.swt.dsl.common.layout;
 
 import com.google.common.graph.ValueGraph;
 import de.uniba.swt.dsl.common.layout.models.*;
-import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
-import de.uniba.swt.dsl.common.layout.models.graph.BlockEdge;
-import de.uniba.swt.dsl.common.layout.models.graph.LayoutVertex;
-import de.uniba.swt.dsl.common.layout.models.graph.SwitchEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
+import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
+import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
+import de.uniba.swt.dsl.common.layout.models.vertex.AbstractVertexMember;
+import de.uniba.swt.dsl.common.layout.models.vertex.VertexMemberType;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -97,8 +97,8 @@ public class DotExporter {
     }
 
     private String getColor(AbstractEdge edgeValue) {
-        if (edgeValue.getEdgeType() == AbstractEdge.EdgeType.Switch) {
-            return getPointColor(((SwitchEdge)edgeValue).getPointElement().getName());
+        if (edgeValue.getEdgeType() == AbstractEdge.EdgeType.SingleSwitch) {
+            return getPointColor(((StandardSwitchEdge)edgeValue).getPointElement().getName());
         }
 
         return "black";
@@ -119,7 +119,7 @@ public class DotExporter {
 
     private String generateNodeId(LayoutVertex vertex) {
         return "\"" +
-                vertex.getMembers().stream().map(VertexMember::getKey).collect(Collectors.joining("-")) +
+                vertex.getMembers().stream().map(AbstractVertexMember::getKey).collect(Collectors.joining("-")) +
                 "\"";
     }
 }

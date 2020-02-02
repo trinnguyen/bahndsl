@@ -1,9 +1,11 @@
 package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.common.layout.models.BlockDirection;
-import de.uniba.swt.dsl.common.layout.models.BlockVertexMember;
-import de.uniba.swt.dsl.common.layout.models.SignalVertexMember;
-import de.uniba.swt.dsl.common.layout.models.graph.LayoutVertex;
+import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
+import de.uniba.swt.dsl.common.layout.models.vertex.BlockVertexMember;
+import de.uniba.swt.dsl.common.layout.models.vertex.SignalVertexMember;
+import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
+import de.uniba.swt.dsl.common.layout.models.vertex.StandardSwitchVertexMember;
 
 public class NetworkLayoutUtil {
     /**

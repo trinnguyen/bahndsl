@@ -1,24 +1,22 @@
-package de.uniba.swt.dsl.common.layout;
+package de.uniba.swt.dsl.common.layout.models.edge;
 
 import de.uniba.swt.dsl.bahn.PointElement;
-import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
-import de.uniba.swt.dsl.common.layout.models.graph.AbstractPointEdge;
-import de.uniba.swt.dsl.common.layout.models.graph.LayoutVertex;
+import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
 
-public class CrossingEdge extends AbstractPointEdge {
+public class StandardSwitchEdge extends AbstractPointEdge {
+
     public enum Aspect {
-        Normal1,
-        Normal2,
-        Reverse1,
-        Reverse2,
+        Normal,
+        Reverse
     }
 
     private Aspect aspect;
 
-    public CrossingEdge(PointElement pointElement, Aspect aspect, LayoutVertex srcVertex, LayoutVertex destVertex) {
+    public StandardSwitchEdge(PointElement pointElement, Aspect aspect, LayoutVertex srcVertex, LayoutVertex destVertex) {
         super(pointElement, srcVertex, destVertex);
         this.aspect = aspect;
     }
+
 
     public Aspect getAspect() {
         return aspect;
@@ -30,7 +28,7 @@ public class CrossingEdge extends AbstractPointEdge {
 
     @Override
     public EdgeType getEdgeType() {
-        return EdgeType.Crossing;
+        return EdgeType.SingleSwitch;
     }
 
     @Override
@@ -41,10 +39,10 @@ public class CrossingEdge extends AbstractPointEdge {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CrossingEdge)) return false;
+        if (!(o instanceof StandardSwitchEdge)) return false;
         if (!super.equals(o)) return false;
 
-        CrossingEdge that = (CrossingEdge) o;
+        StandardSwitchEdge that = (StandardSwitchEdge) o;
 
         return aspect == that.aspect;
     }

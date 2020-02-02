@@ -1,13 +1,14 @@
 package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.common.layout.models.BlockDirection;
-import de.uniba.swt.dsl.common.layout.models.BlockVertexMember;
+import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.layout.models.Route;
-import de.uniba.swt.dsl.common.layout.models.SignalVertexMember;
-import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
-import de.uniba.swt.dsl.common.layout.models.graph.BlockEdge;
-import de.uniba.swt.dsl.common.layout.models.graph.LayoutVertex;
-import de.uniba.swt.dsl.common.layout.models.graph.SwitchEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.DoubleSlipSwitchEdge;
+import de.uniba.swt.dsl.common.layout.models.vertex.SignalVertexMember;
+import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
+import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
+import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -132,13 +133,13 @@ public class RoutesFinder {
     }
 
     private boolean isSamePoint(AbstractEdge prevEdge, AbstractEdge edge) {
-        if (prevEdge.getEdgeType() == AbstractEdge.EdgeType.Switch &&
-                edge.getEdgeType() == AbstractEdge.EdgeType.Switch)
-            return ((SwitchEdge)prevEdge).getPointElement().equals(((SwitchEdge)edge).getPointElement());
+        if (prevEdge.getEdgeType() == AbstractEdge.EdgeType.SingleSwitch &&
+                edge.getEdgeType() == AbstractEdge.EdgeType.SingleSwitch)
+            return ((StandardSwitchEdge)prevEdge).getPointElement().equals(((StandardSwitchEdge)edge).getPointElement());
 
-        if (prevEdge.getEdgeType() == AbstractEdge.EdgeType.Crossing &&
-                edge.getEdgeType() == AbstractEdge.EdgeType.Crossing)
-            return ((CrossingEdge)prevEdge).getPointElement().equals(((CrossingEdge)edge).getPointElement());
+        if (prevEdge.getEdgeType() == AbstractEdge.EdgeType.DoubleSlipSwitch &&
+                edge.getEdgeType() == AbstractEdge.EdgeType.DoubleSlipSwitch)
+            return ((DoubleSlipSwitchEdge)prevEdge).getPointElement().equals(((DoubleSlipSwitchEdge)edge).getPointElement());
 
         return false;
     }

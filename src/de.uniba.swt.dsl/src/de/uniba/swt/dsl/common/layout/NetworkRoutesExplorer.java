@@ -1,7 +1,8 @@
 package de.uniba.swt.dsl.common.layout;
 
+import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.layout.models.Route;
-import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 
 import java.util.*;
 

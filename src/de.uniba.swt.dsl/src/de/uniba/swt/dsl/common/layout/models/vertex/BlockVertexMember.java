@@ -1,4 +1,4 @@
-package de.uniba.swt.dsl.common.layout.models;
+package de.uniba.swt.dsl.common.layout.models.vertex;
 
 import de.uniba.swt.dsl.bahn.BlockElement;
 

@@ -1,10 +1,14 @@
-package de.uniba.swt.dsl.common.layout;
+package de.uniba.swt.dsl.common.layout.models;
 
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
-import de.uniba.swt.dsl.common.layout.models.*;
+import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.DoubleSlipSwitchEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
 import de.uniba.swt.dsl.common.layout.models.graph.*;
+import de.uniba.swt.dsl.common.layout.models.vertex.*;
 import de.uniba.swt.dsl.common.util.LogHelper;
 
 import java.util.*;
@@ -27,7 +31,7 @@ public class NetworkLayout implements LayoutGraph {
         return vertices;
     }
 
-    public void addMembersToVertex(List<VertexMember> members, LayoutVertex vertex) {
+    public void addMembersToVertex(List<AbstractVertexMember> members, LayoutVertex vertex) {
         members.forEach(member -> {
             if (vertex.addIfNeeded(member)) {
                 mapVertices.put(member.getKey(), vertex);
@@ -41,7 +45,7 @@ public class NetworkLayout implements LayoutGraph {
         return vertex;
     }
 
-    public LayoutVertex findVertex(VertexMember member) {
+    public LayoutVertex findVertex(AbstractVertexMember member) {
         var key = member.getKey();
         if (mapVertices.containsKey(key)) {
             return mapVertices.get(key);
@@ -111,7 +115,7 @@ public class NetworkLayout implements LayoutGraph {
         }
     }
 
-    private Set<AbstractEdge> findEdges(LayoutVertex vertex, VertexMember member) {
+    private Set<AbstractEdge> findEdges(LayoutVertex vertex, AbstractVertexMember member) {
         // segment block: platform, block
         if (member.isSegmentBlock()) {
             var blockMember = (BlockVertexMember) member;
@@ -123,13 +127,13 @@ public class NetworkLayout implements LayoutGraph {
         }
 
         // point: switch
-        if (member.getType() == VertexMemberType.Switch) {
-            var switchMember = (SwitchVertexMember) member;
+        if (member.getType() == VertexMemberType.StandardSwitch) {
+            var switchMember = (StandardSwitchVertexMember) member;
             var connectedEndpoints = switchMember.getConnectedEndpoints();
             return connectedEndpoints.stream()
                     .map(e -> {
                         var v = findVertex(switchMember.generateKey(e));
-                        return new SwitchEdge(switchMember.getPointElement(),
+                        return new StandardSwitchEdge(switchMember.getPointElement(),
                                 getSwitchAspect(switchMember.getEndpoint(), e),
                                 vertex,
                                 v);
@@ -138,13 +142,13 @@ public class NetworkLayout implements LayoutGraph {
         }
 
         // point: crossing
-        if (member.getType() == VertexMemberType.Crossing) {
-            var crossingMember = (CrossingVertexMember) member;
+        if (member.getType() == VertexMemberType.DoubleSlipSwitch) {
+            var crossingMember = (DoubleSlipSwitchVertexMember) member;
             var connectedEndpoints = crossingMember.getConnectedEndpoints();
             return connectedEndpoints.stream()
                     .map(e -> {
                         var v = findVertex(crossingMember.generateKey(e));
-                        return new CrossingEdge(crossingMember.getPointElement(),
+                        return new DoubleSlipSwitchEdge(crossingMember.getPointElement(),
                                 getCrossingAspect(crossingMember.getEndpoint(), e),
                                 vertex,
                                 v);
@@ -155,41 +159,41 @@ public class NetworkLayout implements LayoutGraph {
         throw new RuntimeException("Member is not supported for edge: " + member);
     }
 
-    private CrossingEdge.Aspect getCrossingAspect(CrossingVertexMember.CrossingEndpoint src, CrossingVertexMember.CrossingEndpoint dst) {
+    private DoubleSlipSwitchEdge.Aspect getCrossingAspect(DoubleSlipSwitchVertexMember.Endpoint src, DoubleSlipSwitchVertexMember.Endpoint dst) {
         switch (src) {
             case Down1:
-                if (dst == CrossingVertexMember.CrossingEndpoint.Up2)
-                    return CrossingEdge.Aspect.Normal1;
-                if (dst == CrossingVertexMember.CrossingEndpoint.Up1)
-                    return CrossingEdge.Aspect.Reverse1;
+                if (dst == DoubleSlipSwitchVertexMember.Endpoint.Up2)
+                    return DoubleSlipSwitchEdge.Aspect.Normal1;
+                if (dst == DoubleSlipSwitchVertexMember.Endpoint.Up1)
+                    return DoubleSlipSwitchEdge.Aspect.Reverse1;
             case Down2:
-                if (dst == CrossingVertexMember.CrossingEndpoint.Up1)
-                    return CrossingEdge.Aspect.Normal2;
-                if (dst == CrossingVertexMember.CrossingEndpoint.Up2)
-                    return CrossingEdge.Aspect.Reverse2;
+                if (dst == DoubleSlipSwitchVertexMember.Endpoint.Up1)
+                    return DoubleSlipSwitchEdge.Aspect.Normal2;
+                if (dst == DoubleSlipSwitchVertexMember.Endpoint.Up2)
+                    return DoubleSlipSwitchEdge.Aspect.Reverse2;
             case Up1:
-                if (dst == CrossingVertexMember.CrossingEndpoint.Down2)
-                    return CrossingEdge.Aspect.Normal2;
-                if (dst == CrossingVertexMember.CrossingEndpoint.Down1)
-                    return CrossingEdge.Aspect.Reverse1;
+                if (dst == DoubleSlipSwitchVertexMember.Endpoint.Down2)
+                    return DoubleSlipSwitchEdge.Aspect.Normal2;
+                if (dst == DoubleSlipSwitchVertexMember.Endpoint.Down1)
+                    return DoubleSlipSwitchEdge.Aspect.Reverse1;
             case Up2:
-                if (dst == CrossingVertexMember.CrossingEndpoint.Down1)
-                    return CrossingEdge.Aspect.Normal1;
-                if (dst == CrossingVertexMember.CrossingEndpoint.Down2)
-                    return CrossingEdge.Aspect.Reverse2;
+                if (dst == DoubleSlipSwitchVertexMember.Endpoint.Down1)
+                    return DoubleSlipSwitchEdge.Aspect.Normal1;
+                if (dst == DoubleSlipSwitchVertexMember.Endpoint.Down2)
+                    return DoubleSlipSwitchEdge.Aspect.Reverse2;
         }
 
         throw new RuntimeException("Invalid crossing aspect connector: " + src + " -- " + dst);
     }
 
-    private SwitchEdge.Aspect getSwitchAspect(SwitchVertexMember.PointEndpoint srcEndpoint, SwitchVertexMember.PointEndpoint destEndPoint) {
+    private StandardSwitchEdge.Aspect getSwitchAspect(StandardSwitchVertexMember.Endpoint srcEndpoint, StandardSwitchVertexMember.Endpoint destEndPoint) {
         var set = Set.of(srcEndpoint, destEndPoint);
-        if (set.contains(SwitchVertexMember.PointEndpoint.Stem)) {
-            if (set.contains(SwitchVertexMember.PointEndpoint.Normal)) {
-                return SwitchEdge.Aspect.Normal;
+        if (set.contains(StandardSwitchVertexMember.Endpoint.Stem)) {
+            if (set.contains(StandardSwitchVertexMember.Endpoint.Normal)) {
+                return StandardSwitchEdge.Aspect.Normal;
             }
 
-            return SwitchEdge.Aspect.Reverse;
+            return StandardSwitchEdge.Aspect.Reverse;
         }
 
         return null;
@@ -223,5 +227,9 @@ public class NetworkLayout implements LayoutGraph {
 
     public void setBlockDirection(String name, BlockDirection direction) {
         blockDirectionMap.put(name, direction);
+    }
+
+    public boolean hasEdge() {
+        return getVertices().size() >= 2;
     }
 }

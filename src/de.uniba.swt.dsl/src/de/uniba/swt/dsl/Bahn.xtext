@@ -21,7 +21,7 @@ ModuleProperty:
 	| TrainsProperty 
 	| LayoutProperty 
 	| PlatformProperty
-	| RouteProperty
+//	| RouteProperty
 	| FuncDecl
 	;
 
@@ -65,10 +65,25 @@ LayoutProperty :
 	{LayoutProperty} 'layout'
 		(items+=LayoutElement)*
 	'end';
+/*
 RouteProperty:
 	{RouteProperty} 'routes'
 		(items+=RouteElement)*
 	'end';
+RouteElement:
+	name=ID 
+	'source' source=[SignalElement] 
+	'destination' destination=[SignalElement]
+	'path' (segments+=[SegmentElement])* 'end'
+	'points' (points+=RoutePoint)* 'end'
+	'signals' (signals+=[SignalElement])* 'end'
+	'conflicts' (conflicts+=[RouteElement])* 'end'
+;
+*/
+
+RoutePoint:
+	point=[PointElement] aspect=PointAspectType
+;
 
 GetFuncExpr returns BehaviourExpr:
 	{GetFuncExpr} 'get'
@@ -105,20 +120,6 @@ enum TimeSpanType:
 
 PointAspectLiteral:
 	value=PointAspectType
-;
-
-RouteElement:
-	name=ID 
-	'source' source=[SignalElement] 
-	'destination' destination=[SignalElement]
-	'path' (segments+=[SegmentElement])* 'end'
-	'points' (points+=RoutePoint)* 'end'
-	'signals' (signals+=[SignalElement])* 'end'
-	'conflicts' (conflicts+=[RouteElement])* 'end'
-;
-
-RoutePoint:
-	point=[PointElement] aspect=PointAspectType
 ;
 		
 enum TrainType:

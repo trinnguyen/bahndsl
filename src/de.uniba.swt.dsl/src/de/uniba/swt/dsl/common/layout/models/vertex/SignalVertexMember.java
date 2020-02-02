@@ -1,9 +1,9 @@
-package de.uniba.swt.dsl.common.layout.models;
+package de.uniba.swt.dsl.common.layout.models.vertex;
 
 import de.uniba.swt.dsl.bahn.BlockElement;
 import de.uniba.swt.dsl.bahn.SignalElement;
 
-public class SignalVertexMember extends VertexMember {
+public class SignalVertexMember extends AbstractVertexMember {
 
     public SignalVertexMember(SignalElement signal, BlockElement connectedBlock) {
         this.signal = signal;

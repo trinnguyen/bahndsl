@@ -1,8 +1,8 @@
-package de.uniba.swt.dsl.common.layout.models;
+package de.uniba.swt.dsl.common.layout.models.vertex;
 
-public abstract class VertexMember {
+public abstract class AbstractVertexMember {
 
-    protected VertexMember() {
+    protected AbstractVertexMember() {
     }
 
     public abstract String getName();
@@ -22,7 +22,7 @@ public abstract class VertexMember {
     }
 
     public boolean isPoint() {
-        return getType() == VertexMemberType.Switch || getType() == VertexMemberType.Crossing;
+        return getType() == VertexMemberType.StandardSwitch || getType() == VertexMemberType.DoubleSlipSwitch;
     }
 }
 

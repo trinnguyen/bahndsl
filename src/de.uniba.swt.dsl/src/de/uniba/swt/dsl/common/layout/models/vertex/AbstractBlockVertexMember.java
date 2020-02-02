@@ -1,8 +1,8 @@
-package de.uniba.swt.dsl.common.layout.models;
+package de.uniba.swt.dsl.common.layout.models.vertex;
 
 import de.uniba.swt.dsl.bahn.BlockElement;
 
-public abstract class AbstractBlockVertexMember extends VertexMember {
+public abstract class AbstractBlockVertexMember extends AbstractVertexMember {
     private BlockElement block;
 
     public AbstractBlockVertexMember(BlockElement block) {

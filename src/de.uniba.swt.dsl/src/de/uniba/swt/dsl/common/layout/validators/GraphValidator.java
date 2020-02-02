@@ -1,12 +1,12 @@
 package de.uniba.swt.dsl.common.layout.validators;
 
-import de.uniba.swt.dsl.common.layout.NetworkLayout;
-import de.uniba.swt.dsl.common.layout.models.graph.LayoutVertex;
+import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
+import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class LayoutGraphValidator {
+public class GraphValidator {
     private NetworkLayout networkLayout;
     private Map<LayoutVertex, Boolean> visitedVertices = new HashMap<>();
 

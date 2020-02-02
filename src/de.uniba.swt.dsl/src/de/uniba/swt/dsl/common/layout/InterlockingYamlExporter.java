@@ -1,11 +1,8 @@
 package de.uniba.swt.dsl.common.layout;
 
-import de.uniba.swt.dsl.bahn.PointElement;
-import de.uniba.swt.dsl.bahn.TrackSection;
 import de.uniba.swt.dsl.common.layout.models.Route;
-import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
-import de.uniba.swt.dsl.common.layout.models.graph.BlockEdge;
-import de.uniba.swt.dsl.common.layout.models.graph.SwitchEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,13 +43,13 @@ public class InterlockingYamlExporter {
         // segment (blocks and points)
         appendLine("path:");
         indentLevel++;
-        List<SwitchEdge> points = new ArrayList<>();
+        List<StandardSwitchEdge> points = new ArrayList<>();
         String cmtPath = route.getEdges().stream().map(AbstractEdge::getKey).collect(Collectors.joining(" -> "));
         appendLine("# %s", cmtPath);
         for (AbstractEdge edge : route.getEdges()) {
             // cache points
-            if (edge.getEdgeType() == AbstractEdge.EdgeType.Switch) {
-                points.add((SwitchEdge)edge);
+            if (edge.getEdgeType() == AbstractEdge.EdgeType.SingleSwitch) {
+                points.add((StandardSwitchEdge)edge);
             }
 
             // render
@@ -65,7 +62,7 @@ public class InterlockingYamlExporter {
         // points
         appendLine("points:");
         indentLevel++;
-        for (SwitchEdge point : points) {
+        for (StandardSwitchEdge point : points) {
             appendLine("- id: %s", point.getPointElement().getName());
             indentLevel++;
             appendLine("position: %s", point.getAspect().toString().toLowerCase());

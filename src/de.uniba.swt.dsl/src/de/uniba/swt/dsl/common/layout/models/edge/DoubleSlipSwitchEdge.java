@@ -1,24 +1,22 @@
-package de.uniba.swt.dsl.common.layout.models.graph;
+package de.uniba.swt.dsl.common.layout.models.edge;
 
 import de.uniba.swt.dsl.bahn.PointElement;
-import de.uniba.swt.dsl.bahn.TrackSection;
+import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
 
-import java.util.Objects;
-
-public class SwitchEdge extends AbstractPointEdge {
-
+public class DoubleSlipSwitchEdge extends AbstractPointEdge {
     public enum Aspect {
-        Normal,
-        Reverse
+        Normal1,
+        Normal2,
+        Reverse1,
+        Reverse2,
     }
 
     private Aspect aspect;
 
-    public SwitchEdge(PointElement pointElement, Aspect aspect, LayoutVertex srcVertex, LayoutVertex destVertex) {
+    public DoubleSlipSwitchEdge(PointElement pointElement, Aspect aspect, LayoutVertex srcVertex, LayoutVertex destVertex) {
         super(pointElement, srcVertex, destVertex);
         this.aspect = aspect;
     }
-
 
     public Aspect getAspect() {
         return aspect;
@@ -30,7 +28,7 @@ public class SwitchEdge extends AbstractPointEdge {
 
     @Override
     public EdgeType getEdgeType() {
-        return EdgeType.Switch;
+        return EdgeType.DoubleSlipSwitch;
     }
 
     @Override
@@ -41,10 +39,10 @@ public class SwitchEdge extends AbstractPointEdge {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SwitchEdge)) return false;
+        if (!(o instanceof DoubleSlipSwitchEdge)) return false;
         if (!super.equals(o)) return false;
 
-        SwitchEdge that = (SwitchEdge) o;
+        DoubleSlipSwitchEdge that = (DoubleSlipSwitchEdge) o;
 
         return aspect == that.aspect;
     }

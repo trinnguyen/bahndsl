@@ -99,15 +99,26 @@ class ConfigurationParsingTest {
 	}
 	
 	@Test
-	def void testPoint() {
+	def void testStandardSwitch() {
 		'''
 			module test
 				points onecontrol
 					point1 0x00 
-					block blockPoint1
+					segment seg1
 					normal 0x01
 					reverse 0x00
 					initial normal
+				end
+			end
+		'''.parse.assertNoParsingErrors
+	}
+
+	@Test
+	def void testPlatforms() {
+		'''
+			module test
+				platforms
+					platform1 overlap seg1 main seg1 overlap seg2
 				end
 			end
 		'''.parse.assertNoParsingErrors

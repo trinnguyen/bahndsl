@@ -1,6 +1,6 @@
 package de.uniba.swt.dsl.common.layout.models;
 
-import de.uniba.swt.dsl.common.layout.models.graph.AbstractEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 
 import java.util.HashSet;
 import java.util.Set;

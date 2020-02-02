@@ -1,9 +1,10 @@
-package de.uniba.swt.dsl.common.layout.models.graph;
+package de.uniba.swt.dsl.common.layout.models.edge;
 
 import de.uniba.swt.dsl.bahn.BlockElement;
 import de.uniba.swt.dsl.bahn.SegmentElement;
 import de.uniba.swt.dsl.common.layout.models.BlockDirection;
-import de.uniba.swt.dsl.common.layout.models.BlockVertexMember;
+import de.uniba.swt.dsl.common.layout.models.vertex.BlockVertexMember;
+import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
 
 import java.util.ArrayList;
 import java.util.List;
