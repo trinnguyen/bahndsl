@@ -33,9 +33,9 @@ module layout3
 	    b3.down -- c1.up1
 	    b4.down -- c1.up2
 
-	    # sig1 -- b1.down
-	    # sig2 -- b2.up
-	    # sig3 -- b3.up
-	    # sig4 -- b4.down
+	    sig1 -- b1.down
+	    sig2 -- b2.up
+	    sig3 -- b3.up
+	    sig4 -- b4.down
 	end
 end

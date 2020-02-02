@@ -11,6 +11,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
+import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class LayoutGenerator {
@@ -47,7 +49,7 @@ public class LayoutGenerator {
 				return;
 			}
 
-			var routes = routesExplorer.findAllRoutes(networkLayout, signals.stream().map(SignalElement::getName).collect(Collectors.toSet()));
+			var routes = routesExplorer.findAllRoutes(networkLayout, signals);
 			logger.debug(LogHelper.printObject(routes));
 
 			// generate yaml
@@ -58,8 +60,13 @@ public class LayoutGenerator {
 		}
 	}
 
-	private EList<SignalElement> getAllSignals(RootModule rootModule) {
-		var signalsProp = rootModule.getProperties().stream().filter(p -> p instanceof SignalsProperty).map(p -> (SignalsProperty)p).findFirst();
-		return signalsProp.map(SignalsProperty::getItems).orElse(null);
+	private Set<String> getAllSignals(RootModule rootModule) {
+		return rootModule.getProperties()
+				.stream()
+				.filter(p -> p instanceof SignalsProperty)
+				.map(p -> ((SignalsProperty) p).getItems())
+				.flatMap(Collection::stream)
+				.map(SignalElement::getName)
+				.collect(Collectors.toSet());
 	}
 }

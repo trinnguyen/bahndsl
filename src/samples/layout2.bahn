@@ -24,7 +24,7 @@ module layout2
 	end
 	blocks
 		b1 overlap seg6 main seg2
-		b2 main seg6
+		b2 main seg3
 		b3 main seg4
 		b4 main seg5
 	end
