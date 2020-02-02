@@ -30,7 +30,6 @@ dependencies {
 	mwe2 "org.eclipse.xtext:org.eclipse.xtext.common.types:${xtextVersion}"
 	mwe2 "org.eclipse.xtext:org.eclipse.xtext.xtext.generator:${xtextVersion}"
 	mwe2 'org.eclipse.xtext:xtext-antlr-generator'
-	implementation group: 'commons-cli', name: 'commons-cli', version: '1.2'
 }
 
 task generateXtextLanguage(type: JavaExec) {
