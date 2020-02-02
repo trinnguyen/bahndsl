@@ -4,13 +4,7 @@
 package de.uniba.swt.dsl.scoping;
 
 
-import de.uniba.swt.dsl.bahn.BahnFactory;
-import de.uniba.swt.dsl.bahn.BahnPackage;
-import de.uniba.swt.dsl.bahn.BlockElement;
-import de.uniba.swt.dsl.bahn.FuncDecl;
-import de.uniba.swt.dsl.bahn.FunctionCallExpr;
-import de.uniba.swt.dsl.bahn.LayoutProperty;
-import de.uniba.swt.dsl.bahn.LayoutReference;
+import de.uniba.swt.dsl.bahn.*;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

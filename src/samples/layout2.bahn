@@ -8,6 +8,7 @@ module layout2
 		seg3 0x02 length 11cm
 		seg4 0x03 length 11cm
 		seg5 0x04 length 11cm
+		seg6 0x05 length 11cm
 	end
 	aspects
 		red 0x01
@@ -22,8 +23,8 @@ module layout2
 	    p1 0x01 segment seg1 normal 0x00 reverse 0x01 initial normal
 	end
 	blocks
-		b1 main seg2
-		b2 main seg3
+		b1 overlap seg6 main seg2
+		b2 main seg6
 		b3 main seg4
 		b4 main seg5
 	end
