@@ -30,6 +30,9 @@ public class BahnValidator extends AbstractBahnValidator {
     @Inject
     UniqueSegmentValidator segmentValidator;
 
+    @Inject
+    UniqueHexValidator hexValidator;
+
     @Check
     public void typeCheckingExpression(Expression expression) {
         try {
@@ -87,6 +90,33 @@ public class BahnValidator extends AbstractBahnValidator {
     }
 
     @Check
+    public void validateSegmentsProperty(SegmentsProperty segmentsProperty) {
+        try {
+            hexValidator.validateUniqueAddress(segmentsProperty.getItems(), SegmentElement::getAddress);
+        } catch (Exception e) {
+            error(e.getMessage(), BahnPackage.Literals.SEGMENTS_PROPERTY__ITEMS);
+        }
+    }
+
+    @Check
+    public void validateSignalsProperty(SignalsProperty signalsProperty) {
+        try {
+            hexValidator.validateUniqueAddress(signalsProperty.getItems(), SignalElement::getNumber);
+        } catch (Exception e) {
+            error(e.getMessage(), BahnPackage.Literals.SIGNALS_PROPERTY__ITEMS);
+        }
+    }
+
+    @Check
+    public void validatePointsProperty(PointsProperty pointsProperty) {
+        try {
+            hexValidator.validateUniqueAddress(pointsProperty.getItems(), PointElement::getNumber);
+        } catch (Exception e) {
+            error(e.getMessage(), BahnPackage.Literals.POINTS_PROPERTY__ITEMS);
+        }
+    }
+
+    @Check
     public void validatePoint(PointElement pointElement) {
         try {
             segmentValidator.validateSegment(pointElement);
@@ -112,13 +142,4 @@ public class BahnValidator extends AbstractBahnValidator {
             error(e.getMessage(), e.getFeature());
         }
     }
-
-//    @Check
-//    public void mainFuncRequired(BahnExpr bahnExpr) {
-//        boolean hasMain = bahnExpr.getDecls() != null
-//                && bahnExpr.getDecls().stream().anyMatch(d -> Objects.equals(d.getName().toLowerCase(), "main"));
-//        if (!hasMain) {
-//            error("Main function is required", BahnexprPackage.Literals.BAHN_EXPR__DECLS);
-//        }
-//    }
 }

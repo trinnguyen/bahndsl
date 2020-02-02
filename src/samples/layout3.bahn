@@ -4,19 +4,19 @@ module layout3
     end
 	segments master
 		seg1 0x01 length 11cm
-		seg2 0x01 length 11cm
-		seg3 0x01 length 11cm
-		seg4 0x01 length 11cm
-		seg5 0x01 length 11cm
+		seg2 0x02 length 11cm
+		seg3 0x03 length 11cm
+		seg4 0x04 length 11cm
+		seg5 0x05 length 11cm
 	end
 	aspects
 		red 0x01
 	end
 	signals master
 		sig1 0x01 aspects red end initial red
-		sig2 0x01 aspects red end initial red
-		sig3 0x01 aspects red end initial red
-		sig4 0x01 aspects red end initial red
+		sig2 0x02 aspects red end initial red
+		sig3 0x03 aspects red end initial red
+		sig4 0x04 aspects red end initial red
 	end
 	crossings
 	    c1 segment seg1
