@@ -77,7 +77,8 @@ class ConfigurationParsingTest {
 			end
 		'''.parse.assertNoParsingErrors
 	}
-	
+
+	/*
 	@Test
 	def void testRoute() {
 		'''
@@ -97,6 +98,7 @@ class ConfigurationParsingTest {
 			end
 		'''.parse.assertNoParsingErrors
 	}
+	*/
 	
 	@Test
 	def void testStandardSwitch() {

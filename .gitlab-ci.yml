@@ -5,6 +5,14 @@ cache:
   paths:
     - .m2/repository
 
+test:
+  stage: test
+  script:
+    - 'cd src && ./gradlew de.uniba.swt.dsl.test:test'
+  artifacts:
+    reports:
+      junit: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
+
 deploy-rcp-compiler:
   stage: deploy
   script:
