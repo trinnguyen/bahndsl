@@ -39,7 +39,7 @@ public class LayoutGenerator {
 
 			// generate graph
 			var graph = networkLayout.generateGraph();
-			fsa.generateFile(rootModule.getName() + "_diagram.dot", dotExporter.render(networkLayout, graph));
+			fsa.generateFile("layout_diagram.dot", dotExporter.render(networkLayout, graph));
 
 			// find all routes
 			var signals = getAllSignals(rootModule);

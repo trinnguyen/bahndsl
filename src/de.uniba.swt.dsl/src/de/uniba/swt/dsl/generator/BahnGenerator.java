@@ -52,8 +52,6 @@ public class BahnGenerator extends AbstractGenerator {
 	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		RootModule rootModule = getRootModule(resource);
 		if (rootModule != null) {
-			// ast
-			fsa.generateFile(rootModule.getName() + "_ast.txt", AstGenerator.dumpAst(resource.getContents().get(0), ""));
 
 			// YAML
 			NetworkModel network = modelConverter.buildNetworkModel(rootModule);
@@ -68,7 +66,7 @@ public class BahnGenerator extends AbstractGenerator {
 			fsa.generateFile("bidib_train_config.yml", bidibGenerator.dumpTrainConfig(network.name, network.trains));
 
 			// SCCharts
-			fsa.generateFile(rootModule.getName() + "_sccharts.sctx", scChartsGenerator.generate(rootModule));
+			fsa.generateFile("interlocking_sccharts.sctx", scChartsGenerator.generate(rootModule));
 			
 			// layout
 			layoutGenerator.run(fsa, rootModule);
