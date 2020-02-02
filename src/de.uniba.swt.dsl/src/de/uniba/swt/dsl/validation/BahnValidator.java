@@ -27,6 +27,9 @@ public class BahnValidator extends AbstractBahnValidator {
     @Inject
     BahnLayoutValidator layoutValidator;
 
+    @Inject
+    UniqueSegmentValidator segmentValidator;
+
     @Check
     public void typeCheckingExpression(Expression expression) {
         try {
@@ -80,6 +83,33 @@ public class BahnValidator extends AbstractBahnValidator {
             for (LayoutException exp : compositeExp.getExceptions()) {
                 error(exp.getMessage(), BahnPackage.Literals.LAYOUT_PROPERTY__ITEMS);
             }
+        }
+    }
+
+    @Check
+    public void validatePoint(PointElement pointElement) {
+        try {
+            segmentValidator.validateSegment(pointElement);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void validatePoint(BlockElement blockElement) {
+        try {
+            segmentValidator.validateSegment(blockElement);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void validateCrossing(CrossingElement crossingElement) {
+        try {
+            segmentValidator.validateSegment(crossingElement);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
         }
     }
 

@@ -80,7 +80,6 @@ public class NetworkLayout implements LayoutGraph {
 
     @Override
     public Set<AbstractEdge> incidentEdges(LayoutVertex vertex) {
-        logger.debug("incidentEdges: " + vertex);
         return vertex.getMembers()
                 .stream()
                 .filter(member -> member.getType() != VertexMemberType.Signal)
@@ -124,7 +123,6 @@ public class NetworkLayout implements LayoutGraph {
     }
 
     private Set<AbstractEdge> findEdges(LayoutVertex vertex, AbstractVertexMember member) {
-        logger.debug(String.format("find vertex: %s \n\t %s", vertex, member));
         // segment block: platform, block
         if (member.isSegmentBlock()) {
             var blockMember = (BlockVertexMember) member;

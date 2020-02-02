@@ -32,7 +32,6 @@ public class LayoutGenerator {
 			return;
 		
 		try {
-			Logger.getRootLogger().setLevel(Level.DEBUG);
 			// network
 			var networkLayout = networkLayoutBuilder.build(layoutProp);
 			logger.debug(networkLayout);

@@ -4,6 +4,10 @@ module layout3
     end
 	segments master
 		seg1 0x01 length 11cm
+		seg2 0x01 length 11cm
+		seg3 0x01 length 11cm
+		seg4 0x01 length 11cm
+		seg5 0x01 length 11cm
 	end
 	aspects
 		red 0x01
@@ -18,10 +22,10 @@ module layout3
 	    c1 segment seg1
 	end
 	blocks
-		b1 main seg1
-		b2 main seg1
-		b3 main seg1
-		b4 main seg1
+		b1 main seg2
+		b2 main seg3
+		b3 main seg4
+		b4 main seg5
 	end
 	layout
 	    b1.up -- c1.down1
