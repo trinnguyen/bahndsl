@@ -8,6 +8,7 @@ unzip ../build/bahn-ide-server*.zip -d ./
 mv bahn-ide-server* bahn-ide-server
 
 # build
+npm install
 npm run package
 cd ..
 
