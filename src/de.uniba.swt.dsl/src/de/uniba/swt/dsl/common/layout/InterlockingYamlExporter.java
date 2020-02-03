@@ -2,6 +2,7 @@ package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.DoubleSlipSwitchEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
 
 import java.util.*;
@@ -44,12 +45,17 @@ public class InterlockingYamlExporter {
         appendLine("path:");
         indentLevel++;
         List<StandardSwitchEdge> points = new ArrayList<>();
+        List<DoubleSlipSwitchEdge> slipSwitchEdges = new ArrayList<>();
         String cmtPath = route.getEdges().stream().map(AbstractEdge::getKey).collect(Collectors.joining(" -> "));
         appendLine("# %s", cmtPath);
         for (AbstractEdge edge : route.getEdges()) {
             // cache points
-            if (edge.getEdgeType() == AbstractEdge.EdgeType.SingleSwitch) {
+            if (edge instanceof StandardSwitchEdge) {
                 points.add((StandardSwitchEdge)edge);
+            }
+
+            if (edge instanceof DoubleSlipSwitchEdge) {
+                slipSwitchEdges.add((DoubleSlipSwitchEdge) edge);
             }
 
             // render
@@ -66,6 +72,12 @@ public class InterlockingYamlExporter {
             appendLine("- id: %s", point.getPointElement().getName());
             indentLevel++;
             appendLine("position: %s", point.getAspect().toString().toLowerCase());
+            indentLevel--;
+        }
+        for (DoubleSlipSwitchEdge slipSwitchEdge : slipSwitchEdges) {
+            appendLine("- id: %s", slipSwitchEdge.getPointElement().getName());
+            indentLevel++;
+            appendLine("position: %s", slipSwitchEdge.printifyAspect());
             indentLevel--;
         }
         indentLevel--;

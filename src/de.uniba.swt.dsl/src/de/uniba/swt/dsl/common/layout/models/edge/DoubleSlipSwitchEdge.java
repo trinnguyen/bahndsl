@@ -4,6 +4,12 @@ import de.uniba.swt.dsl.bahn.PointElement;
 import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
 
 public class DoubleSlipSwitchEdge extends AbstractPointEdge {
+    public String printifyAspect() {
+        return (aspect == Aspect.Normal1 || aspect == Aspect.Normal2)
+                ? "normal"
+                : "reverse";
+    }
+
     public enum Aspect {
         Normal1,
         Normal2,
