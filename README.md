@@ -5,12 +5,16 @@ Respository for Masters thesis on BahnDSL: A Domain-Specific Language for Config
 ## Download latest artifacts
 
 ### Bahn IDE
-- [macOS: BahnIDE-macosx.cocoa.x86_64.tar.gz](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/BahnIDE-macosx.cocoa.x86_64.tar.gz?job=deploy-rcp-compiler)
-- [Linux: BahnIDE-linux.gtk.x86_64.tar.gz](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/BahnIDE-linux.gtk.x86_64.tar.gz?job=deploy-rcp-compiler)
-- [Windows: BahnIDE-win32.win32.x86_64.zip](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/BahnIDE-win32.win32.x86_64.zip?job=deploy-rcp-compiler)
+- [macOS: BahnIDE-macosx.cocoa.x86_64.tar.gz](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/BahnIDE-macosx.cocoa.x86_64.tar.gz?job=build-rcp-compiler)
+- [Linux: BahnIDE-linux.gtk.x86_64.tar.gz](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/BahnIDE-linux.gtk.x86_64.tar.gz?job=build-rcp-compiler)
+- [Windows: BahnIDE-win32.win32.x86_64.zip](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/BahnIDE-win32.win32.x86_64.zip?job=build-rcp-compiler)
 
 ### bahnc (Bahn Compiler CLI)
-- [macOS/Linux/Windows: bahnc-1.0.0-SNAPSHOT.zip](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/bahnc-1.0.0-SNAPSHOT.zip?job=deploy-rcp-compiler)
+- [macOS/Linux/Windows: bahnc-1.0.0-SNAPSHOT.zip](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/bahnc-1.0.0-SNAPSHOT.zip?job=build-rcp-compiler)
+
+### Bahn Language Support for VS Code
+- [Bahn Language VS Code Extension: bahn-language-0.0.1.vsix](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/bahn-language-0.0.1.vsix?job=deploy-vscode)
+
 
 ### Fix damaged macOS application
 - Run command line: `xattr -c "Bahn IDE.app"`
