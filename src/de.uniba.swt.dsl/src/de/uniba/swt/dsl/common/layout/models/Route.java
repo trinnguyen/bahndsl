@@ -1,10 +1,10 @@
 package de.uniba.swt.dsl.common.layout.models;
 
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
+import de.uniba.swt.dsl.common.layout.models.vertex.SignalVertexMember;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Route {
@@ -13,11 +13,14 @@ public class Route {
     private String destSignal;
     private Stack<AbstractEdge> edges;
     private Set<String> conflictRouteIds = new HashSet<>();
+    private final List<String> immediateSignals;
 
-    public Route(String srcSignal, String destSignal, Stack<AbstractEdge> edges) {
+
+    public Route(String srcSignal, String destSignal, Stack<AbstractEdge> edges, List<String> immediateSignals) {
         this.srcSignal = srcSignal;
         this.destSignal = destSignal;
         this.edges = edges;
+        this.immediateSignals = immediateSignals;
     }
 
     public String getId() {
@@ -56,9 +59,15 @@ public class Route {
         return conflictRouteIds;
     }
 
+    public List<String> getImmediateSignals() {
+        return immediateSignals;
+    }
+
     @Override
     public String toString() {
         var strEdge = edges.stream().map(Object::toString).collect(Collectors.joining(" -> "));
-        return String.format("%s (%s - %s): %s\n\t\tconflicts: %s", id, srcSignal, destSignal, strEdge, getConflictRouteIds());
+        return String.format("%s (%s - %s): %s\n" +
+                "\t\tconflicts: %s\n" +
+                "\t\timmediate signals: %s", id, srcSignal, destSignal, strEdge, getConflictRouteIds(), getImmediateSignals());
     }
 }
