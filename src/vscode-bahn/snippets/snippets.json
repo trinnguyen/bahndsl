@@ -1,5 +1,5 @@
 {
-    "Print to console": {
+    "Module": {
         "prefix": "module",
         "body": [
             "module $TM_FILENAME_BASE",
@@ -27,5 +27,14 @@
             "end"
         ],
         "description": "Create new Bahn model"
+    },
+    "Interlocking Entry": {
+        "prefix": "interlocking",
+        "body": [
+            "def interlocking(string src_signal_id, string dest_signal_id, string train_id): int",
+            "   return -1",
+            "end"
+        ],
+        "description": "Entry interlocking function"
     }
 }
