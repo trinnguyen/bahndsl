@@ -22,7 +22,7 @@ public class ArgOptionContainer {
         builder.append(options.stream().map(o -> "[" + o.getFormattedKeyValue() + "]").collect(Collectors.joining(" ")));
         builder.append("\n");
         for (ArgOption option : options) {
-            String tab = option.isHasValue() ? "\t\t" : "\t\t\t";
+            String tab = option.isHasValue() ? "\t" : "\t\t";
             builder.append("" +
                     "  ").append(option.getFormattedKeyValue()).append(tab).append(option.getDesc()).append("\n");
         }
