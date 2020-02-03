@@ -12,9 +12,6 @@ Respository for Masters thesis on BahnDSL: A Domain-Specific Language for Config
 ### bahnc (Bahn Compiler CLI)
 - [macOS/Linux/Windows: bahnc-1.0.0-SNAPSHOT.zip](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/bahnc-1.0.0-SNAPSHOT.zip?job=deploy-rcp-compiler)
 
-### Bahn Language Support for VS Code
-- [Bahn Language VS Code Extension: bahn-language-0.0.1.vsix](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/bahn-language-0.0.1.vsix?job=deploy-rcp-compiler)
-
 ### Fix damaged macOS application
 - Run command line: `xattr -c "Bahn IDE.app"`
 

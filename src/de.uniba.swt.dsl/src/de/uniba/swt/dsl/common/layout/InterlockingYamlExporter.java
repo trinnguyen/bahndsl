@@ -34,7 +34,7 @@ public class InterlockingYamlExporter {
 
         // generate signals
         indentLevel = 1;
-        appendLine("- id: %s", route.getId());
+        appendLine("- id: %s #route%s", route.getId(), route.getId());
 
         indentLevel++;
         appendLine("source: %s", route.getSrcSignal());
