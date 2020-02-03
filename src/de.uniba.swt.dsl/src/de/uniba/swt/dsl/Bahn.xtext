@@ -210,9 +210,13 @@ LayoutElement :
 ;
 
 LayoutReference:
-	elem=[TrackSection] '.' prop=ID
+	elem=[TrackSection] notSignal?='.' prop=ConnectorProp
 	|
 	elem=[SignalElement]
+;
+
+enum ConnectorProp:
+    STEM='stem' | STRAIGHT='straight' | SIDE='side' | DOWN='down' | UP='up' | DOWN1='down1' | DOWN2='down2' | UP1='up1' | UP2='up2'
 ;
 
 Length:

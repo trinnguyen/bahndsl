@@ -55,7 +55,7 @@ public class NetworkLayoutBuilder {
                 throw new LayoutException("Signal can only connect to a block");
             }
             var signalMember = new SignalVertexMember((SignalElement) firstRef.getElem(), (BlockElement)secondRef.getElem());
-            var blockMember = new BlockVertexMember((BlockElement)secondRef.getElem(), secondRef.getProp());
+            var blockMember = new BlockVertexMember((BlockElement)secondRef.getElem(), secondRef.getProp().getLiteral());
             return List.of(signalMember, blockMember);
         }
 
@@ -64,7 +64,7 @@ public class NetworkLayoutBuilder {
                 throw new LayoutException("Signal can only connect to a block");
             }
             var signalMember = new SignalVertexMember((SignalElement) secondRef.getElem(), (BlockElement)firstRef.getElem());
-            var blockMember = new BlockVertexMember((BlockElement)firstRef.getElem(), firstRef.getProp());
+            var blockMember = new BlockVertexMember((BlockElement)firstRef.getElem(), firstRef.getProp().getLiteral());
             return List.of(blockMember, signalMember);
         }
 
@@ -107,15 +107,15 @@ public class NetworkLayoutBuilder {
 
     private AbstractVertexMember convertToVertexMember(LayoutReference ref) {
         if (isSwitch(ref))
-            return new StandardSwitchVertexMember((PointElement) ref.getElem(), ref.getProp());
+            return new StandardSwitchVertexMember((PointElement) ref.getElem(), ref.getProp().getLiteral());
 
         if (isDoubleSlipSwitch(ref))
-            return new DoubleSlipSwitchVertexMember((PointElement) ref.getElem(), ref.getProp());
+            return new DoubleSlipSwitchVertexMember((PointElement) ref.getElem(), ref.getProp().getLiteral());
 
         if (isCrossing(ref))
-            return new CrossingVertexMember((CrossingElement) ref.getElem(), ref.getProp());
+            return new CrossingVertexMember((CrossingElement) ref.getElem(), ref.getProp().getLiteral());
 
-        return new BlockVertexMember((BlockElement) ref.getElem(), ref.getProp());
+        return new BlockVertexMember((BlockElement) ref.getElem(), ref.getProp().getLiteral());
     }
 
     private boolean isSignal(LayoutReference ref) {
@@ -133,12 +133,12 @@ public class NetworkLayoutBuilder {
     private boolean isSwitch(LayoutReference ref) {
         return ref.getElem() instanceof PointElement
                 && ref.getProp() != null
-                && BahnConstants.STANDARD_SWITCH_PROPS.contains(ref.getProp().toLowerCase());
+                && BahnConstants.STANDARD_SWITCH_PROPS.contains(ref.getProp().getLiteral().toLowerCase());
     }
 
     private boolean isDoubleSlipSwitch(LayoutReference ref) {
         return ref.getElem() instanceof PointElement
                 && ref.getProp() != null
-                && BahnConstants.DOUBLE_SLIP_SWITCH_PROPS.contains(ref.getProp().toLowerCase());
+                && BahnConstants.DOUBLE_SLIP_SWITCH_PROPS.contains(ref.getProp().getLiteral().toLowerCase());
     }
 }

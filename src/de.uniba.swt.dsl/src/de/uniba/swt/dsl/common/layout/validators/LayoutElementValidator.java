@@ -25,9 +25,9 @@ public class LayoutElementValidator {
                     throw new ValidationException("Direction must be configured on the same block", BahnPackage.Literals.LAYOUT_ELEMENT__CONNECTORS);
                 }
 
-                if (!isBlockProp(leftRef.getProp())
-                        || !isBlockProp(rightRef.getProp())
-                        || leftRef.getProp().equalsIgnoreCase(rightRef.getProp())) {
+                if (!isBlockProp(leftRef.getProp().getLiteral())
+                        || !isBlockProp(rightRef.getProp().getLiteral())
+                        || leftRef.getProp().getLiteral().equalsIgnoreCase(rightRef.getProp().getLiteral())) {
                     var hint = String.join(",", BahnConstants.BLOCK_PROPS);
                     throw new ValidationException("Invalid connector property, use: " + hint, BahnPackage.Literals.LAYOUT_ELEMENT__CONNECTORS);
                 }
@@ -40,14 +40,14 @@ public class LayoutElementValidator {
     }
 
     public static void validateReference(LayoutReference reference) throws ValidationException {
-        var prop = reference.getProp();
         if (reference.getElem() instanceof SignalElement) {
-            if (prop == null)
+            if (!reference.isNotSignal())
                 return;
 
             throw new ValidationException("Signal should have no connector property", BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
         }
 
+        String prop = reference.getProp().getLiteral();
         Set<String> allowedProps = null;
         if (reference.getElem() instanceof PointElement) {
             allowedProps = new HashSet<>();
