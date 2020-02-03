@@ -1,0 +1,31 @@
+{
+    "Print to console": {
+        "prefix": "module",
+        "body": [
+            "module $TM_FILENAME_BASE",
+            "   boards",
+            "       $1 $2",
+            "   end",
+            "",
+            "   segments $1",
+            "   end",
+            "",
+            "   signals $1",
+            "   end",
+            "",
+            "   points $1",
+            "   end",
+            "",
+            "   trains",
+            "   end",
+            "",
+            "   blocks",
+            "   end",
+            "",
+            "   layout",
+            "   end",
+            "end"
+        ],
+        "description": "Create new Bahn model"
+    }
+}

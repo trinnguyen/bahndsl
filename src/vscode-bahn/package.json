@@ -9,7 +9,8 @@
         "vscode": "^1.41.0"
     },
     "categories": [
-        "Programming Languages"
+        "Programming Languages",
+        "Snippets"
     ],
     "activationEvents": [
         "onLanguage:bahn"
@@ -34,6 +35,12 @@
                 "language": "bahn",
                 "scopeName": "source.bahn",
                 "path": "./syntaxes/bahn.tmLanguage.json"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "bahn",
+                "path": "snippets/snippets.json"
             }
         ]
     },
