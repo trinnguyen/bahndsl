@@ -6,13 +6,15 @@ package de.uniba.swt.dsl.generator;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
-import com.google.inject.internal.util.$Nullable;
 import de.uniba.swt.dsl.BahnStandaloneSetup;
 
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 
+import de.uniba.swt.dsl.generator.cli.ArgOption;
+import de.uniba.swt.dsl.generator.cli.ArgOptionContainer;
+import de.uniba.swt.dsl.generator.cli.ArgParseResult;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -30,28 +32,48 @@ import org.eclipse.xtext.validation.Issue;
 public class Main {
 
 	public static void main(String[] args) {
+		// define
+		var container = new ArgOptionContainer(List.of(
+				new ArgOption("o", "output folder", true, "path"),
+				new ArgOption("v", "verbose logging")));
+
+		// parse arg
 		if (args.length == 0) {
-			showHelp();
+			showHelp(container, true);
 			return;
 		}
+		ArgParseResult result = null;
+		try {
+			result = container.parse(args, 1);
+		} catch (Exception e) {
+			System.out.println(e.getMessage() + "\n");
+			showHelp(container, false);
+			return;
+		}
+
+		// start
+		if (result.hasOption("v")) {
+			Logger.getRootLogger().setLevel(Level.DEBUG);
+		}
+		String outputPath = result.getValue("o", null);
 
 		Injector injector = new BahnStandaloneSetup().createInjectorAndDoEMFRegistration();
 		Main main = injector.getInstance(Main.class);
 
-		String outputPath = args.length > 1 ? args[1] : null;
 		boolean success = main.runGenerator(args[0], outputPath);
 		if (!success) {
 			System.exit(1);
 		}
 	}
 
-	private static void showHelp() {
-		String builder = "OVERVIEW: Bahn compiler\n\n" +
-				"USAGE: bahnc file [output]\n\n" +
-				"EXAMPLE: \n" +
-				"\tbahnc example.bahn\n" +
-				"\tbahnc example.bahn output/src-gen\n";
-		System.out.println(builder);
+	private static void showHelp(ArgOptionContainer container, boolean showAll) {
+		if (showAll) {
+			System.out.println("OVERVIEW: Bahn compiler\n");
+		}
+		System.out.println(container.formatHelp("bahnc file"));
+		System.out.println("EXAMPLE: \n" +
+				"  bahnc example.bahn\n" +
+				"  bahnc example.bahn output/src-gen\n");
 	}
 
 	@Inject
