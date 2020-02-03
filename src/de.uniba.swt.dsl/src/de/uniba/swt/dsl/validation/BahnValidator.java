@@ -33,6 +33,9 @@ public class BahnValidator extends AbstractBahnValidator {
     @Inject
     UniqueHexValidator hexValidator;
 
+    @Inject
+    BoardRefValidator boardRefValidator;
+
     @Check
     public void typeCheckingExpression(Expression expression) {
         try {
@@ -93,6 +96,7 @@ public class BahnValidator extends AbstractBahnValidator {
     public void validateSegmentsProperty(SegmentsProperty segmentsProperty) {
         try {
             hexValidator.validateUniqueAddress(segmentsProperty.getItems(), SegmentElement::getAddress);
+            boardRefValidator.validateBoard(segmentsProperty, segmentsProperty.getBoard());
         } catch (Exception e) {
             error(e.getMessage(), BahnPackage.Literals.SEGMENTS_PROPERTY__ITEMS);
         }
@@ -102,6 +106,7 @@ public class BahnValidator extends AbstractBahnValidator {
     public void validateSignalsProperty(SignalsProperty signalsProperty) {
         try {
             hexValidator.validateUniqueAddress(signalsProperty.getItems(), SignalElement::getNumber);
+            boardRefValidator.validateBoard(signalsProperty, signalsProperty.getBoard());
         } catch (Exception e) {
             error(e.getMessage(), BahnPackage.Literals.SIGNALS_PROPERTY__ITEMS);
         }
@@ -111,6 +116,7 @@ public class BahnValidator extends AbstractBahnValidator {
     public void validatePointsProperty(PointsProperty pointsProperty) {
         try {
             hexValidator.validateUniqueAddress(pointsProperty.getItems(), PointElement::getNumber);
+            boardRefValidator.validateBoard(pointsProperty, pointsProperty.getBoard());
         } catch (Exception e) {
             error(e.getMessage(), BahnPackage.Literals.POINTS_PROPERTY__ITEMS);
         }
