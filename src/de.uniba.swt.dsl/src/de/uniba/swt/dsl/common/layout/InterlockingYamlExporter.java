@@ -2,8 +2,7 @@ package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
-import de.uniba.swt.dsl.common.layout.models.edge.DoubleSlipSwitchEdge;
-import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.AbstractPointEdge;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,18 +43,13 @@ public class InterlockingYamlExporter {
         // segment (blocks and points)
         appendLine("path:");
         indentLevel++;
-        List<StandardSwitchEdge> points = new ArrayList<>();
-        List<DoubleSlipSwitchEdge> slipSwitchEdges = new ArrayList<>();
+        List<AbstractPointEdge> points = new ArrayList<>();
         String cmtPath = route.getEdges().stream().map(AbstractEdge::getKey).collect(Collectors.joining(" -> "));
         appendLine("# %s", cmtPath);
         for (AbstractEdge edge : route.getEdges()) {
             // cache points
-            if (edge instanceof StandardSwitchEdge) {
-                points.add((StandardSwitchEdge)edge);
-            }
-
-            if (edge instanceof DoubleSlipSwitchEdge) {
-                slipSwitchEdges.add((DoubleSlipSwitchEdge) edge);
+            if (edge instanceof AbstractPointEdge) {
+                points.add((AbstractPointEdge)edge);
             }
 
             // render
@@ -68,16 +62,10 @@ public class InterlockingYamlExporter {
         // points
         appendLine("points:");
         indentLevel++;
-        for (StandardSwitchEdge point : points) {
+        for (AbstractPointEdge point : points) {
             appendLine("- id: %s", point.getPointElement().getName());
             indentLevel++;
-            appendLine("position: %s", point.getAspect().toString().toLowerCase());
-            indentLevel--;
-        }
-        for (DoubleSlipSwitchEdge slipSwitchEdge : slipSwitchEdges) {
-            appendLine("- id: %s", slipSwitchEdge.getPointElement().getName());
-            indentLevel++;
-            appendLine("position: %s", slipSwitchEdge.printifyAspect());
+            appendLine("position: %s", point.formatAspect());
             indentLevel--;
         }
         indentLevel--;

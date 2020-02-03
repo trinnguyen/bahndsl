@@ -53,4 +53,9 @@ public class StandardSwitchEdge extends AbstractPointEdge {
         result = 31 * result + (aspect != null ? aspect.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String formatAspect() {
+        return aspect.toString().toLowerCase();
+    }
 }

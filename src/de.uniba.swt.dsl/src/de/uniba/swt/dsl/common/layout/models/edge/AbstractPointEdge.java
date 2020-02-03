@@ -45,4 +45,6 @@ public abstract class AbstractPointEdge extends AbstractEdge {
         result = 31 * result + (pointElement != null ? pointElement.hashCode() : 0);
         return result;
     }
+
+    public abstract String formatAspect();
 }
