@@ -5,20 +5,28 @@ cache:
   paths:
     - .m2/repository
 
-test:
-  stage: test
-  script:
-    - 'src/gradlew -p src de.uniba.swt.dsl.test:test'
-  artifacts:
-    reports:
-      junit: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
+# test:
+#   stage: test
+#   script:
+#     - 'src/gradlew -p src de.uniba.swt.dsl.test:test'
+#   artifacts:
+#     reports:
+#       junit: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
 
 deploy-rcp-compiler:
-  stage: deploy
+  stage: build
   script:
     - 'sh src/build-gradle.sh'
-    - 'sh src/build-maven-rcp.sh'
-    # - 'sh src/build-node-vscode.sh'
+    # - 'sh src/build-maven-rcp.sh'
+  artifacts:
+    paths:
+    - src/build/
+    expire_in: 1 week
+    
+deploy-vscode:
+  stage: deploy
+  script:
+    - 'sh src/build-node-vscode.sh'
   artifacts:
     paths:
     - src/build/
