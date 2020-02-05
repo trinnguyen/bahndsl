@@ -13,14 +13,12 @@ public class Route {
     private String destSignal;
     private Stack<AbstractEdge> edges;
     private Set<String> conflictRouteIds = new HashSet<>();
-    private final List<String> immediateSignals;
+    private List<String> immediateSignals;
 
-
-    public Route(String srcSignal, String destSignal, Stack<AbstractEdge> edges, List<String> immediateSignals) {
+    public Route(String srcSignal, String destSignal, Stack<AbstractEdge> edges) {
         this.srcSignal = srcSignal;
         this.destSignal = destSignal;
         this.edges = edges;
-        this.immediateSignals = immediateSignals;
     }
 
     public String getId() {
@@ -63,11 +61,14 @@ public class Route {
         return immediateSignals;
     }
 
+    private String formatImmediateSignals() {
+        return String.format("\t\timmediate signals: %s", getImmediateSignals());
+    }
+
     @Override
     public String toString() {
         var strEdge = edges.stream().map(Object::toString).collect(Collectors.joining(" -> "));
         return String.format("%s (%s - %s): %s\n" +
-                "\t\tconflicts: %s\n" +
-                "\t\timmediate signals: %s", id, srcSignal, destSignal, strEdge, getConflictRouteIds(), getImmediateSignals());
+                "\t\tconflicts: %s\n", id, srcSignal, destSignal, strEdge, getConflictRouteIds());
     }
 }

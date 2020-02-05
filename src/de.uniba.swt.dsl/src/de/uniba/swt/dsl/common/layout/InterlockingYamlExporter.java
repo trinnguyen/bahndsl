@@ -74,12 +74,14 @@ public class InterlockingYamlExporter {
         appendLine("signals:");
 
         // immediate signals
+        /*
         appendLine("immediate_signals:");
         indentLevel++;
         for (var signalId : route.getImmediateSignals()) {
             appendLine("- id: %s", signalId);
         }
         indentLevel--;
+         */
 
         // conflicts
         appendLine("conflicts:");

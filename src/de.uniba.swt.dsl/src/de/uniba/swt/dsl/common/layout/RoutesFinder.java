@@ -146,10 +146,11 @@ public class RoutesFinder {
 
     private void terminateCurrentPath() {
         Stack<AbstractEdge> clonedEdges = new Stack<>();
-        List<String> immediateSignals = new ArrayList<>();
+        // List<String> immediateSignals = new ArrayList<>();
         for (AbstractEdge edge : currentEdges) {
             clonedEdges.push(edge);
 
+            /*
             if (edge instanceof BlockEdge) {
                 var blockEdge = (BlockEdge) edge;
 
@@ -160,7 +161,8 @@ public class RoutesFinder {
                         .filter(m -> m instanceof SignalVertexMember && !((SignalVertexMember) m).getSignal().equals(destMember.getSignal()))
                         .findFirst().ifPresent(signal -> immediateSignals.add(signal.getName()));
             }
+             */
         }
-        routes.add(new Route(srcMember.getName(), destMember.getName(), clonedEdges, immediateSignals));
+        routes.add(new Route(srcMember.getName(), destMember.getName(), clonedEdges));
     }
 }
