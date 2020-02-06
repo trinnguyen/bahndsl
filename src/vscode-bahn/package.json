@@ -55,6 +55,7 @@
     },
     "scripts": {
         "compile": "tsc -p ./src",
-        "package": "tsc -p ./src && vsce package"
+        "package": "tsc -p ./src && vsce package",
+        "publish": "tsc -p ./src && vsce publish patch"
     }
 }
