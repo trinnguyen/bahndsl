@@ -73,7 +73,7 @@ public class Main {
 		System.out.println(container.formatHelp("bahnc file"));
 		System.out.println("EXAMPLE: \n" +
 				"  bahnc example.bahn\n" +
-				"  bahnc example.bahn output/src-gen\n");
+				"  bahnc example.bahn -o output/src-gen\n");
 	}
 
 	@Inject
