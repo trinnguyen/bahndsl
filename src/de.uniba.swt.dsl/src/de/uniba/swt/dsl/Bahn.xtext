@@ -331,7 +331,6 @@ PrimaryExpr:
 	| ParenthesizedExpr
 	| LiteralExpr 
 	| ValuedReferenceExpr
-	| ExternalFunctionCallExpr
 	| FunctionCallExpr
 ;
 
@@ -361,6 +360,7 @@ ExternalFunctionCallExpr:
 
 FunctionCallExpr:
 	{FunctionCallExpr} decl=[FuncDecl] ('()' | '(' params+=Expression (',' params+=Expression)* ')')
+	| ExternalFunctionCallExpr
 	| BehaviourExpr
 ;
 

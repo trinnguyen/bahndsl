@@ -1,11 +1,9 @@
 module route1
     def request_route(string src_signal_id, string dst_signal_id): string
         string route_ids[100]
-        int count_route = 0
-        float length1 = 12.3
-        # count_routes = interlocking_table_get_routes(src_signal_id, dst_signal_id, routes)
 
-        string route = route_ids[count_route - 1]
-        return route
+        int count_routes = extern interlocking_table_get_routes(src_signal_id, dst_signal_id, route_ids)
+
+        return route_ids[count_routes - 1]
     end
 end

@@ -84,6 +84,22 @@ public class ExpressionTextualBuilder extends TextualBuilder {
                 append("]");
             }
         }
+
+        // ExternalFunctionCallExprImpl
+        if (expression instanceof ExternalFunctionCallExpr) {
+            ExternalFunctionCallExpr externExpr = (ExternalFunctionCallExpr) expression;
+            append(externExpr.getName());
+            append("(");
+            if (externExpr.getParams().size() > 0) {
+                for (int i = 0; i < externExpr.getParams().size(); i++) {
+                    generateExpr(externExpr.getParams().get(i));
+                    if (i < externExpr.getParams().size() - 1) {
+                        append(",");
+                    }
+                }
+            }
+            append(")");
+        }
     }
 
     /**

@@ -6,6 +6,7 @@ import de.uniba.swt.dsl.common.generator.sccharts.models.*;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class StateTextualBuilder extends TextualBuilder {
@@ -25,15 +26,11 @@ public class StateTextualBuilder extends TextualBuilder {
     private void generateRootState() {
         append("scchart").append(rootState.getId()).append("{").append(LINE_BREAK);
 
-        // variables
-        generateVarDecls(rootState.getDeclarations());
+        // host code references
+        generateHostcodeReferences(rootState.getHostCodeReferences());
 
-        // generate actions
-        if (rootState.getLocalActions() != null) {
-            for (var action : rootState.getLocalActions()) {
-                generateLocalAction(action);
-            }
-        }
+        // interface variables
+        generateVarDecls(rootState.getDeclarations());
 
         // all root states
         if (rootState.getStates() != null) {
@@ -86,6 +83,13 @@ public class StateTextualBuilder extends TextualBuilder {
                         decl.getName()));
             }
             append("(").append(String.join(",", txtBindings)).append(")");
+        }
+    }
+
+    private void generateHostcodeReferences(Set<String> hostCodeReferences) {
+        for (String name : hostCodeReferences) {
+            append(String.format("extern @C \"%s\" %s", name, name));
+            append(LINE_BREAK);
         }
     }
 

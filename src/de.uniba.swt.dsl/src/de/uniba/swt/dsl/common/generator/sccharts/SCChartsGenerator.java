@@ -19,6 +19,14 @@ public class SCChartsGenerator {
 
     private static final Logger logger = Logger.getLogger(SCChartsGenerator.class);
 
+    private final String VAR_OUTPUT_NAME = "out";
+
+    /**
+     * temporary allocate param array size to 1024
+     * TODO should guess the size of param based on function call
+     */
+    private final int DEFAULT_PARAM_ARRAY_SIZE = 1024;
+
     @Inject SCChartsTextualBuilder builder;
 
     @Inject
@@ -55,12 +63,6 @@ public class SCChartsGenerator {
         return new SCCharts(states);
     }
 
-    /**
-     * temporary allocate param array size to 1024
-     * TODO should guess the size of param based on function call
-     */
-    private final int DEFAULT_PARAM_ARRAY_SIZE = 1024;
-
     private RootState buildModel(FuncDecl funcDecl) {
         RootState superState = new RootState();
         superState.setId(funcDecl.getName());
@@ -74,11 +76,13 @@ public class SCChartsGenerator {
 
         // output
         if (funcDecl.isReturn()) {
-            superState.getDeclarations().add(convertDeclaration(funcDecl.getReturnType(), SCChartsGenUtil.VAR_OUTPUT_NAME, funcDecl.isReturnArray() ? DEFAULT_PARAM_ARRAY_SIZE : 0, false, true));
+            superState.getDeclarations().add(convertDeclaration(funcDecl.getReturnType(), VAR_OUTPUT_NAME, funcDecl.isReturnArray() ? DEFAULT_PARAM_ARRAY_SIZE : 0, false, true));
         }
 
         // local variables
         for (Statement stmt : funcDecl.getStmtList().getStmts()) {
+
+            // VarDeclStmt
             if (stmt instanceof VarDeclStmt) {
                 VarDeclStmt varDeclStmt = (VarDeclStmt)stmt;
                 VarDecl varDecl = varDeclStmt.getDecl();
@@ -94,6 +98,23 @@ public class SCChartsGenerator {
                 }
 
                 superState.getDeclarations().add(convertDeclaration(varDecl.getType(), varDecl.getName(), arraySize, false, false));
+
+                // find reference expression
+                if (varDeclStmt.getAssignment() != null) {
+                    findAndAddHostCodeReference(superState, varDeclStmt.getAssignment().getExpr());
+                }
+                continue;
+            }
+
+            // AssignmentStmt
+            if (stmt instanceof AssignmentStmt) {
+                findAndAddHostCodeReference(superState, ((AssignmentStmt) stmt).getAssignment().getExpr());
+                continue;
+            }
+
+            // ReturnStmt
+            if (stmt instanceof ReturnStmt) {
+                findAndAddHostCodeReference(superState, ((ReturnStmt) stmt).getExpr());
             }
         }
 
@@ -101,6 +122,47 @@ public class SCChartsGenerator {
         logger.debug("state declarations: " + LogHelper.printObject(superState.getDeclarations()));
 
         return superState;
+    }
+
+    private void findAndAddHostCodeReference(RootState superState, Expression expression) {
+        if (expression == null)
+            return;
+
+        if (expression instanceof ExternalFunctionCallExpr) {
+            superState.getHostCodeReferences().add(((ExternalFunctionCallExpr) expression).getName());
+            return;
+        }
+
+        if (expression instanceof UnaryExpr) {
+            findAndAddHostCodeReference(superState, ((UnaryExpr) expression).getExpr());
+            return;
+        }
+
+        if (expression instanceof ParenthesizedExpr) {
+            findAndAddHostCodeReference(superState, ((ParenthesizedExpr) expression).getExpr());
+            return;
+        }
+
+        if (expression instanceof ValuedReferenceExpr) {
+            var indexExpr = ((ValuedReferenceExpr) expression).getIndexExpr();
+            if (indexExpr != null) {
+                findAndAddHostCodeReference(superState, indexExpr);
+            }
+            return;
+        }
+
+        if (expression instanceof FunctionCallExpr) {
+            for (Expression param : ((FunctionCallExpr) expression).getParams()) {
+                findAndAddHostCodeReference(superState, param);
+            }
+            return;
+        }
+
+        // go through
+        if (expression instanceof OpExpression) {
+            findAndAddHostCodeReference(superState, ((OpExpression) expression).getLeftExpr());
+            findAndAddHostCodeReference(superState, ((OpExpression) expression).getRightExpr());
+        }
     }
 
     private void updateModel(FuncDecl funcDecl, RootState model) {
@@ -269,7 +331,7 @@ public class SCChartsGenerator {
         if (stmt instanceof ReturnStmt) {
             AssignmentEffect effect = new AssignmentEffect();
             effect.setExpression(((ReturnStmt) stmt).getExpr());
-            effect.setVarDeclaration(findVarDecl(declarations, SCChartsGenUtil.VAR_OUTPUT_NAME));
+            effect.setVarDeclaration(findVarDecl(declarations, VAR_OUTPUT_NAME));
             return effect;
         }
 

@@ -15,10 +15,6 @@ public class SCCharts {
         return rootStates;
     }
 
-    public void setRootStates(List<RootState> rootStates) {
-        this.rootStates = rootStates;
-    }
-
     @Override
     public String toString() {
         return "SCCharts{" +
