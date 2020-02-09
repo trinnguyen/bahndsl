@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.generator.sccharts.builder.SCChartsTextualBuilder;
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
+import de.uniba.swt.dsl.common.util.BahnException;
 import de.uniba.swt.dsl.common.util.LogHelper;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
@@ -32,6 +33,7 @@ public class SCChartsGenerator {
     public String generate(RootModule rootModule) {
         this.rootModule = normalizer.normalizeModule(rootModule);
         SCCharts models = buildSCChartsModels();
+        logger.debug(models);
         return builder.buildString(models);
     }
 
@@ -53,6 +55,12 @@ public class SCChartsGenerator {
         return new SCCharts(states);
     }
 
+    /**
+     * temporary allocate param array size to 1024
+     * TODO should guess the size of param based on function call
+     */
+    private int DEFAULT_PARAM_ARRAY_SIZE = 1024;
+
     private RootState buildModel(FuncDecl funcDecl) {
         RootState superState = new RootState();
         superState.setId(funcDecl.getName());
@@ -60,13 +68,13 @@ public class SCChartsGenerator {
         // input
         if (funcDecl.getParamDecls() != null) {
             for (RefVarDecl paramDecl : funcDecl.getParamDecls()) {
-                superState.getDeclarations().add(convertDeclaration(paramDecl.getType(), paramDecl.getName(), paramDecl.isArray(), true, false));
+                superState.getDeclarations().add(convertDeclaration(paramDecl.getType(), paramDecl.getName(), paramDecl.isArray() ? DEFAULT_PARAM_ARRAY_SIZE : 0, true, false));
             }
         }
 
         // output
         if (funcDecl.isReturn()) {
-            superState.getDeclarations().add(convertDeclaration(funcDecl.getReturnType(), SCChartsGenUtil.VAR_OUTPUT_NAME, funcDecl.isReturnArray(), false, true));
+            superState.getDeclarations().add(convertDeclaration(funcDecl.getReturnType(), SCChartsGenUtil.VAR_OUTPUT_NAME, funcDecl.isReturnArray() ? DEFAULT_PARAM_ARRAY_SIZE : 0, false, true));
         }
 
         // local variables
@@ -74,8 +82,18 @@ public class SCChartsGenerator {
             if (stmt instanceof VarDeclStmt) {
                 VarDeclStmt varDeclStmt = (VarDeclStmt)stmt;
                 VarDecl varDecl = varDeclStmt.getDecl();
-                var sDecl = convertDeclaration(varDecl.getType(), varDecl.getName(), varDecl.isArray(), false, false);
-                superState.getDeclarations().add(sDecl);
+
+                // array cardinality must be a int literal
+                int arraySize = 0;
+                if (varDecl.isArray()) {
+                    if (varDecl.getCardinality() instanceof NumberLiteral) {
+                        arraySize = (int) ((NumberLiteral) varDecl.getCardinality()).getValue();
+                    } else {
+                        throw new BahnException("Array cardinality must be a literal integer");
+                    }
+                }
+
+                superState.getDeclarations().add(convertDeclaration(varDecl.getType(), varDecl.getName(), arraySize, false, false));
             }
         }
 
@@ -153,7 +171,8 @@ public class SCChartsGenerator {
         state.getOutgoingTransitions().add(transition);
         if (state.getReferenceState() == null) {
             var effect = generateEffect(declarations, stmt);
-            transition.setEffects(List.of(effect));
+            if (effect != null)
+                transition.setEffects(List.of(effect));
         }
     }
 
@@ -174,10 +193,12 @@ public class SCChartsGenerator {
     private void updateStateReferenceCallIfNeeded(State state, Statement stmt) {
         if (stmt instanceof VarDeclStmt) {
             VarDeclStmt varDeclStmt = (VarDeclStmt)stmt;
-            if (findRefState(state, varDeclStmt.getAssignment().getExpr())) {
-                // update return
-                state.getReferenceBindingExprs().add(createValuedReferenceExpr(varDeclStmt.getDecl()));
-                return;
+            if (varDeclStmt.getAssignment() != null) {
+                if (findRefState(state, varDeclStmt.getAssignment().getExpr())) {
+                    // update return
+                    state.getReferenceBindingExprs().add(createValuedReferenceExpr(varDeclStmt.getDecl()));
+                    return;
+                }
             }
         }
 
@@ -222,6 +243,10 @@ public class SCChartsGenerator {
 
     private Effect generateEffect(List<SVarDeclaration> declarations, Statement stmt) {
         if (stmt instanceof VarDeclStmt) {
+
+            if (((VarDeclStmt) stmt).getAssignment() == null)
+                return null;
+
             AssignmentEffect effect = new AssignmentEffect();
             effect.setExpression(((VarDeclStmt) stmt).getAssignment().getExpr());
             effect.setVarDeclaration(findVarDecl(declarations, ((VarDeclStmt) stmt).getDecl().getName()));
@@ -252,20 +277,29 @@ public class SCChartsGenerator {
     }
 
     private SVarDeclaration findVarDecl(List<SVarDeclaration> declarations, String name) {
-        logger.debug("findVarDecl: " + name);
         return declarations.stream()
                 .filter(d -> d.getName().equals(name))
                 .findAny()
                 .orElseThrow();
     }
 
-    private SVarDeclaration convertDeclaration(DataType type, String name, boolean array, boolean isInput, boolean isOutput) {
+    /**
+     * Convert from Bahn decl to SCChart interface decl
+     * Initial value is not supported, generated as a separated transaction
+     * @param type
+     * @param name
+     * @param arrayCardinality
+     * @param isInput
+     * @param isOutput
+     * @return
+     */
+    private SVarDeclaration convertDeclaration(DataType type, String name, int arrayCardinality, boolean isInput, boolean isOutput) {
         var result = new SVarDeclaration();
         result.setDataType(convertDataType(type));
         result.setName(name);
         result.setInput(isInput);
         result.setOutput(isOutput);
-        //TODO array
+        result.setCardinality(arrayCardinality);
         return result;
     }
 

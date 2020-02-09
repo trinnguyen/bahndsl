@@ -35,4 +35,12 @@ public class Transition extends Action {
     public void setTargetState(State targetState) {
         this.targetState = targetState;
     }
+
+    @Override
+    public String toString() {
+        return "Transition{" +
+                "targetState=" + targetState.getId() +
+                "\n" + super.toString() +
+                '}';
+    }
 }

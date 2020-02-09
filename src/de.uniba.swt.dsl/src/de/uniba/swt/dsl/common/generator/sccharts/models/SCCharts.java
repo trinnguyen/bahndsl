@@ -1,5 +1,7 @@
 package de.uniba.swt.dsl.common.generator.sccharts.models;
 
+import de.uniba.swt.dsl.common.util.LogHelper;
+
 import java.util.List;
 
 public class SCCharts {
@@ -15,5 +17,12 @@ public class SCCharts {
 
     public void setRootStates(List<RootState> rootStates) {
         this.rootStates = rootStates;
+    }
+
+    @Override
+    public String toString() {
+        return "SCCharts{" +
+                "rootStates=" + LogHelper.printObject(rootStates) +
+                '}';
     }
 }

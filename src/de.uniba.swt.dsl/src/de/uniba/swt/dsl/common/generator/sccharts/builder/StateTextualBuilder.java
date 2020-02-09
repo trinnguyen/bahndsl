@@ -111,11 +111,6 @@ public class StateTextualBuilder extends TextualBuilder {
         if (decl.getCardinality() > 0) {
             append("[" + decl.getCardinality() + "]");
         }
-
-        // initial value
-        if (decl.getInitialExpr() != null) {
-            append("=").append(ExpressionTextualBuilder.buildString(decl.getInitialExpr()));
-        }
     }
 
     private void generateTransition(Transition transition) {

@@ -10,8 +10,6 @@ public class SVarDeclaration {
     private String name;
     private SDataType dataType;
     private int cardinality;
-    private Expression initialExpr;
-    private List<Expression> cardinalityExprs;
 
     public boolean isInput() {
         return isInput;
@@ -53,22 +51,6 @@ public class SVarDeclaration {
         this.cardinality = cardinality;
     }
 
-    public Expression getInitialExpr() {
-        return initialExpr;
-    }
-
-    public void setInitialExpr(Expression initialExpr) {
-        this.initialExpr = initialExpr;
-    }
-
-    public List<Expression> getCardinalityExprs() {
-        return cardinalityExprs;
-    }
-
-    public void setCardinalityExprs(List<Expression> cardinalityExprs) {
-        this.cardinalityExprs = cardinalityExprs;
-    }
-
     @Override
     public String toString() {
         return "SVarDeclaration{" +
@@ -77,8 +59,6 @@ public class SVarDeclaration {
                 ", name='" + name + '\'' +
                 ", dataType=" + dataType +
                 ", cardinality=" + cardinality +
-                ", initialExpr=" + initialExpr +
-                ", cardinalityExprs=" + cardinalityExprs +
                 '}';
     }
 }

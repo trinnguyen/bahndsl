@@ -1,5 +1,7 @@
 package de.uniba.swt.dsl.common.generator.sccharts.models;
 
+import de.uniba.swt.dsl.common.util.LogHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,5 +32,14 @@ public class SuperState extends State {
 
     public void setDeclarations(List<SVarDeclaration> declarations) {
         this.declarations = declarations;
+    }
+
+    @Override
+    public String toString() {
+        return "SuperState{" +
+                "states=" + LogHelper.printObject(states) +
+                "\n, localActions=" + LogHelper.printObject(localActions) +
+                "\n, declarations=" + LogHelper.printObject(declarations) +
+                '}';
     }
 }

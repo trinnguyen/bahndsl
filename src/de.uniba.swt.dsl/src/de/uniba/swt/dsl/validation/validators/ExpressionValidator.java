@@ -46,8 +46,8 @@ public class ExpressionValidator {
     }
 
     private static void validateValuedReferenceExpr(ValuedReferenceExpr expr) throws ValidationException {
-        if (expr.getPropRef() != null) {
-            throw new ValidationException("Not supported: property is not yet supported", BahnPackage.Literals.VALUED_REFERENCE_EXPR__PROP_REF);
+        if (expr.getIndexExpr() != null && !expr.getDecl().isArray()) {
+            throw new ValidationException(String.format("Invalid value reference. Variable %s is not an array", expr.getDecl().getName()), BahnPackage.Literals.VALUED_REFERENCE_EXPR__INDEX_EXPR);
         }
     }
 

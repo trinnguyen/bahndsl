@@ -23,7 +23,13 @@ public class TypeComputingHelper {
 
             // ValuedReferenceExpr
             if (expr instanceof ValuedReferenceExpr) {
-                return getDataType(((ValuedReferenceExpr) expr).getDecl());
+                ValuedReferenceExpr referenceExpr = (ValuedReferenceExpr) expr;
+                var dataType = getDataType(referenceExpr.getDecl());
+                if (dataType.isArray() && referenceExpr.getIndexExpr() != null) {
+                    dataType.setArray(false);
+                }
+
+                return dataType;
             }
 
             // FunctionCallExpr
@@ -64,7 +70,6 @@ public class TypeComputingHelper {
             return ExprDataType.ScalarString;
         }
 
-        //FIXME data type for object and NullLiteral
         return null;
     }
 

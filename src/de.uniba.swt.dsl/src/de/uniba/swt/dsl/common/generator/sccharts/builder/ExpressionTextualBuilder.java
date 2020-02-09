@@ -73,12 +73,16 @@ public class ExpressionTextualBuilder extends TextualBuilder {
 
         // ValuedReferenceExpr
         if (expression instanceof ValuedReferenceExpr) {
+            ValuedReferenceExpr referenceExpr = (ValuedReferenceExpr) expression;
             append(((ValuedReferenceExpr) expression).getDecl().getName());
-            return;
-        }
 
-        // FunctionCallExpr
-        //TODO fix function call expr
+            // index
+            if (referenceExpr.getIndexExpr() != null) {
+                append("[");
+                generateExpr(referenceExpr.getIndexExpr());
+                append("]");
+            }
+        }
     }
 
     /**
