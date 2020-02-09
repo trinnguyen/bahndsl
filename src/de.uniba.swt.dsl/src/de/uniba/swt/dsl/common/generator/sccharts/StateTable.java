@@ -6,20 +6,21 @@ import java.util.TreeMap;
 
 public class StateTable {
 
-    private final static String ID_PREFIX = "S";
     private TreeMap<String, Integer> mapId = new TreeMap<>();
 
-    int incre = 0;
-    public String nextStateId() {
-        return ID_PREFIX + (incre++);
+    private String idPrefix;
+    private int incre = 0;
+
+    public StateTable(String superId) {
+        this.idPrefix = superId + "_";
     }
 
-    public State nextState(State state) {
-        String curId = state != null ? state.getId() : null;
+    public StateTable() {
+        this.idPrefix = "S";
+    }
 
-        var result = new State();
-        result.setId(nextId(curId));
-        return result;
+    public String nextStateId() {
+        return idPrefix + (incre++);
     }
 
     private String nextId(String id) {
@@ -30,7 +31,7 @@ public class StateTable {
             }
         }
 
-        String resultId = ID_PREFIX + num;
+        String resultId = idPrefix + num;
         mapId.put(resultId, num);
         return resultId;
     }

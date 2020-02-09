@@ -11,6 +11,7 @@ public class SuperState extends State {
     private List<State> states = new ArrayList<>();
     private List<SVarDeclaration> declarations = new ArrayList<>();
     private Set<String> hostCodeReferences = new HashSet<>();
+    private String joinTargetId;
 
     public List<State> getStates() {
         return states;
@@ -22,6 +23,18 @@ public class SuperState extends State {
 
     public Set<String> getHostCodeReferences() {
         return hostCodeReferences;
+    }
+
+    public String getJoinTargetId() {
+        return joinTargetId;
+    }
+
+    public void setJoinTargetId(String joinTargetId) {
+        this.joinTargetId = joinTargetId;
+    }
+
+    public SuperState(String id) {
+        super(id);
     }
 
     @Override

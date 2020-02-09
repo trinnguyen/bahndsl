@@ -2,9 +2,9 @@ module route1
     def interlocking(string src_signal_id, string dst_signal_id): string
         string id
         if src_signal_id == "signal1"
-            id = src_signal_id
+            string id1 = src_signal_id
         else
-            id = "signal2"
+            string id2 = "signal2"
         end
         return id
     end

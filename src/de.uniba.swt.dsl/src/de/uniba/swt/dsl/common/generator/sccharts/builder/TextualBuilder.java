@@ -18,6 +18,11 @@ public class TextualBuilder {
         return this;
     }
 
+    public TextualBuilder appendLine(String text) {
+        append(text).append(LINE_BREAK);
+        return this;
+    }
+
     public TextualBuilder clear() {
         builder.clear();
         return this;

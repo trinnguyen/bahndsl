@@ -2,6 +2,7 @@ package de.uniba.swt.dsl.common.generator.sccharts.builder;
 
 import de.uniba.swt.dsl.bahn.Expression;
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
+import de.uniba.swt.dsl.common.util.StringUtil;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -24,35 +25,43 @@ public class StateTextualBuilder extends TextualBuilder {
     }
 
     private void generateRootState() {
-        append("scchart").append(rootState.getId()).append("{").append(LINE_BREAK);
+        append("scchart").append(rootState.getId());
+        generateSuperState(rootState);
+    }
 
+    private void generateSuperState(SuperState superState) {
+        appendLine("{");
         // host code references
-        generateHostcodeReferences(rootState.getHostCodeReferences());
+        generateHostcodeReferences(superState.getHostCodeReferences());
 
         // interface variables
-        generateVarDecls(rootState.getDeclarations());
+        generateVarDecls(superState.getDeclarations());
+        appendLine("");
 
         // all root states
-        if (rootState.getStates() != null) {
-            for (var childState : rootState.getStates()) {
-                generateRegularState(childState);
-                append(LINE_BREAK);
+        if (superState.getStates() != null) {
+            for (var childState : superState.getStates()) {
+                if (childState instanceof SuperState) {
+                    generateStateId(childState);
+                    generateSuperState((SuperState)childState);
+                } else {
+                    generateRegularState(childState);
+                }
+
+                appendLine("");
             }
         }
 
-        append("}");
+        appendLine("}");
+
+        // join
+        if (StringUtil.isNotEmpty(superState.getJoinTargetId())) {
+            appendLine("join to " + superState.getJoinTargetId());
+        }
     }
 
     private void generateRegularState(State state) {
-        if (state.isInitial())
-            append("initial");
-
-        if (state.isFinal())
-            append("final");
-
-        append("state").append(state.getId());
-        if (state.getLabel() != null)
-            append(state.getLabel());
+        generateStateId(state);
 
         // reference
         if (state.getReferenceState() != null) {
@@ -65,6 +74,18 @@ public class StateTextualBuilder extends TextualBuilder {
                 generateTransition(transition);
             }
         }
+    }
+
+    private void generateStateId(State state) {
+        if (state.isInitial())
+            append("initial");
+
+        if (state.isFinal())
+            append("final");
+
+        append("state").append(state.getId());
+        if (state.getLabel() != null)
+            append(state.getLabel());
     }
 
     private void generateReferenceState(State state) {
@@ -133,8 +154,8 @@ public class StateTextualBuilder extends TextualBuilder {
         generateAction(transition);
 
         // go to
-        if (transition.getTargetState() != null) {
-            append("go").append("to").append(transition.getTargetState().getId());
+        if (transition.getTargetStateId() != null) {
+            append("go").append("to").append(transition.getTargetStateId());
         }
     }
 
