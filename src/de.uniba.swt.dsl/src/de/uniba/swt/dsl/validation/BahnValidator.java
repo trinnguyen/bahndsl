@@ -8,14 +8,18 @@ import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.layout.models.CompositeLayoutException;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.validators.LayoutElementValidator;
+import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 import de.uniba.swt.dsl.validation.util.ValidationException;
 import de.uniba.swt.dsl.validation.validators.BahnLayoutValidator;
 import de.uniba.swt.dsl.validation.validators.DeclValidator;
 import de.uniba.swt.dsl.validation.validators.ExpressionValidator;
 import de.uniba.swt.dsl.validation.validators.StatementValidator;
+import org.eclipse.emf.common.util.DiagnosticChain;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.xtext.validation.Check;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 /**
  * This class contains custom validation rules.
@@ -36,10 +40,28 @@ public class BahnValidator extends AbstractBahnValidator {
     @Inject
     BoardRefValidator boardRefValidator;
 
+    @Inject
+    DeclValidator declValidator;
+
+    @Inject
+    TypeCheckingTable typeCheckingTable;
+
+    @Inject
+    ExpressionValidator expressionValidator;
+
+    @Inject
+    StatementValidator statementValidator;
+
+    @Override
+    public boolean validate(EDataType eDataType, Object value, DiagnosticChain diagnostics, Map<Object, Object> context) {
+        typeCheckingTable.clear();
+        return super.validate(eDataType, value, diagnostics, context);
+    }
+
     @Check
     public void typeCheckingExpression(Expression expression) {
         try {
-            ExpressionValidator.validate(expression);
+            expressionValidator.validate(expression);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
@@ -48,7 +70,7 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void typeCheckingStatement(Statement statement) {
         try {
-            StatementValidator.validate(statement);
+            statementValidator.validate(statement);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
@@ -57,7 +79,7 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void typeCheckingFuncDecl(FuncDecl funcDecl) {
         try {
-            DeclValidator.validateFuncDecl(funcDecl);
+            declValidator.validateFuncDecl(funcDecl);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }

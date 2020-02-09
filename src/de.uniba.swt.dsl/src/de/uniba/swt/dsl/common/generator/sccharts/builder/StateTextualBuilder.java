@@ -3,18 +3,23 @@ package de.uniba.swt.dsl.common.generator.sccharts.builder;
 import de.uniba.swt.dsl.bahn.Expression;
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class StateTextualBuilder extends TextualBuilder {
+
+    @Inject
+    ExpressionTextualBuilder expressionTextualBuilder;
+
     private RootState rootState;
 
-    public StateTextualBuilder(RootState rootState) {
+    public String buildString(RootState rootState) {
+        clear();
         this.rootState = rootState;
-
-        // generate root
         generateRootState();
+        return build();
     }
 
     private void generateRootState() {
@@ -172,6 +177,6 @@ public class StateTextualBuilder extends TextualBuilder {
     }
 
     private String generateExpression(Expression expression) {
-        return ExpressionTextualBuilder.buildString(expression);
+        return expressionTextualBuilder.buildString(expression);
     }
 }

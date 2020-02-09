@@ -59,7 +59,7 @@ public class SCChartsGenerator {
      * temporary allocate param array size to 1024
      * TODO should guess the size of param based on function call
      */
-    private int DEFAULT_PARAM_ARRAY_SIZE = 1024;
+    private final int DEFAULT_PARAM_ARRAY_SIZE = 1024;
 
     private RootState buildModel(FuncDecl funcDecl) {
         RootState superState = new RootState();

@@ -1,13 +1,14 @@
 package de.uniba.swt.dsl.common.generator.sccharts.builder;
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 
 public class ExpressionTextualBuilder extends TextualBuilder {
 
-    public static String buildString(Expression expression) {
-        var builder = new ExpressionTextualBuilder();
-        builder.generateExpr(expression);
-        return builder.build();
+    public String buildString(Expression expression) {
+        clear();
+        generateExpr(expression);
+        return build();
     }
 
     private void generateExpr(Expression expression) {
@@ -101,8 +102,12 @@ public class ExpressionTextualBuilder extends TextualBuilder {
         }
 
         if (expr instanceof NumberLiteral) {
-            var val = ((NumberLiteral) expr).getValue();
-            append(String.valueOf(val));
+            double val = ((NumberLiteral) expr).getValue();
+            if (isInteger(val)) {
+                append(String.valueOf((int)val));
+            } else {
+                append(String.valueOf(val));
+            }
             return;
         }
 
@@ -116,6 +121,10 @@ public class ExpressionTextualBuilder extends TextualBuilder {
         }
 
         //TODO NULL and PostAspect
+    }
+
+    private boolean isInteger(double val) {
+        return val % 1 == 0;
     }
 
     private void generateOp(OperatorType op) {
