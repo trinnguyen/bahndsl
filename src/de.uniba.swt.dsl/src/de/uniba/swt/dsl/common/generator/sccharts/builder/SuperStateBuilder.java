@@ -9,6 +9,7 @@ import de.uniba.swt.dsl.common.util.StringUtil;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 public class SuperStateBuilder {
     public final String VAR_OUTPUT_NAME = "out";
@@ -23,19 +24,23 @@ public class SuperStateBuilder {
     private StateTable stateTable;
     protected SuperState superState;
     private StatementList statementList;
+    private Stack<SuperState> stackSuperStates;
 
-    public SuperStateBuilder(Map<FuncDecl, RootState> mapFuncState, String id, StatementList statementList) {
-        this(mapFuncState, new StateTable(id), new SuperState(id), statementList);
+    public SuperStateBuilder(Map<FuncDecl, RootState> mapFuncState, Stack<SuperState> stackSuperStates, String id, StatementList statementList) {
+        this(mapFuncState, stackSuperStates, new StateTable(id), new SuperState(id), statementList);
     }
 
-    protected SuperStateBuilder(Map<FuncDecl, RootState> mapFuncState, StateTable stateTable, SuperState superState, StatementList statementList) {
+    protected SuperStateBuilder(Map<FuncDecl, RootState> mapFuncState, Stack<SuperState> stackSuperStates, StateTable stateTable, SuperState superState, StatementList statementList) {
         this.mapFuncState = mapFuncState;
+        this.stackSuperStates = stackSuperStates;
         this.stateTable = stateTable;
         this.superState = superState;
         this.statementList = statementList;
     }
 
     public SuperState build() {
+        // push
+        stackSuperStates.push(superState);
 
         // initial
         initializeDeclarationInterface(superState, statementList);
@@ -44,6 +49,9 @@ public class SuperStateBuilder {
         if (statementList != null) {
             addChildStates(statementList);
         }
+
+        // pop stack
+        stackSuperStates.pop();
 
         return superState;
     }
@@ -81,14 +89,16 @@ public class SuperStateBuilder {
 
     private State buildSelectionSuperState(String id, String nextStateId, SelectionStmt stmt) {
         if (stmt.getElseStmts() != null) {
+
             // create super state manually
             StateTable stateTable = new StateTable(id);
             SuperState superState = new SuperState(id);
+            stackSuperStates.push(superState);
 
             // create 3 states
             State initialState = new State(stateTable.nextStateId());
-            var thenState = new SuperStateBuilder(mapFuncState, stateTable.nextStateId(), stmt.getThenStmts()).build();
-            var elseState = new SuperStateBuilder(mapFuncState, stateTable.nextStateId(), stmt.getThenStmts()).build();
+            var thenState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getThenStmts()).build();
+            var elseState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getThenStmts()).build();
             State finalState = new State(stateTable.nextStateId());
 
             // initial -> then
@@ -111,10 +121,12 @@ public class SuperStateBuilder {
             superState.getStates().add(finalState);
             finalState.setFinal(true);
             superState.setJoinTargetId(nextStateId);
+
+            stackSuperStates.pop();
             return superState;
         }
 
-        return new SuperStateBuilder(mapFuncState, id, stmt.getThenStmts()).build();
+        return new SuperStateBuilder(mapFuncState, stackSuperStates, id, stmt.getThenStmts()).build();
     }
 
     private State addNormalState(String id, String nextStateId, Statement stmt) {
@@ -125,7 +137,7 @@ public class SuperStateBuilder {
         var transition = new Transition(nextStateId);
         state.getOutgoingTransitions().add(transition);
         if (state.getReferenceState() == null) {
-            var effect = generateEffect(superState.getDeclarations(), stmt);
+            var effect = generateEffect(stmt);
             if (effect != null)
                 transition.setEffects(List.of(effect));
         }
@@ -180,7 +192,7 @@ public class SuperStateBuilder {
         return false;
     }
 
-    private Effect generateEffect(List<SVarDeclaration> declarations, Statement stmt) {
+    private Effect generateEffect(Statement stmt) {
         if (stmt instanceof VarDeclStmt) {
 
             if (((VarDeclStmt) stmt).getAssignment() == null)
@@ -188,14 +200,14 @@ public class SuperStateBuilder {
 
             AssignmentEffect effect = new AssignmentEffect();
             effect.setExpression(((VarDeclStmt) stmt).getAssignment().getExpr());
-            effect.setVarDeclaration(findVarDecl(declarations, ((VarDeclStmt) stmt).getDecl().getName()));
+            effect.setVarDeclaration(findVarDecl(((VarDeclStmt) stmt).getDecl().getName()));
             return effect;
         }
 
         if (stmt instanceof AssignmentStmt) {
             AssignmentEffect effect = new AssignmentEffect();
             effect.setExpression(((AssignmentStmt) stmt).getAssignment().getExpr());
-            effect.setVarDeclaration(findVarDecl(declarations, ((AssignmentStmt) stmt).getReferenceExpr().getDecl().getName()));
+            effect.setVarDeclaration(findVarDecl(((AssignmentStmt) stmt).getReferenceExpr().getDecl().getName()));
             return effect;
         }
 
@@ -208,18 +220,24 @@ public class SuperStateBuilder {
         if (stmt instanceof ReturnStmt) {
             AssignmentEffect effect = new AssignmentEffect();
             effect.setExpression(((ReturnStmt) stmt).getExpr());
-            effect.setVarDeclaration(findVarDecl(declarations, VAR_OUTPUT_NAME));
+            effect.setVarDeclaration(findVarDecl(VAR_OUTPUT_NAME));
             return effect;
         }
 
         throw new RuntimeException("Statement is not supported");
     }
 
-    private SVarDeclaration findVarDecl(List<SVarDeclaration> declarations, String name) {
-        return declarations.stream()
-                .filter(d -> d.getName().equals(name))
-                .findAny()
-                .orElseThrow();
+    private SVarDeclaration findVarDecl(String name) {
+        for (SuperState stackSuperState : stackSuperStates) {
+            var declarations = stackSuperState.getDeclarations();
+            var res = declarations.stream()
+                    .filter(d -> d.getName().equals(name))
+                    .findAny();
+            if (res.isPresent())
+                return res.get();
+        }
+
+        return null;
     }
 
 

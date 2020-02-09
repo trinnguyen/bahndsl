@@ -7,10 +7,7 @@ import de.uniba.swt.dsl.common.generator.sccharts.models.*;
 import de.uniba.swt.dsl.common.util.BahnException;
 import de.uniba.swt.dsl.common.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SCChartModelBuilder {
@@ -19,6 +16,7 @@ public class SCChartModelBuilder {
 
     private Map<FuncDecl, RootState> mapFuncState = new HashMap<>();
     private List<RootStateBuilder> builders = new ArrayList<>();
+    private Stack<SuperState> superStates = new Stack<>();
 
     public SCCharts createModel(RootModule rootModule) {
 
@@ -28,7 +26,7 @@ public class SCChartModelBuilder {
         for (ModuleProperty property : rootModule.getProperties()) {
             if (property instanceof FuncDecl) {
                 FuncDecl funcDecl = (FuncDecl) property;
-                RootStateBuilder rootStateBuilder = new RootStateBuilder(funcDecl, mapFuncState);
+                RootStateBuilder rootStateBuilder = new RootStateBuilder(mapFuncState, superStates, funcDecl);
                 mapFuncState.put(funcDecl, rootStateBuilder.getRootState());
                 builders.add(rootStateBuilder);
             }
