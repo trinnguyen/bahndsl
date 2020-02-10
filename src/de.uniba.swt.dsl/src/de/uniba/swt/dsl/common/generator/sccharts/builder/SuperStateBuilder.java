@@ -1,6 +1,5 @@
 package de.uniba.swt.dsl.common.generator.sccharts.builder;
 
-import com.google.inject.internal.asm.$ByteVector;
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.generator.sccharts.StateTable;
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
@@ -62,25 +61,19 @@ public class SuperStateBuilder {
         for (Statement stmt : stmtList.getStmts()) {
             var id = StringUtil.isNotEmpty(nextStateId) ? nextStateId : stateTable.nextStateId();
             nextStateId = stateTable.nextStateId();
-            State state;
 
             // selection
             if (stmt instanceof SelectionStmt) {
-                state = buildSelectionSuperState(id, (SelectionStmt) stmt);
-            } else if (stmt instanceof IterationStmt) {
-                state = buildIterationSuperState(id, (IterationStmt) stmt);
-            } else {
-                state = addNormalState(id, nextStateId, stmt);
-            }
-
-            if (state instanceof SuperState) {
-                SuperState curState = (SuperState) state;
+                var curState = buildSelectionSuperState(id, (SelectionStmt) stmt);
                 updateInitialAndFinalState(curState);
                 curState.setJoinTargetId(nextStateId);
+                superState.getStates().add(curState);
+            } else if (stmt instanceof IterationStmt) {
+                addIterationSuperState(id, nextStateId, (IterationStmt) stmt);
+            } else {
+                var state = addNormalState(id, nextStateId, stmt);
+                superState.getStates().add(state);
             }
-
-            // next state is always new
-            superState.getStates().add(state);
         }
 
         // add last state
@@ -99,7 +92,7 @@ public class SuperStateBuilder {
         }
     }
 
-    private State buildSelectionSuperState(String id, SelectionStmt stmt) {
+    private SuperState buildSelectionSuperState(String id, SelectionStmt stmt) {
         if (stmt.getElseStmts() != null) {
 
             // create super state manually
@@ -138,16 +131,13 @@ public class SuperStateBuilder {
         return new SuperStateBuilder(mapFuncState, stackSuperStates, id, stmt.getThenStmts()).build();
     }
 
-    private State buildIterationSuperState(String id, IterationStmt stmt) {
+    private void addIterationSuperState(String id, String nextStateId, IterationStmt stmt) {
         // create super state manually
         StateTable stateTable = new StateTable(id);
-        SuperState superState = new SuperState(id);
-        stackSuperStates.push(superState);
 
         // create body states
-        State initialState = new State(stateTable.nextStateId());
+        State initialState = new State(id);
         var bodyState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getStmts()).build();
-        State finalState = new State(stateTable.nextStateId());
 
         // link: while -> body
         Transition conditionTran = new Transition(bodyState.getId());
@@ -158,14 +148,11 @@ public class SuperStateBuilder {
         bodyState.setJoinTargetId(initialState.getId());
 
         // go to final state
-        initialState.getOutgoingTransitions().add(new Transition(finalState.getId()));
+        initialState.getOutgoingTransitions().add(new Transition(nextStateId));
 
         // add
         superState.getStates().add(initialState);
         superState.getStates().add(bodyState);
-        superState.getStates().add(finalState);
-
-        return superState;
     }
 
     private State addNormalState(String id, String nextStateId, Statement stmt) {
