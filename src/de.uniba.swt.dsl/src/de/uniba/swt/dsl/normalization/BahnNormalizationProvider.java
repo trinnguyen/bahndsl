@@ -16,6 +16,12 @@ public class BahnNormalizationProvider {
 
     private static final String EXTERN_STATE_SETTER_NAME = "track_state_get_value";
 
+    private static final String EXTERN_CONFIG_SET_SCALAR_STRING = "config_set_scalar_string_value";
+
+    private static final String PROP_TRAIN = "train";
+
+    private static final String TYPE_ROUTE = "route";
+
     private static final String TYPE_POINT = "point";
 
     private static final String TYPE_SIGNAL = "signal";
@@ -44,7 +50,7 @@ public class BahnNormalizationProvider {
             }
 
             if (stmt instanceof IterationStmt) {
-                normalize(((IterationStmt) stmt).getReferenceExpr());
+                normalize(((IterationStmt) stmt).getExpr());
                 normalize(((IterationStmt) stmt).getStmts());
                 continue;
             }
@@ -135,8 +141,12 @@ public class BahnNormalizationProvider {
         }
 
         if (expr instanceof GrantRouteFuncExpr) {
-            //TODO generate route.train = train
-            return expr;
+            GrantRouteFuncExpr grantRouteFuncExpr = (GrantRouteFuncExpr) expr;
+            return createExternalFunctionCallExpr(EXTERN_CONFIG_SET_SCALAR_STRING, List.of(
+                    createString(TYPE_ROUTE),
+                    grantRouteFuncExpr.getRouteExpr(),
+                    createString(PROP_TRAIN),
+                    grantRouteFuncExpr.getTrainExpr()));
         }
 
         return null;

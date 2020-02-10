@@ -66,9 +66,17 @@ public class SuperStateBuilder {
 
             // selection
             if (stmt instanceof SelectionStmt) {
-                state = buildSelectionSuperState(id, nextStateId, (SelectionStmt) stmt);
+                state = buildSelectionSuperState(id, (SelectionStmt) stmt);
+            } else if (stmt instanceof IterationStmt) {
+                state = buildIterationSuperState(id, (IterationStmt) stmt);
             } else {
                 state = addNormalState(id, nextStateId, stmt);
+            }
+
+            if (state instanceof SuperState) {
+                SuperState curState = (SuperState) state;
+                updateInitialAndFinalState(curState);
+                curState.setJoinTargetId(nextStateId);
             }
 
             // next state is always new
@@ -81,13 +89,17 @@ public class SuperStateBuilder {
         }
 
         // mark first and last
-        if (!superState.getStates().isEmpty()) {
-            superState.getStates().get(0).setInitial(true);
-            superState.getStates().get(superState.getStates().size() - 1).setFinal(true);
+        updateInitialAndFinalState(superState);
+    }
+
+    private void updateInitialAndFinalState(SuperState state) {
+        if (!state.getStates().isEmpty()) {
+            state.getStates().get(0).setInitial(true);
+            state.getStates().get(state.getStates().size() - 1).setFinal(true);
         }
     }
 
-    private State buildSelectionSuperState(String id, String nextStateId, SelectionStmt stmt) {
+    private State buildSelectionSuperState(String id, SelectionStmt stmt) {
         if (stmt.getElseStmts() != null) {
 
             // create super state manually
@@ -114,19 +126,46 @@ public class SuperStateBuilder {
             elseState.setJoinTargetId(finalState.getId());
 
             // add and return
-            initialState.setInitial(true);
             superState.getStates().add(initialState);
             superState.getStates().add(thenState);
             superState.getStates().add(elseState);
             superState.getStates().add(finalState);
-            finalState.setFinal(true);
-            superState.setJoinTargetId(nextStateId);
 
             stackSuperStates.pop();
             return superState;
         }
 
         return new SuperStateBuilder(mapFuncState, stackSuperStates, id, stmt.getThenStmts()).build();
+    }
+
+    private State buildIterationSuperState(String id, IterationStmt stmt) {
+        // create super state manually
+        StateTable stateTable = new StateTable(id);
+        SuperState superState = new SuperState(id);
+        stackSuperStates.push(superState);
+
+        // create body states
+        State initialState = new State(stateTable.nextStateId());
+        var bodyState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getStmts()).build();
+        State finalState = new State(stateTable.nextStateId());
+
+        // link: while -> body
+        Transition conditionTran = new Transition(bodyState.getId());
+        conditionTran.setTrigger(stmt.getExpr());
+        initialState.getOutgoingTransitions().add(conditionTran);
+
+        // body -> back to beginning
+        bodyState.setJoinTargetId(initialState.getId());
+
+        // go to final state
+        initialState.getOutgoingTransitions().add(new Transition(finalState.getId()));
+
+        // add
+        superState.getStates().add(initialState);
+        superState.getStates().add(bodyState);
+        superState.getStates().add(finalState);
+
+        return superState;
     }
 
     private State addNormalState(String id, String nextStateId, Statement stmt) {

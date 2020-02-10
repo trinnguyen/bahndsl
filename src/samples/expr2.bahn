@@ -1,0 +1,12 @@
+module expr2
+    def interlocking(string src_signal_id, string dst_signal_id): string
+        string route_ids[100]
+        int i = 0
+        float l = 0
+        while i < 100
+            l = l + 1
+            i = i + 1
+        end
+        return route_ids[0]
+    end
+end
