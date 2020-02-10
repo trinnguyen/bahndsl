@@ -22,7 +22,6 @@ ModuleProperty:
 	| TrainsProperty 
 	| LayoutProperty 
 	| PlatformProperty
-//	| RouteProperty
 	| FuncDecl
 	;
 
@@ -70,21 +69,6 @@ LayoutProperty :
 	{LayoutProperty} 'layout'
 		(items+=LayoutElement)*
 	'end';
-/*
-RouteProperty:
-	{RouteProperty} 'routes'
-		(items+=RouteElement)*
-	'end';
-RouteElement:
-	name=ID 
-	'source' source=[SignalElement] 
-	'destination' destination=[SignalElement]
-	'path' (segments+=[SegmentElement])* 'end'
-	'points' (points+=RoutePoint)* 'end'
-	'signals' (signals+=[SignalElement])* 'end'
-	'conflicts' (conflicts+=[RouteElement])* 'end'
-;
-*/
 
 RoutePoint:
 	point=[PointElement] aspect=PointAspectType
@@ -97,7 +81,7 @@ GetFuncExpr returns BehaviourExpr:
 		|
 		(point?='point' expr=PrimaryExpr)
 		|
-		(route?='route' 'from' srcSignalExpr=PrimaryExpr 'to' destSignalExpr=PrimaryExpr)
+		(route?='routes' 'from' srcSignalExpr=PrimaryExpr 'to' destSignalExpr=PrimaryExpr 'binding' binding=ValuedReferenceExpr)
 	)
 ;
 
@@ -260,13 +244,13 @@ SelectionStmt returns Statement:
 ;
 
 IterationStmt returns Statement:
-	{IterationStmt} 'for' var=VarDecl 'in' referenceExpr=ValuedReferenceExpr
+	{IterationStmt} 'while' expr=Expression
 		stmts=StatementList
 	'end'
 ;
 
 VarDeclStmt returns Statement:
-	{VarDeclStmt} decl=VarDecl assignment=VariableAssignment
+	{VarDeclStmt} decl=VarDecl (assignment=VariableAssignment)?
 ;
 
 VarDecl:
@@ -363,18 +347,20 @@ LiteralExpr:
 	| NumberLiteral
 	| HexLiteral
 	| StringLiteral
-	| NullLiteral
 	| PointAspectLiteral
 ;
 
 ValuedReferenceExpr:
-	decl=[RefVarDecl]
-		('['indices+=Expression']')*
-		('.' propRef=ValuedReferenceExpr)?
+	decl=[RefVarDecl] ('['indexExpr=Expression']')?
+;
+
+ExternalFunctionCallExpr:
+	'extern' name=ID ('()' | '(' params+=Expression (',' params+=Expression)* ')')
 ;
 
 FunctionCallExpr:
 	{FunctionCallExpr} decl=[FuncDecl] ('()' | '(' params+=Expression (',' params+=Expression)* ')')
+	| ExternalFunctionCallExpr
 	| BehaviourExpr
 ;
 
@@ -398,12 +384,8 @@ StringLiteral:
 	{StringLiteral} value=STRING
 ;
 
-NullLiteral:
-	{NullLiteral} 'nil'
-;
-
 enum DataType:
-	INT_TYPE='int' | FLOAT_TYPE = 'float' | BOOLEAN_TYPE = 'bool' | STRING_TYPE = 'string' | OBJECT_TYPE = 'var'
+	INT_TYPE='int' | FLOAT_TYPE = 'float' | BOOLEAN_TYPE = 'bool' | STRING_TYPE = 'string'
 ;
 
 terminal BOOLEAN returns ecore::EBoolean:

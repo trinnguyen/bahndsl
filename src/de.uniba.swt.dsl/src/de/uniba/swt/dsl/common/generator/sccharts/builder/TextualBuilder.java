@@ -19,8 +19,7 @@ public class TextualBuilder {
     }
 
     public TextualBuilder appendLine(String text) {
-        builder.add(text);
-        builder.add(LINE_BREAK);
+        append(text).append(LINE_BREAK);
         return this;
     }
 

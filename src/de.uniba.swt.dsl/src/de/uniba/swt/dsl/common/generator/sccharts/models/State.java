@@ -1,6 +1,7 @@
 package de.uniba.swt.dsl.common.generator.sccharts.models;
 
 import de.uniba.swt.dsl.bahn.Expression;
+import de.uniba.swt.dsl.common.util.LogHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,5 +76,18 @@ public class State {
 
     public void setReferenceBindingExprs(List<Expression> referenceBindingExprs) {
         this.referenceBindingExprs = referenceBindingExprs;
+    }
+
+    @Override
+    public String toString() {
+        return "State{" +
+                "id='" + id + '\'' +
+                ", isInitial=" + isInitial +
+                ", isFinal=" + isFinal +
+                ", outgoingTransitions=" + LogHelper.printObject(outgoingTransitions) +
+                ", label='" + label + '\'' +
+                ", referenceState=" + referenceState +
+                ", referenceBindingExprs=" + referenceBindingExprs +
+                '}';
     }
 }

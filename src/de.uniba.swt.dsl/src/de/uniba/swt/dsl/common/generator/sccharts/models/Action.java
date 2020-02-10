@@ -33,4 +33,13 @@ public class Action {
     public void setEffects(List<Effect> effects) {
         this.effects = effects;
     }
+
+    @Override
+    public String toString() {
+        return "Action{" +
+                "label='" + label + '\'' +
+                ", trigger=" + trigger +
+                ", effects=" + effects +
+                '}';
+    }
 }

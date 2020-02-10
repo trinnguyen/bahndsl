@@ -18,11 +18,12 @@ public class SCChartsNormalizer {
      * @return
      */
     public RootModule normalizeModule(RootModule rootModule) {
+        /*
         for (var p : rootModule.getProperties()) {
             if (p instanceof FuncDecl) {
-//                normalizeFuncDecl((FuncDecl)p);
             }
         }
+         */
 
         return rootModule;
     }

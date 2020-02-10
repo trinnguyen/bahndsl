@@ -3,13 +3,13 @@ package de.uniba.swt.dsl.common.generator.sccharts.models;
 public class Transition extends Action {
     private boolean isDeferred;
     private boolean immediate;
-    private State targetState;
+    private String targetStateId;
 
     public Transition() {
     }
 
-    public Transition(State targetState) {
-        this.targetState = targetState;
+    public Transition(String targetStateId) {
+        this.targetStateId = targetStateId;
     }
 
     public boolean isDeferred() {
@@ -28,11 +28,19 @@ public class Transition extends Action {
         this.immediate = immediate;
     }
 
-    public State getTargetState() {
-        return targetState;
+    public String getTargetStateId() {
+        return targetStateId;
     }
 
-    public void setTargetState(State targetState) {
-        this.targetState = targetState;
+    public void setTargetStateId(String targetStateId) {
+        this.targetStateId = targetStateId;
+    }
+
+    @Override
+    public String toString() {
+        return "Transition{" +
+                "targetState=" + targetStateId +
+                "\n" + super.toString() +
+                '}';
     }
 }

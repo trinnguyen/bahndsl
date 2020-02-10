@@ -1,23 +1,27 @@
 package de.uniba.swt.dsl.validation.validators;
 
 import de.uniba.swt.dsl.bahn.*;
-import de.uniba.swt.dsl.validation.ExprDataType;
+import de.uniba.swt.dsl.validation.typing.ExprDataType;
+import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 import de.uniba.swt.dsl.validation.util.ExprUtil;
 import de.uniba.swt.dsl.validation.util.OperatorTypeHelper;
-import de.uniba.swt.dsl.validation.util.TypeComputingHelper;
 import de.uniba.swt.dsl.validation.util.ValidationException;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ExpressionValidator {
 
+    @Inject
+    TypeCheckingTable typeCheckingTable;
+
     /**
      * validate an expression
      * @param expr expr
      */
-    public static void validate(Expression expr) throws ValidationException {
+    public void validate(Expression expr) throws ValidationException {
         // PrimaryExpr
         if (expr instanceof PrimaryExpr) {
             // UnaryExpr or ParenthesizedExpr
@@ -45,9 +49,15 @@ public class ExpressionValidator {
         }
     }
 
-    private static void validateValuedReferenceExpr(ValuedReferenceExpr expr) throws ValidationException {
-        if (expr.getPropRef() != null) {
-            throw new ValidationException("Not supported: property is not yet supported", BahnPackage.Literals.VALUED_REFERENCE_EXPR__PROP_REF);
+    private void validateValuedReferenceExpr(ValuedReferenceExpr expr) throws ValidationException {
+        if (expr.getIndexExpr() != null) {
+            if (!expr.getDecl().isArray())
+                throw new ValidationException(String.format("Invalid value reference. Variable %s is not an array", expr.getDecl().getName()), BahnPackage.Literals.VALUED_REFERENCE_EXPR__INDEX_EXPR);
+
+            var indexType = typeCheckingTable.computeDataType(DataType.INT_TYPE, expr.getIndexExpr());
+            if (indexType.getDataType() != DataType.INT_TYPE) {
+                throw new ValidationException("Type Error: Expected int", BahnPackage.Literals.OP_EXPRESSION__LEFT_EXPR);
+            }
         }
     }
 
@@ -60,15 +70,15 @@ public class ExpressionValidator {
      * @param opExpr expression
      * @throws ValidationException exception
      */
-    private static void validateOpExpression(OpExpression opExpr) throws ValidationException {
+    private void validateOpExpression(OpExpression opExpr) throws ValidationException {
         ExprDataType dataTypeLeft = null;
         if (opExpr.getLeftExpr() != null) {
-            dataTypeLeft = TypeComputingHelper.computeDataType(opExpr.getLeftExpr());
+            dataTypeLeft = typeCheckingTable.computeOpExpression(opExpr.getLeftExpr());
         }
 
         ExprDataType dataTypeRight = null;
         if (opExpr.getRightExpr() != null) {
-            dataTypeRight = TypeComputingHelper.computeDataType(opExpr.getRightExpr());
+            dataTypeRight = typeCheckingTable.computeOpExpression(opExpr.getRightExpr());
         }
 
         // ensure same type

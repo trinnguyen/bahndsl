@@ -12,6 +12,13 @@ public class Effect {
     public void setExpression(Expression expression) {
         this.expression = expression;
     }
+
+    @Override
+    public String toString() {
+        return "Effect{" +
+                "expression=" + expression +
+                '}';
+    }
 }
 
 

@@ -10,32 +10,25 @@ import java.util.List;
 @Singleton
 public class BahnNormalizationProvider {
 
-    private FuncDecl getSignalAspectFuncDecl;
+    private static final String EXTERN_TABLE_GET_ROUTES = "interlocking_table_get_routes";
 
-    private FuncDecl getPointAspectFuncDecl;
+    private static final String EXTERN_STATE_GETTER_NAME = "track_state_get_value";
 
-    private FuncDecl setSignalAspectFuncDecl;
+    private static final String EXTERN_STATE_SETTER_NAME = "track_state_get_value";
 
-    private FuncDecl setPointAspectFuncDecl;
+    private static final String EXTERN_CONFIG_SET_SCALAR_STRING = "config_set_scalar_string_value";
 
-    private FuncDecl getRouteFuncDecl;
+    private static final String PROP_TRAIN = "train";
+
+    private static final String TYPE_ROUTE = "route";
+
+    private static final String TYPE_POINT = "point";
+
+    private static final String TYPE_SIGNAL = "signal";
+
+    private static final String TYPE_SEGMENT = "segment";
 
     public BahnNormalizationProvider() {
-        getSignalAspectFuncDecl = createFuncDecl("get_signal_aspect",
-                List.of(createVarParam("inSignal", DataType.OBJECT_TYPE, false)));
-
-        getPointAspectFuncDecl = createFuncDecl("get_point_aspect",
-                List.of(createVarParam("inPoint", DataType.OBJECT_TYPE, false)));
-
-        setSignalAspectFuncDecl = createFuncDecl("set_signal_aspect",
-                List.of(createVarParam("inSignal", DataType.OBJECT_TYPE, false)));
-
-        setPointAspectFuncDecl = createFuncDecl("set_point_aspect",
-                List.of(createVarParam("inPoint", DataType.OBJECT_TYPE, false)));
-
-        getRouteFuncDecl = createFuncDecl("get_route_from_to",
-                List.of(createVarParam("inSignalFrom", DataType.OBJECT_TYPE, false),
-                        createVarParam("inSignalTo", DataType.OBJECT_TYPE, false)));
     }
 
     public void normalize(RootModule rootModule) {
@@ -57,12 +50,12 @@ public class BahnNormalizationProvider {
             }
 
             if (stmt instanceof IterationStmt) {
-                normalize(((IterationStmt) stmt).getReferenceExpr());
+                normalize(((IterationStmt) stmt).getExpr());
                 normalize(((IterationStmt) stmt).getStmts());
                 continue;
             }
 
-            if (stmt instanceof VarDeclStmt) {
+            if (stmt instanceof VarDeclStmt && ((VarDeclStmt) stmt).getAssignment() != null) {
                 normalize(((VarDeclStmt) stmt).getAssignment());
                 continue;
             }
@@ -101,36 +94,44 @@ public class BahnNormalizationProvider {
         }
     }
 
+    private StringLiteral createString(String value) {
+        var literal = BahnFactory.eINSTANCE.createStringLiteral();
+        literal.setValue(value);
+        return literal;
+    }
+
     private Expression convertSyntacticExpr(Expression expr) {
+        // getter
         if (expr instanceof GetFuncExpr) {
             // get signal sig1 -> get_signal_aspect(sig1)
             // get point point1 -> get_point_aspect(point1)
-            // get route from sig1 to sig2 -> get_route_from_to(sig1, sign2)
+            // get routes from sig1 to sig2 -> get_route_from_to(sig1, sign2)
             GetFuncExpr getFuncExpr = (GetFuncExpr)expr;
 
             if (getFuncExpr.isPoint()) {
-                return createFuncCallExpr(getPointAspectFuncDecl, List.of(getFuncExpr.getExpr()));
+                return createExternalFunctionCallExpr(EXTERN_STATE_GETTER_NAME, List.of(createString(TYPE_POINT), getFuncExpr.getExpr()));
             }
 
             if (getFuncExpr.isSignal()) {
-                return createFuncCallExpr(getSignalAspectFuncDecl, List.of(getFuncExpr.getExpr()));
+                return createExternalFunctionCallExpr(EXTERN_STATE_GETTER_NAME, List.of(createString(TYPE_SIGNAL), getFuncExpr.getExpr()));
             }
 
             if (getFuncExpr.isRoute()) {
-                return createFuncCallExpr(getRouteFuncDecl, List.of(getFuncExpr.getSrcSignalExpr(), getFuncExpr.getDestSignalExpr()));
+                return createExternalFunctionCallExpr(EXTERN_TABLE_GET_ROUTES, List.of(getFuncExpr.getSrcSignalExpr(), getFuncExpr.getDestSignalExpr(), getFuncExpr.getBinding()));
             }
 
             return null;
         }
 
+        // setter
         if (expr instanceof SetAspectFuncExpr) {
             SetAspectFuncExpr setAspectFuncExpr = (SetAspectFuncExpr) expr;
             if (setAspectFuncExpr.isPoint()) {
-                return createFuncCallExpr(setPointAspectFuncDecl, List.of(setAspectFuncExpr.getExpr()));
+                return createExternalFunctionCallExpr(EXTERN_STATE_SETTER_NAME, List.of(createString(TYPE_POINT), setAspectFuncExpr.getExpr()));
             }
 
             if (setAspectFuncExpr.isSignal()) {
-                return createFuncCallExpr(setSignalAspectFuncDecl, List.of(setAspectFuncExpr.getExpr()));
+                return createExternalFunctionCallExpr(EXTERN_STATE_SETTER_NAME, List.of(createString(TYPE_SIGNAL), setAspectFuncExpr.getExpr()));
             }
         }
 
@@ -140,32 +141,21 @@ public class BahnNormalizationProvider {
         }
 
         if (expr instanceof GrantRouteFuncExpr) {
-            //TODO generate route.train = train
-            return expr;
+            GrantRouteFuncExpr grantRouteFuncExpr = (GrantRouteFuncExpr) expr;
+            return createExternalFunctionCallExpr(EXTERN_CONFIG_SET_SCALAR_STRING, List.of(
+                    createString(TYPE_ROUTE),
+                    grantRouteFuncExpr.getRouteExpr(),
+                    createString(PROP_TRAIN),
+                    grantRouteFuncExpr.getTrainExpr()));
         }
 
         return null;
     }
 
-    private static FunctionCallExpr createFuncCallExpr(FuncDecl funcDecl, Collection<Expression> paramExprs) {
-        var expr = BahnFactory.eINSTANCE.createFunctionCallExpr();
-        expr.setDecl(funcDecl);
+    private static ExternalFunctionCallExpr createExternalFunctionCallExpr(String name, Collection<Expression> paramExprs) {
+        var expr = BahnFactory.eINSTANCE.createExternalFunctionCallExpr();
+        expr.setName(name);
         expr.getParams().addAll(paramExprs);
         return expr;
-    }
-
-    private static ParamDecl createVarParam(String name, DataType dataType, boolean isArray) {
-        var decl = BahnFactory.eINSTANCE.createParamDecl();
-        decl.setName(name);
-        decl.setType(dataType);
-        decl.setArray(isArray);
-        return decl;
-    }
-
-    private static FuncDecl createFuncDecl(String name, Collection<ParamDecl> paramDecls) {
-        var decl = BahnFactory.eINSTANCE.createFuncDecl();
-        decl.setName(name);
-        decl.getParamDecls().addAll(paramDecls);
-        return decl;
     }
 }

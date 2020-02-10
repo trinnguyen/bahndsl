@@ -2,55 +2,66 @@ package de.uniba.swt.dsl.common.generator.sccharts.builder;
 
 import de.uniba.swt.dsl.bahn.Expression;
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
+import de.uniba.swt.dsl.common.util.StringUtil;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class StateTextualBuilder extends TextualBuilder {
+
+    @Inject
+    ExpressionTextualBuilder expressionTextualBuilder;
+
     private RootState rootState;
 
-    public StateTextualBuilder(RootState rootState) {
+    public String buildString(RootState rootState) {
+        clear();
         this.rootState = rootState;
-
-        // generate root
         generateRootState();
+        return build();
     }
 
     private void generateRootState() {
-        append("scchart").append(rootState.getId()).append("{").append(LINE_BREAK);
+        append("scchart").append(rootState.getId());
+        generateSuperState(rootState);
+    }
 
-        // variables
-        generateVarDecls(rootState.getDeclarations());
+    private void generateSuperState(SuperState superState) {
+        appendLine("{");
+        // host code references
+        generateHostcodeReferences(superState.getHostCodeReferences());
 
-        // generate actions
-        if (rootState.getLocalActions() != null) {
-            for (var action : rootState.getLocalActions()) {
-                generateLocalAction(action);
-            }
-        }
+        // interface variables
+        generateVarDecls(superState.getDeclarations());
+        appendLine("");
 
         // all root states
-        if (rootState.getStates() != null) {
-            for (var childState : rootState.getStates()) {
-                generateRegularState(childState);
-                append(LINE_BREAK);
+        if (superState.getStates() != null) {
+            for (var childState : superState.getStates()) {
+                if (childState instanceof SuperState) {
+                    generateStateId(childState);
+                    generateSuperState((SuperState)childState);
+                } else {
+                    generateRegularState(childState);
+                }
+
+                appendLine("");
             }
         }
 
-        append("}");
+        appendLine("}");
+
+        // join
+        if (StringUtil.isNotEmpty(superState.getJoinTargetId())) {
+            appendLine("join to " + superState.getJoinTargetId());
+        }
     }
 
     private void generateRegularState(State state) {
-        if (state.isInitial())
-            append("initial");
-
-        if (state.isFinal())
-            append("final");
-
-        append("state").append(state.getId());
-        if (state.getLabel() != null)
-            append(state.getLabel());
+        generateStateId(state);
 
         // reference
         if (state.getReferenceState() != null) {
@@ -63,6 +74,18 @@ public class StateTextualBuilder extends TextualBuilder {
                 generateTransition(transition);
             }
         }
+    }
+
+    private void generateStateId(State state) {
+        if (state.isInitial())
+            append("initial");
+
+        if (state.isFinal())
+            append("final");
+
+        append("state").append(state.getId());
+        if (state.getLabel() != null)
+            append(state.getLabel());
     }
 
     private void generateReferenceState(State state) {
@@ -81,6 +104,13 @@ public class StateTextualBuilder extends TextualBuilder {
                         decl.getName()));
             }
             append("(").append(String.join(",", txtBindings)).append(")");
+        }
+    }
+
+    private void generateHostcodeReferences(Set<String> hostCodeReferences) {
+        for (String name : hostCodeReferences) {
+            append(String.format("extern @C \"%s\" %s", name, name));
+            append(LINE_BREAK);
         }
     }
 
@@ -111,11 +141,6 @@ public class StateTextualBuilder extends TextualBuilder {
         if (decl.getCardinality() > 0) {
             append("[" + decl.getCardinality() + "]");
         }
-
-        // initial value
-        if (decl.getInitialExpr() != null) {
-            append("=").append(ExpressionTextualBuilder.buildString(decl.getInitialExpr()));
-        }
     }
 
     private void generateTransition(Transition transition) {
@@ -129,8 +154,8 @@ public class StateTextualBuilder extends TextualBuilder {
         generateAction(transition);
 
         // go to
-        if (transition.getTargetState() != null) {
-            append("go").append("to").append(transition.getTargetState().getId());
+        if (transition.getTargetStateId() != null) {
+            append("go").append("to").append(transition.getTargetStateId());
         }
     }
 
@@ -177,6 +202,6 @@ public class StateTextualBuilder extends TextualBuilder {
     }
 
     private String generateExpression(Expression expression) {
-        return ExpressionTextualBuilder.buildString(expression);
+        return expressionTextualBuilder.buildString(expression);
     }
 }
