@@ -33,11 +33,13 @@ public class SCChartModelBuilder {
         }
 
         // update model
+        List<RootState> rootStates = new ArrayList<>();
         for (RootStateBuilder builder : builders) {
             builder.build();
+            rootStates.add(builder.getRootState());
         }
 
-        return new SCCharts(new ArrayList<>(mapFuncState.values()));
+        return new SCCharts(rootStates);
     }
 
 }
