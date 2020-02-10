@@ -116,7 +116,7 @@ public class SuperStateBuilder {
         // go to final state
         SuperState elseState = null;
         if (stmt.getElseStmts() != null) {
-            elseState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getThenStmts()).build();
+            elseState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getElseStmts()).build();
             initialState.getOutgoingTransitions().add(new Transition(elseState.getId()));
             elseState.setJoinTargetId(finalState.getId());
             superState.getStates().add(elseState);
