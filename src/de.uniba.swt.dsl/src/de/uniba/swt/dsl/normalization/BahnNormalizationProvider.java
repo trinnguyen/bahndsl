@@ -117,7 +117,7 @@ public class BahnNormalizationProvider {
             }
 
             if (getFuncExpr.isRoute()) {
-                return createExternalFunctionCallExpr(EXTERN_TABLE_GET_ROUTES, List.of(getFuncExpr.getSrcSignalExpr(), getFuncExpr.getDestSignalExpr()));
+                return createExternalFunctionCallExpr(EXTERN_TABLE_GET_ROUTES, List.of(getFuncExpr.getSrcSignalExpr(), getFuncExpr.getDestSignalExpr(), getFuncExpr.getBinding()));
             }
 
             return null;

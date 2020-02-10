@@ -81,7 +81,7 @@ GetFuncExpr returns BehaviourExpr:
 		|
 		(point?='point' expr=PrimaryExpr)
 		|
-		(route?='routes' 'from' srcSignalExpr=PrimaryExpr 'to' destSignalExpr=PrimaryExpr)
+		(route?='routes' 'from' srcSignalExpr=PrimaryExpr 'to' destSignalExpr=PrimaryExpr 'binding' binding=ValuedReferenceExpr)
 	)
 ;
 
