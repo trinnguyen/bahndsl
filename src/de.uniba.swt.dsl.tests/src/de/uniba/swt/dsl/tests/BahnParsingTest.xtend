@@ -48,8 +48,8 @@ class BahnParsingTest {
 					set point point1 to reverse
 
 					# get aspect
-					var pAspect = get point point1
-					var sAspect = get signal sig1
+					string pAspect = get point point1
+					string sAspect = get signal sig1
 
 					# check aspect
 					bool isRed = get signal sig1 is red
@@ -71,7 +71,8 @@ class BahnParsingTest {
 					bool r2 = route1 is not available
 
 					# get route
-					var route1 = get route from sig1 to sig2
+					string route_ids[100]
+					int count_routes = get routes from src_signal_id to dst_signal_id binding route_ids
 				end
 			end
 		'''.parse.assertNoParsingErrors

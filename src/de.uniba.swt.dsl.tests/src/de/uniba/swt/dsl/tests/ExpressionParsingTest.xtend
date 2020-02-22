@@ -181,17 +181,4 @@ class ExpressionParsingTest {
 			end end
 		'''.parse.assertNoParsingErrors
 	}
-
-	@Test
-	def void testPropertyValuedReferenceExpr() {
-		'''
-			module test def test()
-				float b = a.value * 5
-				b = a.value + 5
-				b = c.result || true
-				b = d.result == true
-				b = d.result > 3
-			end end
-		'''.parse.assertNoParsingErrors
-	}
 }

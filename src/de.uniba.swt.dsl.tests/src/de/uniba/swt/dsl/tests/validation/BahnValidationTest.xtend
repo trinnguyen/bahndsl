@@ -147,11 +147,13 @@ class BahnValidationTest {
     @Test
     def void testTypeSelectionStmt() {
         '''
-			module validation def interproc()
-				if 3
-				       int i1 = 1
-				   end end
-			end end
+			module validation
+			    def interproc()
+				    if 3
+						int i1 = 1
+					end
+				end
+			end
 		     '''.parse.assertError(BahnPackage.Literals.SELECTION_STMT, null, "Expected bool")
     }
     

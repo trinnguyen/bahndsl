@@ -13,37 +13,21 @@ public class TypeCheckingTable {
 
     private Map<Expression, ExprDataType> typeTable = new HashMap<>();
 
-    public ExprDataType computeDataType(DataType hintType, Expression expression) {
+    public ExprDataType computeDataType(Expression expression) {
+        return computeDataType(expression, HintDataType.NONE);
+    }
+
+    public ExprDataType computeDataType(Expression expression, HintDataType hintType) {
         if (hasDataType(expression))
-            return typeTable.get(expression);
+            return lookup(expression);
 
-        var dataType = TypeComputingHelper.computeDataType(hintType, expression);
+        var dataType = TypeComputingHelper.computeDataType(expression, hintType);
         return insertToTable(expression, dataType);
-    }
-
-    public ExprDataType computeValuedReferenceExpr(ValuedReferenceExpr referenceExpr) {
-        if (hasDataType(referenceExpr))
-            return typeTable.get(referenceExpr);
-
-        var dataType = TypeComputingHelper.computeValuedReferenceExpr(referenceExpr);
-        return insertToTable(referenceExpr, dataType);
-    }
-
-    public ExprDataType computeOpExpression(OpExpression leftExpr) {
-        if (hasDataType(leftExpr))
-            return typeTable.get(leftExpr);
-
-        var dataType = TypeComputingHelper.computeOpExpression(leftExpr);
-        return insertToTable(leftExpr, dataType);
     }
 
     private ExprDataType insertToTable(Expression expression, ExprDataType dataType) {
         typeTable.put(expression, dataType);
         return dataType;
-    }
-
-    public boolean hasDataType(Expression expression) {
-        return typeTable.containsKey(expression);
     }
 
     public boolean isValidType(ExprDataType computedType, ExprDataType expectedType) {
@@ -59,7 +43,11 @@ public class TypeCheckingTable {
         return TypeComputingHelper.getDataType(decl);
     }
 
-    public ExprDataType lookup(LiteralExpr expr) {
+    public boolean hasDataType(Expression expression) {
+        return typeTable.containsKey(expression);
+    }
+
+    public ExprDataType lookup(Expression expr) {
         return typeTable.get(expr);
     }
 }

@@ -128,8 +128,9 @@ class BStatementParsingTest {
 	def void testGetRouteBySignal() {
 		'''
 			module expr
-				def inter()
-					var r1 = get route from sig1 to sig2
+				def inter(string sig1, string sig2)
+				    string route_ids[100]
+					int count_routes = get routes from src_signal_id to dst_signal_id binding route_ids
 				end
 			end
 		'''.parse.assertNoParsingErrors

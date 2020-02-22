@@ -13,4 +13,8 @@ public class ExprUtil {
             return false;
         return Arrays.asList(array).contains(value);
     }
+
+    public static boolean isInteger(double val) {
+        return val % 1 == 0;
+    }
 }
