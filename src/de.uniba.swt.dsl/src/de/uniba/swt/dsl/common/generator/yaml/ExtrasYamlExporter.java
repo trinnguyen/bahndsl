@@ -33,17 +33,10 @@ public class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         Set<ExtraBlockElement> platforms = rootModule.getProperties().stream().filter(p -> p instanceof PlatformsProperty).map(p -> ((PlatformsProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraItem(b, mapSignals)).collect(Collectors.toSet());
         Set<CrossingElement> crossings = rootModule.getProperties().stream().filter(p -> p instanceof CrossingsProperty).map(p -> ((CrossingsProperty) p).getItems()).flatMap(Collection::stream).collect(Collectors.toSet());
 
-        appendLine("extras:");
-        increaseLevel();
-
         // blocks
-        exportSection("- blocks:", blocks);
-        increaseLevel();
+        exportSection("blocks:", blocks);
         exportSection("platforms:", platforms);
         exportSection("crossings:", crossings);
-        decreaseLevel();
-
-        decreaseLevel();
     }
 
     private Map<String, Set<String>> getMapSignals(NetworkLayout networkLayout) {
