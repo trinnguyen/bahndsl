@@ -49,15 +49,6 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
         decreaseLevel();
     }
 
-    private void exportSection(String section, List<?> items) {
-        appendLine(section);
-        increaseLevel();
-        for (Object item : items) {
-            ElementExporterFactory.build(this, item);
-        }
-        decreaseLevel();
-    }
-
     private Map<String, Set<ModuleProperty>> buildMap(RootModule rootModule) {
         Map<String, Set<ModuleProperty>> map = new HashMap<>();
         for (ModuleProperty property : rootModule.getProperties()) {

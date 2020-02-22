@@ -16,7 +16,7 @@ public class YamlConfigGenerator implements GeneratorProvider {
     TrainYamlExporter trainYamlExporter;
 
     @Inject
-    BlockYamlExporter blockYamlExporter;
+    ExtrasYamlExporter extrasYamlExporter;
 
     @Override
     public void run(IFileSystemAccess2 fsa, RootModule rootModule) {
@@ -30,6 +30,6 @@ public class YamlConfigGenerator implements GeneratorProvider {
         fsa.generateFile("bidib_train_config.yml", trainYamlExporter.export(rootModule));
 
         // block
-        fsa.generateFile("block_config.yml", blockYamlExporter.export(rootModule));
+        fsa.generateFile("extras_config.yml", extrasYamlExporter.export(rootModule));
     }
 }

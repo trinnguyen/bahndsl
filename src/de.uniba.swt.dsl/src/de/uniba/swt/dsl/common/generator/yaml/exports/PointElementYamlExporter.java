@@ -18,6 +18,9 @@ public class PointElementYamlExporter extends AbstractElementYamlExporter<PointE
         var aspects = List.of(
                 new PointAspect(PointAspectType.NORMAL, element.getNormalValue()),
                 new PointAspect(PointAspectType.REVERSE, element.getReverseValue()));
-        return Map.of("number", element.getNumber(), "aspects", aspects, "initial", element.getInitial().getName().toLowerCase());
+        return Map.of("number", element.getNumber(),
+                "aspects", aspects,
+                "initial", element.getInitial().getName().toLowerCase(),
+                "segment", element.getMainSeg().getName());
     }
 }

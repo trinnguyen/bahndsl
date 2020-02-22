@@ -48,6 +48,17 @@ public class ElementExporterFactory {
 
         if (obj instanceof TrainPeripheral) {
             new TrainPeripheralYamlExporter().build(exporter, (TrainPeripheral) obj);
+            return;
+        }
+
+        if (obj instanceof BlockElement) {
+            new BlockElementYamlExporter().build(exporter, (BlockElement) obj);
+            return;
+        }
+
+        if (obj instanceof CrossingElement) {
+            new CrossingElementYamlExporter().build(exporter, (CrossingElement) obj);
+            return;
         }
     }
 }
