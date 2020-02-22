@@ -26,10 +26,6 @@ public class LayoutVertex {
         return members;
     }
 
-    public void setMembers(List<AbstractVertexMember> members) {
-        this.members = members;
-    }
-
     public boolean addIfNeeded(AbstractVertexMember member) {
         if (members.stream()
                 .noneMatch(r -> r.getKey().equalsIgnoreCase(member.getKey()))) {

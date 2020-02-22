@@ -49,17 +49,15 @@ public class BahnGenerator extends AbstractGenerator {
 	@Override
 	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 
-		GeneratorProvider[] providers = new GeneratorProvider[]{
-				yamlConfigGenerator,
-				scChartsGenerator,
-				layoutGenerator,
-		};
-
 		RootModule rootModule = getRootModule(resource);
 		if (rootModule != null) {
-			for (GeneratorProvider provider : providers) {
-				provider.run(fsa, rootModule);
-			}
+			// layout generator must run first to generate network layout
+			layoutGenerator.run(fsa, rootModule);
+			scChartsGenerator.run(fsa, rootModule);
+
+			// use network layout for block generation (direction, signals)
+			yamlConfigGenerator.setNetworkLayout(layoutGenerator.getNetworkLayout());
+			yamlConfigGenerator.run(fsa, rootModule);
 		}
 	}
 

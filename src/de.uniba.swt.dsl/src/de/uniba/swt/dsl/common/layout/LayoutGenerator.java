@@ -6,6 +6,7 @@ import de.uniba.swt.dsl.bahn.SignalElement;
 import de.uniba.swt.dsl.bahn.SignalsProperty;
 import de.uniba.swt.dsl.common.generator.GeneratorProvider;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
+import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.util.LogHelper;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -24,10 +25,15 @@ public class LayoutGenerator implements GeneratorProvider {
 	private NetworkRoutesExplorer routesExplorer = new NetworkRoutesExplorer();
 	private DotExporter dotExporter = new DotExporter();
 	private InterlockingYamlExporter yamlExporter = new InterlockingYamlExporter();
+	private NetworkLayout networkLayout;
 
 	public void run(IFileSystemAccess2 fsa, RootModule rootModule) {
 		var layoutProp = rootModule.getProperties().stream().filter(p -> p instanceof LayoutProperty).map(p -> (LayoutProperty)p).findFirst();
 		layoutProp.ifPresent(moduleProperty -> buildLayout(fsa, rootModule, moduleProperty));
+	}
+
+	public NetworkLayout getNetworkLayout() {
+		return networkLayout;
 	}
 
 	private void buildLayout(IFileSystemAccess2 fsa, RootModule rootModule, LayoutProperty layoutProp) {
@@ -36,7 +42,7 @@ public class LayoutGenerator implements GeneratorProvider {
 		
 		try {
 			// network
-			var networkLayout = networkLayoutBuilder.build(layoutProp);
+			networkLayout = networkLayoutBuilder.build(layoutProp);
 			logger.debug(networkLayout);
 
 			// generate graph

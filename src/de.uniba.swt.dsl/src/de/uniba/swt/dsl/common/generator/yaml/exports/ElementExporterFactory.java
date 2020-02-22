@@ -1,6 +1,7 @@
 package de.uniba.swt.dsl.common.generator.yaml.exports;
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.common.util.ExtraBlockElement;
 import de.uniba.swt.dsl.common.util.PointAspect;
 import de.uniba.swt.dsl.common.util.YamlExporter;
 
@@ -51,8 +52,8 @@ public class ElementExporterFactory {
             return;
         }
 
-        if (obj instanceof BlockElement) {
-            new BlockElementYamlExporter().build(exporter, (BlockElement) obj);
+        if (obj instanceof ExtraBlockElement) {
+            new ExtraBlockElementYamlExporter().build(exporter, (ExtraBlockElement) obj);
             return;
         }
 
