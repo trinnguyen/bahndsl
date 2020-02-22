@@ -2,12 +2,14 @@ package de.uniba.swt.dsl.common.generator.sccharts;
 
 import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.common.generator.GeneratorProvider;
 import de.uniba.swt.dsl.common.generator.sccharts.builder.SCChartModelBuilder;
 import de.uniba.swt.dsl.common.generator.sccharts.builder.SCChartsTextualBuilder;
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
 import org.apache.log4j.Logger;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
 
-public class SCChartsGenerator {
+public class SCChartsGenerator implements GeneratorProvider {
 
     private static final Logger logger = Logger.getLogger(SCChartsGenerator.class);
 
@@ -19,10 +21,10 @@ public class SCChartsGenerator {
     @Inject
     SCChartModelBuilder modelBuilder;
 
-
-    public String generate(RootModule rootModule) {
+    @Override
+    public void run(IFileSystemAccess2 fsa, RootModule rootModule) {
         SCCharts models = modelBuilder.createModel(normalizer.normalizeModule(rootModule));
         logger.debug(models);
-        return builder.buildString(models);
+        fsa.generateFile("interlocking_sccharts.sctx", builder.buildString(models));
     }
 }

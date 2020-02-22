@@ -4,6 +4,7 @@ import de.uniba.swt.dsl.bahn.LayoutProperty;
 import de.uniba.swt.dsl.bahn.RootModule;
 import de.uniba.swt.dsl.bahn.SignalElement;
 import de.uniba.swt.dsl.bahn.SignalsProperty;
+import de.uniba.swt.dsl.common.generator.GeneratorProvider;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.util.LogHelper;
 import org.apache.log4j.Level;
@@ -15,7 +16,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class LayoutGenerator {
+public class LayoutGenerator implements GeneratorProvider {
 	
 	private final static Logger logger = Logger.getLogger(LayoutGenerator.class);
 
