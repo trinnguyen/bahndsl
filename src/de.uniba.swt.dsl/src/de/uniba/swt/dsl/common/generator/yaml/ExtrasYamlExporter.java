@@ -37,9 +37,11 @@ public class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         increaseLevel();
 
         // blocks
-        exportSection("blocks:", blocks);
+        exportSection("- blocks:", blocks);
+        increaseLevel();
         exportSection("platforms:", platforms);
         exportSection("crossings:", crossings);
+        decreaseLevel();
 
         decreaseLevel();
     }
