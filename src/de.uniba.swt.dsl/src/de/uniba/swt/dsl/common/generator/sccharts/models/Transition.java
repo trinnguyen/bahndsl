@@ -10,6 +10,7 @@ public class Transition extends Action {
 
     public Transition(String targetStateId) {
         this.targetStateId = targetStateId;
+        this.setImmediate(true);
     }
 
     public boolean isDeferred() {
