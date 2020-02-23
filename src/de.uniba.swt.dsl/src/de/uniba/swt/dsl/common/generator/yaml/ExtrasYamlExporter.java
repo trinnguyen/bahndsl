@@ -27,11 +27,11 @@ public class ExtrasYamlExporter extends AbstractBidibYamlExporter {
     @Override
     protected void exportContent(RootModule rootModule) {
 
-        Map<String, Set<String>> mapSignals = getMapSignals(networkLayout);
+        Map<String, List<String>> mapSignals = getMapSignals();
 
-        Set<ExtraBlockElement> blocks = rootModule.getProperties().stream().filter(p -> p instanceof BlocksProperty).map(p -> ((BlocksProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraItem(b, mapSignals)).collect(Collectors.toSet());
-        Set<ExtraBlockElement> platforms = rootModule.getProperties().stream().filter(p -> p instanceof PlatformsProperty).map(p -> ((PlatformsProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraItem(b, mapSignals)).collect(Collectors.toSet());
-        Set<CrossingElement> crossings = rootModule.getProperties().stream().filter(p -> p instanceof CrossingsProperty).map(p -> ((CrossingsProperty) p).getItems()).flatMap(Collection::stream).collect(Collectors.toSet());
+        List<ExtraBlockElement> blocks = rootModule.getProperties().stream().filter(p -> p instanceof BlocksProperty).map(p -> ((BlocksProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraItem(b, mapSignals)).collect(Collectors.toList());
+        List<ExtraBlockElement> platforms = rootModule.getProperties().stream().filter(p -> p instanceof PlatformsProperty).map(p -> ((PlatformsProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraItem(b, mapSignals)).collect(Collectors.toList());
+        List<CrossingElement> crossings = rootModule.getProperties().stream().filter(p -> p instanceof CrossingsProperty).map(p -> ((CrossingsProperty) p).getItems()).flatMap(Collection::stream).collect(Collectors.toList());
 
         // blocks
         exportSection("blocks:", blocks);
@@ -39,11 +39,14 @@ public class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         exportSection("crossings:", crossings);
     }
 
-    private Map<String, Set<String>> getMapSignals(NetworkLayout networkLayout) {
-        Map<String, Set<String>> map = new HashMap<>();
+    private Map<String, List<String>> getMapSignals() {
+        if (networkLayout == null)
+            return null;
+
+        Map<String, List<String>> map = new HashMap<>();
         for (LayoutVertex vertex : networkLayout.getVertices()) {
             String blockName = null;
-            Set<String> signals = new HashSet<>();
+            List<String> signals = new ArrayList<>();
             for (AbstractVertexMember member : vertex.getMembers()) {
                 if (member.getType() == VertexMemberType.Block) {
                     blockName = member.getName();
@@ -65,7 +68,9 @@ public class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         return map;
     }
 
-    private ExtraBlockElement createExtraItem(BlockElement blockElement, Map<String, Set<String>> mapSignals) {
-        return new ExtraBlockElement(blockElement, networkLayout.getBlockDirection(blockElement.getName()), mapSignals.get(blockElement.getName()));
+    private ExtraBlockElement createExtraItem(BlockElement blockElement, Map<String, List<String>> mapSignals) {
+        var direction = networkLayout != null ? networkLayout.getBlockDirection(blockElement.getName()) : null;
+        var signals = mapSignals != null ? mapSignals.get(blockElement.getName()) : null;
+        return new ExtraBlockElement(blockElement, direction, signals);
     }
 }

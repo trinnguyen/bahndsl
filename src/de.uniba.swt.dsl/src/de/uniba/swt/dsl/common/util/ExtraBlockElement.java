@@ -3,14 +3,14 @@ package de.uniba.swt.dsl.common.util;
 import de.uniba.swt.dsl.bahn.BlockElement;
 import de.uniba.swt.dsl.common.layout.models.BlockDirection;
 
-import java.util.Set;
+import java.util.List;
 
 public class ExtraBlockElement {
     private BlockElement blockElement;
     private BlockDirection direction;
-    private Set<String> signals;
+    private List<String> signals;
 
-    public ExtraBlockElement(BlockElement blockElement, BlockDirection direction, Set<String> signals) {
+    public ExtraBlockElement(BlockElement blockElement, BlockDirection direction, List<String> signals) {
         this.blockElement = blockElement;
         this.direction = direction;
         this.signals = signals;
@@ -24,7 +24,7 @@ public class ExtraBlockElement {
         return direction;
     }
 
-    public Set<String> getSignals() {
+    public List<String> getSignals() {
         return signals;
     }
 }

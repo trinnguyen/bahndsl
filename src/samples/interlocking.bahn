@@ -1,90 +1,134 @@
-module interlocking
-    # interlocking procedure - required
-    def interlocking_procedure(var source_signal, var destination_signal, var train)
-        var route1 = get route from source_signal to destination_signal
-        if route1 is nil
-            return nil
-        end
-        
-        var not_grantable = route_is_unavailable_or_conflicted(route)
-        if not_grantable
-            return nil
-        end
-        
-        var is_clear = route_is_clear(route, train)
-        if !is_clear
-            return nil
-        end
-        
-        # block route
-        grant route1 to train
+module interlocking_sample
+    def interlocking(string src_signal_id, string dst_signal_id, string train_id): string
+        string route_ids[100]
 
-        # set points and signals
-        set_route_points_signals(route1)
-        
-        return route
-    end
+        # 1. Get all routes
+        int count_routes = get routes from src_signal_id to dst_signal_id binding route_ids
 
-    def route_is_unavailable_or_conflicted(var route1)
-        # Check if the route has been granted (unavailable)
-        if route1 is not available
-            return true
-        end
+        # 2. Find shortest route
+        string id = get_shortest_route(count_routes, route_ids)
 
-        # Check conflicts
-        for var item in route.conflictRoutes
-            if item.train is not nil
-                return true
+        # 3. Check route grantability
+        bool is_grantable = route_is_grantable(id)
+        if !is_grantable
+            id = ""
+        else
+            # 4. Check route clearance
+            bool is_clear = route_is_clear(id)
+            if !is_clear
+                id = ""
+            else
+                # 5. Block the route
+                block_route(id, train_id)
+
+                # 6. Set the points and signals
+                set_points_signals(id)
             end
         end
 
-        return false
+        return id
     end
 
-    def route_is_clear(var route1, var train)
-        # TODO Signal at the route source has to be red (stop aspect)
-        # if get route entry signal is red
-        #     return false
-        # end
+    def get_shortest_route(int count_routes, string route_ids[]): string
+        float min_len = 2147483647
+        int i = 0
+        int result = 0
+        while i < count_routes
+            string route_id = route_ids[i]
+            float len = extern config_get_scalar_float_value("route", route_id, "length")
+            if len < min_len
+                min_len = len
+                result = i
+            end
 
-        # TODO Signals of tracks that intersect the route have to be red (stop aspect)
-        # for var flankSignal in flank route signals
-        #     if get signal is not red
-        #         return false
-        #     end
-        # end
+            i = i + 1
+        end
 
-        # All track segments on the route have to be clear
-        int index = 0
-        for var seg in route.paths
-            if seg is occupied
-                if index is 0 && seg is not occupied by train
-                    return false
+        return route_ids[result]
+    end
+
+    def route_is_grantable(string route_id): bool
+        string train_id = extern config_get_scalar_string_value("route", route_id, "train")
+
+        string conflict_routes[100]
+        int count_conflict_routes = extern config_get_array_string_value("route", route_id, "conflicts", conflict_routes)
+
+        int i = 0
+        bool result = true
+        while i < count_conflict_routes
+            string conflict_route_id = conflict_routes[i]
+            string conflict_train_id = extern config_get_scalar_string_value("route", conflict_route_id, "train")
+            if conflict_train_id != ""
+                result = false
+            end
+
+            i = i + 1
+        end
+
+        return result
+    end
+
+    def route_is_clear(string route_id): bool
+        bool result = true
+
+        # check entry signal
+        string src_signal = extern config_get_scalar_string_value("route", route_id, "source")
+        string src_state = get signal src_signal
+        if src_state != "red"
+            result = false
+        else
+            # check flank signals
+            string flank_signals[100]
+            int flank_signals_count = extern config_get_array_string_value("route", route_id, "signals", flank_signals)
+            int i = 0
+            while i < flank_signals_count
+                string flank_signal = flank_signals[i]
+                string flank_state = get signal flank_signal
+                if flank_signal != "red"
+                    result = false
                 end
-            else
-                return false
+
+                i  = i + 1
             end
-            index = index + 1
         end
-        return true
+
+        #  All track segments on the route have to be clear
+        if result
+            string segment_ids[100]
+            int segment_ids_count = extern config_get_array_string_value("route", route_id, "path", segment_ids)
+            int i = 0
+            while i < segment_ids_count && result
+                string segment_id = segment_ids[i]
+                bool oc = extern is_segment_occupied(segment_id)
+                if oc
+                    result = false
+                end
+                i = i + 1
+            end
+        end
+
+        return result
     end
 
-    def set_route_points_signals(var route1)
-        # Set points
-        for var pt in route.routePoints
-            if get point pt.position is normal
-                set point pt to normal
-            else
-                set point pt to reverse
-            end
+    def block_route(string route_id, string train_id)
+        bool success = extern config_set_scalar_string_value("route", route_id, "train", train_id)
+    end
+
+    def set_points_signals(string route_id)
+        # switch all points
+        string point_ids[100]
+        int points_count = extern config_get_array_string_value("route", route_id, "points", point_ids)
+        int i = 0
+        while i < points_count
+            string point_id = point_ids[i]
+            string point_position = extern config_get_scalar_string_value("route_point", point_id, "position")
+            bool success1 = extern track_state_set_value("point", point_id, point_position)
+
+            i = i +1
         end
 
-        # Set entry signal to green (proceed aspect)
-        if set signal route.srcSignal to green
-            # Set signal - invalid parameters
-            return false
-        end
-
-        return true
+        # set entry signal to green
+        string src_signal_id = extern config_get_scalar_string_value("route", route_id, "source")
+        bool success2 = extern track_state_set_value("signal", src_signal_id, "green")
     end
 end

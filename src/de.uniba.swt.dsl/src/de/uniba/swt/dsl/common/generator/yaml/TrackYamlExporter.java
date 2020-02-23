@@ -1,10 +1,12 @@
 package de.uniba.swt.dsl.common.generator.yaml;
 
 import de.uniba.swt.dsl.bahn.*;
-import de.uniba.swt.dsl.common.generator.yaml.exports.ElementExporterFactory;
 import de.uniba.swt.dsl.common.util.StringUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 class TrackYamlExporter extends AbstractBidibYamlExporter {
     @Override
@@ -14,17 +16,17 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
 
     @Override
     protected void exportContent(RootModule rootModule) {
-        Map<String, Set<ModuleProperty>> map = buildMap(rootModule);
+        Map<String, List<ModuleProperty>> map = buildMap(rootModule);
 
         appendLine("boards:");
         increaseLevel();
-        for (Map.Entry<String, Set<ModuleProperty>> entry : map.entrySet()) {
+        for (Map.Entry<String, List<ModuleProperty>> entry : map.entrySet()) {
             exportBoard(entry.getKey(), entry.getValue());
         }
         decreaseLevel();
     }
 
-    private void exportBoard(String boardName, Set<ModuleProperty> properties) {
+    private void exportBoard(String boardName, List<ModuleProperty> properties) {
         appendLine("- id: %s", boardName);
         increaseLevel();
 
@@ -49,8 +51,8 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
         decreaseLevel();
     }
 
-    private Map<String, Set<ModuleProperty>> buildMap(RootModule rootModule) {
-        Map<String, Set<ModuleProperty>> map = new HashMap<>();
+    private Map<String, List<ModuleProperty>> buildMap(RootModule rootModule) {
+        Map<String, List<ModuleProperty>> map = new HashMap<>();
         for (ModuleProperty property : rootModule.getProperties()) {
             String boardName = null;
             if (property instanceof SegmentsProperty) {
@@ -66,7 +68,7 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
             // check
             if (StringUtil.isNotEmpty(boardName)) {
                 if (!map.containsKey(boardName)) {
-                    var set = new HashSet<ModuleProperty>();
+                    var set = new ArrayList<ModuleProperty>();
                     set.add(property);
                     map.put(boardName, set);
                 } else {
