@@ -133,8 +133,8 @@ public class ExpressionTextualBuilder extends TextualBuilder {
         }
 
         if (expr instanceof StringLiteral) {
-            append("\"").append(((StringLiteral) expr).getValue()).append("\"");
-            return;
+            String value = ((StringLiteral) expr).getValue();
+            append("\"" + value + "\"");
         }
 
         //TODO NULL and PostAspect
