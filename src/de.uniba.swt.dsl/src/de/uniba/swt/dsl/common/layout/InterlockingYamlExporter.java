@@ -1,5 +1,7 @@
 package de.uniba.swt.dsl.common.layout;
 
+import de.uniba.swt.dsl.bahn.LengthUnit;
+import de.uniba.swt.dsl.bahn.SegmentElement;
 import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractPointEdge;
@@ -35,6 +37,8 @@ public class InterlockingYamlExporter extends YamlExporter {
         appendLine("destination: %s", route.getDestSignal());
 
         // segment (blocks and points)
+        double length = 0;
+        LengthUnit unit = LengthUnit.METRE;
         appendLine("path:");
         increaseLevel();
         List<AbstractPointEdge> points = new ArrayList<>();
@@ -47,11 +51,16 @@ public class InterlockingYamlExporter extends YamlExporter {
             }
 
             // render
-            edge.getSegments().forEach(segmentElement -> {
-                appendLine("- id: %s", segmentElement.getName());
-            });
+            for (SegmentElement segment : edge.getSegments()) {
+                appendLine("- id: %s", segment.getName());
+                length += segment.getLength().getValue();
+                unit = segment.getLength().getUnit();
+            }
         }
         decreaseLevel();
+
+        // length
+        appendLine("length: %.2f%s", length, unit.getLiteral().toLowerCase());
 
         // points
         appendLine("points:");
