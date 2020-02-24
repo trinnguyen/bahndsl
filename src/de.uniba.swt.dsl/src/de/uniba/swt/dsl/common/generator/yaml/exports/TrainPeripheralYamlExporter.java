@@ -1,7 +1,9 @@
 package de.uniba.swt.dsl.common.generator.yaml.exports;
 
 import de.uniba.swt.dsl.bahn.TrainPeripheral;
+import de.uniba.swt.dsl.common.util.Tuple;
 
+import java.util.List;
 import java.util.Map;
 
 public class TrainPeripheralYamlExporter extends AbstractElementYamlExporter<TrainPeripheral> {
@@ -11,7 +13,8 @@ public class TrainPeripheralYamlExporter extends AbstractElementYamlExporter<Tra
     }
 
     @Override
-    protected Map<String, Object> getProps(TrainPeripheral element) {
-        return Map.of("bit", element.getBit(), "initial", element.getInitial());
+    protected List<Tuple<String, Object>> getProps(TrainPeripheral element) {
+        return List.of(Tuple.of("bit", element.getBit()),
+                Tuple.of("initial", element.getInitial()));
     }
 }

@@ -1,8 +1,10 @@
 package de.uniba.swt.dsl.common.generator.yaml.exports;
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.common.util.Tuple;
 import org.eclipse.emf.common.util.EList;
 
+import java.util.List;
 import java.util.Map;
 
 class SignalElementYamlExporter extends AbstractElementYamlExporter<SignalElement> {
@@ -13,9 +15,11 @@ class SignalElementYamlExporter extends AbstractElementYamlExporter<SignalElemen
     }
 
     @Override
-    protected Map<String, Object> getProps(SignalElement element) {
+    protected List<Tuple<String, Object>> getProps(SignalElement element) {
         EList<AspectElement> aspects = getAspectsSet(element.getAspects());
-        return Map.of("number", element.getNumber(), "aspects", aspects, "initial", element.getInitial().getName());
+        return List.of(Tuple.of("number", element.getNumber()),
+                Tuple.of("aspects", aspects),
+                Tuple.of("initial", element.getInitial().getName()));
     }
 
     private EList<AspectElement> getAspectsSet(SignalAspectsElement aspects) {

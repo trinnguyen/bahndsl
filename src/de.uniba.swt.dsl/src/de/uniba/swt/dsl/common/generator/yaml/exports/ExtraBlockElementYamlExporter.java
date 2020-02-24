@@ -4,6 +4,7 @@ import de.uniba.swt.dsl.bahn.BlockElement;
 import de.uniba.swt.dsl.bahn.LengthUnit;
 import de.uniba.swt.dsl.bahn.SegmentElement;
 import de.uniba.swt.dsl.common.util.ExtraBlockElement;
+import de.uniba.swt.dsl.common.util.Tuple;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,8 +19,8 @@ class ExtraBlockElementYamlExporter extends AbstractElementYamlExporter<ExtraBlo
     }
 
     @Override
-    protected Map<String, Object> getProps(ExtraBlockElement element) {
-        Map<String, Object> map = new HashMap<>();
+    protected List<Tuple<String, Object>> getProps(ExtraBlockElement element) {
+        List<Tuple<String, Object>> list = new ArrayList<>();
         List<String> overlaps = new ArrayList<>();
 
         double length = element.getBlockElement().getMainSeg().getLength().getValue();
@@ -29,15 +30,15 @@ class ExtraBlockElementYamlExporter extends AbstractElementYamlExporter<ExtraBlo
             length += overlap.getLength().getValue();
         }
 
-        map.put("length", String.format("%.2f%s", length, unit.getLiteral().toLowerCase()));
-        map.put("main", element.getBlockElement().getMainSeg().getName());
-        map.put("overlaps", overlaps);
-        map.put("direction", element.getDirection().toString().toLowerCase());
-        map.put("trains", element.getBlockElement().getTrainTypes().stream().map(trainType -> trainType.getName().toLowerCase()).collect(Collectors.toList()));
+        list.add(Tuple.of("length", String.format("%.2f%s", length, unit.getLiteral().toLowerCase())));
+        list.add(Tuple.of("main", element.getBlockElement().getMainSeg().getName()));
+        list.add(Tuple.of("overlaps", overlaps));
+        list.add(Tuple.of("direction", element.getDirection().toString().toLowerCase()));
+        list.add(Tuple.of("trains", element.getBlockElement().getTrainTypes().stream().map(trainType -> trainType.getName().toLowerCase()).collect(Collectors.toList())));
         if (element.getSignals() != null) {
-            map.put("signals", element.getSignals());
+            list.add(Tuple.of("signals", element.getSignals()));
         }
 
-        return map;
+        return list;
     }
 }

@@ -1,7 +1,9 @@
 package de.uniba.swt.dsl.common.generator.yaml.exports;
 
 import de.uniba.swt.dsl.bahn.BoardElement;
+import de.uniba.swt.dsl.common.util.Tuple;
 
+import java.util.List;
 import java.util.Map;
 
 class BoardElementYamlExporter extends AbstractElementYamlExporter<BoardElement> {
@@ -11,8 +13,9 @@ class BoardElementYamlExporter extends AbstractElementYamlExporter<BoardElement>
     }
 
     @Override
-    protected Map<String, Object> getProps(BoardElement element) {
-        return Map.of("unique-id", element.getUniqueId(), "features", element.getFeatures());
+    protected List<Tuple<String, Object>> getProps(BoardElement element) {
+        return List.of(Tuple.of("unique-id", element.getUniqueId()),
+                Tuple.of("features", element.getFeatures()));
     }
 }
 

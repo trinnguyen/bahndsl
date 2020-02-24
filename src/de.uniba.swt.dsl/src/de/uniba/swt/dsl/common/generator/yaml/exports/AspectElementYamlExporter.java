@@ -1,7 +1,9 @@
 package de.uniba.swt.dsl.common.generator.yaml.exports;
 
 import de.uniba.swt.dsl.bahn.AspectElement;
+import de.uniba.swt.dsl.common.util.Tuple;
 
+import java.util.List;
 import java.util.Map;
 
 class AspectElementYamlExporter extends AbstractElementYamlExporter<AspectElement> {
@@ -12,7 +14,7 @@ class AspectElementYamlExporter extends AbstractElementYamlExporter<AspectElemen
     }
 
     @Override
-    protected Map<String, Object> getProps(AspectElement element) {
-        return Map.of("value", element.getValue());
+    protected List<Tuple<String, Object>> getProps(AspectElement element) {
+        return List.of(Tuple.of("value", element.getValue()));
     }
 }
