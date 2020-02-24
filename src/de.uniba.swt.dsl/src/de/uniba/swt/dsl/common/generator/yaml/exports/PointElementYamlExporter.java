@@ -3,6 +3,7 @@ package de.uniba.swt.dsl.common.generator.yaml.exports;
 import de.uniba.swt.dsl.bahn.PointAspectType;
 import de.uniba.swt.dsl.bahn.PointElement;
 import de.uniba.swt.dsl.common.util.PointAspect;
+import de.uniba.swt.dsl.common.util.Tuple;
 
 import java.util.List;
 import java.util.Map;
@@ -14,13 +15,13 @@ public class PointElementYamlExporter extends AbstractElementYamlExporter<PointE
     }
 
     @Override
-    protected Map<String, Object> getProps(PointElement element) {
+    protected List<Tuple<String, Object>> getProps(PointElement element) {
         var aspects = List.of(
                 new PointAspect(PointAspectType.NORMAL, element.getNormalValue()),
                 new PointAspect(PointAspectType.REVERSE, element.getReverseValue()));
-        return Map.of("number", element.getNumber(),
-                "aspects", aspects,
-                "initial", element.getInitial().getName().toLowerCase(),
-                "segment", element.getMainSeg().getName());
+        return List.of(Tuple.of("number", element.getNumber()),
+                Tuple.of("aspects", aspects),
+                Tuple.of("initial", element.getInitial().getName().toLowerCase()),
+                Tuple.of("segment", element.getMainSeg().getName()));
     }
 }

@@ -2,7 +2,9 @@ package de.uniba.swt.dsl.common.generator.yaml.exports;
 
 import de.uniba.swt.dsl.bahn.Length;
 import de.uniba.swt.dsl.bahn.SegmentElement;
+import de.uniba.swt.dsl.common.util.Tuple;
 
+import java.util.List;
 import java.util.Map;
 
 class SegmentElementYamlExporter extends AbstractElementYamlExporter<SegmentElement> {
@@ -13,7 +15,8 @@ class SegmentElementYamlExporter extends AbstractElementYamlExporter<SegmentElem
     }
 
     @Override
-    protected Map<String, Object> getProps(SegmentElement element) {
-        return Map.of("address", element.getAddress(), "length", CommonFormatter.formatLength(element.getLength()));
+    protected List<Tuple<String, Object>> getProps(SegmentElement element) {
+        return List.of(Tuple.of("address", element.getAddress()),
+                Tuple.of("length", CommonFormatter.formatLength(element.getLength())));
     }
 }

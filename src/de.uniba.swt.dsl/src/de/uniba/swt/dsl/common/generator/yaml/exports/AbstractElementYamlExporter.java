@@ -1,9 +1,11 @@
 package de.uniba.swt.dsl.common.generator.yaml.exports;
 
+import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.common.util.YamlExporter;
 import org.eclipse.emf.ecore.EObject;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractElementYamlExporter<T> {
@@ -16,17 +18,17 @@ public abstract class AbstractElementYamlExporter<T> {
         var props = getProps(element);
         if (props != null && props.size() > 0)
         {
-            for (Map.Entry<String, Object> entry : props.entrySet()) {
+            for (Tuple<String, Object> entry : props) {
 
-                if (entry.getValue() == null)
+                if (entry.getSecond() == null)
                     continue;
 
-                if (entry.getValue() instanceof Collection) {
-                    var collection = (Collection<?>) entry.getValue();
+                if (entry.getSecond() instanceof Collection) {
+                    var collection = (Collection<?>) entry.getSecond();
                     if (collection.isEmpty())
                         continue;
 
-                    exporter.appendLine("%s:", entry.getKey());
+                    exporter.appendLine("%s:", entry.getFirst());
                     exporter.increaseLevel();
                     for (Object item : collection) {
                         // simply print the value
@@ -38,7 +40,7 @@ public abstract class AbstractElementYamlExporter<T> {
                     }
                     exporter.decreaseLevel();
                 } else {
-                    exporter.appendLine("%s: %s", entry.getKey(), entry.getValue());
+                    exporter.appendLine("%s: %s", entry.getFirst(), entry.getSecond());
                 }
             }
         }
@@ -62,5 +64,5 @@ public abstract class AbstractElementYamlExporter<T> {
 
     protected abstract String getId(T element);
 
-    protected abstract Map<String, Object> getProps(T element);
+    protected abstract List<Tuple<String, Object>> getProps(T element);
 }
