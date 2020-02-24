@@ -23,11 +23,11 @@ class StmtParsingTest {
 		'''
 			module test 
 				def test()
-					int max = 0
-					for int a in array
-						if a > max
-							max = a
-						end
+					int sum = 0
+					int i = 0
+					while i < 10
+					    sum = sum + i
+					    i = i + 1
 					end
 				end 
 			end

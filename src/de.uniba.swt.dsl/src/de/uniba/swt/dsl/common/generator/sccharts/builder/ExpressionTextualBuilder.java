@@ -2,6 +2,7 @@ package de.uniba.swt.dsl.common.generator.sccharts.builder;
 
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
+import de.uniba.swt.dsl.validation.util.ExprUtil;
 
 public class ExpressionTextualBuilder extends TextualBuilder {
 
@@ -119,7 +120,7 @@ public class ExpressionTextualBuilder extends TextualBuilder {
 
         if (expr instanceof NumberLiteral) {
             double val = ((NumberLiteral) expr).getValue();
-            if (isInteger(val)) {
+            if (ExprUtil.isInteger(val)) {
                 append(String.valueOf((int)val));
             } else {
                 append(String.valueOf(val));
@@ -132,15 +133,11 @@ public class ExpressionTextualBuilder extends TextualBuilder {
         }
 
         if (expr instanceof StringLiteral) {
-            append("\"").append(((StringLiteral) expr).getValue()).append("\"");
-            return;
+            String value = ((StringLiteral) expr).getValue();
+            append("\"" + value + "\"");
         }
 
         //TODO NULL and PostAspect
-    }
-
-    private boolean isInteger(double val) {
-        return val % 1 == 0;
     }
 
     private void generateOp(OperatorType op) {

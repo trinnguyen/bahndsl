@@ -2,24 +2,25 @@ package de.uniba.swt.dsl.validation.typing;
 
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
+import de.uniba.swt.dsl.validation.util.ExprUtil;
 import de.uniba.swt.dsl.validation.util.OperatorTypeHelper;
 
 class TypeComputingHelper {
-    public static ExprDataType computeDataType(DataType hintType, Expression expr) {
+    public static ExprDataType computeDataType(Expression expr, HintDataType hintType) {
         // PrimaryExpr
         if (expr instanceof PrimaryExpr) {
 
             // LiteralExpr
             if (expr instanceof LiteralExpr) {
-                return computeLiteralExprDataType(hintType, (LiteralExpr)expr);
+                return computeLiteralExprDataType((LiteralExpr)expr, hintType);
             }
 
             // UnaryExpr or ParenthesizedExpr
             if (expr instanceof UnaryExpr) {
-                return computeDataType(hintType, ((UnaryExpr) expr).getExpr());
+                return computeDataType(((UnaryExpr) expr).getExpr(), hintType);
             }
             if (expr instanceof ParenthesizedExpr) {
-                return computeDataType(hintType, ((ParenthesizedExpr) expr).getExpr());
+                return computeDataType(((ParenthesizedExpr) expr).getExpr(), hintType);
             }
 
             // ValuedReferenceExpr
@@ -61,18 +62,24 @@ class TypeComputingHelper {
         return new ExprDataType(decl.getType(), decl.isArray());
     }
 
-    private static ExprDataType computeLiteralExprDataType(DataType hintType, LiteralExpr expr) {
+    private static ExprDataType computeLiteralExprDataType(LiteralExpr expr, HintDataType hintType) {
         if (expr instanceof BooleanLiteral) {
             return ExprDataType.ScalarBool;
         }
 
         if (expr instanceof NumberLiteral) {
-            if (hintType == DataType.FLOAT_TYPE)
-                return ExprDataType.ScalarFloat;
-            if (hintType == DataType.INT_TYPE)
+            if (hintType == HintDataType.INT)
                 return ExprDataType.ScalarInt;
 
-            return null;
+            if (hintType == HintDataType.FLOAT)
+                return ExprDataType.ScalarFloat;
+
+            // auto suggesting int
+            double value = ((NumberLiteral) expr).getValue();
+            if (ExprUtil.isInteger(value))
+                return ExprDataType.ScalarInt;
+
+            return ExprDataType.ScalarFloat;
         }
 
         if (expr instanceof HexLiteral) {

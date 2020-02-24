@@ -3,7 +3,9 @@
  */
 package de.uniba.swt.dsl.generator;
 
+import de.uniba.swt.dsl.common.generator.GeneratorProvider;
 import de.uniba.swt.dsl.common.generator.sccharts.SCChartsGenerator;
+import de.uniba.swt.dsl.common.generator.yaml.YamlConfigGenerator;
 import de.uniba.swt.dsl.normalization.BahnNormalizationProvider;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -24,15 +26,11 @@ import de.uniba.swt.dsl.common.models.NetworkModel;
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
 public class BahnGenerator extends AbstractGenerator {
-	
-	@Inject 
-	BidibYamlConfigGenerator bidibGenerator;
-	
-	@Inject
-	ModelConverter modelConverter;
-
 	@Inject
 	BahnNormalizationProvider normalizationProvider;
+
+	@Inject
+	YamlConfigGenerator yamlConfigGenerator;
 
 	@Inject
 	SCChartsGenerator scChartsGenerator;
@@ -50,26 +48,16 @@ public class BahnGenerator extends AbstractGenerator {
 
 	@Override
 	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
+
 		RootModule rootModule = getRootModule(resource);
 		if (rootModule != null) {
-
-			// YAML
-			NetworkModel network = modelConverter.buildNetworkModel(rootModule);
-			
-			// bidib_board_config
-			fsa.generateFile("bidib_board_config.yml", bidibGenerator.dumpBoardConfig(network.name, network.boards));
-			
-			// bidib_track_config
-			fsa.generateFile("bidib_track_config.yml", bidibGenerator.dumpTrackConfig(network));
-			
-			// bidib_train_config
-			fsa.generateFile("bidib_train_config.yml", bidibGenerator.dumpTrainConfig(network.name, network.trains));
-
-			// SCCharts
-			fsa.generateFile("interlocking_sccharts.sctx", scChartsGenerator.generate(rootModule));
-			
-			// layout
+			// layout generator must run first to generate network layout
 			layoutGenerator.run(fsa, rootModule);
+			scChartsGenerator.run(fsa, rootModule);
+
+			// use network layout for block generation (direction, signals)
+			yamlConfigGenerator.setNetworkLayout(layoutGenerator.getNetworkLayout());
+			yamlConfigGenerator.run(fsa, rootModule);
 		}
 	}
 

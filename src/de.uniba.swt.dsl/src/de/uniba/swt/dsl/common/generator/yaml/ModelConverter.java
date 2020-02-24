@@ -1,6 +1,5 @@
-package de.uniba.swt.dsl.generator;
+package de.uniba.swt.dsl.common.generator.yaml;
 
-import com.google.common.collect.Lists;
 import de.uniba.swt.dsl.bahn.AspectsProperty;
 import de.uniba.swt.dsl.bahn.BoardsProperty;
 import de.uniba.swt.dsl.bahn.RootModule;

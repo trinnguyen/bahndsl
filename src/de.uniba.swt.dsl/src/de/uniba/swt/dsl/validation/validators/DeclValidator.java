@@ -2,6 +2,7 @@ package de.uniba.swt.dsl.validation.validators;
 
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
+import de.uniba.swt.dsl.validation.typing.HintDataTypeUtl;
 import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 import de.uniba.swt.dsl.validation.util.ValidationException;
 
@@ -55,7 +56,7 @@ public class DeclValidator {
             }
 
             if (stmt instanceof ReturnStmt) {
-                ExprDataType computedType = typeCheckingTable.computeDataType(expectedType.getDataType(), ((ReturnStmt) stmt).getExpr());
+                ExprDataType computedType = typeCheckingTable.computeDataType(((ReturnStmt) stmt).getExpr(), HintDataTypeUtl.from(expectedType.getDataType()));
                 if (!typeCheckingTable.isValidType(computedType, expectedType)) {
                     throw ValidationException.createTypeErrorException(expectedType, computedType, BahnPackage.Literals.RETURN_STMT__EXPR);
                 }

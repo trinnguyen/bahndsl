@@ -22,7 +22,8 @@ class FunctionCallExprParsingTest {
 	def void testEmptyFunctionCallExpr() {
 		'''
 			module test def test()
-				var routes1 = getAllRoutes()
+			    string route_ids[100]
+				get_all_routes(route_ids)
 			end end
 		'''.parse.assertNoParsingErrors
 	}
@@ -31,7 +32,8 @@ class FunctionCallExprParsingTest {
 	def void testSingleParamFunctionCallExpr() {
 		'''
 			module test def test()
-				var route1 = getRoute(routeId)
+			    string id = "0"
+				clear_route(id)
 			end end
 		'''.parse.assertNoParsingErrors
 	}
@@ -40,7 +42,10 @@ class FunctionCallExprParsingTest {
 	def void testParamsFunctionCallExpr() {
 		'''
 			module test def test()
-				var route1 = getRouteFromTable(table, signal1, signal2)
+			    string route_id = "0"
+			    string train_id = "train1"
+
+				bool res = is_route_available(route_id, train_id)
 			end end
 		'''.parse.assertNoParsingErrors
 	}

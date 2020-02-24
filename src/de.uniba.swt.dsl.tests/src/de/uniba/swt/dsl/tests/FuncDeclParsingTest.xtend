@@ -32,7 +32,7 @@ class FuncDeclParsingTest {
 	def void testSingleWithParamsFuncDecl() {
 		'''
 			module test
-				def test1(int a, var list)
+				def test1(int a, string list[])
 				end
 			end
 		'''.parse.assertNoParsingErrors
