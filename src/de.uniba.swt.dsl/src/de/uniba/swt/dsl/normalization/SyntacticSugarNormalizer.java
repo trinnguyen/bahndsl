@@ -27,7 +27,7 @@ public class SyntacticSugarNormalizer {
 
     private static final String TYPE_SIGNAL = "signal";
 
-    public Expression normalizeBehaviourExpr(BehaviourExpr expr) {
+    public OpExpression normalizeBehaviourExpr(BehaviourExpr expr) {
 
         // clear
         tempVarGenerator.reset();
@@ -128,7 +128,7 @@ public class SyntacticSugarNormalizer {
 
                 // create equality op
                 var opExpr = BahnFactory.eINSTANCE.createOpExpression();
-                opExpr.setLeftExpr(getExpr);
+                opExpr.setLeftExpr(normalizeBehaviourExpr(getExpr));
                 opExpr.setOp(evalExpr.isNot() ? OperatorType.NOT_EQUAL : OperatorType.EQUAL);
                 opExpr.setRightExpr(createString(""));
                 return opExpr;
@@ -157,7 +157,7 @@ public class SyntacticSugarNormalizer {
      * @param expr expr
      * @return expr
      */
-    private Expression normalizeGetConfigFuncExpr(GetConfigFuncExpr expr) {
+    private ExternalFunctionCallExpr normalizeGetConfigFuncExpr(GetConfigFuncExpr expr) {
         String funcName = getConfigFunctionName(expr.getProp(), true);
         Collection<Expression> params = new ArrayList<>();
         params.add(createString(expr.getType().getName()));
@@ -173,7 +173,7 @@ public class SyntacticSugarNormalizer {
      * @param expr expr
      * @return expr
      */
-    private Expression normalizeSetConfigFuncExpr(SetConfigFuncExpr expr) {
+    private ExternalFunctionCallExpr normalizeSetConfigFuncExpr(SetConfigFuncExpr expr) {
         String funcName = getConfigFunctionName(expr.getProp(), false);
         Collection<Expression> params = List.of(createString(expr.getType().getName()),
                 expr.getConfigExpr(),
