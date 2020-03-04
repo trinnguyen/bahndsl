@@ -4,11 +4,30 @@ import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 generate bahn "http://www.uniba.de/swt/dsl/Bahn"
 
+BahnModel:
+	(schema=Schema)? (module=RootModule)?
+;
 
 RootModule:
 	'module' name=ID
 		(properties+=ModuleProperty)*
 	'end';
+
+Schema:
+	{Schema}
+	'schema'
+		(elements+=SchemaElement)*
+	'end'
+;
+SchemaElement:
+	name=ID
+        (properties+=ElementProp)*
+    'end'
+;
+
+ElementProp:
+	name=ID type=DataType array?='[]'?
+;
 	
 ModuleProperty:
 	AspectsProperty 
@@ -54,6 +73,7 @@ BlocksProperty :
 		(items+=BlockElement)*
 	'end';
 CrossingsProperty:
+	{CrossingsProperty}
     'crossings'
 		(items+=CrossingElement)*
 	'end';
@@ -72,35 +92,6 @@ LayoutProperty :
 
 RoutePoint:
 	point=[PointElement] aspect=PointAspectType
-;
-
-GetFuncExpr returns BehaviourExpr:
-	{GetFuncExpr} 'get'
-	(
-		(signal?='signal' expr=PrimaryExpr)
-		|
-		(point?='point' expr=PrimaryExpr)
-		|
-		(route?='routes' 'from' srcSignalExpr=PrimaryExpr 'to' destSignalExpr=PrimaryExpr 'binding' binding=ValuedReferenceExpr)
-	)
-;
-
-WaitFuncExpr returns BehaviourExpr:
-	{WaitFuncExpr} 'wait' 'for' value=INT timeSpan=TimeSpanType
-;
-
-GrantRouteFuncExpr returns BehaviourExpr:
-	{GrantRouteFuncExpr} 'grant' routeExpr=PrimaryExpr 'to' trainExpr=PrimaryExpr
-;
-
-SetAspectFuncExpr returns BehaviourExpr:
-	{SetAspectFuncExpr} 
-	'set' 
-	(
-		(signal?='signal' expr=PrimaryExpr 'to' aspectId=PrimaryExpr)
-		|
-		(point?='point' expr=PrimaryExpr 'to' pointAspectType=PointAspectType)
-	)
 ;
 
 enum TimeSpanType:
@@ -365,7 +356,54 @@ FunctionCallExpr:
 ;
 
 BehaviourExpr:
-	GetFuncExpr | WaitFuncExpr | GrantRouteFuncExpr | SetAspectFuncExpr
+	BehaviourGetExpr | BehaviourSetExpr | GetRoutesFuncExpr | GrantRouteFuncExpr | WaitFuncExpr
+;
+
+BehaviourGetExpr returns BehaviourExpr:
+	{BehaviourGetExpr}
+	'get' getExpr=(GetTrackStateFuncExpr | GetRoutesFuncExpr | GetConfigFuncExpr)
+;
+
+GetTrackStateFuncExpr:
+	{GetTrackStateFuncExpr}
+	(signal?='signal'| point?='point') trackExpr=PrimaryExpr
+;
+
+GetRoutesFuncExpr returns BehaviourExpr:
+	{GetRoutesFuncExpr}
+	'routes' 'from' srcSignalExpr=PrimaryExpr 'to' destSignalExpr=PrimaryExpr 'binding' binding=ValuedReferenceExpr
+;
+
+GetConfigFuncExpr:
+	{GetConfigFuncExpr}
+	'config' type=[SchemaElement] '.' prop=[ElementProp] configExpr=PrimaryExpr
+;
+
+BehaviourSetExpr returns BehaviourExpr:
+	{BehaviourSetExpr}
+	'set' setExpr=(SetTrackStateFuncExpr | SetConfigFuncExpr)
+;
+
+SetTrackStateFuncExpr:
+	{SetTrackStateFuncExpr}
+	(signal?='signal' trackExpr=PrimaryExpr 'to' aspectExpr=PrimaryExpr)
+	|
+	(point?='point' trackExpr=PrimaryExpr 'to' pointAspectType=PointAspectType)
+;
+
+SetConfigFuncExpr:
+	{SetConfigFuncExpr}
+	'config' type=[SchemaElement] '.' prop=[ElementProp] configExpr=PrimaryExpr 'to' valueExpr=PrimaryExpr
+;
+
+GrantRouteFuncExpr returns BehaviourExpr:
+	{GrantRouteFuncExpr} 
+	'grant' routeExpr=PrimaryExpr 'to' trainExpr=PrimaryExpr
+;
+
+WaitFuncExpr returns BehaviourExpr:
+	{WaitFuncExpr} 
+	'wait' 'for' value=INT timeSpan=TimeSpanType
 ;
 
 BooleanLiteral returns LiteralExpr:

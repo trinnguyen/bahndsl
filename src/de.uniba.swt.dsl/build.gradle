@@ -25,6 +25,14 @@ configurations {
 	}
 }
 
+sourceSets {
+	main {
+		resources {
+            srcDirs "resources"
+        }
+	}
+}
+
 dependencies {
 	mwe2 'org.eclipse.emf:org.eclipse.emf.mwe2.launch'
 	mwe2 "org.eclipse.xtext:org.eclipse.xtext.common.types:${xtextVersion}"

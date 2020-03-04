@@ -50,4 +50,8 @@ public class TypeCheckingTable {
     public ExprDataType lookup(Expression expr) {
         return typeTable.get(expr);
     }
+
+    public boolean canComputeType(Expression expr) {
+        return !(expr instanceof ExternalFunctionCallExpr);
+    }
 }

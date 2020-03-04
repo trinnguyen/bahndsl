@@ -2,6 +2,7 @@ package de.uniba.swt.dsl.normalization;
 
 import com.google.inject.Singleton;
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.common.util.StringUtil;
 import org.eclipse.xtext.EcoreUtil2;
 
 import java.util.Collection;
@@ -102,37 +103,49 @@ public class BahnNormalizationProvider {
 
     private Expression convertSyntacticExpr(Expression expr) {
         // getter
-        if (expr instanceof GetFuncExpr) {
-            // get signal sig1 -> get_signal_aspect(sig1)
-            // get point point1 -> get_point_aspect(point1)
-            // get routes from sig1 to sig2 -> get_route_from_to(sig1, sign2)
-            GetFuncExpr getFuncExpr = (GetFuncExpr)expr;
+        if (expr instanceof BehaviourGetExpr) {
+            BehaviourGetExpr getterExpr = (BehaviourGetExpr) expr;
 
-            if (getFuncExpr.isPoint()) {
-                return createExternalFunctionCallExpr(EXTERN_STATE_GETTER_NAME, List.of(createString(TYPE_POINT), getFuncExpr.getExpr()));
+            if (getterExpr.getGetExpr() instanceof GetTrackStateFuncExpr) {
+                GetTrackStateFuncExpr trackStateFuncExpr = (GetTrackStateFuncExpr) getterExpr.getGetExpr();
+
+                if (trackStateFuncExpr.isSignal()) {
+                    return createExternalFunctionCallExpr(EXTERN_STATE_GETTER_NAME, List.of(createString(TYPE_SIGNAL), trackStateFuncExpr.getTrackExpr()));
+                }
+
+                if (trackStateFuncExpr.isPoint()) {
+                    return createExternalFunctionCallExpr(EXTERN_STATE_GETTER_NAME, List.of(createString(TYPE_POINT), trackStateFuncExpr.getTrackExpr()));
+                }
+
             }
 
-            if (getFuncExpr.isSignal()) {
-                return createExternalFunctionCallExpr(EXTERN_STATE_GETTER_NAME, List.of(createString(TYPE_SIGNAL), getFuncExpr.getExpr()));
+            if (getterExpr.getGetExpr() instanceof GetRoutesFuncExpr) {
+                GetRoutesFuncExpr routesExpr = (GetRoutesFuncExpr) getterExpr.getGetExpr();
+                return createExternalFunctionCallExpr(EXTERN_TABLE_GET_ROUTES, List.of(routesExpr.getSrcSignalExpr(), routesExpr.getDestSignalExpr(), routesExpr.getBinding()));
             }
 
-            if (getFuncExpr.isRoute()) {
-                return createExternalFunctionCallExpr(EXTERN_TABLE_GET_ROUTES, List.of(getFuncExpr.getSrcSignalExpr(), getFuncExpr.getDestSignalExpr(), getFuncExpr.getBinding()));
+            if (getterExpr.getGetExpr() instanceof GetConfigFuncExpr) {
+
             }
 
             return null;
         }
 
         // setter
-        if (expr instanceof SetAspectFuncExpr) {
-            SetAspectFuncExpr setAspectFuncExpr = (SetAspectFuncExpr) expr;
-            if (setAspectFuncExpr.isPoint()) {
-                return createExternalFunctionCallExpr(EXTERN_STATE_SETTER_NAME, List.of(createString(TYPE_POINT), setAspectFuncExpr.getExpr()));
+        if (expr instanceof BehaviourSetExpr) {
+            BehaviourSetExpr setExpr = (BehaviourSetExpr) expr;
+            if (setExpr.getSetExpr() instanceof SetTrackStateFuncExpr) {
+                SetTrackStateFuncExpr setStateFunExpr = (SetTrackStateFuncExpr) setExpr.getSetExpr();
+                if (setStateFunExpr.isSignal()) {
+                    return createExternalFunctionCallExpr(EXTERN_STATE_SETTER_NAME, List.of(createString(TYPE_SIGNAL), setStateFunExpr.getTrackExpr()));
+                }
+
+                if (setStateFunExpr.isPoint()) {
+                    return createExternalFunctionCallExpr(EXTERN_STATE_SETTER_NAME, List.of(createString(TYPE_POINT), setStateFunExpr.getTrackExpr()));
+                }
             }
 
-            if (setAspectFuncExpr.isSignal()) {
-                return createExternalFunctionCallExpr(EXTERN_STATE_SETTER_NAME, List.of(createString(TYPE_SIGNAL), setAspectFuncExpr.getExpr()));
-            }
+            return null;
         }
 
         if (expr instanceof WaitFuncExpr) {

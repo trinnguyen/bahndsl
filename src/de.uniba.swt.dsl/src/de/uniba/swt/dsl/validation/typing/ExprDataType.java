@@ -12,6 +12,14 @@ public class ExprDataType {
 
     public static ExprDataType ScalarString = new ExprDataType(DataType.STRING_TYPE);
 
+    public static ExprDataType ArrayBool = new ExprDataType(DataType.BOOLEAN_TYPE, true);
+
+    public static ExprDataType ArrayInt = new ExprDataType(DataType.INT_TYPE, true);
+
+    public static ExprDataType ArrayFloat = new ExprDataType(DataType.FLOAT_TYPE, true);
+
+    public static ExprDataType ArrayString = new ExprDataType(DataType.STRING_TYPE, true);
+
     public static ExprDataType Void = new ExprDataType(true);
 
     private boolean isVoid;

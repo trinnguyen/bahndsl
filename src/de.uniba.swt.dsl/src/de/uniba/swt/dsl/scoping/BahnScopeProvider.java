@@ -13,11 +13,8 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.scoping.IScope;
 import org.eclipse.xtext.scoping.Scopes;
-import org.eclipse.xtext.scoping.impl.FilteringScope;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * This class contains custom scoping description.
@@ -30,17 +27,15 @@ public class BahnScopeProvider extends AbstractBahnScopeProvider {
 
     @Override
     public IScope getScope(EObject context, EReference reference) {
-        // function call, do not call main function
-        if (context instanceof FunctionCallExpr && reference == BahnPackage.Literals.FUNCTION_CALL_EXPR__DECL) {
-            // main function is excluded
-            return new FilteringScope(getScopes(context, FuncDecl.class), e -> {
-                if (e != null && e.getEObjectOrProxy() instanceof FuncDecl) {
-                    FuncDecl funcDecl = (FuncDecl) e.getEObjectOrProxy();
-                    return !Objects.equals(funcDecl.getName(), "main");
-                }
 
-                return false;
-            });
+        if (context instanceof GetConfigFuncExpr && reference == BahnPackage.Literals.GET_CONFIG_FUNC_EXPR__PROP) {
+            GetConfigFuncExpr expr = (GetConfigFuncExpr) context;
+            return Scopes.scopeFor(expr.getType().getProperties());
+        }
+
+        if (context instanceof SetConfigFuncExpr && reference == BahnPackage.Literals.SET_CONFIG_FUNC_EXPR__PROP) {
+            SetConfigFuncExpr expr = (SetConfigFuncExpr) context;
+            return Scopes.scopeFor(expr.getType().getProperties());
         }
 
         return super.getScope(context, reference);

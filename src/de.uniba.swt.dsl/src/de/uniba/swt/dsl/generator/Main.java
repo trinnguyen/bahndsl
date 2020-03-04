@@ -3,12 +3,17 @@
  */
 package de.uniba.swt.dsl.generator;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import de.uniba.swt.dsl.BahnStandaloneSetup;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -18,6 +23,7 @@ import de.uniba.swt.dsl.generator.cli.ArgParseResult;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.diagnostics.Severity;
@@ -96,6 +102,8 @@ public class Main {
 
 		// Load the resource
 		ResourceSet set = resourceSetProvider.get();
+		StandardLibHelper.loadStandardLibResource(set);
+
 		Resource resource = set.getResource(URI.createFileURI(filePath), true);
 
 		// Validate the resource

@@ -1,0 +1,11 @@
+schema
+    route
+        source string
+        destination string
+        path string[]
+        conflicts string[]
+        point_positions string[]
+        train_id string
+        length_cm float
+    end
+end

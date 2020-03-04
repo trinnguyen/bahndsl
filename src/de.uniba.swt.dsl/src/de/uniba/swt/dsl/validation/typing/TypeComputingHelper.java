@@ -34,19 +34,21 @@ class TypeComputingHelper {
             }
         }
 
+        // syntaxtic sugar
+        if (expr instanceof BEqualityExpr) {
+            return ExprDataType.ScalarBool;
+        }
+
         // OpExpression: ensure both side having the same type
         if (expr instanceof OpExpression) {
-            return computeOpExpression((OpExpression) expr);
+            OpExpression opExpr = (OpExpression) expr;
+
+            // binary operations
+            if (opExpr.getLeftExpr() != null || opExpr.getRightExpr() != null)
+                return computeOpExpressionDataType(opExpr);
         }
 
         throw new RuntimeException("Unable to compute data type for expression: " + expr);
-    }
-
-    public static ExprDataType computeOpExpression(OpExpression opExpr) {
-        if (opExpr.getLeftExpr() != null || opExpr.getRightExpr() != null)
-            return computeOpExpressionDataType(opExpr);
-
-        return null;
     }
 
     public static ExprDataType computeValuedReferenceExpr(ValuedReferenceExpr referenceExpr) {
@@ -129,10 +131,63 @@ class TypeComputingHelper {
     }
 
     private static ExprDataType computeFunctionCallDataType(FunctionCallExpr expr) {
-        FuncDecl decl = expr.getDecl();
-        if (decl.isReturn())
-            return new ExprDataType(decl.getReturnType(), decl.isReturnArray());
+        // BehaviourExpr
+        if (expr instanceof BehaviourExpr) {
 
-        return ExprDataType.Void;
+            BehaviourExpr behaviourExpr = (BehaviourExpr) expr;
+
+            if (behaviourExpr instanceof BehaviourGetExpr) {
+                var getter = ((BehaviourGetExpr) expr).getGetExpr();
+                if (getter instanceof GetConfigFuncExpr) {
+                    var prop = ((GetConfigFuncExpr) getter).getProp();
+                    boolean isArray = prop.isArray();
+                    switch (prop.getType()) {
+                        case INT_TYPE:
+                            return isArray ? ExprDataType.ArrayInt : ExprDataType.ScalarInt;
+                        case FLOAT_TYPE:
+                            return isArray ? ExprDataType.ArrayFloat : ExprDataType.ScalarFloat;
+                        case BOOLEAN_TYPE:
+                            return isArray ? ExprDataType.ArrayFloat : ExprDataType.ScalarBool;
+                        case STRING_TYPE:
+                            return isArray ? ExprDataType.ArrayString : ExprDataType.ScalarString;
+                    }
+                }
+
+                if (getter instanceof GetRoutesFuncExpr) {
+                    return ExprDataType.ArrayString;
+                }
+
+                if (getter instanceof GetTrackStateFuncExpr) {
+                    return ExprDataType.ScalarString;
+                }
+            }
+
+            if (behaviourExpr instanceof BehaviourSetExpr) {
+                var setter = ((BehaviourSetExpr) behaviourExpr).getSetExpr();
+                if (setter instanceof SetConfigFuncExpr) {
+                    return ExprDataType.ScalarBool;
+                }
+
+                if (setter instanceof SetTrackStateFuncExpr) {
+                    return ExprDataType.ScalarBool;
+                }
+            }
+
+            if (behaviourExpr instanceof WaitFuncExpr) {
+                return ExprDataType.Void;
+            }
+        }
+
+        // regular function call
+        FuncDecl decl = expr.getDecl();
+        if (decl != null) {
+            if (decl.isReturn()) {
+                return new ExprDataType(decl.getReturnType(), decl.isReturnArray());
+            }
+
+            return ExprDataType.Void;
+        }
+
+        throw new RuntimeException("Unable to compute data type for function: " + expr);
     }
 }
