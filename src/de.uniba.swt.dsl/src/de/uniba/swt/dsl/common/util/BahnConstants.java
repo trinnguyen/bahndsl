@@ -37,6 +37,13 @@ public class BahnConstants {
 
     public static final Set<String> CROSSING_PROPS;
 
+    public static final String SET_CONFIG_ROUTE_TYPE = "route";
+
+    /**
+     * TODO temporary use train_id, should use train
+     */
+    public static final String SET_CONFIG_TRAIN_NAME = "train_id";
+
     static {
         BLOCK_PROPS = Set.of("up", "down");
         STANDARD_SWITCH_PROPS = Set.of("stem", STANDARD_SWITCH_STRAIGHT, STANDARD_SWITCH_SIDE);

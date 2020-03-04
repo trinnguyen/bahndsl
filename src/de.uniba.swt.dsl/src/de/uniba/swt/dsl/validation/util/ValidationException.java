@@ -15,7 +15,11 @@ public class ValidationException extends Exception
         this.feature = feature;
     }
 
-    public static ValidationException createTypeErrorException(ExprDataType expectedType, ExprDataType actualType, EStructuralFeature feature) {
+    public static ValidationException createTypeException(ExprDataType expectedType, ExprDataType actualType, EStructuralFeature feature) {
+        return createTypeException(expectedType.displayTypeName(), actualType.displayTypeName(), feature);
+    }
+
+    public static ValidationException createTypeException(String expectedType, String actualType, EStructuralFeature feature) {
         return new ValidationException(String.format("Type Error: Expected %s but actual %s", expectedType, actualType), feature);
     }
 

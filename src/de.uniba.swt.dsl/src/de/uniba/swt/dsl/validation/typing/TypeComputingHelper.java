@@ -1,7 +1,6 @@
 package de.uniba.swt.dsl.validation.typing;
 
 import de.uniba.swt.dsl.bahn.*;
-import de.uniba.swt.dsl.validation.typing.ExprDataType;
 import de.uniba.swt.dsl.validation.util.ExprUtil;
 import de.uniba.swt.dsl.validation.util.OperatorTypeHelper;
 
@@ -32,11 +31,6 @@ class TypeComputingHelper {
             if (expr instanceof FunctionCallExpr) {
                 return computeFunctionCallDataType((FunctionCallExpr)expr);
             }
-        }
-
-        // syntaxtic sugar
-        if (expr instanceof BEqualityExpr) {
-            return ExprDataType.ScalarBool;
         }
 
         // OpExpression: ensure both side having the same type
@@ -176,16 +170,26 @@ class TypeComputingHelper {
             if (behaviourExpr instanceof WaitFuncExpr) {
                 return ExprDataType.Void;
             }
-        }
 
-        // regular function call
-        FuncDecl decl = expr.getDecl();
-        if (decl != null) {
-            if (decl.isReturn()) {
-                return new ExprDataType(decl.getReturnType(), decl.isReturnArray());
+            if (behaviourExpr instanceof GrantRouteFuncExpr) {
+                return ExprDataType.ScalarBool;
             }
 
-            return ExprDataType.Void;
+            if (behaviourExpr instanceof EvaluateFuncExpr) {
+                return ExprDataType.ScalarBool;
+            }
+        }
+
+        if (expr instanceof RegularFunctionCallExpr) {
+            var reg = (RegularFunctionCallExpr) expr;
+            var decl = reg.getDecl();
+            if (reg.getDecl() != null) {
+                if (decl.isReturn()) {
+                    return new ExprDataType(decl.getReturnType(), decl.isReturnArray());
+                }
+
+                return ExprDataType.Void;
+            }
         }
 
         throw new RuntimeException("Unable to compute data type for function: " + expr);

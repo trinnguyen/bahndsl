@@ -285,23 +285,7 @@ LogicalAndExpr returns OpExpression:
 ;
 
 EqualityExpr returns OpExpression:
-	BEqualityExpr ({OpExpression.leftExpr=current} op=EqualityOp rightExpr=BEqualityExpr)*
-;
-
-
-BEqualityExpr returns OpExpression:
-	RelationalExpr ({BEqualityExpr.leftExpr=current} suffix=BEqualityExprSuffix)?
-;
-
-BEqualityExprSuffix:
-	'is' isNot?='not'?
-	(
-		rightExpr=PrimaryExpr
-	|
-		routeAvailable?='available'
-	|
-		occupied?='occupied' (by?='by' rightExpr=PrimaryExpr)?
-	)
+	RelationalExpr ({OpExpression.leftExpr=current} op=EqualityOp rightExpr=RelationalExpr)*
 ;
 
 
@@ -345,18 +329,24 @@ ValuedReferenceExpr:
 	decl=[RefVarDecl] ('['indexExpr=Expression']')?
 ;
 
-ExternalFunctionCallExpr:
-	'extern' name=ID ('()' | '(' params+=Expression (',' params+=Expression)* ')')
-;
-
 FunctionCallExpr:
-	{FunctionCallExpr} decl=[FuncDecl] ('()' | '(' params+=Expression (',' params+=Expression)* ')')
+	RegularFunctionCallExpr
 	| ExternalFunctionCallExpr
 	| BehaviourExpr
 ;
 
-BehaviourExpr:
-	BehaviourGetExpr | BehaviourSetExpr | GetRoutesFuncExpr | GrantRouteFuncExpr | WaitFuncExpr
+RegularFunctionCallExpr returns FunctionCallExpr:
+	{RegularFunctionCallExpr}
+	decl=[FuncDecl] ('()' | '(' params+=Expression (',' params+=Expression)* ')')
+;
+
+ExternalFunctionCallExpr returns FunctionCallExpr:
+	{ExternalFunctionCallExpr}
+	'extern' name=ID ('()' | '(' params+=Expression (',' params+=Expression)* ')')
+;
+
+BehaviourExpr returns FunctionCallExpr:
+	BehaviourGetExpr | BehaviourSetExpr | GetRoutesFuncExpr | GrantRouteFuncExpr | WaitFuncExpr | EvaluateFuncExpr
 ;
 
 BehaviourGetExpr returns BehaviourExpr:
@@ -404,6 +394,11 @@ GrantRouteFuncExpr returns BehaviourExpr:
 WaitFuncExpr returns BehaviourExpr:
 	{WaitFuncExpr} 
 	'wait' 'for' value=INT timeSpan=TimeSpanType
+;
+
+EvaluateFuncExpr returns BehaviourExpr:
+	{EvaluateFuncExpr}
+	'is' objectExpr=PrimaryExpr not?='not'? (routeAvailable?='available'|segmentOccupied?='occupied')
 ;
 
 BooleanLiteral returns LiteralExpr:

@@ -19,11 +19,6 @@ public class ExpressionTextualBuilder extends TextualBuilder {
     }
 
     private void generateExpr(OpExpression expression) {
-        // BEqualityExpr
-        if (expression instanceof BEqualityExpr) {
-            generateExpr((BEqualityExpr) expression);
-        }
-
         // primary
         if (expression instanceof PrimaryExpr) {
             generateExpr((PrimaryExpr) expression);
@@ -37,10 +32,6 @@ public class ExpressionTextualBuilder extends TextualBuilder {
         if (expression.getRightExpr() != null) {
             generateExpr(expression.getRightExpr());
         }
-    }
-
-    private void generateExpr(BEqualityExpr expression) {
-        //TODO generateBEqualityExpr
     }
 
     /**

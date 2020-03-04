@@ -3,6 +3,7 @@
  */
 package de.uniba.swt.dsl.generator;
 
+import de.uniba.swt.dsl.bahn.BahnModel;
 import de.uniba.swt.dsl.common.generator.GeneratorProvider;
 import de.uniba.swt.dsl.common.generator.sccharts.SCChartsGenerator;
 import de.uniba.swt.dsl.common.generator.yaml.YamlConfigGenerator;
@@ -63,8 +64,9 @@ public class BahnGenerator extends AbstractGenerator {
 
 	private RootModule getRootModule(Resource resource) {
 		EObject e = resource.getContents().get(0);
-		if (e instanceof RootModule)
-			return (RootModule)e;
+		if (e instanceof BahnModel) {
+			return ((BahnModel) e).getModule();
+		}
 
 		return null;
 	}

@@ -6,6 +6,7 @@ package de.uniba.swt.dsl.scoping;
 
 import de.uniba.swt.dsl.bahn.*;
 
+import de.uniba.swt.dsl.common.util.BahnConstants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
@@ -13,8 +14,10 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.scoping.IScope;
 import org.eclipse.xtext.scoping.Scopes;
+import org.eclipse.xtext.scoping.impl.FilteringScope;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class contains custom scoping description.
@@ -28,14 +31,32 @@ public class BahnScopeProvider extends AbstractBahnScopeProvider {
     @Override
     public IScope getScope(EObject context, EReference reference) {
 
+        // limit properties for a type from schema
         if (context instanceof GetConfigFuncExpr && reference == BahnPackage.Literals.GET_CONFIG_FUNC_EXPR__PROP) {
             GetConfigFuncExpr expr = (GetConfigFuncExpr) context;
             return Scopes.scopeFor(expr.getType().getProperties());
         }
 
-        if (context instanceof SetConfigFuncExpr && reference == BahnPackage.Literals.SET_CONFIG_FUNC_EXPR__PROP) {
-            SetConfigFuncExpr expr = (SetConfigFuncExpr) context;
-            return Scopes.scopeFor(expr.getType().getProperties());
+        // set config allow the route and train only
+        if (context instanceof SetConfigFuncExpr) {
+
+            // set config for route only
+            if (reference == BahnPackage.Literals.SET_CONFIG_FUNC_EXPR__TYPE) {
+                var items = super.getScope(context, reference);
+                return new FilteringScope(items, input -> {
+                    if (input != null && input.getEObjectOrProxy() instanceof SchemaElement) {
+                        return BahnConstants.SET_CONFIG_ROUTE_TYPE.equalsIgnoreCase(((SchemaElement)input.getEObjectOrProxy()).getName());
+                    }
+
+                    return false;
+                });
+            }
+
+            // set config for train_id only
+            if (reference == BahnPackage.Literals.SET_CONFIG_FUNC_EXPR__PROP) {
+                SetConfigFuncExpr expr = (SetConfigFuncExpr) context;
+                return Scopes.scopeFor(expr.getType().getProperties().stream().filter(p -> p.getName().equalsIgnoreCase(BahnConstants.SET_CONFIG_TRAIN_NAME)).collect(Collectors.toList()));
+            }
         }
 
         return super.getScope(context, reference);

@@ -2,15 +2,15 @@ package de.uniba.swt.dsl.common.util;
 
 import java.util.Objects;
 
-public class Tuple<L,R> {
-    private L first;
-    private R second;
+public class Tuple<F, S> {
+    private F first;
+    private S second;
 
     public static <L,R> Tuple<L,R> of(L first, R second) {
         return new Tuple<>(first, second);
     }
 
-    Tuple(L first, R second) {
+    Tuple(F first, S second) {
         this.first = first;
         this.second = second;
     }
@@ -18,11 +18,11 @@ public class Tuple<L,R> {
     public Tuple() {
     }
 
-    public L getFirst() {
+    public F getFirst() {
         return first;
     }
 
-    public R getSecond() {
+    public S getSecond() {
         return second;
     }
 

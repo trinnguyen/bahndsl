@@ -205,8 +205,8 @@ public class SuperStateBuilder {
     }
 
     private boolean findRefState(State state, Expression expr) {
-        if (expr instanceof FunctionCallExpr) {
-            FunctionCallExpr functionCallExpr = (FunctionCallExpr)expr;
+        if (expr instanceof RegularFunctionCallExpr) {
+            var functionCallExpr = (RegularFunctionCallExpr)expr;
             var refState = mapFuncState.get(functionCallExpr.getDecl());
             if (refState != null) {
                 state.setReferenceState(refState);
@@ -348,8 +348,8 @@ public class SuperStateBuilder {
             return;
         }
 
-        if (expression instanceof FunctionCallExpr) {
-            for (Expression param : ((FunctionCallExpr) expression).getParams()) {
+        if (expression instanceof RegularFunctionCallExpr) {
+            for (Expression param : ((RegularFunctionCallExpr) expression).getParams()) {
                 findAndAddHostCodeReference(superState, param);
             }
             return;
