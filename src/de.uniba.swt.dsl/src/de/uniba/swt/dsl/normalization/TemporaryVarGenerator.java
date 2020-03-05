@@ -1,12 +1,14 @@
 package de.uniba.swt.dsl.normalization;
 
+import com.google.inject.Singleton;
 import de.uniba.swt.dsl.bahn.BahnFactory;
 import de.uniba.swt.dsl.bahn.VarDecl;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
 
+@Singleton
 public class TemporaryVarGenerator {
 
-    private String prefix = "t";
+    private String functionName = "";
 
     private int counter = 0;
 
@@ -26,6 +28,11 @@ public class TemporaryVarGenerator {
     }
 
     private String nextTempVarName() {
-        return String.format("%s_%d", prefix, counter++);
+        String prefix = "t";
+        return String.format("%s_%s%d", functionName, prefix, counter++);
+    }
+
+    public void setFunctionName(String name) {
+        functionName = name;
     }
 }

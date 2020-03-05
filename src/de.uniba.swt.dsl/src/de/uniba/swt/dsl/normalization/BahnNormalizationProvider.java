@@ -13,65 +13,30 @@ import java.util.List;
 public class BahnNormalizationProvider {
 
     @Inject
-    SyntacticSugarNormalizer syntacticSugarNormalizer;
+    TemporaryVarGenerator varGenerator;
+
+    @Inject
+    ExpressionNormalizer expressionNormalizer;
+
+    @Inject
+    StatementNormalizer statementNormalizer;
 
     public BahnNormalizationProvider() {
     }
 
     public void normalize(RootModule rootModule) {
+        varGenerator.reset();
+
         for (ModuleProperty property : rootModule.getProperties()) {
             if (property instanceof FuncDecl) {
-                normalize(((FuncDecl) property).getStmtList());
+                normalizeFunc(((FuncDecl) property));
             }
         }
     }
 
-    private void normalize(StatementList stmtList) {
-        for (Statement stmt : stmtList.getStmts()) {
-            if (stmt instanceof SelectionStmt) {
-                normalize(((SelectionStmt) stmt).getExpr());
-                normalize(((SelectionStmt) stmt).getThenStmts());
-                if (((SelectionStmt) stmt).getElseStmts() != null)
-                    normalize(((SelectionStmt) stmt).getElseStmts());
-                continue;
-            }
-
-            if (stmt instanceof IterationStmt) {
-                normalize(((IterationStmt) stmt).getExpr());
-                normalize(((IterationStmt) stmt).getStmts());
-                continue;
-            }
-
-            if (stmt instanceof VarDeclStmt && ((VarDeclStmt) stmt).getAssignment() != null) {
-                normalize(((VarDeclStmt) stmt).getAssignment());
-                continue;
-            }
-
-            if (stmt instanceof AssignmentStmt) {
-                normalize(((AssignmentStmt) stmt).getAssignment());
-                continue;
-            }
-
-            if (stmt instanceof FunctionCallStmt) {
-                normalize(((FunctionCallStmt) stmt).getExpr());
-                continue;
-            }
-
-            if (stmt instanceof ReturnStmt) {
-                normalize(((ReturnStmt) stmt).getExpr());
-            }
-        }
-    }
-
-    private void normalize(VariableAssignment assignment) {
-        normalize(assignment.getExpr());
-    }
-
-    private void normalize(Expression expr) {
-        if (expr instanceof BehaviourExpr) {
-            Expression replacementExpr = syntacticSugarNormalizer.normalizeBehaviourExpr((BehaviourExpr)expr);
-            if (replacementExpr != null)
-                EcoreUtil2.replace(expr, replacementExpr);
-        }
+    private void normalizeFunc(FuncDecl funcDecl) {
+        varGenerator.setFunctionName(funcDecl.getName());
+        expressionNormalizer.normalizeFunc(funcDecl);
+        statementNormalizer.normalizeFunc(funcDecl);
     }
 }

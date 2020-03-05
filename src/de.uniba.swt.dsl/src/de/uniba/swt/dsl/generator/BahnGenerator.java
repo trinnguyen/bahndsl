@@ -4,7 +4,6 @@
 package de.uniba.swt.dsl.generator;
 
 import de.uniba.swt.dsl.bahn.BahnModel;
-import de.uniba.swt.dsl.common.generator.GeneratorProvider;
 import de.uniba.swt.dsl.common.generator.sccharts.SCChartsGenerator;
 import de.uniba.swt.dsl.common.generator.yaml.YamlConfigGenerator;
 import de.uniba.swt.dsl.normalization.BahnNormalizationProvider;
@@ -17,9 +16,7 @@ import org.eclipse.xtext.generator.IGeneratorContext;
 import com.google.inject.Inject;
 
 import de.uniba.swt.dsl.bahn.RootModule;
-import de.uniba.swt.dsl.common.generator.yaml.BidibYamlConfigGenerator;
 import de.uniba.swt.dsl.common.layout.LayoutGenerator;
-import de.uniba.swt.dsl.common.models.NetworkModel;
 
 /**
  * Generates code from your model files on save.

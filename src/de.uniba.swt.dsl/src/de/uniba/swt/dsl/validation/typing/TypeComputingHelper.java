@@ -5,7 +5,7 @@ import de.uniba.swt.dsl.validation.util.ExprUtil;
 import de.uniba.swt.dsl.validation.util.OperatorTypeHelper;
 
 class TypeComputingHelper {
-    public static ExprDataType computeDataType(Expression expr, HintDataType hintType) {
+    public static ExprDataType computeExpr(Expression expr, HintDataType hintType) {
         // PrimaryExpr
         if (expr instanceof PrimaryExpr) {
 
@@ -16,10 +16,10 @@ class TypeComputingHelper {
 
             // UnaryExpr or ParenthesizedExpr
             if (expr instanceof UnaryExpr) {
-                return computeDataType(((UnaryExpr) expr).getExpr(), hintType);
+                return computeExpr(((UnaryExpr) expr).getExpr(), hintType);
             }
             if (expr instanceof ParenthesizedExpr) {
-                return computeDataType(((ParenthesizedExpr) expr).getExpr(), hintType);
+                return computeExpr(((ParenthesizedExpr) expr).getExpr(), hintType);
             }
 
             // ValuedReferenceExpr
@@ -39,7 +39,7 @@ class TypeComputingHelper {
 
             // binary operations
             if (opExpr.getLeftExpr() != null || opExpr.getRightExpr() != null)
-                return computeOpExpressionDataType(opExpr);
+                return computeOpExpression(opExpr, hintType);
         }
 
         throw new RuntimeException("Unable to compute data type for expression: " + expr);
@@ -89,7 +89,7 @@ class TypeComputingHelper {
         return null;
     }
 
-    private static ExprDataType computeOpExpressionDataType(OpExpression expr) {
+    private static ExprDataType computeOpExpression(OpExpression expr, HintDataType hintType) {
         OperatorType op = expr.getOp();
 
         if (OperatorTypeHelper.isArithmeticOp(op)) {
@@ -98,12 +98,12 @@ class TypeComputingHelper {
             ExprDataType leftDataType = null;
             ExprDataType rightDataType = null;
 
-            if (expr.getLeftExpr() instanceof ValuedReferenceExpr) {
-                leftDataType = computeValuedReferenceExpr((ValuedReferenceExpr)expr.getLeftExpr());
+            if (expr.getLeftExpr() != null) {
+                leftDataType = computeExpr(expr.getLeftExpr(), hintType);
             }
 
-            if (expr.getRightExpr() instanceof ValuedReferenceExpr) {
-                rightDataType = computeValuedReferenceExpr((ValuedReferenceExpr)expr.getRightExpr());
+            if (expr.getRightExpr() != null) {
+                rightDataType = computeExpr(expr.getRightExpr(), hintType);
             }
 
             // float has higher priority than int

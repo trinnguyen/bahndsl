@@ -21,7 +21,7 @@ public class TypeCheckingTable {
         if (hasDataType(expression))
             return lookup(expression);
 
-        var dataType = TypeComputingHelper.computeDataType(expression, hintType);
+        var dataType = TypeComputingHelper.computeExpr(expression, hintType);
         return insertToTable(expression, dataType);
     }
 

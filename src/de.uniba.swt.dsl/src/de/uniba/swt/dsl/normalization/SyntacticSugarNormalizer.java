@@ -1,19 +1,14 @@
 package de.uniba.swt.dsl.normalization;
 
-import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.Tuple;
-import de.uniba.swt.dsl.validation.typing.ExprDataType;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class SyntacticSugarNormalizer {
-
-    @Inject
-    private TemporaryVarGenerator tempVarGenerator;
 
     private static final String EXTERN_TABLE_GET_ROUTES = "interlocking_table_get_routes";
 
@@ -27,10 +22,11 @@ public class SyntacticSugarNormalizer {
 
     private static final String TYPE_SIGNAL = "signal";
 
-    public OpExpression normalizeBehaviourExpr(BehaviourExpr expr) {
+    public boolean isSetter(BehaviourExpr expr) {
+        return expr instanceof BehaviourSetExpr || expr instanceof GrantRouteFuncExpr;
+    }
 
-        // clear
-        tempVarGenerator.reset();
+    public OpExpression normalizeBehaviourExpr(BehaviourExpr expr) {
 
         // getter
         if (expr instanceof BehaviourGetExpr) {

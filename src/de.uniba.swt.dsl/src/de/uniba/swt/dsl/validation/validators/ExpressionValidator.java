@@ -155,6 +155,10 @@ public class ExpressionValidator {
             }
 
             if (!Objects.equals(dataTypeLeft, dataTypeRight)) {
+                if (dataTypeLeft.isScalarNumber() && dataTypeRight.isScalarNumber()) {
+                    return;
+                }
+
                 throw new ValidationException("Type Error: Expressions must have the same type. Actual: " + dataTypeLeft.displayTypeName() + " and " + dataTypeRight.displayTypeName(), BahnPackage.Literals.OP_EXPRESSION__RIGHT_EXPR);
             }
         }
