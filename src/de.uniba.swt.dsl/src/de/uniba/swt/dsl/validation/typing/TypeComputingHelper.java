@@ -148,7 +148,7 @@ class TypeComputingHelper {
                 }
 
                 if (getter instanceof GetRoutesFuncExpr) {
-                    return ExprDataType.ArrayString;
+                    return ExprDataType.ScalarInt;
                 }
 
                 if (getter instanceof GetTrackStateFuncExpr) {
