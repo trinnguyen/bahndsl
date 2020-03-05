@@ -102,7 +102,8 @@ public class Main {
 
 		// Load the resource
 		ResourceSet set = resourceSetProvider.get();
-		StandardLibHelper.loadStandardLibResource(set);
+		if (!StandardLibHelper.loadStandardLibResource(set))
+			return false;
 
 		Resource resource = set.getResource(URI.createFileURI(filePath), true);
 

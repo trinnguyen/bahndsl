@@ -10,7 +10,7 @@ public class StandardLibHelper {
 
     private static final String FILE_NAME = "standardlib.bahn";
 
-    public static void loadStandardLibResource(ResourceSet resourceSet) {
+    public static boolean loadStandardLibResource(ResourceSet resourceSet) {
         URI uri = URI.createURI(FILE_NAME);
         var resource = resourceSet.createResource(uri);
 
@@ -22,9 +22,13 @@ public class StandardLibHelper {
                 for (Resource.Diagnostic error : resource.getErrors()) {
                     System.err.println(error);
                 }
+                return false;
             }
         } catch (IOException e) {
             System.err.println("Error on loading built-in standing library: " + e.getMessage());
+            return false;
         }
+
+        return true;
     }
 }

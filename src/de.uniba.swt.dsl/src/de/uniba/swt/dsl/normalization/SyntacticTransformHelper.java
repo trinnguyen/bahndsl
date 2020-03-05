@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class SyntacticSugarNormalizer {
+public class SyntacticTransformHelper {
 
     private static final String EXTERN_TABLE_GET_ROUTES = "interlocking_table_get_routes";
 
@@ -22,11 +22,11 @@ public class SyntacticSugarNormalizer {
 
     private static final String TYPE_SIGNAL = "signal";
 
-    public boolean isSetter(BehaviourExpr expr) {
+    public static boolean isSetter(BehaviourExpr expr) {
         return expr instanceof BehaviourSetExpr || expr instanceof GrantRouteFuncExpr;
     }
 
-    public OpExpression normalizeBehaviourExpr(BehaviourExpr expr) {
+    public static OpExpression normalizeBehaviourExpr(BehaviourExpr expr) {
 
         // getter
         if (expr instanceof BehaviourGetExpr) {
@@ -153,7 +153,7 @@ public class SyntacticSugarNormalizer {
      * @param expr expr
      * @return expr
      */
-    private ExternalFunctionCallExpr normalizeGetConfigFuncExpr(GetConfigFuncExpr expr) {
+    private static ExternalFunctionCallExpr normalizeGetConfigFuncExpr(GetConfigFuncExpr expr) {
         String funcName = getConfigFunctionName(expr.getProp(), true);
         Collection<Expression> params = new ArrayList<>();
         params.add(createString(expr.getType().getName()));
@@ -169,7 +169,7 @@ public class SyntacticSugarNormalizer {
      * @param expr expr
      * @return expr
      */
-    private ExternalFunctionCallExpr normalizeSetConfigFuncExpr(SetConfigFuncExpr expr) {
+    private static ExternalFunctionCallExpr normalizeSetConfigFuncExpr(SetConfigFuncExpr expr) {
         String funcName = getConfigFunctionName(expr.getProp(), false);
         Collection<Expression> params = List.of(createString(expr.getType().getName()),
                 expr.getConfigExpr(),
@@ -187,7 +187,7 @@ public class SyntacticSugarNormalizer {
      * @param isGetter getter or setter function
      * @return name
      */
-    private String getConfigFunctionName(ElementProp prop, boolean isGetter) {
+    private static String getConfigFunctionName(ElementProp prop, boolean isGetter) {
         String type = "";
         switch (prop.getType()) {
             case BOOLEAN_TYPE:
@@ -211,7 +211,7 @@ public class SyntacticSugarNormalizer {
                 type);
     }
 
-    private static ExternalFunctionCallExpr createExternalFunctionCallExpr(String name, Collection<Expression> paramExprs) {
+    public static ExternalFunctionCallExpr createExternalFunctionCallExpr(String name, Collection<Expression> paramExprs) {
         var expr = BahnFactory.eINSTANCE.createExternalFunctionCallExpr();
         expr.setName(name);
         expr.getParams().addAll(paramExprs);
@@ -224,7 +224,7 @@ public class SyntacticSugarNormalizer {
         return literal;
     }
 
-    private Tuple<SchemaElement, ElementProp> createRouteTrainSchema() {
+    private static Tuple<SchemaElement, ElementProp> createRouteTrainSchema() {
         var routeElement = BahnFactory.eINSTANCE.createSchemaElement();
         routeElement.setName(BahnConstants.SET_CONFIG_ROUTE_TYPE);
 

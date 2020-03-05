@@ -8,10 +8,7 @@ import de.uniba.swt.dsl.validation.typing.ExprDataType;
 import java.util.Collection;
 import java.util.List;
 
-public class ExpressionNormalizer extends AbstractNormalizer {
-
-    @Inject
-    SyntacticSugarNormalizer syntacticSugarNormalizer;
+public class SyntacticExprNormalizer extends AbstractNormalizer {
 
     @Inject
     TemporaryVarGenerator varGenerator;
@@ -19,8 +16,8 @@ public class ExpressionNormalizer extends AbstractNormalizer {
     @Override
     protected Collection<Statement> processExpr(Expression expr) {
         if (expr instanceof BehaviourExpr) {
-            boolean isSetter = syntacticSugarNormalizer.isSetter((BehaviourExpr)expr);
-            Expression replacementExpr = syntacticSugarNormalizer.normalizeBehaviourExpr((BehaviourExpr)expr);
+            boolean isSetter = SyntacticTransformHelper.isSetter((BehaviourExpr)expr);
+            Expression replacementExpr = SyntacticTransformHelper.normalizeBehaviourExpr((BehaviourExpr)expr);
             if (replacementExpr != null) {
 
                 BahnUtil.replaceEObject(expr, replacementExpr);

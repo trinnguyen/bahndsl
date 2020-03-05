@@ -76,6 +76,11 @@ public class ExprDataType {
                 &&getDataType() == DataType.BOOLEAN_TYPE && !isArray;
     }
 
+    public boolean isScalarString() {
+        return !isVoid
+                &&getDataType() == DataType.STRING_TYPE && !isArray;
+    }
+
     public String displayTypeName() {
         if (isVoid)
             return "void";

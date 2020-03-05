@@ -279,6 +279,15 @@ public class SuperStateBuilder {
         // local variables
         for (Statement stmt : statementList.getStmts()) {
 
+            if (stmt instanceof SelectionStmt) {
+                findAndAddHostCodeReference(superState, ((SelectionStmt) stmt).getExpr());
+                continue;
+            }
+
+            if (stmt instanceof IterationStmt) {
+                findAndAddHostCodeReference(superState, ((IterationStmt) stmt).getExpr());
+            }
+
             // VarDeclStmt
             if (stmt instanceof VarDeclStmt) {
                 VarDeclStmt varDeclStmt = (VarDeclStmt)stmt;
@@ -301,6 +310,10 @@ public class SuperStateBuilder {
                     findAndAddHostCodeReference(superState, varDeclStmt.getAssignment().getExpr());
                 }
                 continue;
+            }
+
+            if (stmt instanceof FunctionCallStmt) {
+                findAndAddHostCodeReference(superState, ((FunctionCallStmt) stmt).getExpr());
             }
 
             // AssignmentStmt
@@ -326,6 +339,12 @@ public class SuperStateBuilder {
             return;
 
         if (expression instanceof ExternalFunctionCallExpr) {
+            // params
+            for (Expression param : ((ExternalFunctionCallExpr) expression).getParams()) {
+                findAndAddHostCodeReference(superState, param);
+            }
+
+            // function itself
             superState.getHostCodeReferences().add(((ExternalFunctionCallExpr) expression).getName());
             return;
         }
