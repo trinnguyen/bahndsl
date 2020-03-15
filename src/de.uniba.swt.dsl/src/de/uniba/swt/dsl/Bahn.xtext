@@ -90,10 +90,6 @@ LayoutProperty :
 		(items+=LayoutElement)*
 	'end';
 
-RoutePoint:
-	point=[PointElement] aspect=PointAspectType
-;
-
 enum TimeSpanType:
 	SECONDS = 'seconds' | MINUTES = 'minutes' | HOURS = 'hours'
 ;
@@ -222,7 +218,7 @@ StatementList:
 ;
 
 Statement:
-	SelectionStmt | IterationStmt | VarDeclStmt | AssignmentStmt | FunctionCallStmt | ReturnStmt
+	SelectionStmt | IterationStmt | ForeachStmt | VarDeclStmt | AssignmentStmt | FunctionCallStmt | ReturnStmt
 ;
 
 SelectionStmt returns Statement:
@@ -236,6 +232,12 @@ SelectionStmt returns Statement:
 
 IterationStmt returns Statement:
 	{IterationStmt} 'while' expr=Expression
+		stmts=StatementList
+	'end'
+;
+
+ForeachStmt returns Statement:
+	{ForeachStmt} 'for' decl=VarDecl 'in' arrayExpr=ValuedReferenceExpr
 		stmts=StatementList
 	'end'
 ;

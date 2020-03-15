@@ -25,6 +25,9 @@ public class BahnNormalizationProvider {
     @Inject
     ArrayNormalizer arrayNormalizer;
 
+    @Inject
+    ForeachNormalizer foreachNormalizer;
+
     public BahnNormalizationProvider() {
     }
 
@@ -44,9 +47,19 @@ public class BahnNormalizationProvider {
     }
 
     private void normalizeFunc(FuncDecl funcDecl) {
+        // convert list to array with additional length variable
         arrayNormalizer.normalizeFunc(funcDecl);
+
+        // convert syntactic sugar foreach to while iteration
+        foreachNormalizer.normalizeFunc(funcDecl);
+
+        // convert string comparision expression using extern C function
         stringEqualNormalizer.normalizeFunc(funcDecl);
+
+        // convert all getter/setter for configuration and track state
         syntacticExprNormalizer.normalizeFunc(funcDecl);
+
+        // break multiple operator expression into small (basic) statement
         basicStatementNormalizer.normalizeFunc(funcDecl);
     }
 }

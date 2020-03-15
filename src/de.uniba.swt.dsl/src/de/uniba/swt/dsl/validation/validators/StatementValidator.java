@@ -6,6 +6,7 @@ import de.uniba.swt.dsl.validation.typing.HintDataType;
 import de.uniba.swt.dsl.validation.typing.HintDataTypeUtl;
 import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 import de.uniba.swt.dsl.validation.util.ValidationException;
+import org.eclipse.emf.ecore.EStructuralFeature;
 
 import javax.inject.Inject;
 
@@ -16,40 +17,67 @@ public class StatementValidator {
 
     /**
      * validate an statment
-     * @param statement statement
+     * @param stmt statement
      */
-    public void validate(Statement statement) throws ValidationException {
+    public void validate(Statement stmt) throws ValidationException {
         // VarDeclStmt
-        if (statement instanceof VarDeclStmt) {
-            VarDeclStmt stmt = (VarDeclStmt) statement;
-            ExprDataType declType = typeCheckingTable.getDataType(stmt.getDecl());
-            checkExprType(declType, stmt.getAssignment().getExpr(), HintDataTypeUtl.from(declType.getDataType()));
+        if (stmt instanceof VarDeclStmt) {
+            VarDeclStmt varDeclStmt = (VarDeclStmt) stmt;
+            ExprDataType declType = typeCheckingTable.getDataType(varDeclStmt.getDecl());
+            checkExprType(declType, varDeclStmt.getAssignment().getExpr(), HintDataTypeUtl.from(declType.getDataType()), BahnPackage.Literals.VAR_DECL_STMT__ASSIGNMENT);
             return;
         }
 
         // AssignmentStmt
-        if (statement instanceof AssignmentStmt) {
-            AssignmentStmt stmt = (AssignmentStmt) statement;
-            ExprDataType declType = typeCheckingTable.computeDataType(stmt.getReferenceExpr());
-            checkExprType(declType, stmt.getAssignment().getExpr(), HintDataTypeUtl.from(declType.getDataType()));
+        if (stmt instanceof AssignmentStmt) {
+            AssignmentStmt assignmentStmt = (AssignmentStmt) stmt;
+            ExprDataType declType = typeCheckingTable.computeDataType(assignmentStmt.getReferenceExpr());
+            checkExprType(declType, assignmentStmt.getAssignment().getExpr(), HintDataTypeUtl.from(declType.getDataType()), BahnPackage.Literals.ASSIGNMENT_STMT__ASSIGNMENT);
             return;
         }
 
         // SelectionStmt
-        if (statement instanceof SelectionStmt) {
-            ExprDataType exprType = typeCheckingTable.computeDataType(((SelectionStmt) statement).getExpr());
-            if (!exprType.isScalarBool()) {
-                throw new ValidationException("Type Error: Expected type " + ExprDataType.ScalarBool.displayTypeName(), BahnPackage.Literals.SELECTION_STMT__EXPR);
+        if (stmt instanceof SelectionStmt) {
+            ExprDataType exprType = typeCheckingTable.computeDataType(((SelectionStmt) stmt).getExpr());
+            checkTypes(ExprDataType.ScalarBool, exprType, BahnPackage.Literals.SELECTION_STMT__EXPR);
+        }
+
+        // while statement
+        if (stmt instanceof IterationStmt) {
+            ExprDataType exprType = typeCheckingTable.computeDataType(((IterationStmt) stmt).getExpr());
+            checkTypes(ExprDataType.ScalarBool, exprType, BahnPackage.Literals.ITERATION_STMT__EXPR);
+        }
+
+        // foreach
+        if (stmt instanceof ForeachStmt) {
+            var foreachStmt = (ForeachStmt) stmt;
+
+            // ensure array is selected
+            if (!ensureArray(foreachStmt.getArrayExpr())) {
+                throw new ValidationException("Type Error: Expected type array", BahnPackage.Literals.FOREACH_STMT__ARRAY_EXPR);
             }
+
+            // ensure current element is matched
+            var expectedType = new ExprDataType(foreachStmt.getArrayExpr().getDecl().getType(), false);
+            var actualType = new ExprDataType(foreachStmt.getDecl().getType(), foreachStmt.getDecl().isArray());
+            checkTypes(expectedType, actualType, BahnPackage.Literals.FOREACH_STMT__DECL);
         }
     }
 
-    private void checkExprType(ExprDataType declType, Expression expr, HintDataType hintDataType) throws ValidationException {
+    private boolean ensureArray(ValuedReferenceExpr expr) {
+        return expr.getDecl().isArray() && !expr.isLength() && expr.getIndexExpr() == null;
+    }
+
+    private void checkExprType(ExprDataType declType, Expression expr, HintDataType hintDataType, EStructuralFeature feature) throws ValidationException {
         if (typeCheckingTable.canComputeType(expr)) {
             ExprDataType exprType = typeCheckingTable.computeDataType(expr, hintDataType);
-            if (!declType.equals(exprType)) {
-                throw new ValidationException(String.format("Type Error: Expected type %s, actual type: %s", declType.displayTypeName(), exprType.displayTypeName()), BahnPackage.Literals.VAR_DECL_STMT__ASSIGNMENT);
-            }
+            checkTypes(declType, exprType, feature);
+        }
+    }
+
+    private void checkTypes(ExprDataType expected, ExprDataType actual, EStructuralFeature feature) throws ValidationException {
+        if (!expected.equals(actual)) {
+            throw new ValidationException(String.format("Type Error: Expected type %s, actual type: %s", expected.displayTypeName(), actual.displayTypeName()), feature);
         }
     }
 }

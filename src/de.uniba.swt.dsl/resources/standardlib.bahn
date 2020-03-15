@@ -8,4 +8,8 @@ schema
         train_id string
         length_cm float
     end
+
+    route_point
+        position string
+    end
 end
