@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class StatementNormalizer extends AbstractNormalizer {
+public class BasicStatementNormalizer extends AbstractNormalizer {
 
     @Inject
     TemporaryVarGenerator varGenerator;

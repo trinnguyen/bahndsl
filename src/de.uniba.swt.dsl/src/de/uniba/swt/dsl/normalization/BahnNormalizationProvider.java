@@ -14,10 +14,10 @@ public class BahnNormalizationProvider {
     TemporaryVarGenerator varGenerator;
 
     @Inject
-    SyntacticExprNormalizer expressionNormalizer;
+    SyntacticExprNormalizer syntacticExprNormalizer;
 
     @Inject
-    StatementNormalizer statementNormalizer;
+    BasicStatementNormalizer basicStatementNormalizer;
 
     @Inject
     StringEqualNormalizer stringEqualNormalizer;
@@ -46,7 +46,7 @@ public class BahnNormalizationProvider {
     private void normalizeFunc(FuncDecl funcDecl) {
         arrayNormalizer.normalizeFunc(funcDecl);
         stringEqualNormalizer.normalizeFunc(funcDecl);
-        expressionNormalizer.normalizeFunc(funcDecl);
-        statementNormalizer.normalizeFunc(funcDecl);
+        syntacticExprNormalizer.normalizeFunc(funcDecl);
+        basicStatementNormalizer.normalizeFunc(funcDecl);
     }
 }
