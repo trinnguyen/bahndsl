@@ -10,10 +10,11 @@ public class TemporaryVarGenerator {
 
     private String functionName = "";
 
-    private int counter = 0;
+    private int counter = 1;
 
-    public void reset() {
-        counter = 0;
+    public void resetFunc(String name) {
+        functionName = name.toLowerCase();
+        counter = 1;
     }
 
     public VarDecl createTempVar(ExprDataType dataType) {
@@ -29,10 +30,6 @@ public class TemporaryVarGenerator {
 
     private String nextTempVarName() {
         String prefix = "t";
-        return String.format("%s_%s%d", functionName, prefix, counter++);
-    }
-
-    public void setFunctionName(String name) {
-        functionName = name;
+        return String.format("_%s_%s_%d", functionName, prefix, counter++);
     }
 }

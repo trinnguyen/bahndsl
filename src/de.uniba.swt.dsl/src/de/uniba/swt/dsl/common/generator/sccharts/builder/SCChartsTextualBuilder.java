@@ -18,6 +18,9 @@ public class SCChartsTextualBuilder extends TextualBuilder {
     public String buildString(SCCharts model) {
         clear();
 
+        // append hostcode
+        appendLine("#hostcode \"#include \\\"bahn_data_util.h\\\"\"");
+
         for (var rootState : model.getRootStates()) {
             append(stateBuilder.buildString(rootState)).append(LINE_BREAK);
         }

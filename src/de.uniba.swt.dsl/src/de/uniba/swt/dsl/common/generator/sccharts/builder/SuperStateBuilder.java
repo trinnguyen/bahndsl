@@ -3,6 +3,7 @@ package de.uniba.swt.dsl.common.generator.sccharts.builder;
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.generator.sccharts.StateTable;
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
+import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.BahnException;
 import de.uniba.swt.dsl.common.util.StringUtil;
 
@@ -294,7 +295,8 @@ public class SuperStateBuilder {
                 VarDecl varDecl = varDeclStmt.getDecl();
 
                 // array cardinality must be a int literal
-                int arraySize = 0;
+                int arraySize = varDecl.isArray() ? BahnConstants.DefaultArraySize : 0;
+                /*
                 if (varDecl.isArray()) {
                     if (varDecl.getCardinality() instanceof NumberLiteral) {
                         arraySize = (int) ((NumberLiteral) varDecl.getCardinality()).getValue();
@@ -302,6 +304,7 @@ public class SuperStateBuilder {
                         throw new BahnException("Array cardinality must be a literal integer");
                     }
                 }
+                 */
 
                 superState.getDeclarations().add(convertDeclaration(varDecl.getType(), varDecl.getName(), arraySize, false, false));
 

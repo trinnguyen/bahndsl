@@ -1,0 +1,30 @@
+module interlocking_sample
+    def request_route(string src_signal_id, string dst_signal_id, string train_id): string
+        string route_ids[100]
+
+        # 1. Get all routes
+        int count_routes = get routes from src_signal_id to dst_signal_id binding route_ids
+
+        # 2. Find shortest route
+        string id = get_shortest_route(count_routes, route_ids)
+        return id
+    end
+
+    def get_shortest_route(int count_routes, string route_ids[]): string
+        float min_len = 2147483647
+        int i = 0
+        int result = 0
+        while i < count_routes
+            string route_id = route_ids[i]
+            float len = extern config_get_scalar_float_value("route", route_id, "length")
+            if len < min_len
+                min_len = len
+                result = i
+            end
+
+            i = i + 1
+        end
+
+        return route_ids[result]
+    end
+end

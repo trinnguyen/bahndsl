@@ -22,7 +22,7 @@ public class StringEqualNormalizer extends AbstractNormalizer {
                     && (opExpr.getOp() == OperatorType.EQUAL || opExpr.getOp() == OperatorType.NOT_EQUAL)) {
                 var type = typeCheckingTable.computeDataType(opExpr.getLeftExpr());
                 if (type != null && type.isScalarString()) {
-                    PrimaryExpr externExpr = SyntacticTransformHelper.createExternalFunctionCallExpr("string_equals", List.of(opExpr.getLeftExpr(), opExpr.getRightExpr()));
+                    PrimaryExpr externExpr = SyntacticTransformer.createExternalFunctionCallExpr("string_equals", List.of(opExpr.getLeftExpr(), opExpr.getRightExpr()));
                     if (opExpr.getOp() == OperatorType.NOT_EQUAL) {
                         var unaryExpr = BahnFactory.eINSTANCE.createUnaryExpr();
                         unaryExpr.setExpr(externExpr);

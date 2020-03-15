@@ -47,8 +47,14 @@ class TypeComputingHelper {
 
     public static ExprDataType computeValuedReferenceExpr(ValuedReferenceExpr referenceExpr) {
         var dataType = getDataType(referenceExpr.getDecl());
-        if (dataType.isArray() && referenceExpr.getIndexExpr() != null) {
-            dataType.setArray(false);
+        if (dataType.isArray()) {
+            if (referenceExpr.isLength()) {
+                return ExprDataType.ScalarInt;
+            }
+
+            if (referenceExpr.getIndexExpr() != null) {
+                dataType.setArray(false);
+            }
         }
 
         return dataType;
@@ -148,7 +154,7 @@ class TypeComputingHelper {
                 }
 
                 if (getter instanceof GetRoutesFuncExpr) {
-                    return ExprDataType.ScalarInt;
+                    return ExprDataType.ArrayString;
                 }
 
                 if (getter instanceof GetTrackStateFuncExpr) {

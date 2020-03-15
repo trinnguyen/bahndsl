@@ -43,6 +43,7 @@ public class BahnConstants {
      * TODO temporary use train_id, should use train
      */
     public static final String SET_CONFIG_TRAIN_NAME = "train_id";
+    public static int DefaultArraySize = 1024;
 
     static {
         BLOCK_PROPS = Set.of("up", "down");

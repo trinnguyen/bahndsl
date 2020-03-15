@@ -8,6 +8,9 @@ import de.uniba.swt.dsl.bahn.*;
 public class BahnNormalizationProvider {
 
     @Inject
+    ArrayLookupTable arrayLookupTable;
+
+    @Inject
     TemporaryVarGenerator varGenerator;
 
     @Inject
@@ -19,22 +22,29 @@ public class BahnNormalizationProvider {
     @Inject
     StringEqualNormalizer stringEqualNormalizer;
 
+    @Inject
+    ArrayNormalizer arrayNormalizer;
+
     public BahnNormalizationProvider() {
     }
 
     public void normalize(RootModule rootModule) {
-        varGenerator.reset();
 
         for (ModuleProperty property : rootModule.getProperties()) {
             if (property instanceof FuncDecl) {
+
+                // reset
+                varGenerator.resetFunc(((FuncDecl) property).getName());
+                arrayLookupTable.resetFunc(((FuncDecl) property).getName());
+
+                // normalize
                 normalizeFunc(((FuncDecl) property));
             }
         }
     }
 
     private void normalizeFunc(FuncDecl funcDecl) {
-        varGenerator.setFunctionName(funcDecl.getName());
-
+        arrayNormalizer.normalizeFunc(funcDecl);
         stringEqualNormalizer.normalizeFunc(funcDecl);
         expressionNormalizer.normalizeFunc(funcDecl);
         statementNormalizer.normalizeFunc(funcDecl);

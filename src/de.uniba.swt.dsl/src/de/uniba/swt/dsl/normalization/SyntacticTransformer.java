@@ -1,5 +1,6 @@
 package de.uniba.swt.dsl.normalization;
 
+import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.Tuple;
@@ -8,7 +9,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class SyntacticTransformHelper {
+public class SyntacticTransformer {
+
+    @Inject
+    ArrayLookupTable arrayLookupTable;
 
     private static final String EXTERN_TABLE_GET_ROUTES = "interlocking_table_get_routes";
 
@@ -22,23 +26,39 @@ public class SyntacticTransformHelper {
 
     private static final String TYPE_SIGNAL = "signal";
 
-    public static boolean isSetter(BehaviourExpr expr) {
+    public boolean isSetter(BehaviourExpr expr) {
         return expr instanceof BehaviourSetExpr || expr instanceof GrantRouteFuncExpr;
     }
 
-    public static OpExpression normalizeBehaviourExpr(BehaviourExpr expr) {
+    public boolean isArrayGetter(BehaviourExpr expr) {
+        if (expr instanceof BehaviourGetExpr) {
+            var getter = ((BehaviourGetExpr) expr).getGetExpr();
+            if (getter instanceof GetConfigFuncExpr) {
+                var getConfig = (GetConfigFuncExpr) getter;
+                return getConfig.getProp().isArray();
+            }
+
+            return getter instanceof GetRoutesFuncExpr;
+        }
+
+        return false;
+    }
+
+    public OpExpression normalizeBehaviourExpr(BehaviourExpr expr) {
 
         // getter
         if (expr instanceof BehaviourGetExpr) {
             var getter = ((BehaviourGetExpr) expr).getGetExpr();
 
+            // find assignment
+            String lhsArrayName = getArrayDeclName(expr);
             if (getter instanceof GetConfigFuncExpr) {
-                return normalizeGetConfigFuncExpr((GetConfigFuncExpr) getter);
+                return normalizeGetConfigFuncExpr((GetConfigFuncExpr) getter, lhsArrayName);
             }
 
             if (getter instanceof GetRoutesFuncExpr) {
                 GetRoutesFuncExpr routesExpr = (GetRoutesFuncExpr) getter;
-                return createExternalFunctionCallExpr(EXTERN_TABLE_GET_ROUTES, List.of(routesExpr.getSrcSignalExpr(), routesExpr.getDestSignalExpr(), routesExpr.getBinding()));
+                return createExternalFunctionCallExpr(EXTERN_TABLE_GET_ROUTES, List.of(routesExpr.getSrcSignalExpr(), routesExpr.getDestSignalExpr(), arrayLookupTable.createArrayVarExpr(lhsArrayName)));
             }
 
             if (getter instanceof GetTrackStateFuncExpr) {
@@ -145,6 +165,27 @@ public class SyntacticTransformHelper {
         return null;
     }
 
+    private static String getArrayDeclName(Expression expr) {
+        if (expr.eContainer() instanceof VariableAssignment) {
+            if (expr.eContainer().eContainer() instanceof VarDeclStmt) {
+                var varDeclStmt = (VarDeclStmt) expr.eContainer().eContainer();
+                if (varDeclStmt.getDecl().isArray())
+                    return varDeclStmt.getDecl().getName();
+            }
+
+            if (expr.eContainer().eContainer() instanceof AssignmentStmt) {
+                var assignmentStmt = (AssignmentStmt) expr.eContainer().eContainer();
+                if (assignmentStmt.getReferenceExpr().getDecl().isArray()) {
+                    if (!assignmentStmt.getReferenceExpr().isLength() && assignmentStmt.getReferenceExpr().getIndexExpr() == null) {
+                        return assignmentStmt.getReferenceExpr().getDecl().getName();
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      * create the extern get config function
      * sample:
@@ -153,12 +194,15 @@ public class SyntacticTransformHelper {
      * @param expr expr
      * @return expr
      */
-    private static ExternalFunctionCallExpr normalizeGetConfigFuncExpr(GetConfigFuncExpr expr) {
+    private ExternalFunctionCallExpr normalizeGetConfigFuncExpr(GetConfigFuncExpr expr, String lhsArrayName) {
         String funcName = getConfigFunctionName(expr.getProp(), true);
         Collection<Expression> params = new ArrayList<>();
         params.add(createString(expr.getType().getName()));
         params.add(expr.getConfigExpr());
         params.add(createString(expr.getProp().getName()));
+        if (expr.getProp().isArray()) {
+            params.add(arrayLookupTable.createArrayVarExpr(lhsArrayName));
+        }
         return createExternalFunctionCallExpr(funcName, params);
     }
 
