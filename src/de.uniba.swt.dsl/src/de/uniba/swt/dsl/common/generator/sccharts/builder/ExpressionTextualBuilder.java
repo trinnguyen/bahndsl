@@ -4,7 +4,14 @@ import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 import de.uniba.swt.dsl.validation.util.ExprUtil;
 
+import javax.inject.Inject;
+import java.util.Map;
+import java.util.Stack;
+
 public class ExpressionTextualBuilder extends TextualBuilder {
+
+    @Inject
+    ParamBindingTable paramBindingTable;
 
     public String buildString(Expression expression) {
         clear();
@@ -67,7 +74,7 @@ public class ExpressionTextualBuilder extends TextualBuilder {
         // ValuedReferenceExpr
         if (expression instanceof ValuedReferenceExpr) {
             ValuedReferenceExpr referenceExpr = (ValuedReferenceExpr) expression;
-            append(((ValuedReferenceExpr) expression).getDecl().getName());
+            append(paramBindingTable.lookupBindingName(((ValuedReferenceExpr) expression).getDecl().getName()));
 
             // index
             if (referenceExpr.getIndexExpr() != null) {

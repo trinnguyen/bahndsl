@@ -4,12 +4,12 @@ import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.generator.sccharts.StateTable;
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
 import de.uniba.swt.dsl.common.util.BahnConstants;
-import de.uniba.swt.dsl.common.util.BahnException;
 import de.uniba.swt.dsl.common.util.StringUtil;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 public class SuperStateBuilder {
     public final String VAR_OUTPUT_NAME = "out";
@@ -18,7 +18,7 @@ public class SuperStateBuilder {
      * temporary allocate param array size to 1024
      * TODO should guess the size of param based on function call
      */
-    public final int DEFAULT_PARAM_ARRAY_SIZE = 1024;
+    public final int DEFAULT_PARAM_ARRAY_SIZE = BahnConstants.DefaultArraySize;
 
     private Map<FuncDecl, RootState> mapFuncState;
     private StateTable stateTable;
@@ -72,8 +72,13 @@ public class SuperStateBuilder {
             } else if (stmt instanceof IterationStmt) {
                 addIterationSuperState(id, nextStateId, (IterationStmt) stmt);
             } else {
-                var state = addNormalState(id, nextStateId, stmt);
-                superState.getStates().add(state);
+                var state = createState(id, nextStateId, stmt);
+                if (state != null) {
+                    superState.getStates().add(state);
+                } else {
+                    // stay
+                    nextStateId = id;
+                }
             }
         }
 
@@ -156,67 +161,77 @@ public class SuperStateBuilder {
         superState.getStates().add(bodyState);
     }
 
-    private State addNormalState(String id, String nextStateId, Statement stmt) {
-        var state = new State(id);
-        updateStateReferenceCallIfNeeded(state, stmt);
-
-        // transition
-        var transition = new Transition(nextStateId);
-        state.getOutgoingTransitions().add(transition);
-        if (state.getReferenceState() == null) {
-            var effect = generateEffect(stmt);
-            if (effect != null)
-                transition.setEffects(List.of(effect));
+    private State createState(String id, String nextStateId, Statement stmt) {
+        var superState = findFunctionCallSuperState(stmt);
+        if (superState != null) {
+            updateFunctionCallSuperState(superState, id, nextStateId);
+            return superState;
         }
 
-        return state;
+        // transition
+        var effect = generateEffect(stmt);
+        if (effect != null) {
+            var transition = new Transition(nextStateId);
+            transition.getEffects().add(effect);
+
+            var state = new State(id);
+            state.getOutgoingTransitions().add(transition);
+            return state;
+        }
+
+        return null;
     }
 
-    private void updateStateReferenceCallIfNeeded(State state, Statement stmt) {
+    private void updateFunctionCallSuperState(SuperState superState, String id, String nextStateId) {
+        // update id and target
+        superState.setId(id);
+        superState.setJoinTargetId(nextStateId);
+    }
+
+    private SuperState findFunctionCallSuperState(Statement stmt) {
         if (stmt instanceof VarDeclStmt) {
             VarDeclStmt varDeclStmt = (VarDeclStmt)stmt;
             if (varDeclStmt.getAssignment() != null) {
-                if (findRefState(state, varDeclStmt.getAssignment().getExpr())) {
-                    // update return
-                    state.getReferenceBindingExprs().add(createValuedReferenceExpr(varDeclStmt.getDecl()));
-                    return;
-                }
+                return findRefState(varDeclStmt.getAssignment().getExpr(), createValuedReferenceExpr(varDeclStmt.getDecl()));
             }
         }
 
         if (stmt instanceof AssignmentStmt) {
             AssignmentStmt assignmentStmt = (AssignmentStmt) stmt;
-            if (findRefState(state, assignmentStmt.getAssignment().getExpr())) {
-                // update return
-                state.getReferenceBindingExprs().add(assignmentStmt.getReferenceExpr());
-                return;
-            }
+            return findRefState(assignmentStmt.getAssignment().getExpr(), assignmentStmt.getReferenceExpr());
         }
 
         if (stmt instanceof FunctionCallStmt) {
             FunctionCallStmt functionCallStmt = (FunctionCallStmt) stmt;
-            findRefState(state, functionCallStmt.getExpr());
+            return findRefState(functionCallStmt.getExpr(), null);
         }
+
+        return null;
+    }
+
+    private SuperState findRefState(Expression expr, ValuedReferenceExpr returnRefExpr) {
+        if (expr instanceof RegularFunctionCallExpr) {
+            var functionCallExpr = (RegularFunctionCallExpr)expr;
+            var refState = mapFuncState.get(functionCallExpr.getDecl());
+            if (refState != null) {
+                return createFuncRefState(refState, functionCallExpr.getParams(), returnRefExpr);
+            }
+        }
+
+        return null;
+    }
+
+    private static SuperState createFuncRefState(SuperState superState, List<Expression> params, Expression returnExpr) {
+        var result = new SuperState(superState, params);
+        if (returnExpr != null)
+            result.getReferenceBindingExprs().add(returnExpr);
+        return result;
     }
 
     private ValuedReferenceExpr createValuedReferenceExpr(VarDecl decl) {
         var expr = BahnFactory.eINSTANCE.createValuedReferenceExpr();
         expr.setDecl(decl);
         return expr;
-    }
-
-    private boolean findRefState(State state, Expression expr) {
-        if (expr instanceof RegularFunctionCallExpr) {
-            var functionCallExpr = (RegularFunctionCallExpr)expr;
-            var refState = mapFuncState.get(functionCallExpr.getDecl());
-            if (refState != null) {
-                state.setReferenceState(refState);
-                state.setReferenceBindingExprs(functionCallExpr.getParams());
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private Effect generateEffect(Statement stmt) {

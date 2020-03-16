@@ -1,11 +1,24 @@
 module interlocking_sample
-    def request_route(string src_signal_id, string dst_signal_id, string train_id) : string
+    def request_route(string src_signal_id, string dst_signal_id, string train_id): string
+        
+        # 1. Get all routes
+        string route_ids[] = get routes from src_signal_id to dst_signal_id
 
-        string tmp
+        # 2. Find shortest route
+        return get_shortest_route(route_ids)
+    end
 
-        string ids[] = get routes from "signal1" to "signal2"
-        for int id in ids
-            tmp = id
+    def get_shortest_route(string r_ids[]): string
+        string result = r_ids[0]
+        float min_len = 214748364
+        for string route_id in r_ids 
+            float len = get config route.length_cm route_id
+            if len < min_len
+                min_len = len
+                result = route_id
+            end
         end
+
+        return result
     end
 end

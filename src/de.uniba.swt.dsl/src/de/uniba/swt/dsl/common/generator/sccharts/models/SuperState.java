@@ -1,5 +1,6 @@
 package de.uniba.swt.dsl.common.generator.sccharts.models;
 
+import de.uniba.swt.dsl.bahn.Expression;
 import de.uniba.swt.dsl.common.util.LogHelper;
 
 import java.util.ArrayList;
@@ -12,6 +13,20 @@ public class SuperState extends State {
     private List<SVarDeclaration> declarations = new ArrayList<>();
     private Set<String> hostCodeReferences = new HashSet<>();
     private String joinTargetId;
+    private List<LocalAction> localActions = new ArrayList<>();
+    private List<Expression> referenceBindingExprs = new ArrayList<>();
+
+    public SuperState(SuperState other, List<Expression> params) {
+        super(other);
+        this.states = other.states;
+        this.declarations = other.declarations;
+        this.hostCodeReferences = other.hostCodeReferences;
+        this.joinTargetId = other.joinTargetId;
+
+        // update params
+        if (params != null)
+            this.referenceBindingExprs.addAll(params);
+    }
 
     public List<State> getStates() {
         return states;
@@ -35,6 +50,18 @@ public class SuperState extends State {
 
     public SuperState(String id) {
         super(id);
+    }
+
+    public List<Expression> getReferenceBindingExprs() {
+        return referenceBindingExprs;
+    }
+
+    public void setReferenceBindingExprs(List<Expression> referenceBindingExprs) {
+        this.referenceBindingExprs = referenceBindingExprs;
+    }
+
+    public List<LocalAction> getLocalActions() {
+        return localActions;
     }
 
     @Override

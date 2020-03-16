@@ -1,19 +1,22 @@
 package de.uniba.swt.dsl.common.generator.sccharts.builder;
 
 import de.uniba.swt.dsl.bahn.Expression;
+import de.uniba.swt.dsl.bahn.ValuedReferenceExpr;
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
 import de.uniba.swt.dsl.common.util.StringUtil;
+import de.uniba.swt.dsl.common.util.Tuple;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class StateTextualBuilder extends TextualBuilder {
 
     @Inject
     ExpressionTextualBuilder expressionTextualBuilder;
+
+    @Inject
+    ParamBindingTable paramBindingTable;
 
     private RootState rootState;
 
@@ -25,25 +28,35 @@ public class StateTextualBuilder extends TextualBuilder {
     }
 
     private void generateRootState() {
+        paramBindingTable.reset();
         append("scchart").append(rootState.getId());
-        generateSuperState(rootState);
+        generateSuperState(rootState, true);
     }
 
-    private void generateSuperState(SuperState superState) {
+    private void generateSuperState(SuperState superState, boolean generateInputOutput) {
+
+        // add the mapping
+        paramBindingTable.addBindingMappingIfNeeded(superState);
+
         appendLine("{");
         // host code references
         generateHostcodeReferences(superState.getHostCodeReferences());
 
         // interface variables
-        generateVarDecls(superState.getDeclarations());
+        generateVarDecls(superState.getDeclarations(), generateInputOutput);
         appendLine("");
+
+        // generate local actions
+        for (LocalAction localAction : superState.getLocalActions()) {
+            generateLocalAction(localAction);
+        }
 
         // all root states
         if (superState.getStates() != null) {
             for (var childState : superState.getStates()) {
                 if (childState instanceof SuperState) {
                     generateStateId(childState);
-                    generateSuperState((SuperState)childState);
+                    generateSuperState((SuperState)childState, false);
                 } else {
                     generateRegularState(childState);
                 }
@@ -58,15 +71,13 @@ public class StateTextualBuilder extends TextualBuilder {
         if (StringUtil.isNotEmpty(superState.getJoinTargetId())) {
             appendLine("join to " + superState.getJoinTargetId());
         }
+
+        // remove binding
+        paramBindingTable.removeBindingMappingIfNeeded(superState);
     }
 
     private void generateRegularState(State state) {
         generateStateId(state);
-
-        // reference
-        if (state.getReferenceState() != null) {
-            generateReferenceState(state);
-        }
 
         // transitions
         if (state.getOutgoingTransitions() != null) {
@@ -85,26 +96,7 @@ public class StateTextualBuilder extends TextualBuilder {
 
         append("state").append(state.getId());
         if (state.getLabel() != null)
-            append(state.getLabel());
-    }
-
-    private void generateReferenceState(State state) {
-        RootState refState = state.getReferenceState();
-        append("is").append(refState.getId());
-
-        if (state.getReferenceBindingExprs().size() > 0) {
-            var inOutVars = refState.getDeclarations().stream().filter(s -> s.isInput() || s.isOutput()).collect(Collectors.toList());
-
-            List<String> txtBindings = new ArrayList<>();
-            for (int i = 0; i < state.getReferenceBindingExprs().size(); i++) {
-                var param = state.getReferenceBindingExprs().get(i);
-                var decl = inOutVars.get(i);
-                txtBindings.add(String.format("%s to %s",
-                        generateExpression(param),
-                        decl.getName()));
-            }
-            append("(").append(String.join(",", txtBindings)).append(")");
-        }
+            append("\"" + state.getLabel() + "\"");
     }
 
     private void generateHostcodeReferences(Set<String> hostCodeReferences) {
@@ -114,8 +106,13 @@ public class StateTextualBuilder extends TextualBuilder {
         }
     }
 
-    private void generateVarDecls(List<SVarDeclaration> declarations) {
+    private void generateVarDecls(List<SVarDeclaration> declarations, boolean generateInputOutput) {
         for (var decl : declarations) {
+
+            if ((decl.isInput() || decl.isOutput()) && !generateInputOutput) {
+                continue;
+            }
+
             generateVarDecl(decl);
             append(LINE_BREAK);
         }
@@ -194,8 +191,8 @@ public class StateTextualBuilder extends TextualBuilder {
     private String generateEffect(Effect effect) {
         var strBuilder = new StringBuilder();
         if (effect instanceof AssignmentEffect) {
-            var decl = ((AssignmentEffect) effect).getVarDeclaration();
-            strBuilder.append(decl.getName()).append(" = ");
+            var declName = ((AssignmentEffect) effect).getVarDeclaration().getName();
+            strBuilder.append(paramBindingTable.lookupBindingName(declName)).append(" = ");
         }
         strBuilder.append(generateExpression(effect.getExpression()));
         return strBuilder.toString();

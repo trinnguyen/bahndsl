@@ -12,10 +12,16 @@ public class State {
     private boolean isFinal;
     private List<Transition> outgoingTransitions = new ArrayList<>();
     private String label;
-    private RootState referenceState;
-    private List<Expression> referenceBindingExprs = new ArrayList<>();
 
     public State() {
+    }
+
+    public State(State other) {
+        this.id = other.id;
+        this.isInitial = other.isInitial;
+        this.isFinal = other.isFinal;
+        this.outgoingTransitions = other.outgoingTransitions;
+        this.label = other.label;
     }
 
     public State(String id) {
@@ -62,32 +68,14 @@ public class State {
         this.label = label;
     }
 
-    public RootState getReferenceState() {
-        return referenceState;
-    }
-
-    public void setReferenceState(RootState referenceState) {
-        this.referenceState = referenceState;
-    }
-
-    public List<Expression> getReferenceBindingExprs() {
-        return referenceBindingExprs;
-    }
-
-    public void setReferenceBindingExprs(List<Expression> referenceBindingExprs) {
-        this.referenceBindingExprs = referenceBindingExprs;
-    }
-
     @Override
     public String toString() {
         return "State{" +
                 "id='" + id + '\'' +
                 ", isInitial=" + isInitial +
                 ", isFinal=" + isFinal +
-                ", outgoingTransitions=" + LogHelper.printObject(outgoingTransitions) +
+                ", outgoingTransitions=" + outgoingTransitions +
                 ", label='" + label + '\'' +
-                ", referenceState=" + referenceState +
-                ", referenceBindingExprs=" + referenceBindingExprs +
                 '}';
     }
 }
