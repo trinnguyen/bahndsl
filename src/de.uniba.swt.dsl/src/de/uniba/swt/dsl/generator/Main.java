@@ -139,9 +139,19 @@ public class Main {
 	private LibraryExternalGenerator libraryGenerator;
 
 	protected boolean runGenerator(String filePath, String outputPath, String mode) {
-		logger.info(String.format("Code generate mode: %s", mode));
-		// load output
+		// validate
+		if (filePath == null) {
+			System.err.println("No input file");
+			return false;
+		}
+
 		File file = new File(filePath);
+		if (!file.exists()) {
+			System.err.println("Input file is not exist: " + file.toString());
+			return false;
+		}
+
+		// load output
 		if (outputPath == null || outputPath.isEmpty())
 			outputPath = Paths.get(file.getAbsoluteFile().getParent(), "src-gen").toAbsolutePath().toString();
 
@@ -166,6 +176,8 @@ public class Main {
 				return false;
 			}
 		}
+
+		logger.info(String.format("Code generate mode: %s", mode));
 
 		// Configure and start the generator
 		logger.info("Start generating network layout and SCCharts models");
