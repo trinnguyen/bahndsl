@@ -35,7 +35,6 @@ public class TypeCheckingTable {
     }
 
     public void clear() {
-        logger.debug("Clear type table");
         typeTable.clear();
     }
 

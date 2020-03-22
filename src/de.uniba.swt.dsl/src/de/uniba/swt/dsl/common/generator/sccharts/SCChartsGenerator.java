@@ -6,6 +6,7 @@ import de.uniba.swt.dsl.common.generator.GeneratorProvider;
 import de.uniba.swt.dsl.common.generator.sccharts.builder.SCChartModelBuilder;
 import de.uniba.swt.dsl.common.generator.sccharts.builder.SCChartsTextualBuilder;
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
+import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.normalization.ArrayNormalizer;
 import org.apache.log4j.Logger;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
@@ -25,7 +26,6 @@ public class SCChartsGenerator implements GeneratorProvider {
     @Override
     public void run(IFileSystemAccess2 fsa, RootModule rootModule) {
         SCCharts models = modelBuilder.createModel(rootModule);
-        logger.debug(models);
-        fsa.generateFile("interlocking_sccharts.sctx", builder.buildString(models));
+        fsa.generateFile(BahnConstants.GEN_SCCHARTS_FILE_NAME, builder.buildString(models));
     }
 }

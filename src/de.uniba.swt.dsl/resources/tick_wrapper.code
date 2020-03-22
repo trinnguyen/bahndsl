@@ -1,0 +1,40 @@
+#include "request_route.h"
+
+typedef struct {
+    char* src_signal_id;                                                    // Input
+    char* dst_signal_id;                                                    // Input
+    char* train_id;                                                         // Input
+    char* out;                                                              // Output
+
+    int is_terminated;
+} request_route_tick_data;
+
+TickData intern_data = {};
+
+void sync_data_input(request_route_tick_data *tick_data) {
+    intern_data.iface.src_signal_id = tick_data->src_signal_id;
+    intern_data.iface.dst_signal_id = tick_data->dst_signal_id;
+    intern_data.iface.train_id = tick_data->train_id;
+}
+
+void sync_data_output(request_route_tick_data *tick_data) {
+    tick_data->out = intern_data.iface.out;
+    tick_data->is_terminated = intern_data.threadStatus == TERMINATED ? 1: 0;
+}
+
+void request_route_reset(request_route_tick_data *tick_data) {
+
+    // clear the variables
+    intern_data.iface = (Iface){};
+
+    // sync
+    sync_data_input(tick_data);
+    reset(&intern_data);
+    sync_data_output(tick_data);
+}
+
+void request_route_tick(request_route_tick_data *tick_data) {
+    sync_data_input(tick_data);
+    tick(&intern_data);
+    sync_data_output(tick_data);
+}

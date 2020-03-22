@@ -3,7 +3,7 @@ package de.uniba.swt.dsl.common.util;
 import java.util.Set;
 
 public class BahnConstants {
-    public static final String ENTRY_FUNC_NAME = "interlocking";
+    public static final String ENTRY_FUNC_NAME = "request_route";
 
     public static final String STANDARD_SWITCH_STRAIGHT = "straight";
 
@@ -38,6 +38,10 @@ public class BahnConstants {
     public static final Set<String> CROSSING_PROPS;
 
     public static final String SET_CONFIG_ROUTE_TYPE = "route";
+
+    public static final String GEN_SCCHARTS_FILE_NAME = "interlocking_sccharts.sctx";
+
+    public static final String GEN_REQUEST_ROUTE_DYNAMIC_NAME = "request_route";
 
     /**
      * TODO temporary use train_id, should use train

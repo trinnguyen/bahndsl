@@ -1,12 +1,13 @@
 schema
     route
+        id string
         source string
         destination string
         path string[]
         conflicts string[]
         point_positions string[]
-        train_id string
         length_cm float
+        train_id string
     end
 
     route_point
