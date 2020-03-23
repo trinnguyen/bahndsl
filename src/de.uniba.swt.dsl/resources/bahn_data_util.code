@@ -31,9 +31,9 @@ int config_get_array_bool_value(const char *type, const char *id, const char *pr
 
 bool config_set_scalar_string_value(const char *type, const char *id, const char *prop_name, char *value);
 
-char *track_state_get_value(const char *type, const char *id);
+char *track_state_get_value(const char *id);
 
-bool track_state_set_value(const char *type, const char *id, const char *value);
+bool track_state_set_value(const char *id, const char *value);
 
 bool is_segment_occupied(const char *id);
 

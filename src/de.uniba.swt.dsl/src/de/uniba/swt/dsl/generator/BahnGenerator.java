@@ -19,6 +19,7 @@ import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.RootModule;
 import de.uniba.swt.dsl.common.layout.LayoutGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,13 +64,20 @@ public class BahnGenerator extends AbstractGenerator {
 	}
 
 	private List<FuncDecl> getDecls(Resource resource) {
-		EObject e = resource.getContents().get(0);
-		if (e instanceof BahnModel) {
-			BahnModel bahnModel = (BahnModel) e;
-			return bahnModel.getComponents().stream().filter(c -> c instanceof FuncDecl).map(c -> (FuncDecl)c).collect(Collectors.toList());
+		List<FuncDecl> decls = new ArrayList<>();
+		for (Resource res : resource.getResourceSet().getResources()) {
+			if (res.getContents().size() > 0) {
+				EObject e = res.getContents().get(0);
+				if (e instanceof BahnModel) {
+					BahnModel bahnModel = (BahnModel) e;
+					var items = bahnModel.getComponents().stream().filter(c -> c instanceof FuncDecl).map(c -> (FuncDecl)c).collect(Collectors.toList());
+					decls.addAll(items);
+				}
+			}
 		}
 
-		return null;
+
+		return decls;
 	}
 
 	private RootModule getRootModule(Resource resource) {

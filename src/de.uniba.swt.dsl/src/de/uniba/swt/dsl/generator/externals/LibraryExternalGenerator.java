@@ -1,5 +1,6 @@
 package de.uniba.swt.dsl.generator.externals;
 
+import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.generator.StandardLibHelper;
 import org.apache.log4j.Logger;
@@ -33,15 +34,8 @@ public class LibraryExternalGenerator extends AbstractExternalGenerator {
     @Override
     public boolean generate(String outputPath) {
         // list all c files in the folder
-        List<String> fileNames = null;
-        try {
-            fileNames =  Files.walk(Paths.get(outputPath))
-                    .map(p -> p.getFileName().toString())
-                    .filter(f -> f.endsWith(".c")).collect(Collectors.toList());
-        } catch (IOException e) {
-            logger.warn(e);
-            return false;
-        }
+        List<String> fileNames = new ArrayList<>();
+        fileNames.add(BahnConstants.GEN_REQUEST_ROUTE_DYNAMIC_NAME + ".c");
 
         // generate temporary files
         Path tmpDir = null;

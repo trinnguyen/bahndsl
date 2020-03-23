@@ -25,6 +25,8 @@ public class SCChartsGenerator {
             return;
 
         SCCharts models = modelBuilder.createModel(decls);
-        fsa.generateFile(BahnConstants.GEN_SCCHARTS_FILE_NAME, builder.buildString(models));
+        RootState state = models.getRootStates().stream().filter(s -> s.getId().equalsIgnoreCase(BahnConstants.GEN_REQUEST_ROUTE_DYNAMIC_NAME)).findFirst().orElse(null);
+        if (state != null)
+            fsa.generateFile(BahnConstants.GEN_SCCHARTS_FILE_NAME, builder.buildString(state));
     }
 }

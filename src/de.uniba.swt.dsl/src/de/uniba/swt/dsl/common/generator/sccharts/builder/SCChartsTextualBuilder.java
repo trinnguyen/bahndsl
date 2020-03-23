@@ -15,21 +15,12 @@ public class SCChartsTextualBuilder extends TextualBuilder {
     @Inject
     StateTextualBuilder stateBuilder;
 
-    public String buildString(SCCharts model) {
+    public String buildString(RootState rootState) {
         clear();
 
         // append hostcode
         appendLine("#hostcode \"#include \\\"bahn_data_util.h\\\"\"");
-
-        // only build the first state
-        if (model.getRootStates().size() > 0) {
-            append(stateBuilder.buildString(model.getRootStates().get(0))).append(LINE_BREAK);
-        }
-        /*
-        for (var rootState : model.getRootStates()) {
-            append(stateBuilder.buildString(rootState)).append(LINE_BREAK);
-        }
-         */
+        append(stateBuilder.buildString(rootState)).append(LINE_BREAK);
 
         return build();
     }
