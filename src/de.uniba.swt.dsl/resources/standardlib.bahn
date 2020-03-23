@@ -19,19 +19,19 @@ schema
         length float
     end
 
-    # signal
-        # id string
+    signal
+        id string
         # initial string
         # aspects string[]
-    # end
+    end
 
-    # point
-        # id string
+    point
+        id string
         # initial string
-        # segment string
+        segment string
         # normal string
         # reverse string
-    # end
+    end
 
     train
         id string

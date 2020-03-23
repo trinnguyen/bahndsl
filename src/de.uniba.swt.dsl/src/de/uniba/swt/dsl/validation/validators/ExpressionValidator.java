@@ -102,10 +102,6 @@ public class ExpressionValidator {
                 if (setter instanceof SetTrackStateFuncExpr) {
                     var trackExpr = (SetTrackStateFuncExpr) setter;
                     ensureTypeMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(trackExpr.getTrackExpr()), BahnPackage.Literals.SET_TRACK_STATE_FUNC_EXPR__TRACK_EXPR);
-                    if (trackExpr.isSignal()) {
-                        ensureTypeMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(trackExpr.getAspectExpr()), BahnPackage.Literals.SET_TRACK_STATE_FUNC_EXPR__ASPECT_EXPR);
-                    }
-
                     return;
                 }
             }
@@ -121,7 +117,7 @@ public class ExpressionValidator {
         }
 
         if (expr instanceof RegularFunctionCallExpr) {
-
+//TODO type checking RegularFunctionCallExpr
         }
     }
 

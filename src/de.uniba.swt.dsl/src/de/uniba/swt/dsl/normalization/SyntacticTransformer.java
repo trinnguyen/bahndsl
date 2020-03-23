@@ -22,10 +22,6 @@ public class SyntacticTransformer {
 
     private static final String EXTERN_CONFIG_FORMAT = "config_%s_%s_%s_value";
 
-    private static final String TYPE_POINT = "point";
-
-    private static final String TYPE_SIGNAL = "signal";
-
     public boolean isSetter(BehaviourExpr expr) {
         return expr instanceof BehaviourSetExpr || expr instanceof GrantRouteFuncExpr;
     }
@@ -63,15 +59,7 @@ public class SyntacticTransformer {
 
             if (getter instanceof GetTrackStateFuncExpr) {
                 var trackStateFuncExpr = (GetTrackStateFuncExpr) getter;
-
-                if (trackStateFuncExpr.isSignal()) {
-                    return createExternalFunctionCallExpr(EXTERN_STATE_GETTER_NAME, List.of(createString(TYPE_SIGNAL), trackStateFuncExpr.getTrackExpr()));
-                }
-
-                if (trackStateFuncExpr.isPoint()) {
-                    return createExternalFunctionCallExpr(EXTERN_STATE_GETTER_NAME, List.of(createString(TYPE_POINT), trackStateFuncExpr.getTrackExpr()));
-                }
-
+                return createExternalFunctionCallExpr(EXTERN_STATE_GETTER_NAME, List.of(trackStateFuncExpr.getTrackExpr()));
             }
 
             return null;
@@ -87,14 +75,9 @@ public class SyntacticTransformer {
 
             if (setter instanceof SetTrackStateFuncExpr) {
                 var setStateFunExpr = (SetTrackStateFuncExpr) setter;
-                if (setStateFunExpr.isSignal()) {
-                    return createExternalFunctionCallExpr(EXTERN_STATE_SETTER_NAME, List.of(createString(TYPE_SIGNAL), setStateFunExpr.getTrackExpr(), setStateFunExpr.getAspectExpr()));
-                }
-
-                if (setStateFunExpr.isPoint()) {
-                    String raw = setStateFunExpr.getPointAspectType().getName().toLowerCase();
-                    return createExternalFunctionCallExpr(EXTERN_STATE_SETTER_NAME, List.of(createString(TYPE_POINT), setStateFunExpr.getTrackExpr(), createString(raw)));
-                }
+                var rawState = convertTrackState(setStateFunExpr.getAspectExpr());
+                if (rawState != null && !rawState.isEmpty())
+                    return createExternalFunctionCallExpr(EXTERN_STATE_SETTER_NAME, List.of(setStateFunExpr.getTrackExpr(), createString(rawState)));
             }
 
             return null;
@@ -160,6 +143,23 @@ public class SyntacticTransformer {
                 unaryExpr.setExpr(rawExpr);
                 return unaryExpr;
             }
+        }
+
+        return null;
+    }
+
+    private String convertTrackState(TrackState trackState) {
+        switch (trackState) {
+            case STOP:
+                return "red";
+            case CAUTION:
+                return "yellow";
+            case CLEAR:
+                return "green";
+            case NORMAL:
+                return "normal";
+            case REVERSE:
+                return "reverse";
         }
 
         return null;

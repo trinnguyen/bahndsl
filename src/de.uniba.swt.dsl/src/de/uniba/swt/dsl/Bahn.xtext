@@ -102,8 +102,8 @@ enum TimeSpanType:
 	SECONDS = 'seconds' | MINUTES = 'minutes' | HOURS = 'hours'
 ;
 
-PointAspectLiteral:
-	value=PointAspectType
+enum TrackState:
+	CLEAR = 'clear' | CAUTION = 'caution' | STOP = 'stop' | NORMAL = 'normal' | REVERSE = 'reverse'
 ;
 		
 enum TrainType:
@@ -342,7 +342,6 @@ LiteralExpr:
 	| NumberLiteral
 	| HexLiteral
 	| StringLiteral
-	| PointAspectLiteral
 ;
 
 ValuedReferenceExpr:
@@ -375,8 +374,8 @@ BehaviourGetExpr returns BehaviourExpr:
 ;
 
 GetTrackStateFuncExpr:
-	{GetTrackStateFuncExpr}
-	(signal?='signal'| point?='point') trackExpr=PrimaryExpr
+	{GetTrackStateFuncExpr} 
+	'state' trackExpr=PrimaryExpr 
 ;
 
 GetRoutesFuncExpr returns BehaviourExpr:
@@ -396,9 +395,7 @@ BehaviourSetExpr returns BehaviourExpr:
 
 SetTrackStateFuncExpr:
 	{SetTrackStateFuncExpr}
-	(signal?='signal' trackExpr=PrimaryExpr 'to' aspectExpr=PrimaryExpr)
-	|
-	(point?='point' trackExpr=PrimaryExpr 'to' pointAspectType=PointAspectType)
+	'state' trackExpr=PrimaryExpr 'to' aspectExpr=TrackState
 ;
 
 SetConfigFuncExpr:
