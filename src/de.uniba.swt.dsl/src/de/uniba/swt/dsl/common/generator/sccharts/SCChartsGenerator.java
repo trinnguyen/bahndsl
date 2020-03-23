@@ -11,21 +11,20 @@ import de.uniba.swt.dsl.normalization.ArrayNormalizer;
 import org.apache.log4j.Logger;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
-public class SCChartsGenerator implements GeneratorProvider {
+import java.util.List;
 
-    private static final Logger logger = Logger.getLogger(SCChartsGenerator.class);
+public class SCChartsGenerator {
 
     @Inject SCChartsTextualBuilder builder;
 
     @Inject
-    ArrayNormalizer normalizer;
-
-    @Inject
     SCChartModelBuilder modelBuilder;
 
-    @Override
-    public void run(IFileSystemAccess2 fsa, RootModule rootModule) {
-        SCCharts models = modelBuilder.createModel(rootModule);
+    public void run(IFileSystemAccess2 fsa, List<FuncDecl> decls) {
+        if (decls == null || decls.size() == 0)
+            return;
+
+        SCCharts models = modelBuilder.createModel(decls);
         fsa.generateFile(BahnConstants.GEN_SCCHARTS_FILE_NAME, builder.buildString(models));
     }
 }

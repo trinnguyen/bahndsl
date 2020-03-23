@@ -10,19 +10,16 @@ public class SCChartModelBuilder {
     private List<RootStateBuilder> builders = new ArrayList<>();
     private Stack<SuperState> superStates = new Stack<>();
 
-    public SCCharts createModel(RootModule rootModule) {
+    public SCCharts createModel(List<FuncDecl> decls) {
 
         mapFuncState.clear();
         builders.clear();
 
         // create models
-        for (ModuleProperty property : rootModule.getProperties()) {
-            if (property instanceof FuncDecl) {
-                FuncDecl funcDecl = (FuncDecl) property;
-                RootStateBuilder rootStateBuilder = new RootStateBuilder(mapFuncState, superStates, funcDecl);
-                mapFuncState.put(funcDecl, rootStateBuilder.getRootState());
-                builders.add(rootStateBuilder);
-            }
+        for (FuncDecl funcDecl : decls) {
+            RootStateBuilder rootStateBuilder = new RootStateBuilder(mapFuncState, superStates, funcDecl);
+            mapFuncState.put(funcDecl, rootStateBuilder.getRootState());
+            builders.add(rootStateBuilder);
         }
 
         // update model
