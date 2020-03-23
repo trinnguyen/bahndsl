@@ -47,7 +47,8 @@ public class Main {
 		var container = new ArgOptionContainer(List.of(
 				new ArgOption("o", "output folder", true, "path"),
 				new ArgOption("m", modeDesc, true, "mode"),
-				new ArgOption("v", "verbose output")));
+				new ArgOption("v", "verbose output"),
+				new ArgOption("d", "debug output")));
 
 		// parse arg
 		if (args.length == 0) {

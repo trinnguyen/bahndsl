@@ -6,11 +6,59 @@ schema
         path string[]
         conflicts string[]
         point_positions string[]
-        length_cm float
-        train_id string
+        length float
+        train string
     end
 
     route_point
         position string
     end
+
+    segment
+        id string
+        length float
+    end
+
+    # signal
+        # id string
+        # initial string
+        # aspects string[]
+    # end
+
+    # point
+        # id string
+        # initial string
+        # segment string
+        # normal string
+        # reverse string
+    # end
+
+    train
+        id string
+        type string
+        weight float
+        length float
+    #     # peripherals string[]
+    #     # calibration int[]
+    end
+
+    block
+        id string
+        segment string
+        direction string
+        length float
+        train_types string[]
+        overlaps string[]
+    end
+
+    crossing
+        id string
+        segment string
+    end
+end
+config
+    length
+    weight
+    type
+    segment
 end

@@ -1,6 +1,6 @@
 package de.uniba.swt.dsl.common.generator.yaml.exports;
 
-import de.uniba.swt.dsl.bahn.TrainElement;
+import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.util.Tuple;
 
 import java.util.ArrayList;
@@ -21,12 +21,18 @@ class TrainElementYamlExporter extends AbstractElementYamlExporter<TrainElement>
         list.add(Tuple.of("dcc-speed-steps", element.getSteps()));
         list.add(Tuple.of("calibration", element.getCalibrations()));
         list.add(Tuple.of("peripherals", element.getPeripherals()));
-        if (element.getWeight() != null)
-            list.add(Tuple.of("weight", CommonFormatter.formatWeight(element.getWeight())));
-        if (element.getLength() != null)
-            list.add(Tuple.of("length", CommonFormatter.formatLength(element.getLength())));
-        if (element.getType() != null)
-            list.add(Tuple.of("type", element.getType().getName().toLowerCase()));
+
+        // go through prop
+        for (ConfigProp prop : element.getProps()) {
+            if (prop.getValue() instanceof Length) {
+                list.add(Tuple.of("length", CommonFormatter.formatLength((Length) prop.getValue())));
+            } else if (prop.getValue() instanceof Weight) {
+                list.add(Tuple.of("weight", CommonFormatter.formatWeight((Weight) prop.getValue())));
+            } else if (prop.getValue() instanceof TrainTypeValue) {
+                list.add(Tuple.of("type", ((TrainTypeValue)prop.getValue()).getType().getName().toLowerCase()));
+            }
+        }
+
         return list;
     }
 }
