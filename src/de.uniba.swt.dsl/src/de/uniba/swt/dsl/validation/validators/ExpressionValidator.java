@@ -117,7 +117,22 @@ public class ExpressionValidator {
         }
 
         if (expr instanceof RegularFunctionCallExpr) {
-//TODO type checking RegularFunctionCallExpr
+            validateRegularFuncCall((RegularFunctionCallExpr)expr);
+        }
+    }
+
+    private void validateRegularFuncCall(RegularFunctionCallExpr expr) throws ValidationException {
+        var paramDecls = expr.getDecl().getParamDecls();
+
+        if (paramDecls.size() != expr.getParams().size()) {
+            String msg = String.format("Expected %d arguments but found %d", paramDecls.size(), expr.getParams().size());
+            throw new ValidationException(msg, BahnPackage.Literals.REGULAR_FUNCTION_CALL_EXPR__PARAMS);
+        }
+
+        for (int i = 0; i < expr.getParams().size(); i++) {
+            var argType = typeCheckingTable.computeDataType(expr.getParams().get(i));
+            var decl = paramDecls.get(i);
+            ensureTypeMatched(new ExprDataType(decl.getType(), decl.isArray()), argType, BahnPackage.Literals.REGULAR_FUNCTION_CALL_EXPR__PARAMS);
         }
     }
 
