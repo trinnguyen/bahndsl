@@ -83,12 +83,6 @@ public class SyntacticTransformer {
             return null;
         }
 
-        // wait
-        if (expr instanceof WaitFuncExpr) {
-            //TODO generate wait expr
-            return expr;
-        }
-
         // grant route to train
         if (expr instanceof GrantRouteFuncExpr) {
 

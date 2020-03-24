@@ -368,7 +368,7 @@ ExternalFunctionCallExpr returns FunctionCallExpr:
 ;
 
 BehaviourExpr returns FunctionCallExpr:
-	BehaviourGetExpr | BehaviourSetExpr | GetRoutesFuncExpr | GrantRouteFuncExpr | WaitFuncExpr | EvaluateFuncExpr
+	BehaviourGetExpr | BehaviourSetExpr | GetRoutesFuncExpr | GrantRouteFuncExpr | EvaluateFuncExpr
 ;
 
 BehaviourGetExpr returns BehaviourExpr:
@@ -409,11 +409,6 @@ SetConfigFuncExpr:
 GrantRouteFuncExpr returns BehaviourExpr:
 	{GrantRouteFuncExpr} 
 	'grant' routeExpr=PrimaryExpr 'to' trainExpr=PrimaryExpr
-;
-
-WaitFuncExpr returns BehaviourExpr:
-	{WaitFuncExpr} 
-	'wait' 'for' value=INT timeSpan=TimeSpanType
 ;
 
 EvaluateFuncExpr returns BehaviourExpr:

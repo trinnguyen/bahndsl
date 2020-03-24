@@ -173,10 +173,6 @@ class TypeComputingHelper {
                 }
             }
 
-            if (behaviourExpr instanceof WaitFuncExpr) {
-                return ExprDataType.Void;
-            }
-
             if (behaviourExpr instanceof GrantRouteFuncExpr) {
                 return ExprDataType.ScalarBool;
             }
