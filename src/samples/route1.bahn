@@ -1,9 +1,0 @@
-module route1
-    def request_route(string src_signal_id, string dst_signal_id): string
-        string route_ids[100]
-
-        int count_routes = extern interlocking_table_get_routes(src_signal_id, dst_signal_id, route_ids)
-
-        return route_ids[count_routes - 1]
-    end
-end

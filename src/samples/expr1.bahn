@@ -1,5 +1,0 @@
-module route1
-    def inter()
-        int a = 2 + 1
-    end
-end
