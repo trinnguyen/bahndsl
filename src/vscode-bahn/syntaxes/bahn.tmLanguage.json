@@ -16,7 +16,7 @@
 		"keywords": {
 			"patterns": [{
 				"name": "keyword.control.bahn",
-				"match": "\\b(aspects|available|bit|blocks|boards|bool|calibration|cargo|cm|config|crossings|def|down|else|end|extern|false|features|float|for|from|get|grant|hours|if|in|initial|int|is|kg|km|layout|length|main|minutes|module|normal|not|occupied|overlap|passenger|peripherals|platforms|point|points|return|reverse|routes|schema|seconds|segment|segments|set|side|signal|signals|stem|steps|straight|string|to|trains|true|type|up|wait|weight|while)\\b"
+				"match": "\\b(aspects|available|bit|blocks|boards|bool|calibration|cargo|caution|clear|cm|config|crossings|def|down|else|end|extern|false|features|float|for|from|get|grant|hours|if|in|initial|int|is|kg|km|layout|len|main|minutes|module|normal|not|occupied|overlap|passenger|peripherals|platforms|points|return|reverse|routes|schema|seconds|segments|set|side|signals|state|stem|steps|stop|straight|string|to|trains|true|up|wait|while)\\b"
 			}]
 		},
 		"strings": {
