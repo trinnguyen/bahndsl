@@ -1,13 +1,32 @@
-package de.uniba.swt.dsl.tests;
+package de.uniba.swt.dsl.tests.helpers;
 
 import java.util.stream.Collectors;
 
+import com.google.inject.Inject;
+import de.uniba.swt.dsl.bahn.BahnModel;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource.Diagnostic;
+import org.eclipse.xtext.testing.util.ParseHelper;
 import org.junit.jupiter.api.Assertions;
 
 public class ParserTestHelper {
+
+	@Inject
+	private ParseHelper<BahnModel> parseHelper;
+
+	public BahnModel parseModel(CharSequence text) {
+		try {
+			return parseHelper.parse(text);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void assertNoParsingErrors(CharSequence text) {
+		var model = parseModel(text);
+		assertNoParsingErrors(model);
+	}
 	
 	public void assertNoParsingErrors(EObject model) {
 		// not null

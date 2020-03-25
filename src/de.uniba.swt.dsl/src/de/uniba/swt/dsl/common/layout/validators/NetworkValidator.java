@@ -30,8 +30,8 @@ public class NetworkValidator {
         validateConnectors();
 
         // 2. ensure all vertices are reachable
-//        if (!graphValidator.isStrongConnected(networkLayout))
-//            throw new CompositeLayoutException("Network layout is not strongly connected");
+        if (!graphValidator.isStrongConnected(networkLayout))
+            throw new CompositeLayoutException("Network layout is not strongly connected");
     }
 
     private void validateConnectors() throws CompositeLayoutException {

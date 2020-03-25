@@ -343,7 +343,6 @@ ParenthesizedExpr:
 LiteralExpr:
 	BooleanLiteral
 	| NumberLiteral
-	| HexLiteral
 	| StringLiteral
 ;
 

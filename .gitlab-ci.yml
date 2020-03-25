@@ -3,14 +3,14 @@ cache:
   paths:
     - .m2/repository
 
-# test:
-#   image: openjdk:11
-#   stage: test
-#   script:
-#     - 'src/gradlew -p src de.uniba.swt.dsl.test:test'
-#   artifacts:
-#     reports:
-#       junit: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
+test:
+  image: openjdk:11
+  stage: test
+  script:
+    - 'src/gradlew -p src de.uniba.swt.dsl.test:test'
+  artifacts:
+    reports:
+      junit: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
 
 build-rcp-compiler:
   image: openjdk:11

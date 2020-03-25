@@ -1,6 +1,8 @@
 dependencies {
 	compile project(':de.uniba.swt.dsl')
 	testCompile 'org.junit.jupiter:junit-jupiter-api'
+	testCompile "org.junit.jupiter:junit-jupiter-api:5.5.1"
+	testCompile 'org.junit.jupiter:junit-jupiter-params:5.5.1'
 	testRuntime 'org.junit.jupiter:junit-jupiter-engine'
 	testCompile "org.eclipse.xtext:org.eclipse.xtext.testing:${xtextVersion}"
 	testCompile "org.eclipse.xtext:org.eclipse.xtext.xbase.testing:${xtextVersion}"
