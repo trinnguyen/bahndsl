@@ -168,8 +168,13 @@ public class Main {
 		if (!list.isEmpty()) {
 			boolean anyError = false;
 			for (Issue issue : list) {
-				anyError = issue.getSeverity() == Severity.ERROR;
-				System.err.println(issue);
+				if (issue.getSeverity() == Severity.ERROR) {
+					System.err.println(issue);
+					anyError = true;
+				} else {
+					System.out.println(issue);
+				}
+
 			}
 
 			// stop
@@ -178,7 +183,7 @@ public class Main {
 			}
 		}
 
-		logger.info(String.format("Code generate mode: %s", mode));
+		logger.info(String.format("Code generation mode: %s", mode));
 
 		// Configure and start the generator
 		logger.info("Start generating network layout and SCCharts models");

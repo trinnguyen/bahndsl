@@ -8,12 +8,11 @@ import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.layout.models.CompositeLayoutException;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.validators.LayoutElementValidator;
+import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 import de.uniba.swt.dsl.validation.util.ValidationException;
-import de.uniba.swt.dsl.validation.validators.BahnLayoutValidator;
-import de.uniba.swt.dsl.validation.validators.DeclValidator;
-import de.uniba.swt.dsl.validation.validators.ExpressionValidator;
-import de.uniba.swt.dsl.validation.validators.StatementValidator;
+import de.uniba.swt.dsl.validation.validators.*;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.xtext.validation.Check;
@@ -27,6 +26,8 @@ import java.util.Map;
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 public class BahnValidator extends AbstractBahnValidator {
+
+    private static Logger logger = Logger.getLogger(BahnValidator.class);
 
     @Inject
     BahnLayoutValidator layoutValidator;
@@ -52,6 +53,9 @@ public class BahnValidator extends AbstractBahnValidator {
     @Inject
     StatementValidator statementValidator;
 
+    @Inject
+    SwtBahnFuncValidator swtBahnFuncValidator;
+
     @Override
     public boolean validate(EDataType eDataType, Object value, DiagnosticChain diagnostics, Map<Object, Object> context) {
         typeCheckingTable.clear();
@@ -59,7 +63,32 @@ public class BahnValidator extends AbstractBahnValidator {
     }
 
     @Check
+    public void validateBahnModel(BahnModel bahnModel) {
+        logger.debug("validateBahnModel");
+        try {
+            var result = swtBahnFuncValidator.hasRequestAndDriveRoute(bahnModel);
+            var hasRequestRoute = result.getFirst();
+            var hasDriveRoute = result.getSecond();
+
+            String msg = null;
+            if (!hasRequestRoute && !hasDriveRoute) {
+                msg = String.format("Neither %s nor %s is implemented.", BahnConstants.REQUEST_ROUTE_FUNC_NAME, BahnConstants.DRIVE_ROUTE_FUNC_NAME);
+            } else if (!hasRequestRoute) {
+                msg = String.format("%s is not implemented.", BahnConstants.REQUEST_ROUTE_FUNC_NAME);
+            } else if (!hasDriveRoute) {
+                msg = String.format("%s is not implemented", BahnConstants.DRIVE_ROUTE_FUNC_NAME);
+            }
+
+            if (msg != null)
+                throw new ValidationException(msg, BahnPackage.Literals.BAHN_MODEL__COMPONENTS);
+        } catch (ValidationException e) {
+            warning(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
     public void typeCheckingExpression(Expression expression) {
+        logger.debug("expression: " + expression.getClass().getSimpleName());
         try {
             expressionValidator.validate(expression);
         } catch (ValidationException e) {
@@ -69,6 +98,7 @@ public class BahnValidator extends AbstractBahnValidator {
 
     @Check
     public void typeCheckingStatement(Statement statement) {
+        logger.debug("typeCheckingStatement: " + statement.getClass().getSimpleName());
         try {
             statementValidator.validate(statement);
         } catch (ValidationException e) {
@@ -78,6 +108,7 @@ public class BahnValidator extends AbstractBahnValidator {
 
     @Check
     public void typeCheckingFuncDecl(FuncDecl funcDecl) {
+        logger.debug("typeCheckingFuncDecl: " + funcDecl.getClass().getSimpleName());
         try {
             declValidator.validateFuncDecl(funcDecl);
         } catch (ValidationException e) {
@@ -87,6 +118,7 @@ public class BahnValidator extends AbstractBahnValidator {
 
     @Check
     public void validateLayoutElement(LayoutElement element) {
+        logger.debug("validateLayoutElement: " + element.getClass().getSimpleName());
         try {
             LayoutElementValidator.validateElement(element);
         } catch (ValidationException e) {
@@ -96,6 +128,7 @@ public class BahnValidator extends AbstractBahnValidator {
     
     @Check
     public void validateLayoutReference(LayoutReference reference) {
+        logger.debug("validateLayoutReference: " + reference.getClass().getSimpleName());
         try {
             LayoutElementValidator.validateReference(reference);
         } catch (ValidationException e) {
@@ -105,6 +138,7 @@ public class BahnValidator extends AbstractBahnValidator {
 
     @Check
     public void validateNetworkLayout(LayoutProperty layoutProperty) {
+        logger.debug("validateNetworkLayout: " + layoutProperty.getClass().getSimpleName());
         try {
             layoutValidator.validateLayout(layoutProperty);
         } catch (CompositeLayoutException compositeExp) {
@@ -116,6 +150,7 @@ public class BahnValidator extends AbstractBahnValidator {
 
     @Check
     public void validateSegmentsProperty(SegmentsProperty segmentsProperty) {
+        logger.debug("validateSegmentsProperty: " + segmentsProperty.getClass().getSimpleName());
         try {
             hexValidator.validateUniqueAddress(segmentsProperty.getItems(), SegmentElement::getAddress);
             boardRefValidator.validateBoard(segmentsProperty, segmentsProperty.getBoard());

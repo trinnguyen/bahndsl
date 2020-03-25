@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class LibraryExternalGenerator extends AbstractExternalGenerator {
+public class LibraryExternalGenerator extends ExternalGenerator {
     private static Logger logger = Logger.getLogger(LibraryExternalGenerator.class);
     private List<Tuple<String, String>> resources;
 
@@ -32,17 +32,15 @@ public class LibraryExternalGenerator extends AbstractExternalGenerator {
     }
 
     @Override
-    public boolean generate(String outputPath) {
+    protected boolean execute(String outputPath) {
         // list all c files in the folder
         List<String> fileNames = new ArrayList<>();
-        fileNames.add(BahnConstants.GEN_REQUEST_ROUTE_DYNAMIC_NAME + ".c");
+        fileNames.add(BahnConstants.REQUEST_ROUTE_FUNC_NAME + ".c");
 
         // generate temporary files
-        Path tmpDir = null;
-        try {
-            tmpDir = Files.createTempDirectory("bahn");
-        } catch (IOException e) {
-            logger.warn(e.getMessage(), e);
+        Path tmpDir = Path.of(outputPath); //getTempDir();
+        if (tmpDir == null) {
+            logger.warn("Failed to prepare resource for generating dynamic library");
             return false;
         }
 
@@ -55,7 +53,6 @@ public class LibraryExternalGenerator extends AbstractExternalGenerator {
         }
 
         // start code generation
-        var out = "request_route." + getOsLibExt();
         List<String> args = new ArrayList<>();
         args.add("-shared");
         args.add("-undefined");
@@ -64,12 +61,26 @@ public class LibraryExternalGenerator extends AbstractExternalGenerator {
         args.add("-I.");
         args.add("-I" + tmpDir);
         args.add("-o");
-        args.add(out);
+        args.add(getOutputFileName());
         var res = executeArgs(args.toArray(new String[0]), outputPath);
 
         // clean
-        cleanTemp(tmpDir, tmpFiles);
+        //cleanTemp(tmpDir, tmpFiles);
         return res;
+    }
+
+    private static Path getTempDir() {
+        try {
+            return Files.createTempDirectory("bahn");
+        } catch (IOException e) {
+            logger.warn(e.getMessage(), e);
+            return null;
+        }
+    }
+
+    @Override
+    protected String[] generatedFileNames() {
+        return new String[] { getOutputFileName() };
     }
 
     private void cleanTemp(Path tmpDir, List<String> tmpFiles) {
@@ -78,7 +89,11 @@ public class LibraryExternalGenerator extends AbstractExternalGenerator {
                 for (String tmpFile : tmpFiles) {
                     Files.delete(Path.of(tmpFile));
                 }
-                Files.delete(tmpDir);
+
+                var file = tmpDir.toFile();
+                if (file.isDirectory() && file.list() == null) {
+                    file.delete();
+                }
             } catch (IOException e) {
                 logger.debug("Error deleting temp file: " + e.getMessage());
             }
@@ -109,7 +124,11 @@ public class LibraryExternalGenerator extends AbstractExternalGenerator {
         return null;
     }
 
-    private String getOsLibExt() {
+    private static String getOutputFileName() {
+        return "libinterlocking_bahndslfilename." + getOsLibExt();
+    }
+
+    private static String getOsLibExt() {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("mac"))
             return "dylib";

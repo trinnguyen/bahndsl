@@ -9,7 +9,6 @@ import de.uniba.swt.dsl.common.util.StringUtil;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 public class SuperStateBuilder {
     public final String VAR_OUTPUT_NAME = "out";
@@ -18,7 +17,7 @@ public class SuperStateBuilder {
      * temporary allocate param array size to 1024
      * TODO should guess the size of param based on function call
      */
-    public final int DEFAULT_PARAM_ARRAY_SIZE = BahnConstants.DefaultArraySize;
+    public final int DEFAULT_PARAM_ARRAY_SIZE = BahnConstants.DEFAULT_ARRAY_SIZE;
 
     private Map<FuncDecl, RootState> mapFuncState;
     private StateTable stateTable;
@@ -310,7 +309,7 @@ public class SuperStateBuilder {
                 VarDecl varDecl = varDeclStmt.getDecl();
 
                 // array cardinality must be a int literal
-                int arraySize = varDecl.isArray() ? BahnConstants.DefaultArraySize : 0;
+                int arraySize = varDecl.isArray() ? BahnConstants.DEFAULT_ARRAY_SIZE : 0;
                 /*
                 if (varDecl.isArray()) {
                     if (varDecl.getCardinality() instanceof NumberLiteral) {

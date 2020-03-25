@@ -1,4 +1,5 @@
 #include "request_route.h"
+#include "drive_route.h"
 
 typedef struct {
     char* src_signal_id;                                                    // Input
@@ -9,32 +10,67 @@ typedef struct {
     int is_terminated;
 } request_route_tick_data;
 
-TickData intern_data = {};
+intern_request_route_tick_data intern_request = {};
 
-void sync_data_input(request_route_tick_data *tick_data) {
-    intern_data.iface.src_signal_id = tick_data->src_signal_id;
-    intern_data.iface.dst_signal_id = tick_data->dst_signal_id;
-    intern_data.iface.train_id = tick_data->train_id;
+void request_route_sync_input(request_route_tick_data *tick_data) {
+    intern_request.intern_request_route_logiciface.src_signal_id = tick_data->src_signal_id;
+    intern_request.intern_request_route_logiciface.dst_signal_id = tick_data->dst_signal_id;
+    intern_request.intern_request_route_logiciface.train_id = tick_data->train_id;
 }
 
-void sync_data_output(request_route_tick_data *tick_data) {
-    tick_data->out = intern_data.iface.out;
-    tick_data->is_terminated = intern_data.threadStatus == TERMINATED ? 1: 0;
+void request_route_sync_output(request_route_tick_data *tick_data) {
+    tick_data->out = intern_request.intern_request_route_logiciface.out;
+    tick_data->is_terminated = intern_request.threadStatus == TERMINATED ? 1: 0;
 }
 
 void request_route_reset(request_route_tick_data *tick_data) {
 
     // clear the variables
-    intern_data.iface = (Iface){};
+    intern_request.intern_request_route_logiciface = (intern_request_route_logicIface){};
 
     // sync
-    sync_data_input(tick_data);
-    reset(&intern_data);
-    sync_data_output(tick_data);
+    request_route_sync_input(tick_data);
+    intern_request_route_tick(&intern_request);
+    request_route_sync_output(tick_data);
 }
 
 void request_route_tick(request_route_tick_data *tick_data) {
-    sync_data_input(tick_data);
-    tick(&intern_data);
-    sync_data_output(tick_data);
+    request_route_sync_input(tick_data);
+    intern_request_route_reset(&intern_request);
+    request_route_sync_output(tick_data);
+}
+
+typedef struct {
+    char* route_id;                                                    // Input
+    char* train_id;                                                    // Input
+
+    int is_terminated;
+} drive_route_tick_data;
+
+intern_drive_route_tick_data intern_drive = {};
+
+void drive_route_sync_input(drive_route_tick_data *tick_data) {
+    intern_drive.intern_drive_route_logiciface.route_id = tick_data->route_id;
+    intern_drive.intern_drive_route_logiciface.train_id = tick_data->train_id;
+}
+
+void drive_route_sync_output(drive_route_tick_data *tick_data) {
+    tick_data->is_terminated = intern_drive.threadStatus == TERMINATED ? 1: 0;
+}
+
+void drive_route_reset(drive_route_tick_data *tick_data) {
+
+    // clear the variables
+    intern_drive.intern_drive_route_logiciface = (intern_drive_route_logicIface){};
+
+    // sync
+    drive_route_sync_input(tick_data);
+    intern_drive_route_tick(&intern_drive);
+    drive_route_sync_output(tick_data);
+}
+
+void drive_route_tick(drive_route_tick_data *tick_data) {
+    drive_route_sync_input(tick_data);
+    intern_drive_route_reset(&intern_drive);
+    drive_route_sync_output(tick_data);
 }

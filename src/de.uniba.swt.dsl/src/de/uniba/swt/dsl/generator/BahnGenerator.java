@@ -3,12 +3,11 @@
  */
 package de.uniba.swt.dsl.generator;
 
-import de.uniba.swt.dsl.bahn.BahnModel;
-import de.uniba.swt.dsl.bahn.FuncDecl;
 import de.uniba.swt.dsl.common.generator.sccharts.SCChartsGenerator;
 import de.uniba.swt.dsl.common.generator.yaml.YamlConfigGenerator;
+import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.normalization.BahnNormalizationProvider;
-import org.eclipse.emf.ecore.EObject;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.generator.AbstractGenerator;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
@@ -16,12 +15,7 @@ import org.eclipse.xtext.generator.IGeneratorContext;
 
 import com.google.inject.Inject;
 
-import de.uniba.swt.dsl.bahn.RootModule;
 import de.uniba.swt.dsl.common.layout.LayoutGenerator;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Generates code from your model files on save.
@@ -29,6 +23,9 @@ import java.util.stream.Collectors;
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
 public class BahnGenerator extends AbstractGenerator {
+
+	private static Logger logger = Logger.getLogger(BahnGenerator.class);
+
 	@Inject
 	BahnNormalizationProvider normalizationProvider;
 
@@ -43,52 +40,23 @@ public class BahnGenerator extends AbstractGenerator {
 
 	@Override
 	public void beforeGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
-		normalizationProvider.normalize(getDecls(input));
+		normalizationProvider.normalize(BahnUtil.getDecls(input.getResourceSet()));
 	}
 
 	@Override
 	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
+		var bahnModel = BahnUtil.getBahnModel(resource);
+		if (bahnModel == null)
+			return;
 
-		RootModule rootModule = getRootModule(resource);
-		if (rootModule != null) {
-			// layout generator must run first to generate network layout
-			layoutGenerator.run(fsa, rootModule);
+		// layout generator must run first to generate network layout
+		layoutGenerator.generate(fsa, bahnModel);
 
-			// use network layout for block generation (direction, signals)
-			yamlConfigGenerator.setNetworkLayout(layoutGenerator.getNetworkLayout());
-			yamlConfigGenerator.run(fsa, rootModule);
-		}
+		// use network layout for block generation (direction, signals)
+		yamlConfigGenerator.setNetworkLayout(layoutGenerator.getNetworkLayout());
+		yamlConfigGenerator.generate(fsa, bahnModel);
 
 		// sccharts
-		scChartsGenerator.run(fsa, getDecls(resource));
-	}
-
-	private List<FuncDecl> getDecls(Resource resource) {
-		List<FuncDecl> decls = new ArrayList<>();
-		for (Resource res : resource.getResourceSet().getResources()) {
-			if (res.getContents().size() > 0) {
-				EObject e = res.getContents().get(0);
-				if (e instanceof BahnModel) {
-					BahnModel bahnModel = (BahnModel) e;
-					var items = bahnModel.getComponents().stream().filter(c -> c instanceof FuncDecl).map(c -> (FuncDecl)c).collect(Collectors.toList());
-					decls.addAll(items);
-				}
-			}
-		}
-
-
-		return decls;
-	}
-
-	private RootModule getRootModule(Resource resource) {
-		EObject e = resource.getContents().get(0);
-		if (e instanceof BahnModel) {
-			BahnModel bahnModel = (BahnModel) e;
-			var module = bahnModel.getComponents().stream().filter(c -> c instanceof RootModule).map(c -> (RootModule)c).findFirst();
-			if (module.isPresent())
-				return module.get();
-		}
-
-		return null;
+		scChartsGenerator.generate(fsa, bahnModel);
 	}
 }

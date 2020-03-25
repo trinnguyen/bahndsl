@@ -3,14 +3,12 @@ package de.uniba.swt.dsl.generator.externals;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class LowLevelCodeExternalGenerator extends AbstractExternalGenerator {
+public class LowLevelCodeExternalGenerator extends ExternalGenerator {
 
-    private final String GENERATION_SYSTEM = "de.cau.cs.kieler.sccharts.statebased";
+    private static final String SCC_GEN_SYSTEM = "de.cau.cs.kieler.sccharts.statebased";
 
     private static Logger logger = Logger.getLogger(LowLevelCodeExternalGenerator.class);
 
@@ -20,16 +18,30 @@ public class LowLevelCodeExternalGenerator extends AbstractExternalGenerator {
     }
 
     @Override
-    public boolean generate(String outputPath) {
-        String inputFileName = BahnConstants.GEN_SCCHARTS_FILE_NAME;
-        var path = Paths.get(outputPath, inputFileName);
+    protected boolean execute(String outputPath) {
+        return executeFile(outputPath, BahnConstants.REQUEST_ROUTE_SCTX)
+                && executeFile(outputPath, BahnConstants.DRIVE_ROUTE_SCTX);
+    }
+
+    private boolean executeFile(String outputPath, String input) {
+        var path = Paths.get(outputPath, input);
         if (!Files.exists(path)) {
-            logger.error(String.format("Generated SCCharts file is not exist: %s", inputFileName));
+            logger.debug("File is not exist: " + input);
             return false;
         }
 
         // start code generation
-        var args = new String[]{"-s", GENERATION_SYSTEM, "-o", ".", inputFileName};
+        var args = new String[]{"-s", SCC_GEN_SYSTEM, "-o", ".", input};
         return executeArgs(args, outputPath);
+    }
+
+    @Override
+    protected String[] generatedFileNames() {
+        return new String[] {
+                BahnConstants.REQUEST_ROUTE_FUNC_NAME + ".h",
+                BahnConstants.REQUEST_ROUTE_FUNC_NAME + ".c",
+                BahnConstants.DRIVE_ROUTE_FUNC_NAME + ".h",
+                BahnConstants.DRIVE_ROUTE_FUNC_NAME + ".c",
+        };
     }
 }

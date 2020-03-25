@@ -1,16 +1,19 @@
 package de.uniba.swt.dsl.generator.externals;
 
 import org.apache.log4j.Logger;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
-public abstract class AbstractExternalGenerator {
+public abstract class ExternalGenerator {
 
-    private static Logger logger = Logger.getLogger(AbstractExternalGenerator.class);
+    private static Logger logger = Logger.getLogger(ExternalGenerator.class);
 
     protected abstract String[] supportedTools();
 
@@ -64,5 +67,32 @@ public abstract class AbstractExternalGenerator {
         return -1;
     }
 
-    public abstract boolean generate(String outputPath);
+    public boolean generate(String outputPath) {
+        cleanUp(outputPath);
+        return execute(outputPath);
+    }
+
+    protected abstract boolean execute(String outputPath);
+
+    /**
+     * Remove previous generated file
+     */
+    protected void cleanUp(String outputPath) {
+        var names = generatedFileNames();
+        if (names != null) {
+            for (String name : names) {
+                try {
+                    Files.deleteIfExists(Paths.get(outputPath, name));
+                } catch (IOException e) {
+                    logger.debug("Failed to delete file: " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * Generated file names used for cleaning up
+     * @return file names
+     */
+    protected abstract String[] generatedFileNames();
 }

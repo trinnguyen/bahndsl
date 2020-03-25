@@ -1,24 +1,22 @@
 package de.uniba.swt.dsl.common.layout;
 
-import de.uniba.swt.dsl.bahn.LayoutProperty;
-import de.uniba.swt.dsl.bahn.RootModule;
-import de.uniba.swt.dsl.bahn.SignalElement;
-import de.uniba.swt.dsl.bahn.SignalsProperty;
+import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.generator.GeneratorProvider;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
+import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.LogHelper;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class LayoutGenerator implements GeneratorProvider {
-	
+public class LayoutGenerator extends GeneratorProvider {
+
+	private static final String InterlockingFileName = "interlocking_table.yml";
+
 	private final static Logger logger = Logger.getLogger(LayoutGenerator.class);
 
 	private NetworkLayoutBuilder networkLayoutBuilder = new NetworkLayoutBuilder();
@@ -27,7 +25,17 @@ public class LayoutGenerator implements GeneratorProvider {
 	private InterlockingYamlExporter yamlExporter = new InterlockingYamlExporter();
 	private NetworkLayout networkLayout;
 
-	public void run(IFileSystemAccess2 fsa, RootModule rootModule) {
+	@Override
+	protected String[] generatedFileNames() {
+		return new String[] { InterlockingFileName };
+	}
+
+	@Override
+	protected void execute(IFileSystemAccess2 fsa, BahnModel bahnModel) {
+		var rootModule = BahnUtil.getRootModule(bahnModel);
+		if (rootModule == null)
+			return;
+
 		var layoutProp = rootModule.getProperties().stream().filter(p -> p instanceof LayoutProperty).map(p -> (LayoutProperty)p).findFirst();
 		layoutProp.ifPresent(moduleProperty -> buildLayout(fsa, rootModule, moduleProperty));
 	}
@@ -60,7 +68,7 @@ public class LayoutGenerator implements GeneratorProvider {
 			logger.debug(LogHelper.printObject(routes));
 
 			// generate yaml
-			fsa.generateFile("interlocking_table.yml", yamlExporter.generate(routes));
+			fsa.generateFile(InterlockingFileName, yamlExporter.generate(routes));
 
 		} catch (LayoutException e) {
 			throw new RuntimeException(e);

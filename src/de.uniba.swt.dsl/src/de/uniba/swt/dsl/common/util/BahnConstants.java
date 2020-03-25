@@ -37,17 +37,19 @@ public class BahnConstants {
 
     public static final Set<String> CROSSING_PROPS;
 
+    public static final String REQUEST_ROUTE_SCTX = "request_route_sccharts.sctx";
+
+    public static final String DRIVE_ROUTE_SCTX = "drive_route_sccharts.sctx";
+
+    public static final String REQUEST_ROUTE_FUNC_NAME = "request_route";
+
+    public static final String DRIVE_ROUTE_FUNC_NAME = "drive_route";
+
+    public static final String SET_CONFIG_TRAIN_NAME = "train";
+
     public static final String SET_CONFIG_ROUTE_TYPE = "route";
 
-    public static final String GEN_SCCHARTS_FILE_NAME = "interlocking_sccharts.sctx";
-
-    public static final String GEN_REQUEST_ROUTE_DYNAMIC_NAME = "request_route";
-
-    /**
-     * TODO temporary use train_id, should use train
-     */
-    public static final String SET_CONFIG_TRAIN_NAME = "train_id";
-    public static int DefaultArraySize = 1024;
+    public static final int DEFAULT_ARRAY_SIZE = 1024;
 
     static {
         BLOCK_PROPS = Set.of("up", "down");
