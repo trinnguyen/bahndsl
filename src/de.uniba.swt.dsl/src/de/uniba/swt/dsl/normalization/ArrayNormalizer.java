@@ -2,6 +2,7 @@ package de.uniba.swt.dsl.normalization;
 
 import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 
 import java.util.Collection;
@@ -49,9 +50,15 @@ public class ArrayNormalizer extends AbstractNormalizer {
                 // insert
                 arrayLookupTable.insert(varDeclStmt.getDecl());
 
+                // set default assignment
+                VariableAssignment assignment = BahnFactory.eINSTANCE.createVariableAssignment();
+                assignment.setExpr(BahnUtil.createNumLiteral(BahnConstants.DEFAULT_ARRAY_SIZE));
+
                 // add new stmt
                 var lenDeclStmt = BahnFactory.eINSTANCE.createVarDeclStmt();
                 lenDeclStmt.setDecl(arrayLookupTable.lookupLengthDecl(name));
+                lenDeclStmt.setAssignment(assignment);
+
                 return List.of(lenDeclStmt);
             }
         }

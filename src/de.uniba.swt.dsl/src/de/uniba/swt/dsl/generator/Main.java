@@ -3,47 +3,24 @@
  */
 package de.uniba.swt.dsl.generator;
 
-import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Provider;
 import de.uniba.swt.dsl.BahnStandaloneSetup;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.generator.cli.ArgOption;
 import de.uniba.swt.dsl.generator.cli.ArgOptionContainer;
 import de.uniba.swt.dsl.generator.cli.ArgParseResult;
-import de.uniba.swt.dsl.generator.externals.LibraryExternalGenerator;
-import de.uniba.swt.dsl.generator.externals.LowLevelCodeExternalGenerator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.xtext.diagnostics.Severity;
-import org.eclipse.xtext.generator.GeneratorContext;
-import org.eclipse.xtext.generator.GeneratorDelegate;
-import org.eclipse.xtext.generator.JavaIoFileSystemAccess;
-import org.eclipse.xtext.util.CancelIndicator;
-import org.eclipse.xtext.validation.CheckMode;
-import org.eclipse.xtext.validation.IResourceValidator;
-import org.eclipse.xtext.validation.Issue;
 
 public class Main {
 
-	private static Logger logger = Logger.getLogger(Main.class);
-
 	public static void main(String[] args) {
 		// define
-		var modeDesc = String.format("code generation mode (%s, %s, %s)", MODE_DEFAULT, MODE_C_CODE, MODE_LIBRARY);
+		var modeDesc = String.format("code generation mode (%s, %s, %s)", StandaloneApp.MODE_DEFAULT, StandaloneApp.MODE_C_CODE, StandaloneApp.MODE_LIBRARY);
 		var container = new ArgOptionContainer(List.of(
 				new ArgOption("o", "output folder", true, "path"),
 				new ArgOption("m", modeDesc, true, "mode"),
@@ -78,14 +55,14 @@ public class Main {
 
 		// prepare for code generation
 		String outputPath = result.getValue("o", null);
-		String mode = result.getValue("m", MODE_DEFAULT);
+		String mode = result.getValue("m", StandaloneApp.MODE_DEFAULT);
 
-		// get remain arg
+		// process
 		var inputFile = filterArgs(args, result.getConsumedIndices());
 		Injector injector = new BahnStandaloneSetup().createInjectorAndDoEMFRegistration();
-		Main main = injector.getInstance(Main.class);
+		StandaloneApp app = injector.getInstance(StandaloneApp.class);
 
-		boolean success = main.runGenerator(inputFile, outputPath, mode);
+		boolean success = app.runGenerator(inputFile, outputPath, mode);
 		if (!success) {
 			System.exit(1);
 		}
@@ -104,12 +81,6 @@ public class Main {
 		return null;
 	}
 
-	private static final String MODE_DEFAULT = "default";
-
-	private static final String MODE_C_CODE = "c-code";
-
-	private static final String MODE_LIBRARY = "library";
-
 	private static void showHelp(ArgOptionContainer container, boolean showAll) {
 		if (showAll) {
 			System.out.println("OVERVIEW: Bahn compiler\n");
@@ -119,98 +90,5 @@ public class Main {
 				"  bahnc example.bahn\n" +
 				"  bahnc -m library -v example.bahn\n" +
 				"  bahnc -o output/src-gen example.bahn\n");
-	}
-
-	@Inject
-	private Provider<ResourceSet> resourceSetProvider;
-
-	@Inject
-	private IResourceValidator validator;
-
-	@Inject
-	private GeneratorDelegate generator;
-
-	@Inject
-	private JavaIoFileSystemAccess fileAccess;
-
-	@Inject
-	private LowLevelCodeExternalGenerator lowLevelCodeExternalGenerator;
-
-	@Inject
-	private LibraryExternalGenerator libraryGenerator;
-
-	protected boolean runGenerator(String filePath, String outputPath, String mode) {
-		// validate
-		if (filePath == null) {
-			System.err.println("No input file");
-			return false;
-		}
-
-		File file = new File(filePath);
-		if (!file.exists()) {
-			System.err.println("Input file is not exist: " + file.toString());
-			return false;
-		}
-
-		// load output
-		if (outputPath == null || outputPath.isEmpty())
-			outputPath = Paths.get(file.getAbsoluteFile().getParent(), "src-gen").toAbsolutePath().toString();
-
-		// Load the resource
-		ResourceSet set = resourceSetProvider.get();
-		if (!StandardLibHelper.loadStandardLibResource(set))
-			return false;
-
-		Resource resource = set.getResource(URI.createFileURI(filePath), true);
-
-		// Validate the resource
-		List<Issue> list = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
-		if (!list.isEmpty()) {
-			boolean anyError = false;
-			for (Issue issue : list) {
-				if (issue.getSeverity() == Severity.ERROR) {
-					System.err.println(issue);
-					anyError = true;
-				} else {
-					System.out.println(issue);
-				}
-
-			}
-
-			// stop
-			if (anyError) {
-				return false;
-			}
-		}
-
-		logger.info(String.format("Code generation mode: %s", mode));
-
-		// Configure and start the generator
-		logger.info("Start generating network layout and SCCharts models");
-		fileAccess.setOutputPath(outputPath);
-		GeneratorContext context = new GeneratorContext();
-		context.setCancelIndicator(CancelIndicator.NullImpl);
-		generator.generate(resource, fileAccess, context);
-
-		// post process
-		boolean genLibrary = MODE_LIBRARY.equalsIgnoreCase(mode);
-		boolean genLowLevelCode = genLibrary || MODE_C_CODE.equalsIgnoreCase(mode);
-
-		if (genLowLevelCode) {
-			logger.info("Start generating low-level code");
-			if (!lowLevelCodeExternalGenerator.generate(outputPath))
-				return false;
-		}
-
-		if (genLibrary) {
-			var res = List.of(Tuple.of("tick_wrapper.code", "tick_wrapper.c"), Tuple.of("bahn_data_util.code", "bahn_data_util.h"));
-			libraryGenerator.setResources(res);
-			logger.info("Start generating dynamic library");
-			if (!libraryGenerator.generate(outputPath))
-				return false;
-		}
-
-		System.out.println(String.format("Code generation finished: %s", outputPath));
-		return true;
 	}
 }

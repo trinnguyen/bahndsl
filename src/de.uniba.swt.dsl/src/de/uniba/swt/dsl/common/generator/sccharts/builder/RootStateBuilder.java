@@ -11,7 +11,7 @@ import java.util.Stack;
 
 public class RootStateBuilder extends SuperStateBuilder {
     public RootStateBuilder(Map<FuncDecl, RootState> mapFuncState, Stack<SuperState> superStates, FuncDecl funcDecl) {
-        super(mapFuncState, superStates, new StateTable(), new RootState(funcDecl.getName()), funcDecl.getStmtList());
+        super(mapFuncState, superStates, new StateTable("S_" + funcDecl.getName()), new RootState(funcDecl.getName()), funcDecl.getStmtList());
 
         // input
         if (funcDecl.getParamDecls() != null) {

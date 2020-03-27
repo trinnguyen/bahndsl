@@ -5,12 +5,13 @@ public class Transition extends Action {
     private boolean immediate;
     private String targetStateId;
 
-    public Transition() {
+    public Transition(String targetStateId) {
+        this(targetStateId, true);
     }
 
-    public Transition(String targetStateId) {
+    public Transition(String targetStateId, boolean immediate) {
         this.targetStateId = targetStateId;
-        this.setImmediate(true);
+        this.immediate = immediate;
     }
 
     public boolean isDeferred() {

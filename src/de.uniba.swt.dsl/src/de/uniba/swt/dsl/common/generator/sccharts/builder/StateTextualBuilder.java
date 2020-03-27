@@ -191,8 +191,20 @@ public class StateTextualBuilder extends TextualBuilder {
     private String generateEffect(Effect effect) {
         var strBuilder = new StringBuilder();
         if (effect instanceof AssignmentEffect) {
-            var declName = ((AssignmentEffect) effect).getVarDeclaration().getName();
-            strBuilder.append(paramBindingTable.lookupBindingName(declName)).append(" = ");
+            var assignmentEffect = (AssignmentEffect) effect;
+            var declName = assignmentEffect.getVarDeclaration().getName();
+            var name = paramBindingTable.lookupBindingName(declName);
+
+            strBuilder.append(name);
+
+            // array index
+            if (assignmentEffect.getIndexExpr() != null) {
+                strBuilder.append("[");
+                strBuilder.append(generateExpression(assignmentEffect.getIndexExpr()));
+                strBuilder.append("]");
+            }
+
+            strBuilder.append(" = ");
         }
         strBuilder.append(generateExpression(effect.getExpression()));
         return strBuilder.toString();

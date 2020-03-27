@@ -248,7 +248,12 @@ public class SuperStateBuilder {
         if (stmt instanceof AssignmentStmt) {
             AssignmentEffect effect = new AssignmentEffect();
             effect.setExpression(((AssignmentStmt) stmt).getAssignment().getExpr());
-            effect.setVarDeclaration(findVarDecl(((AssignmentStmt) stmt).getReferenceExpr().getDecl().getName()));
+
+            var ref = ((AssignmentStmt) stmt).getReferenceExpr();
+            effect.setVarDeclaration(findVarDecl(ref.getDecl().getName()));
+            if (ref.getIndexExpr() != null) {
+                effect.setIndexExpr(ref.getIndexExpr());
+            }
             return effect;
         }
 

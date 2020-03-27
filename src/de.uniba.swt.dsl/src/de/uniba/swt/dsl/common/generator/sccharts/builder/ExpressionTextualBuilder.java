@@ -126,16 +126,10 @@ public class ExpressionTextualBuilder extends TextualBuilder {
             return;
         }
 
-        if (expr instanceof HexLiteral) {
-            //TODO hex
-        }
-
         if (expr instanceof StringLiteral) {
             String value = ((StringLiteral) expr).getValue();
             append("\"" + value + "\"");
         }
-
-        //TODO NULL and PostAspect
     }
 
     private void generateOp(OperatorType op) {

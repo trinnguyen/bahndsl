@@ -1,6 +1,7 @@
 package de.uniba.swt.dsl.generator.externals;
 
 import de.uniba.swt.dsl.common.util.BahnConstants;
+import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.generator.StandardLibHelper;
 import org.apache.log4j.Logger;
@@ -15,15 +16,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LibraryExternalGenerator extends ExternalGenerator {
-    private static Logger logger = Logger.getLogger(LibraryExternalGenerator.class);
-    private List<Tuple<String, String>> resources;
 
-    /**
-     * add built-in resources
-     * @param resources resources
-     */
-    public void setResources(List<Tuple<String, String>> resources) {
-        this.resources = resources;
+    private static final String ThreadStatusName = "ThreadStatus";
+
+    private static final String WrapperThreadStatusName = "wrapper_thread_status";
+
+    private static Logger logger = Logger.getLogger(LibraryExternalGenerator.class);
+
+    private List<Tuple<String, String>> resources;
+    private String sourceFileName;
+
+    public LibraryExternalGenerator() {
+        resources = List.of(
+                Tuple.of("tick_wrapper_header.code", "tick_wrapper.h"),
+                Tuple.of("tick_wrapper.code", "tick_wrapper.c"),
+                Tuple.of("bahn_data_util.code", "bahn_data_util.h"));
+    }
+
+    public void setSourceFileName(String sourceFileName) {
+        this.sourceFileName = sourceFileName;
     }
 
     @Override
@@ -33,12 +44,19 @@ public class LibraryExternalGenerator extends ExternalGenerator {
 
     @Override
     protected boolean execute(String outputPath) {
+        var genModels = new String[]{BahnConstants.REQUEST_ROUTE_FUNC_NAME, BahnConstants.DRIVE_ROUTE_FUNC_NAME};
+
+        // process header
+        preprocessHeaders(outputPath, genModels);
+
         // list all c files in the folder
         List<String> fileNames = new ArrayList<>();
-        fileNames.add(BahnConstants.REQUEST_ROUTE_FUNC_NAME + ".c");
+        for (String genModel : genModels) {
+            fileNames.add(genModel + ".c");
+        }
 
         // generate temporary files
-        Path tmpDir = Path.of(outputPath); //getTempDir();
+        Path tmpDir = getTempDir();
         if (tmpDir == null) {
             logger.warn("Failed to prepare resource for generating dynamic library");
             return false;
@@ -65,8 +83,16 @@ public class LibraryExternalGenerator extends ExternalGenerator {
         var res = executeArgs(args.toArray(new String[0]), outputPath);
 
         // clean
-        //cleanTemp(tmpDir, tmpFiles);
+         cleanTemp(tmpDir, tmpFiles);
         return res;
+    }
+
+    private void preprocessHeaders(String outputPath, String[] genModels) {
+        for (String genModel : genModels) {
+            logger.debug(String.format("Process tick header for: %s", genModel));
+            var oldPrefix = BahnUtil.generateLogicNaming(genModel);
+            HeaderFileUtil.updateThreadStatus(outputPath, genModel + ".h", oldPrefix, ThreadStatusName, WrapperThreadStatusName);
+        }
     }
 
     private static Path getTempDir() {
@@ -83,7 +109,44 @@ public class LibraryExternalGenerator extends ExternalGenerator {
         return new String[] { getOutputFileName() };
     }
 
-    private void cleanTemp(Path tmpDir, List<String> tmpFiles) {
+    private List<String> generateTempResources(String tmpDir) {
+        try {
+            List<String> result = new ArrayList<>();
+            for (Tuple<String, String> resource : resources) {
+                try (var stream = StandardLibHelper.class.getClassLoader().getResourceAsStream(resource.getFirst())) {
+                    if (stream != null) {
+                        var target = Paths.get(tmpDir, resource.getSecond());
+                        var res = Files.copy(stream, target, StandardCopyOption.REPLACE_EXISTING);
+                        if (res > 0) {
+                            result.add(target.toString());
+                        }
+                    }
+                }
+            }
+            return result;
+        } catch (IOException e) {
+            logger.warn("Failed to generate temporary resources", e);
+        }
+
+        return null;
+    }
+
+    private String getOutputFileName() {
+        return String.format("libinterlocking_%s.%s", sourceFileName, getOsLibExt());
+    }
+
+    private static String getOsLibExt() {
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("mac"))
+            return "dylib";
+
+        if (os.contains("win"))
+            return "dll";
+
+        return "so";
+    }
+
+    private static void cleanTemp(Path tmpDir, List<String> tmpFiles) {
         if (tmpFiles != null) {
             try {
                 for (String tmpFile : tmpFiles) {
@@ -98,44 +161,5 @@ public class LibraryExternalGenerator extends ExternalGenerator {
                 logger.debug("Error deleting temp file: " + e.getMessage());
             }
         }
-    }
-
-    private List<String> generateTempResources(String tmpDir) {
-        if (resources != null) {
-            try {
-                List<String> result = new ArrayList<>();
-                for (Tuple<String, String> resource : resources) {
-                    try (var stream = StandardLibHelper.class.getClassLoader().getResourceAsStream(resource.getFirst())) {
-                        if (stream != null) {
-                            var target = Paths.get(tmpDir, resource.getSecond());
-                            var res = Files.copy(stream, target, StandardCopyOption.REPLACE_EXISTING);
-                            if (res > 0) {
-                                result.add(target.toString());
-                            }
-                        }
-                    }
-                }
-                return result;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return null;
-    }
-
-    private static String getOutputFileName() {
-        return "libinterlocking_bahndslfilename." + getOsLibExt();
-    }
-
-    private static String getOsLibExt() {
-        String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("mac"))
-            return "dylib";
-
-        if (os.contains("win"))
-            return "dll";
-
-        return "so";
     }
 }

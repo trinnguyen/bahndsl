@@ -18,7 +18,7 @@ public class DeclValidator {
             // ensure having return statement
             var expectedType = new ExprDataType(decl.getReturnType(), decl.isReturnArray());
             if (!ensureReturnStmt(decl.getStmtList(), expectedType)) {
-                throw new ValidationException("Missing return statement", BahnPackage.Literals.FUNC_DECL__RETURN);
+                throw new ValidationException("Missing return statement", BahnPackage.Literals.FUNC_DECL__RETURN_TYPE);
             }
         } else {
             // ensure having no return statement

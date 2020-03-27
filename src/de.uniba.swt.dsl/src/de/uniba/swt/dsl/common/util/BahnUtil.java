@@ -1,18 +1,18 @@
 package de.uniba.swt.dsl.common.util;
 
-import de.uniba.swt.dsl.bahn.BahnModel;
-import de.uniba.swt.dsl.bahn.Component;
-import de.uniba.swt.dsl.bahn.FuncDecl;
-import de.uniba.swt.dsl.bahn.RootModule;
+import de.uniba.swt.dsl.bahn.*;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.EcoreUtil2;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class BahnUtil {
     public static void replaceEObject(EObject oldObj, EObject newObj) {
@@ -62,5 +62,35 @@ public class BahnUtil {
         }
 
         return decls;
+    }
+
+    public static Expression createNumLiteral(int var) {
+        var liter = BahnFactory.eINSTANCE.createNumberLiteral();
+        liter.setValue(var);
+        return liter;
+    }
+
+    public static String getNameWithoutExtension(String fileName) {
+        if (fileName == null)
+            return null;
+
+        int dotIndex = fileName.lastIndexOf('.');
+        return (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
+    }
+
+    private static final String CodeNamingPrefix = "intern_";
+
+    public static String generateCodeNaming(String id) {
+        var prefix = CodeNamingPrefix + id.toLowerCase();
+        var names = new String[]{
+                prefix + "_tick",
+                prefix + "_reset",
+                generateLogicNaming(id),
+                prefix + "_tick_data"};
+        return  "#code.naming \"" + String.join("\",\"", names) + "\"";
+    }
+
+    public static String generateLogicNaming(String id) {
+        return CodeNamingPrefix + id.toLowerCase() + "_logic";
     }
 }

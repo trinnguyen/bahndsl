@@ -1,14 +1,6 @@
+#include "tick_wrapper.h"
 #include "request_route.h"
 #include "drive_route.h"
-
-typedef struct {
-    char* src_signal_id;                                                    // Input
-    char* dst_signal_id;                                                    // Input
-    char* train_id;                                                         // Input
-    char* out;                                                              // Output
-
-    int is_terminated;
-} request_route_tick_data;
 
 intern_request_route_tick_data intern_request = {};
 
@@ -20,32 +12,25 @@ void request_route_sync_input(request_route_tick_data *tick_data) {
 
 void request_route_sync_output(request_route_tick_data *tick_data) {
     tick_data->out = intern_request.intern_request_route_logiciface.out;
-    tick_data->is_terminated = intern_request.threadStatus == TERMINATED ? 1: 0;
+    tick_data->terminated = intern_request.threadStatus == TERMINATED ? 1 : 0;
 }
 
 void request_route_reset(request_route_tick_data *tick_data) {
 
     // clear the variables
-    intern_request.intern_request_route_logiciface = (intern_request_route_logicIface){};
+    intern_request.intern_request_route_logiciface = (intern_request_route_logicIface) {};
 
     // sync
-    request_route_sync_input(tick_data);
-    intern_request_route_tick(&intern_request);
-    request_route_sync_output(tick_data);
-}
-
-void request_route_tick(request_route_tick_data *tick_data) {
     request_route_sync_input(tick_data);
     intern_request_route_reset(&intern_request);
     request_route_sync_output(tick_data);
 }
 
-typedef struct {
-    char* route_id;                                                    // Input
-    char* train_id;                                                    // Input
-
-    int is_terminated;
-} drive_route_tick_data;
+void request_route_tick(request_route_tick_data *tick_data) {
+    request_route_sync_input(tick_data);
+    intern_request_route_tick(&intern_request);
+    request_route_sync_output(tick_data);
+}
 
 intern_drive_route_tick_data intern_drive = {};
 
@@ -55,7 +40,7 @@ void drive_route_sync_input(drive_route_tick_data *tick_data) {
 }
 
 void drive_route_sync_output(drive_route_tick_data *tick_data) {
-    tick_data->is_terminated = intern_drive.threadStatus == TERMINATED ? 1: 0;
+    tick_data->terminated = intern_drive.threadStatus == TERMINATED ? 1 : 0;
 }
 
 void drive_route_reset(drive_route_tick_data *tick_data) {
@@ -65,12 +50,12 @@ void drive_route_reset(drive_route_tick_data *tick_data) {
 
     // sync
     drive_route_sync_input(tick_data);
-    intern_drive_route_tick(&intern_drive);
+    intern_drive_route_reset(&intern_drive);
     drive_route_sync_output(tick_data);
 }
 
 void drive_route_tick(drive_route_tick_data *tick_data) {
     drive_route_sync_input(tick_data);
-    intern_drive_route_reset(&intern_drive);
+    intern_drive_route_tick(&intern_drive);
     drive_route_sync_output(tick_data);
 }

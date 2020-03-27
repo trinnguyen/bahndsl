@@ -3,7 +3,6 @@ package de.uniba.swt.dsl.common.util;
 import java.util.Set;
 
 public class BahnConstants {
-    public static final String ENTRY_FUNC_NAME = "request_route";
 
     public static final String STANDARD_SWITCH_STRAIGHT = "straight";
 

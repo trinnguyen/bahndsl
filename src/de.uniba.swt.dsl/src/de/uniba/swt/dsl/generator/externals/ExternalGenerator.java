@@ -39,7 +39,7 @@ public abstract class ExternalGenerator {
             if (args != null)
                 System.arraycopy(args, 0, cmd, 1, args.length);
 
-            logger.info(String.format("Execute: %s; folder: %s", String.join(" ", cmd), workingDir));
+            logger.info(String.format("Execute: %s", String.join(" ", cmd)));
 
             // execute
             var dir = workingDir != null ? new File(workingDir) : null;
