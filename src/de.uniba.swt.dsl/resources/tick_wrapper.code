@@ -11,7 +11,7 @@ void request_route_sync_input(request_route_tick_data *tick_data) {
 }
 
 void request_route_sync_output(request_route_tick_data *tick_data) {
-    tick_data->out = intern_request.intern_request_route_logiciface.out;
+    tick_data->out = intern_request.intern_request_route_logiciface._out;
     tick_data->terminated = intern_request.threadStatus == TERMINATED ? 1 : 0;
 }
 

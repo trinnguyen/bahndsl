@@ -78,4 +78,9 @@ public class State {
                 ", label='" + label + '\'' +
                 '}';
     }
+
+    public void addTransition(String id, boolean immediate) {
+        var transition = new Transition(id, immediate);
+        getOutgoingTransitions().add(transition);
+    }
 }

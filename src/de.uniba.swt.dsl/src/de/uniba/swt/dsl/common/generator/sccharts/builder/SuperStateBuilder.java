@@ -44,10 +44,21 @@ public class SuperStateBuilder {
         // initial
         initializeDeclarationInterface(superState, statementList);
 
-        // add child
-        if (statementList != null) {
+        // add regular states from the child list
+        if (statementList != null && statementList.getStmts() != null && !statementList.getStmts().isEmpty()) {
             addChildStates(statementList);
+        } else {
+            // add 2 states, one for initial and the other for final, must be deferred transition for being compatible
+            // with statebased compilation trategy
+            var initialState = new State(stateTable.nextStateId());
+            var finalState = new State(stateTable.nextStateId());
+            initialState.addTransition(finalState.getId(), false);
+            superState.getStates().add(initialState);
+            superState.getStates().add(finalState);
         }
+
+        // mark first and last
+        updateInitialAndFinalState(superState);
 
         // pop stack
         stackSuperStates.pop();
@@ -85,9 +96,6 @@ public class SuperStateBuilder {
         if (StringUtil.isNotEmpty(nextStateId)) {
             superState.getStates().add(new State(nextStateId));
         }
-
-        // mark first and last
-        updateInitialAndFinalState(superState);
     }
 
     private void updateInitialAndFinalState(SuperState state) {
