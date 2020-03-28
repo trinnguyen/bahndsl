@@ -5,7 +5,7 @@ import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 generate bahn "http://www.uniba.de/swt/dsl/Bahn"
 
 BahnModel:
-	(schema=Schema)? (configKeys=ConfigKeys)? (components+=Component)*
+	(schema=Schema)? (configKeys=ConfigKeys)? (signalTypes=SignalTypes)? (components+=Component)*
 ;
 
 Component:
@@ -40,10 +40,18 @@ ConfigKeys:
 ConfigKey:
 	name=ID
 ;
+
+SignalTypes:
+	'signaltypes' (types+=SignalType)+ 'end'
+;
+
+SignalType:
+	{SignalType}
+	name=ID 'aspects' (items+=AspectElement)+ 'end' 'initial' initial=[AspectElement] 
+;
 	
 ModuleProperty:
-	AspectsProperty 
-	| BoardsProperty 
+	BoardsProperty 
 	| SegmentsProperty 
 	| SignalsProperty 
 	| PointsProperty 
@@ -55,10 +63,6 @@ ModuleProperty:
 	| PlatformsProperty
 	;
 
-AspectsProperty :
-	{AspectsProperty} 'aspects'
-		(items+=AspectElement)*
-	'end';
 BoardsProperty :
 	{BoardsProperty} 'boards'
 		(items+=BoardElement)*
@@ -101,10 +105,6 @@ LayoutProperty :
 		(items+=LayoutElement)*
 	'end';
 
-enum TimeSpanType:
-	SECONDS = 'seconds' | MINUTES = 'minutes' | HOURS = 'hours'
-;
-
 enum TrackState:
 	CLEAR = 'clear' | CAUTION = 'caution' | STOP = 'stop' | NORMAL = 'normal' | REVERSE = 'reverse'
 ;
@@ -130,19 +130,7 @@ SegmentElement :
 ;
 
 SignalElement :
-	name=ID number=HEX 'aspects' aspects=SignalAspectsElement 'end' 'initial' initial=[AspectElement] 
-;
-
-SignalAspectsElement:
-	ReferenceSignalAspectsElement | OverrideSignalAspectsElement
-;
-
-ReferenceSignalAspectsElement:
-	(aspects+=[AspectElement])+
-;
-
-OverrideSignalAspectsElement:
-	(aspects+=AspectElement)+
+	type=[SignalType] name=ID number=HEX 
 ;
 
 PointElement:

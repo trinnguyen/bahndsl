@@ -16,21 +16,10 @@ class SignalElementYamlExporter extends AbstractElementYamlExporter<SignalElemen
 
     @Override
     protected List<Tuple<String, Object>> getProps(SignalElement element) {
-        EList<AspectElement> aspects = getAspectsSet(element.getAspects());
+        var signalType = element.getType();
         return List.of(Tuple.of("number", element.getNumber()),
-                Tuple.of("aspects", aspects),
-                Tuple.of("initial", element.getInitial().getName()));
-    }
-
-    private EList<AspectElement> getAspectsSet(SignalAspectsElement aspects) {
-        if (aspects instanceof OverrideSignalAspectsElement) {
-            return ((OverrideSignalAspectsElement) aspects).getAspects();
-        }
-
-        if (aspects instanceof ReferenceSignalAspectsElement) {
-            return ((ReferenceSignalAspectsElement) aspects).getAspects();
-        }
-
-        return null;
+                Tuple.of("aspects", element.getType().getItems()),
+                Tuple.of("initial", element.getType().getInitial().getName()),
+                Tuple.of("type", element.getType().getName()));
     }
 }

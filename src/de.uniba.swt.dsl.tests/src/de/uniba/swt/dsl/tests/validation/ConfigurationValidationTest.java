@@ -4,14 +4,12 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import de.uniba.swt.dsl.bahn.BahnModel;
 import de.uniba.swt.dsl.bahn.BahnPackage;
-import de.uniba.swt.dsl.generator.StandardLibHelper;
 import de.uniba.swt.dsl.tests.BahnInjectorProvider;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.testing.InjectWith;
 import org.eclipse.xtext.testing.extensions.InjectionExtension;
 import org.eclipse.xtext.testing.util.ParseHelper;
 import org.eclipse.xtext.testing.validation.ValidationTestHelper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,9 +31,6 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "module test\n" +
-            "    aspects\n" +
-            "        red 0x00\n" +
-            "    end\n" +
             "    boards\n" +
             "        master 0x00\n" +
             "    end\n" +
@@ -43,7 +38,7 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
             "        seg1 0x00 length 11cm\n" +
             "    end\n" +
             "    signals master\n" +
-            "        sig1 0x00 aspects red end initial red\n" +
+            "        entry sig1 0x00\n" +
             "    end\n" +
             "    blocks\n" +
             "        b1 main seg1\n" +
@@ -190,10 +185,9 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
                 "       seg2 0x02 length 11cm\n" +
                 "       seg3 0x03 length 11cm\n" +
                 "    end" +
-                "    aspects red 0x01 end\n" +
-                "        signals master\n" +
-                "            sig1 0x01 aspects red end initial red\n" +
-                "        end\n" +
+                "    signals master\n" +
+                "       entry sig1 0x00\n" +
+                "    end" +
                 "    blocks\n" +
                 "        b1 main seg1\n" +
                 "        b2 main seg2\n" +
@@ -228,9 +222,8 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
         var src = "module test\n" +
                 "    boards master 0x01 end\n" +
                 "    segments master seg1 0x01 length 11cm end\n" +
-                "    aspects red 0x01 end\n" +
                 "    signals master\n" +
-                "        sig1 0x01 aspects red end initial red\n" +
+                "        exit sig1 0x01\n" +
                 "    end\n" +
                 "    points master\n" +
                 "        p1 0x00 segment seg1 normal 0x00 reverse 0x00 initial normal\n" +
@@ -247,9 +240,8 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
         var src = "module test\n" +
                 "    boards master 0x01 end\n" +
                 "    segments master seg1 0x01 length 11cm end\n" +
-                "    aspects red 0x01 end\n" +
                 "    signals master\n" +
-                "        sig1 0x01 aspects red end initial red\n" +
+                "        entry sig1 0x01\n" +
                 "    end\n" +
                 "    points master\n" +
                 "        p1 0x00 segment seg1 normal 0x00 reverse 0x00 initial normal\n" +

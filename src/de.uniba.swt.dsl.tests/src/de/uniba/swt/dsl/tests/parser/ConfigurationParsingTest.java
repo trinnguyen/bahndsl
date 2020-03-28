@@ -29,8 +29,8 @@ public class ConfigurationParsingTest {
 			"end",
 
 			"module test\n" +
-			"    segments master\n" +
-			"        seg1 0x00 length 34cm\n" +
+			"    signals master\n" +
+			"        entry sig1 0x00\n" +
 			"    end\n" +
 			"end",
 
@@ -76,12 +76,7 @@ public class ConfigurationParsingTest {
 
 			"module test\n" +
 			"     peripherals lightcontrol\n" +
-			"             lanterns 0x13\n" +
-			"                 aspects\n" +
-			"                     on 0x00\n" +
-			"                     off 0x01\n" +
-			"                 end\n" +
-			"                 initial on\n" +
+			"             peripheral lanterns 0x13\n" +
 			"         end\n" +
 			"end"
 			})

@@ -56,11 +56,39 @@ schema
         segment string
     end
 end
+
 config
     length
     weight
     type
     segment
+end
+
+signaltypes
+    entry 
+        aspects 
+            yellow 0x02 
+            green 0x01
+            red 0x00
+        end 
+        initial red
+    exit
+        aspects 
+            green 0x01
+            red 0x00
+        end 
+        initial red
+    peripheral 
+        aspects 
+            on 0x00
+        end
+        initial on
+    platformlight 
+        aspects
+            on 0x00
+            off 0x01
+        end 
+        initial on
 end
 
 def get_shortest_route(string route_ids[]): string

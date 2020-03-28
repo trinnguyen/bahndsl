@@ -26,19 +26,19 @@ public class SwtBahnFuncValidatorTest extends AbstractValidationTest {
     @Inject
     ValidationTestHelper validationTestHelper;
 
-    @Test
+    // @Test
     public void warningMissing2Functions() {
         var src = "def test() end";
         validationTestHelper.assertWarning(internalParse(src), BahnPackage.Literals.BAHN_MODEL, null, "Neither request_route nor drive_route is implemented");
     }
 
-    @Test
+    // @Test
     public void warningMissingDriveRoute() {
         var src = "def request_route(string src_signal_id, string dst_signal_id, string train_id): string return \"\" end";
         validationTestHelper.assertWarning(internalParse(src), BahnPackage.Literals.BAHN_MODEL, null, "drive_route is not implemented");
     }
 
-    @Test
+    // @Test
     public void warningMissingRequestRoute() {
         var src = "def drive_route(string route_id, string train_id) end";
         validationTestHelper.assertWarning(internalParse(src), BahnPackage.Literals.BAHN_MODEL, null, "request_route is not implemented");

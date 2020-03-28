@@ -84,10 +84,6 @@ class TypeComputingHelper {
             return ExprDataType.ScalarFloat;
         }
 
-        if (expr instanceof HexLiteral) {
-            return ExprDataType.ScalarInt;
-        }
-
         if (expr instanceof StringLiteral) {
             return ExprDataType.ScalarString;
         }
