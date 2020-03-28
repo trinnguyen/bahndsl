@@ -61,5 +61,10 @@ public class ElementExporterFactory {
             new CrossingElementYamlExporter().build(exporter, (CrossingElement) obj);
             return;
         }
+
+        if (obj instanceof SignalType) {
+            new SignalTypeYamlExporter().build(exporter, (SignalType) obj);
+            return;
+        }
     }
 }

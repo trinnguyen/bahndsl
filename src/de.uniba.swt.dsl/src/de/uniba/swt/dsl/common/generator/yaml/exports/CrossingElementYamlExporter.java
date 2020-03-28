@@ -1,6 +1,7 @@
 package de.uniba.swt.dsl.common.generator.yaml.exports;
 
 import de.uniba.swt.dsl.bahn.CrossingElement;
+import de.uniba.swt.dsl.bahn.SignalType;
 import de.uniba.swt.dsl.common.util.Tuple;
 
 import java.util.List;

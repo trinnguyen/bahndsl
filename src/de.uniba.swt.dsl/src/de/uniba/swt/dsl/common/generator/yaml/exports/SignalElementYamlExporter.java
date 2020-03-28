@@ -16,7 +16,6 @@ class SignalElementYamlExporter extends AbstractElementYamlExporter<SignalElemen
 
     @Override
     protected List<Tuple<String, Object>> getProps(SignalElement element) {
-        var signalType = element.getType();
         return List.of(Tuple.of("number", element.getNumber()),
                 Tuple.of("aspects", element.getType().getItems()),
                 Tuple.of("initial", element.getType().getInitial().getName()),

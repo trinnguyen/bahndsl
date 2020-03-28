@@ -5,8 +5,10 @@ import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.layout.models.vertex.AbstractVertexMember;
 import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
 import de.uniba.swt.dsl.common.layout.models.vertex.VertexMemberType;
+import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.ExtraBlockElement;
 import de.uniba.swt.dsl.common.util.StringUtil;
+import org.eclipse.emf.ecore.resource.Resource;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,11 +34,27 @@ public class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         List<ExtraBlockElement> blocks = rootModule.getProperties().stream().filter(p -> p instanceof BlocksProperty).map(p -> ((BlocksProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraItem(b, mapSignals)).collect(Collectors.toList());
         List<ExtraBlockElement> platforms = rootModule.getProperties().stream().filter(p -> p instanceof PlatformsProperty).map(p -> ((PlatformsProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraItem(b, mapSignals)).collect(Collectors.toList());
         List<CrossingElement> crossings = rootModule.getProperties().stream().filter(p -> p instanceof CrossingsProperty).map(p -> ((CrossingsProperty) p).getItems()).flatMap(Collection::stream).collect(Collectors.toList());
+        List<SignalType> signaltypes = getSignalTypes(rootModule);
 
         // blocks
         exportSection("blocks:", blocks);
         exportSection("platforms:", platforms);
         exportSection("crossings:", crossings);
+        exportSection("signaltypes:", signaltypes);
+    }
+
+    private List<SignalType> getSignalTypes(RootModule rootModule) {
+        var set = rootModule.eResource().getResourceSet();
+
+        List<SignalType> result = new ArrayList<>();
+        for (Resource resource : set.getResources()) {
+            var bahnModel = BahnUtil.getBahnModel(resource);
+            if (bahnModel != null && bahnModel.getSignalTypes() != null && bahnModel.getSignalTypes().getTypes() != null) {
+                result.addAll(bahnModel.getSignalTypes().getTypes());
+            }
+        }
+
+        return result;
     }
 
     private Map<String, List<String>> getMapSignals() {
