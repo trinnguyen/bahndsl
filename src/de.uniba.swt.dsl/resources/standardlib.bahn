@@ -21,6 +21,7 @@ schema
 
     signal
         id string
+        type string
         # initial string
         # aspects string[]
     end
