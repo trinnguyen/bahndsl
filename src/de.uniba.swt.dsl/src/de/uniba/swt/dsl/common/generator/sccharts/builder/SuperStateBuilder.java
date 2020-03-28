@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Stack;
 
 public class SuperStateBuilder {
-    public final String VAR_OUTPUT_NAME = "out";
+    public final String VAR_OUTPUT_NAME = "_out";
 
     /**
      * temporary allocate param array size to 1024

@@ -30,6 +30,6 @@ public class TemporaryVarGenerator {
 
     private String nextTempVarName() {
         String prefix = "t";
-        return String.format("_%s_%s_%d", functionName, prefix, counter++);
+        return String.format("_%s_%s%d", functionName, prefix, counter++);
     }
 }
