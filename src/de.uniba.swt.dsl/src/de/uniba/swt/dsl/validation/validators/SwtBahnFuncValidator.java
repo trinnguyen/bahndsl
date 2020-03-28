@@ -92,6 +92,7 @@ public class SwtBahnFuncValidator {
         decl.setName(BahnConstants.DRIVE_ROUTE_FUNC_NAME);
         decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, "route_id"));
         decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, "train_id"));
+        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, true, "segment_ids"));
         decl.setReturn(false);
         decl.setReturnArray(false);
         return decl;

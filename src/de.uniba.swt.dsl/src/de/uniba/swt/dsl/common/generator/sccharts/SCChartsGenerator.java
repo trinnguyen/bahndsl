@@ -37,11 +37,6 @@ public class SCChartsGenerator extends GeneratorProvider {
             return;
         }
 
-        if (!result.getSecond()) {
-            logger.debug("Adding empty driving route function");
-            addEmptyDriveRoute(bahnModel);
-        }
-
         var decls = BahnUtil.getDecls(bahnModel.eResource().getResourceSet());
         if (decls == null || decls.size() == 0)
             return;

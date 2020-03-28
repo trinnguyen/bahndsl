@@ -3,10 +3,12 @@
  */
 package de.uniba.swt.dsl.generator;
 
+import de.uniba.swt.dsl.bahn.FuncDecl;
 import de.uniba.swt.dsl.common.generator.sccharts.SCChartsGenerator;
 import de.uniba.swt.dsl.common.generator.yaml.YamlConfigGenerator;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.normalization.BahnNormalizationProvider;
+import de.uniba.swt.dsl.validation.validators.SwtBahnFuncValidator;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.generator.AbstractGenerator;
@@ -38,8 +40,19 @@ public class BahnGenerator extends AbstractGenerator {
 	@Inject
 	LayoutGenerator layoutGenerator;
 
+	@Inject
+	SwtBahnFuncValidator swtBahnFuncValidator;
+
 	@Override
 	public void beforeGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
+		var decls = BahnUtil.getDecls(input);
+		if (decls == null || decls.size() == 0)
+			return;
+
+		// check required function
+		checkInterlockingFunctions(input);
+
+		// normalize
 		normalizationProvider.normalize(BahnUtil.getDecls(input.getResourceSet()));
 	}
 
@@ -58,5 +71,21 @@ public class BahnGenerator extends AbstractGenerator {
 
 		// sccharts
 		scChartsGenerator.generate(fsa, bahnModel);
+	}
+
+	private void checkInterlockingFunctions(Resource resource) {
+		var bahnModel = BahnUtil.getBahnModel(resource);
+
+		var result = swtBahnFuncValidator.hasRequestAndDriveRoute(bahnModel);
+		if (!result.getFirst()) {
+			logger.error("Missing function for requesting route. SCCharts code generation is skipped.");
+			return;
+		}
+
+		if (!result.getSecond()) {
+			logger.warn("Adding empty driving route function");
+			FuncDecl decl = swtBahnFuncValidator.generateDriveRouteFuncDecl();
+			bahnModel.getComponents().add(decl);
+		}
 	}
 }

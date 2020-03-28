@@ -53,37 +53,10 @@ public class BahnValidator extends AbstractBahnValidator {
     @Inject
     StatementValidator statementValidator;
 
-    @Inject
-    SwtBahnFuncValidator swtBahnFuncValidator;
-
     @Override
     public boolean validate(EDataType eDataType, Object value, DiagnosticChain diagnostics, Map<Object, Object> context) {
         typeCheckingTable.clear();
         return super.validate(eDataType, value, diagnostics, context);
-    }
-
-    @Check
-    public void validateBahnModel(BahnModel bahnModel) {
-        logger.debug("validateBahnModel");
-        try {
-            var result = swtBahnFuncValidator.hasRequestAndDriveRoute(bahnModel);
-            var hasRequestRoute = result.getFirst();
-            var hasDriveRoute = result.getSecond();
-
-            String msg = null;
-            if (!hasRequestRoute && !hasDriveRoute) {
-                msg = String.format("Neither %s nor %s is implemented.", BahnConstants.REQUEST_ROUTE_FUNC_NAME, BahnConstants.DRIVE_ROUTE_FUNC_NAME);
-            } else if (!hasRequestRoute) {
-                msg = String.format("%s is not implemented.", BahnConstants.REQUEST_ROUTE_FUNC_NAME);
-            } else if (!hasDriveRoute) {
-                msg = String.format("%s is not implemented", BahnConstants.DRIVE_ROUTE_FUNC_NAME);
-            }
-
-            if (msg != null)
-                throw new ValidationException(msg, BahnPackage.Literals.BAHN_MODEL__COMPONENTS);
-        } catch (ValidationException e) {
-            warning(e.getMessage(), e.getFeature());
-        }
     }
 
     @Check

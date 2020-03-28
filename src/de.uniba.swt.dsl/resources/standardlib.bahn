@@ -64,14 +64,16 @@ config
 end
 
 def get_shortest_route(string route_ids[]): string
-    float min_len = 2147483647
-
-    string result = route_ids[0]
-    for string route_id in route_ids
-        float length = get config route.length route_id
-        if length < min_len
-            min_len = length
-            result = route_id
+    string result = ""
+    if route_ids.len > 0
+        float min_len = 2147483647
+        string result = route_ids[0]
+        for string route_id in route_ids
+            float length = get config route.length route_id
+            if length < min_len
+                min_len = length
+                result = route_id
+            end
         end
     end
 

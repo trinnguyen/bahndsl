@@ -15,6 +15,9 @@ public abstract class AbstractNormalizer {
     }
 
     private void normalizeStmtList(StatementList list) {
+        if (list == null)
+            return;
+
         int index = 0;
         while (index < list.getStmts().size()) {
             Statement stmt = list.getStmts().get(index);

@@ -83,7 +83,7 @@ public class LibraryExternalGenerator extends ExternalGenerator {
         var res = executeArgs(args.toArray(new String[0]), outputPath);
 
         // clean
-         cleanTemp(tmpDir, tmpFiles);
+        cleanTemp(tmpDir, tmpFiles);
         return res;
     }
 

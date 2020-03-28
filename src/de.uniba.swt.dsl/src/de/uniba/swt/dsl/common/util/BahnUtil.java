@@ -50,18 +50,19 @@ public class BahnUtil {
         return set.getResources().stream().map(BahnUtil::getDecls).flatMap(Collection::stream).collect(Collectors.toList());
     }
 
-    private static List<FuncDecl> getDecls(Resource resource) {
-        List<FuncDecl> decls = new ArrayList<>();
+    public static List<FuncDecl> getDecls(Resource resource) {
         var bahnModel = getBahnModel(resource);
         if (bahnModel != null) {
+            List<FuncDecl> decls = new ArrayList<>();
             for (Component component : bahnModel.getComponents()) {
                 if (component instanceof FuncDecl) {
                     decls.add((FuncDecl)component);
                 }
             }
+            return decls;
         }
 
-        return decls;
+        return null;
     }
 
     public static Expression createNumLiteral(int var) {
