@@ -423,10 +423,6 @@ NumberLiteral:
 	{NumberLiteral} value=NUMBER
 ;
 
-HexLiteral:
-	{HexLiteral} value=HEX
-;
-
 StringLiteral:
 	{StringLiteral} value=STRING
 ;
