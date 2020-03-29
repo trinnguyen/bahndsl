@@ -65,9 +65,15 @@ public class BahnUtil {
         return null;
     }
 
-    public static Expression createNumLiteral(int var) {
+    public static BooleanLiteral createBooleanLiteral(boolean val) {
+        var liter = BahnFactory.eINSTANCE.createBooleanLiteral();
+        liter.setBoolValue(val);
+        return liter;
+    }
+
+    public static Expression createNumLiteral(int val) {
         var liter = BahnFactory.eINSTANCE.createNumberLiteral();
-        liter.setValue(var);
+        liter.setValue(val);
         return liter;
     }
 

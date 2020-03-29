@@ -1,5 +1,6 @@
 package de.uniba.swt.dsl.common.generator.sccharts.builder;
 
+import de.uniba.swt.dsl.bahn.DataType;
 import de.uniba.swt.dsl.bahn.FuncDecl;
 import de.uniba.swt.dsl.bahn.RefVarDecl;
 import de.uniba.swt.dsl.common.generator.sccharts.StateTable;
@@ -23,6 +24,7 @@ public class RootStateBuilder extends SuperStateBuilder {
         // output
         if (funcDecl.isReturn()) {
             superState.getDeclarations().add(convertDeclaration(funcDecl.getReturnType(), VAR_OUTPUT_NAME, funcDecl.isReturnArray() ? DEFAULT_PARAM_ARRAY_SIZE : 0, false, true));
+            superState.getDeclarations().add(convertDeclaration(DataType.BOOLEAN_TYPE, VAR_HAS_RETURN_NAME, 0, false, false));
         }
     }
 

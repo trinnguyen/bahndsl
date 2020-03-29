@@ -23,6 +23,10 @@ public class StateTable {
         return idPrefix + (incre++);
     }
 
+    public String finalStateId() {
+        return idPrefix + "FINAL";
+    }
+
     private String nextId(String id) {
         int num = 0;
         if (id != null) {

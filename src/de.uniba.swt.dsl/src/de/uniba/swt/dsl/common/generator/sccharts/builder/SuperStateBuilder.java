@@ -4,6 +4,7 @@ import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.generator.sccharts.StateTable;
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
 import de.uniba.swt.dsl.common.util.BahnConstants;
+import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.StringUtil;
 
 import java.util.List;
@@ -12,6 +13,8 @@ import java.util.Stack;
 
 public class SuperStateBuilder {
     public final String VAR_OUTPUT_NAME = "_out";
+
+    public final String VAR_HAS_RETURN_NAME = "_has_return";
 
     /**
      * temporary allocate param array size to 1024
@@ -51,7 +54,7 @@ public class SuperStateBuilder {
             // add 2 states, one for initial and the other for final, must be deferred transition for being compatible
             // with statebased compilation trategy
             var initialState = new State(stateTable.nextStateId());
-            var finalState = new State(stateTable.nextStateId());
+            var finalState = new State(stateTable.finalStateId());
             initialState.addTransition(finalState.getId(), false);
             superState.getStates().add(initialState);
             superState.getStates().add(finalState);
@@ -69,9 +72,22 @@ public class SuperStateBuilder {
     private void addChildStates(StatementList stmtList) {
 
         String nextStateId = null;
-        for (Statement stmt : stmtList.getStmts()) {
+        String finalStateId = stateTable.finalStateId();
+        for (int i = 0; i < stmtList.getStmts().size(); i++) {
+
+            // process
+            var stmt = stmtList.getStmts().get(i);
+            var isLast = i == stmtList.getStmts().size() - 1;
+            var isReturn = stmt instanceof ReturnStmt;
             var id = StringUtil.isNotEmpty(nextStateId) ? nextStateId : stateTable.nextStateId();
-            nextStateId = stateTable.nextStateId();
+
+            // skip if just moving out of block statment
+            if (i > 0) {
+                addTransitionToFinalIfReturn(stmtList.getStmts().get(i - 1), id, finalStateId);
+            }
+
+            // build regular state
+            nextStateId = (isLast || isReturn) ? finalStateId : stateTable.nextStateId();
 
             // selection
             if (stmt instanceof SelectionStmt) {
@@ -90,12 +106,96 @@ public class SuperStateBuilder {
                     nextStateId = id;
                 }
             }
+
+            // break if return
+            if (isReturn)
+                break;
         }
 
         // add last state
         if (StringUtil.isNotEmpty(nextStateId)) {
             superState.getStates().add(new State(nextStateId));
         }
+    }
+
+    private void addTransitionToFinalIfReturn(Statement stmt, String nextStateId, String finalStateId) {
+        boolean shouldCheck = stmt instanceof IterationStmt || stmt instanceof SelectionStmt;
+        if (!shouldCheck)
+            return;
+
+        if (!hasReturnStmtInBlock(stmt))
+            return;
+
+        var hasReturnVar = findVarDecl(VAR_HAS_RETURN_NAME);
+        if (hasReturnVar == null)
+            return;
+
+        if (superState.getStates().size() > 0) {
+            var lastState = superState.getStates().get(superState.getStates().size() - 1);
+            if (!(lastState instanceof SuperState))
+                return;
+
+            // update last state
+            SuperState superLastState = (SuperState) lastState;
+
+            // generate decl
+            var decl = BahnFactory.eINSTANCE.createVarDecl();
+            decl.setType(DataType.BOOLEAN_TYPE);
+            decl.setArray(false);
+            decl.setName(hasReturnVar.getName());
+
+            // generate condition
+            var expression = BahnFactory.eINSTANCE.createOpExpression();
+            expression.setOp(OperatorType.EQUAL);
+            expression.setLeftExpr(createValuedReferenceExpr(decl));
+            expression.setRightExpr(BahnUtil.createBooleanLiteral(true));
+
+            // generate 1 transition to the final state with the trigger
+            var transition = new Transition(finalStateId);
+            transition.setTrigger(expression);
+
+            // add new state with 2 transitions, one to final and another one to next state
+            State state = new State(stateTable.nextStateId());
+            state.getOutgoingTransitions().add(transition);
+            state.addTransition(superLastState.getJoinTargetId(), true);
+            superState.getStates().add(state);
+
+            // replace
+            superLastState.setJoinTargetId(state.getId());
+        }
+    }
+
+    private boolean hasReturnStmtInBlock(Statement blockStmt) {
+        if (blockStmt instanceof ReturnStmt)
+            return true;
+
+        if (blockStmt instanceof IterationStmt) {
+            var iterationStmt = (IterationStmt) blockStmt;
+            if (iterationStmt.getStmts() != null) {
+                for (Statement stmt : iterationStmt.getStmts().getStmts()) {
+                    if (hasReturnStmtInBlock(stmt))
+                        return true;
+                }
+            }
+        }
+
+        if (blockStmt instanceof SelectionStmt) {
+            var selectionStmt = (SelectionStmt) blockStmt;
+            if (selectionStmt.getThenStmts() != null && selectionStmt.getThenStmts().getStmts() != null) {
+                for (Statement stmt : selectionStmt.getThenStmts().getStmts()) {
+                    if (hasReturnStmtInBlock(stmt))
+                        return true;
+                }
+            }
+            if (selectionStmt.getElseStmts() != null && selectionStmt.getElseStmts().getStmts() != null) {
+                for (Statement stmt : selectionStmt.getElseStmts().getStmts()) {
+                    if (hasReturnStmtInBlock(stmt))
+                        return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private void updateInitialAndFinalState(SuperState state) {
@@ -180,6 +280,11 @@ public class SuperStateBuilder {
         if (effect != null) {
             var transition = new Transition(nextStateId);
             transition.getEffects().add(effect);
+
+            // add has return
+            if (stmt instanceof ReturnStmt) {
+                transition.getEffects().add(generateHasReturnEffect());
+            }
 
             var state = new State(id);
             state.getOutgoingTransitions().add(transition);
@@ -279,6 +384,13 @@ public class SuperStateBuilder {
         }
 
         throw new RuntimeException("Statement is not supported");
+    }
+
+    private Effect generateHasReturnEffect() {
+        AssignmentEffect effect = new AssignmentEffect();
+        effect.setExpression(BahnUtil.createBooleanLiteral(true));
+        effect.setVarDeclaration(findVarDecl(VAR_HAS_RETURN_NAME));
+        return effect;
     }
 
     private SVarDeclaration findVarDecl(String name) {
