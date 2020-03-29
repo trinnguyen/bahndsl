@@ -22,7 +22,7 @@ Workflow {
 					enabled = false
 				}
 				web = {
-					enabled = true
+					enabled = false
 				}
 				createEclipseMetaData = true
 			}
