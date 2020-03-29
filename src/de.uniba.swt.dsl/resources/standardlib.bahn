@@ -93,7 +93,6 @@ signaltypes
 end
 
 def get_shortest_route(string route_ids[]): string
-    string result = ""
     if route_ids.len > 0
         float min_len = 2147483647
         string result = route_ids[0]
@@ -104,7 +103,9 @@ def get_shortest_route(string route_ids[]): string
                 result = route_id
             end
         end
+
+        return result
     end
 
-    return result
+    return ""
 end
