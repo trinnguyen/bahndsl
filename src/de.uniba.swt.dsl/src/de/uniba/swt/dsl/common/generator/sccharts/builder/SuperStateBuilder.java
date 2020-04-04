@@ -52,10 +52,10 @@ public class SuperStateBuilder {
             addChildStates(statementList);
         } else {
             // add 2 states, one for initial and the other for final, must be deferred transition for being compatible
-            // with statebased compilation trategy
+            // with statebased compilation strategy
             var initialState = new State(stateTable.nextStateId());
             var finalState = new State(stateTable.finalStateId());
-            initialState.addTransition(finalState.getId(), false);
+            initialState.addTransition(finalState.getId(), null, false);
             superState.getStates().add(initialState);
             superState.getStates().add(finalState);
         }
@@ -91,10 +91,7 @@ public class SuperStateBuilder {
 
             // selection
             if (stmt instanceof SelectionStmt) {
-                var curState = buildSelectionSuperState(id, (SelectionStmt) stmt);
-                updateInitialAndFinalState(curState);
-                curState.setJoinTargetId(nextStateId);
-                superState.getStates().add(curState);
+                addSelectionSuperState(id, nextStateId, (SelectionStmt) stmt);
             } else if (stmt instanceof IterationStmt) {
                 addIterationSuperState(id, nextStateId, (IterationStmt) stmt);
             } else {
@@ -157,7 +154,7 @@ public class SuperStateBuilder {
             // add new state with 2 transitions, one to final and another one to next state
             State state = new State(stateTable.nextStateId());
             state.getOutgoingTransitions().add(transition);
-            state.addTransition(superLastState.getJoinTargetId(), true);
+            state.addTransition(superLastState.getJoinTargetId(), null, true);
             superState.getStates().add(state);
 
             // replace
@@ -205,43 +202,36 @@ public class SuperStateBuilder {
         }
     }
 
-    private SuperState buildSelectionSuperState(String id, SelectionStmt stmt) {
+    private void addSelectionSuperState(String id, String nextStateId, SelectionStmt stmt) {
         // create super state manually
         StateTable stateTable = new StateTable(id);
-        SuperState superState = new SuperState(id);
-        stackSuperStates.push(superState);
 
         // create 3 states
-        State initialState = new State(stateTable.nextStateId());
-        var thenState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getThenStmts()).build();
-        State finalState = new State(stateTable.nextStateId());
+        State initialState = new State(id);
 
         // initial -> then
-        Transition conditionTran = new Transition(thenState.getId());
-        conditionTran.setTrigger(stmt.getExpr());
-        initialState.getOutgoingTransitions().add(conditionTran);
-        thenState.setJoinTargetId(finalState.getId());
+        var thenState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getThenStmts()).build();
+        thenState.setJoinTargetId(nextStateId);
+        initialState.addTransition(thenState.getId(), stmt.getExpr(), true);
+
+        // initial -> else
+        SuperState elseState = null;
+        if (stmt.getElseStmts() != null) {
+            elseState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getElseStmts()).build();
+            elseState.setJoinTargetId(nextStateId);
+            initialState.addTransition(elseState.getId());
+        }
 
         // add
         superState.getStates().add(initialState);
         superState.getStates().add(thenState);
 
         // go to final state
-        SuperState elseState = null;
-        if (stmt.getElseStmts() != null) {
-            elseState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getElseStmts()).build();
-            initialState.getOutgoingTransitions().add(new Transition(elseState.getId()));
-            elseState.setJoinTargetId(finalState.getId());
+        if (elseState != null) {
             superState.getStates().add(elseState);
         } else {
-            initialState.getOutgoingTransitions().add(new Transition(finalState.getId()));
+            initialState.addTransition(nextStateId);
         }
-
-
-        // add final
-        superState.getStates().add(finalState);
-        stackSuperStates.pop();
-        return superState;
     }
 
     private void addIterationSuperState(String id, String nextStateId, IterationStmt stmt) {
@@ -253,15 +243,13 @@ public class SuperStateBuilder {
         var bodyState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getStmts()).build();
 
         // link: while -> body
-        Transition conditionTran = new Transition(bodyState.getId());
-        conditionTran.setTrigger(stmt.getExpr());
-        initialState.getOutgoingTransitions().add(conditionTran);
+        initialState.addTransition(bodyState.getId(), stmt.getExpr());
 
         // body -> back to beginning
         bodyState.setJoinTargetId(initialState.getId());
 
         // go to final state
-        initialState.getOutgoingTransitions().add(new Transition(nextStateId));
+        initialState.addTransition(nextStateId);
 
         // add
         superState.getStates().add(initialState);

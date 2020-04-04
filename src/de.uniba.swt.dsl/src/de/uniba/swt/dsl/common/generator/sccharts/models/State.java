@@ -1,7 +1,6 @@
 package de.uniba.swt.dsl.common.generator.sccharts.models;
 
 import de.uniba.swt.dsl.bahn.Expression;
-import de.uniba.swt.dsl.common.util.LogHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,8 +78,17 @@ public class State {
                 '}';
     }
 
-    public void addTransition(String id, boolean immediate) {
+    public void addTransition(String id) {
+        addTransition(id, null, true);
+    }
+
+    public void addTransition(String id, Expression expr) {
+        addTransition(id, expr, true);
+    }
+
+    public void addTransition(String id, Expression expr, boolean immediate) {
         var transition = new Transition(id, immediate);
+        transition.setTrigger(expr);
         getOutgoingTransitions().add(transition);
     }
 }
