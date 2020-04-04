@@ -73,12 +73,6 @@ signaltypes
             red 0x00
         end 
         initial red
-    exit
-        aspects 
-            green 0x01
-            red 0x00
-        end 
-        initial red
     peripheral 
         aspects 
             on 0x00
