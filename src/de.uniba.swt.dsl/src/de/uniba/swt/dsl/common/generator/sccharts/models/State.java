@@ -78,6 +78,14 @@ public class State {
                 '}';
     }
 
+    public void addRegularTransition(String id) {
+        addTransition(id, TransitionType.Regular, null);
+    }
+
+    public void addAbortTo(String id, Expression expr) {
+        addTransition(id, TransitionType.AbortTo, expr);
+    }
+
     public void addImmediateTransition(String id) {
         addImmediateTransition(id, null);
     }
@@ -87,7 +95,7 @@ public class State {
     }
 
     public void addTransition(String id, TransitionType transitionType, Expression expr) {
-        var transition = new Transition(id, TransitionType.Immediate);
+        var transition = new Transition(id, transitionType);
         transition.setTrigger(expr);
         getOutgoingTransitions().add(transition);
     }

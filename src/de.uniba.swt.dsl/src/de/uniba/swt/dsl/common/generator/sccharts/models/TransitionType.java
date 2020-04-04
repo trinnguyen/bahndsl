@@ -4,6 +4,5 @@ public enum TransitionType
 {
     Regular,
     Immediate,
-    JoinTo,
     AbortTo
 }

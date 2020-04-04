@@ -154,16 +154,10 @@ public class StateTextualBuilder extends TextualBuilder {
         generateAction(transition);
 
         // go to
-        switch (transition.getTransitionType()) {
-            case JoinTo:
-                append("join").append("to");
-                break;
-            case AbortTo:
-                append("abort").append("to");
-                break;
-            default:
-                append("go").append("to");
-                break;
+        if (transition.getTransitionType() == TransitionType.AbortTo) {
+            append("abort").append("to");
+        } else {
+            append("go").append("to");
         }
 
         // target

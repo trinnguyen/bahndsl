@@ -135,31 +135,30 @@ public class SuperStateBuilder {
             // update last state
             SuperState superLastState = (SuperState) lastState;
 
-            // generate decl
-            var decl = BahnFactory.eINSTANCE.createVarDecl();
-            decl.setType(DataType.BOOLEAN_TYPE);
-            decl.setArray(false);
-            decl.setName(hasReturnVar.getName());
-
-            // generate condition
-            var expression = BahnFactory.eINSTANCE.createOpExpression();
-            expression.setOp(OperatorType.EQUAL);
-            expression.setLeftExpr(createValuedReferenceExpr(decl));
-            expression.setRightExpr(BahnUtil.createBooleanLiteral(true));
-
-            // generate 1 transition to the final state with the trigger
-            var transition = new Transition(finalStateId);
-            transition.setTrigger(expression);
-
             // add new state with 2 transitions, one to final and another one to next state
             State state = new State(stateTable.nextStateId());
-            state.getOutgoingTransitions().add(transition);
-            state.addImmediateTransition(superLastState.getJoinTargetId());
+            state.addAbortTo(finalStateId, createHasReturnTrigger(hasReturnVar));
+            state.addRegularTransition(superLastState.getJoinTargetId());
             superState.getStates().add(state);
 
             // replace
             superLastState.setJoinTargetId(state.getId());
         }
+    }
+
+    private OpExpression createHasReturnTrigger(SVarDeclaration hasReturnVar) {
+        // generate decl
+        var decl = BahnFactory.eINSTANCE.createVarDecl();
+        decl.setType(DataType.BOOLEAN_TYPE);
+        decl.setArray(false);
+        decl.setName(hasReturnVar.getName());
+
+        // generate condition
+        var expression = BahnFactory.eINSTANCE.createOpExpression();
+        expression.setOp(OperatorType.EQUAL);
+        expression.setLeftExpr(createValuedReferenceExpr(decl));
+        expression.setRightExpr(BahnUtil.createBooleanLiteral(true));
+        return expression;
     }
 
     private boolean hasReturnStmtInBlock(Statement blockStmt) {
