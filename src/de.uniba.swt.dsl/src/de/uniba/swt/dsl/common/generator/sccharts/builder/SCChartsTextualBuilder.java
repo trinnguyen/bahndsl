@@ -25,7 +25,7 @@ public class SCChartsTextualBuilder extends TextualBuilder {
         append(BahnUtil.generateCodeNaming(rootState.getId()));
         // appendLine("#resource \"bahn_data_util.h\"");
         // appendLine("#resource \"bahn_data_util.c\"");
-        // appendLine("#hostcode \"#include \\\"bahn_data_util.h\\\"\"");
+         appendLine("#hostcode \"#include \\\"bahn_data_util.h\\\"\"");
         appendLine(stateBuilder.buildString(rootState));
         return build();
     }
