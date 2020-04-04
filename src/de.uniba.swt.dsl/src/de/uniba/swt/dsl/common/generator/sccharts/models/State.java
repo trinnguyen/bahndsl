@@ -78,16 +78,16 @@ public class State {
                 '}';
     }
 
-    public void addTransition(String id) {
-        addTransition(id, null, true);
+    public void addImmediateTransition(String id) {
+        addImmediateTransition(id, null);
     }
 
-    public void addTransition(String id, Expression expr) {
-        addTransition(id, expr, true);
+    public void addImmediateTransition(String id, Expression expr) {
+        addTransition(id, TransitionType.Immediate, expr);
     }
 
-    public void addTransition(String id, Expression expr, boolean immediate) {
-        var transition = new Transition(id, immediate);
+    public void addTransition(String id, TransitionType transitionType, Expression expr) {
+        var transition = new Transition(id, TransitionType.Immediate);
         transition.setTrigger(expr);
         getOutgoingTransitions().add(transition);
     }

@@ -51,11 +51,11 @@ public class SuperStateBuilder {
         if (statementList != null && statementList.getStmts() != null && !statementList.getStmts().isEmpty()) {
             addChildStates(statementList);
         } else {
-            // add 2 states, one for initial and the other for final, must be deferred transition for being compatible
+            // add 2 states, one for initial and the other for final, must be regular transition for being compatible
             // with statebased compilation strategy
             var initialState = new State(stateTable.nextStateId());
             var finalState = new State(stateTable.finalStateId());
-            initialState.addTransition(finalState.getId(), null, false);
+            initialState.addTransition(finalState.getId(), TransitionType.Regular, null);
             superState.getStates().add(initialState);
             superState.getStates().add(finalState);
         }
@@ -154,7 +154,7 @@ public class SuperStateBuilder {
             // add new state with 2 transitions, one to final and another one to next state
             State state = new State(stateTable.nextStateId());
             state.getOutgoingTransitions().add(transition);
-            state.addTransition(superLastState.getJoinTargetId(), null, true);
+            state.addImmediateTransition(superLastState.getJoinTargetId());
             superState.getStates().add(state);
 
             // replace
@@ -212,14 +212,14 @@ public class SuperStateBuilder {
         // initial -> then
         var thenState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getThenStmts()).build();
         thenState.setJoinTargetId(nextStateId);
-        initialState.addTransition(thenState.getId(), stmt.getExpr(), true);
+        initialState.addImmediateTransition(thenState.getId(), stmt.getExpr());
 
         // initial -> else
         SuperState elseState = null;
         if (stmt.getElseStmts() != null) {
             elseState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getElseStmts()).build();
             elseState.setJoinTargetId(nextStateId);
-            initialState.addTransition(elseState.getId());
+            initialState.addImmediateTransition(elseState.getId());
         }
 
         // add
@@ -230,7 +230,7 @@ public class SuperStateBuilder {
         if (elseState != null) {
             superState.getStates().add(elseState);
         } else {
-            initialState.addTransition(nextStateId);
+            initialState.addImmediateTransition(nextStateId);
         }
     }
 
@@ -243,13 +243,13 @@ public class SuperStateBuilder {
         var bodyState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getStmts()).build();
 
         // link: while -> body
-        initialState.addTransition(bodyState.getId(), stmt.getExpr());
+        initialState.addImmediateTransition(bodyState.getId(), stmt.getExpr());
 
         // body -> back to beginning
         bodyState.setJoinTargetId(initialState.getId());
 
         // go to final state
-        initialState.addTransition(nextStateId);
+        initialState.addImmediateTransition(nextStateId);
 
         // add
         superState.getStates().add(initialState);
@@ -269,7 +269,7 @@ public class SuperStateBuilder {
             var transition = new Transition(nextStateId);
             transition.getEffects().add(effect);
 
-            // add has return
+            // add has return link to final state
             if (stmt instanceof ReturnStmt) {
                 transition.getEffects().add(generateHasReturnEffect());
             }

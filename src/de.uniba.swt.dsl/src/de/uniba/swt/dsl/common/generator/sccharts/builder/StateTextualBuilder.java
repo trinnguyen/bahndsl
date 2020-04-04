@@ -1,13 +1,12 @@
 package de.uniba.swt.dsl.common.generator.sccharts.builder;
 
 import de.uniba.swt.dsl.bahn.Expression;
-import de.uniba.swt.dsl.bahn.ValuedReferenceExpr;
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
 import de.uniba.swt.dsl.common.util.StringUtil;
-import de.uniba.swt.dsl.common.util.Tuple;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class StateTextualBuilder extends TextualBuilder {
@@ -38,13 +37,14 @@ public class StateTextualBuilder extends TextualBuilder {
         // add the mapping
         paramBindingTable.addBindingMappingIfNeeded(superState);
 
-        appendLine("{");
+        append("{");
+        increaseIndent().appendLine("");
+
         // host code references
         generateHostcodeReferences(superState.getHostCodeReferences());
 
         // interface variables
         generateVarDecls(superState.getDeclarations(), generateInputOutput);
-        appendLine("");
 
         // generate local actions
         for (LocalAction localAction : superState.getLocalActions()) {
@@ -55,16 +55,17 @@ public class StateTextualBuilder extends TextualBuilder {
         if (superState.getStates() != null) {
             for (var childState : superState.getStates()) {
                 if (childState instanceof SuperState) {
+                    appendLine("");
                     generateStateId(childState);
                     generateSuperState((SuperState)childState, false);
+                    appendLine("");
                 } else {
                     generateRegularState(childState);
                 }
-
-                appendLine("");
             }
         }
 
+        decreaseIndent();
         appendLine("}");
 
         // join
@@ -77,6 +78,7 @@ public class StateTextualBuilder extends TextualBuilder {
     }
 
     private void generateRegularState(State state) {
+        appendLine("");
         generateStateId(state);
 
         // transitions
@@ -85,6 +87,9 @@ public class StateTextualBuilder extends TextualBuilder {
                 generateTransition(transition);
             }
         }
+
+        if (!state.isFinal())
+            appendLine("");
     }
 
     private void generateStateId(State state) {
@@ -114,7 +119,7 @@ public class StateTextualBuilder extends TextualBuilder {
             }
 
             generateVarDecl(decl);
-            append(LINE_BREAK);
+            appendLine("");
         }
     }
 
@@ -141,19 +146,28 @@ public class StateTextualBuilder extends TextualBuilder {
     }
 
     private void generateTransition(Transition transition) {
-        // action
-        if (transition.isImmediate()) {
+        appendLine("");
+        if (transition.getTransitionType() == TransitionType.Immediate) {
             append("immediate");
         }
-        if (transition.isDeferred()) {
-            append("deferred");
-        }
+
         generateAction(transition);
 
         // go to
-        if (transition.getTargetStateId() != null) {
-            append("go").append("to").append(transition.getTargetStateId());
+        switch (transition.getTransitionType()) {
+            case JoinTo:
+                append("join").append("to");
+                break;
+            case AbortTo:
+                append("abort").append("to");
+                break;
+            default:
+                append("go").append("to");
+                break;
         }
+
+        // target
+        append(transition.getTargetStateId());
     }
 
     private void generateLocalAction(LocalAction action) {
@@ -207,7 +221,7 @@ public class StateTextualBuilder extends TextualBuilder {
             strBuilder.append(" = ");
         }
         strBuilder.append(generateExpression(effect.getExpression()));
-        return strBuilder.toString();
+        return strBuilder.toString().trim();
     }
 
     private String generateExpression(Expression expression) {

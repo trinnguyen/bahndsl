@@ -22,11 +22,11 @@ public class SCChartsTextualBuilder extends TextualBuilder {
         clear();
 
         // append hostcode
-        appendLine(BahnUtil.generateCodeNaming(rootState.getId()));
+        append(BahnUtil.generateCodeNaming(rootState.getId()));
         // appendLine("#resource \"bahn_data_util.h\"");
         // appendLine("#resource \"bahn_data_util.c\"");
-        appendLine("#hostcode \"#include \\\"bahn_data_util.h\\\"\"");
-        append(stateBuilder.buildString(rootState)).append(LINE_BREAK);
+        // appendLine("#hostcode \"#include \\\"bahn_data_util.h\\\"\"");
+        appendLine(stateBuilder.buildString(rootState));
         return build();
     }
 }
