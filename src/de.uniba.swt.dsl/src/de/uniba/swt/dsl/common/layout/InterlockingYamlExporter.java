@@ -5,6 +5,7 @@ import de.uniba.swt.dsl.bahn.SegmentElement;
 import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractPointEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
 import de.uniba.swt.dsl.common.util.YamlExporter;
 
 import java.util.*;
@@ -42,6 +43,7 @@ public class InterlockingYamlExporter extends YamlExporter {
         appendLine("path:");
         increaseLevel();
         List<AbstractPointEdge> points = new ArrayList<>();
+        List<String> blockIds = new ArrayList<>();
         String cmtPath = route.getEdges().stream().map(AbstractEdge::getKey).collect(Collectors.joining(" -> "));
         appendLine("# %s", cmtPath);
         for (AbstractEdge edge : route.getEdges()) {
@@ -50,12 +52,25 @@ public class InterlockingYamlExporter extends YamlExporter {
                 points.add((AbstractPointEdge)edge);
             }
 
+            // cache block
+            if (edge instanceof BlockEdge) {
+                blockIds.add(edge.getKey());
+            }
+
             // render
             for (SegmentElement segment : edge.getSegments()) {
                 appendLine("- id: %s", segment.getName());
                 length += segment.getLength().getValue();
                 unit = segment.getLength().getUnit();
             }
+        }
+        decreaseLevel();
+
+        // sections
+        appendLine("sections:");
+        increaseLevel();
+        for (String blockId : blockIds) {
+            appendLine("- id: %s", blockId);
         }
         decreaseLevel();
 
@@ -72,9 +87,6 @@ public class InterlockingYamlExporter extends YamlExporter {
             decreaseLevel();
         }
         decreaseLevel();
-
-        // flank signals
-        appendLine("signals:");
 
         // conflicts
         appendLine("conflicts:");
