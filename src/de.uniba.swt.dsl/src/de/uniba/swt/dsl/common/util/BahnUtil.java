@@ -6,7 +6,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.EcoreUtil2;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -99,5 +98,77 @@ public class BahnUtil {
 
     public static String generateLogicNaming(String id) {
         return CodeNamingPrefix + id.toLowerCase() + "_logic";
+    }
+
+    public static boolean hasBreakStmtInBlock(Statement blockStmt) {
+        return hasStmtInBlock(blockStmt, BreakStmt.class);
+    }
+
+    public static boolean hasReturnStmtInBlock(Statement blockStmt) {
+        return hasStmtInBlock(blockStmt, ReturnStmt.class);
+    }
+
+    private static boolean hasStmtInBlock(Statement blockStmt, Class<?> stmtClass) {
+        if (stmtClass.isInstance(blockStmt))
+            return true;
+
+        if (blockStmt instanceof IterationStmt) {
+            var iterationStmt = (IterationStmt) blockStmt;
+            if (iterationStmt.getStmts() != null) {
+                for (Statement stmt : iterationStmt.getStmts().getStmts()) {
+                    if (hasStmtInBlock(stmt, stmtClass))
+                        return true;
+                }
+            }
+        }
+
+        if (blockStmt instanceof SelectionStmt) {
+            var selectionStmt = (SelectionStmt) blockStmt;
+            if (selectionStmt.getThenStmts() != null && selectionStmt.getThenStmts().getStmts() != null) {
+                for (Statement stmt : selectionStmt.getThenStmts().getStmts()) {
+                    if (hasStmtInBlock(stmt, stmtClass))
+                        return true;
+                }
+            }
+            if (selectionStmt.getElseStmts() != null && selectionStmt.getElseStmts().getStmts() != null) {
+                for (Statement stmt : selectionStmt.getElseStmts().getStmts()) {
+                    if (hasStmtInBlock(stmt, stmtClass))
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean isInsideIterationStmt(EObject eObject) {
+        return eObject != null && isIteration(eObject.eContainer());
+    }
+
+    private static boolean isIteration(EObject eObject) {
+        if (eObject == null)
+            return false;
+
+        if (eObject instanceof IterationStmt)
+            return true;
+
+        if (eObject instanceof ForeachStmt)
+            return true;
+
+        if (eObject instanceof FuncDecl)
+            return false;
+
+        return isIteration(eObject.eContainer());
+    }
+
+    public static boolean hasBreakStmt(StatementList stmtList) {
+        if (stmtList != null && stmtList.getStmts() != null) {
+            for (Statement stmt : stmtList.getStmts()) {
+                if (hasBreakStmtInBlock(stmt))
+                    return true;
+            }
+        }
+
+        return false;
     }
 }

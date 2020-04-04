@@ -12,9 +12,6 @@ import java.util.Map;
 import java.util.Stack;
 
 public class SuperStateBuilder {
-    public final String VAR_OUTPUT_NAME = "_out";
-
-    public final String VAR_HAS_RETURN_NAME = "_has_return";
 
     /**
      * temporary allocate param array size to 1024
@@ -79,21 +76,17 @@ public class SuperStateBuilder {
             var stmt = stmtList.getStmts().get(i);
             var isLast = i == stmtList.getStmts().size() - 1;
             var isReturn = stmt instanceof ReturnStmt;
+            var isBreak = stmt instanceof BreakStmt;
             var id = StringUtil.isNotEmpty(nextStateId) ? nextStateId : stateTable.nextStateId();
-
-            // skip if just moving out of block statment
-            if (i > 0) {
-                addTransitionToFinalIfReturn(stmtList.getStmts().get(i - 1), id, finalStateId);
-            }
 
             // build regular state
             nextStateId = (isLast || isReturn) ? finalStateId : stateTable.nextStateId();
 
             // selection
             if (stmt instanceof SelectionStmt) {
-                addSelectionSuperState(id, nextStateId, (SelectionStmt) stmt);
+                addSelectionSuperState(id, nextStateId, finalStateId, (SelectionStmt) stmt);
             } else if (stmt instanceof IterationStmt) {
-                addIterationSuperState(id, nextStateId, (IterationStmt) stmt);
+                addIterationSuperState(id, nextStateId, finalStateId, (IterationStmt) stmt);
             } else {
                 var state = createState(id, nextStateId, stmt);
                 if (state != null) {
@@ -104,8 +97,8 @@ public class SuperStateBuilder {
                 }
             }
 
-            // break if return
-            if (isReturn)
+            // ignore remaining actions if return or break
+            if (isReturn || isBreak)
                 break;
         }
 
@@ -115,85 +108,6 @@ public class SuperStateBuilder {
         }
     }
 
-    private void addTransitionToFinalIfReturn(Statement stmt, String nextStateId, String finalStateId) {
-        boolean shouldCheck = stmt instanceof IterationStmt || stmt instanceof SelectionStmt;
-        if (!shouldCheck)
-            return;
-
-        if (!hasReturnStmtInBlock(stmt))
-            return;
-
-        var hasReturnVar = findVarDecl(VAR_HAS_RETURN_NAME);
-        if (hasReturnVar == null)
-            return;
-
-        if (superState.getStates().size() > 0) {
-            var lastState = superState.getStates().get(superState.getStates().size() - 1);
-            if (!(lastState instanceof SuperState))
-                return;
-
-            // update last state
-            SuperState superLastState = (SuperState) lastState;
-
-            // add new state with 2 transitions, one to final and another one to next state
-            State state = new State(stateTable.nextStateId());
-            state.addAbortTo(finalStateId, createHasReturnTrigger(hasReturnVar));
-            state.addRegularTransition(superLastState.getJoinTargetId());
-            superState.getStates().add(state);
-
-            // replace
-            superLastState.setJoinTargetId(state.getId());
-        }
-    }
-
-    private OpExpression createHasReturnTrigger(SVarDeclaration hasReturnVar) {
-        // generate decl
-        var decl = BahnFactory.eINSTANCE.createVarDecl();
-        decl.setType(DataType.BOOLEAN_TYPE);
-        decl.setArray(false);
-        decl.setName(hasReturnVar.getName());
-
-        // generate condition
-        var expression = BahnFactory.eINSTANCE.createOpExpression();
-        expression.setOp(OperatorType.EQUAL);
-        expression.setLeftExpr(createValuedReferenceExpr(decl));
-        expression.setRightExpr(BahnUtil.createBooleanLiteral(true));
-        return expression;
-    }
-
-    private boolean hasReturnStmtInBlock(Statement blockStmt) {
-        if (blockStmt instanceof ReturnStmt)
-            return true;
-
-        if (blockStmt instanceof IterationStmt) {
-            var iterationStmt = (IterationStmt) blockStmt;
-            if (iterationStmt.getStmts() != null) {
-                for (Statement stmt : iterationStmt.getStmts().getStmts()) {
-                    if (hasReturnStmtInBlock(stmt))
-                        return true;
-                }
-            }
-        }
-
-        if (blockStmt instanceof SelectionStmt) {
-            var selectionStmt = (SelectionStmt) blockStmt;
-            if (selectionStmt.getThenStmts() != null && selectionStmt.getThenStmts().getStmts() != null) {
-                for (Statement stmt : selectionStmt.getThenStmts().getStmts()) {
-                    if (hasReturnStmtInBlock(stmt))
-                        return true;
-                }
-            }
-            if (selectionStmt.getElseStmts() != null && selectionStmt.getElseStmts().getStmts() != null) {
-                for (Statement stmt : selectionStmt.getElseStmts().getStmts()) {
-                    if (hasReturnStmtInBlock(stmt))
-                        return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     private void updateInitialAndFinalState(SuperState state) {
         if (!state.getStates().isEmpty()) {
             state.getStates().get(0).setInitial(true);
@@ -201,23 +115,23 @@ public class SuperStateBuilder {
         }
     }
 
-    private void addSelectionSuperState(String id, String nextStateId, SelectionStmt stmt) {
-        // create super state manually
-        StateTable stateTable = new StateTable(id);
+    private void addSelectionSuperState(String id, String nextStateId, String finalStateId, SelectionStmt stmt) {
 
         // create 3 states
+        String lastStateId = stateTable.nextStateId();
         State initialState = new State(id);
 
         // initial -> then
-        var thenState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getThenStmts()).build();
-        thenState.setJoinTargetId(nextStateId);
+        StateTable localStateTable = new StateTable(id);
+        var thenState = new SuperStateBuilder(mapFuncState, stackSuperStates, localStateTable.nextStateId(), stmt.getThenStmts()).build();
+        thenState.setJoinTargetId(lastStateId);
         initialState.addImmediateTransition(thenState.getId(), stmt.getExpr());
 
         // initial -> else
         SuperState elseState = null;
         if (stmt.getElseStmts() != null) {
-            elseState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getElseStmts()).build();
-            elseState.setJoinTargetId(nextStateId);
+            elseState = new SuperStateBuilder(mapFuncState, stackSuperStates, localStateTable.nextStateId(), stmt.getElseStmts()).build();
+            elseState.setJoinTargetId(lastStateId);
             initialState.addImmediateTransition(elseState.getId());
         }
 
@@ -229,30 +143,105 @@ public class SuperStateBuilder {
         if (elseState != null) {
             superState.getStates().add(elseState);
         } else {
-            initialState.addImmediateTransition(nextStateId);
+            initialState.addImmediateTransition(lastStateId);
         }
+
+        // create last state
+        State lastState = new State(lastStateId);
+        lastState.addImmediateTransition(nextStateId);
+        superState.getStates().add(lastState);
+
+        // check break when finishing the loop -> go to final
+        addHasBreakTransitionExist(lastState, finalStateId, stmt, false);
+
+        // check return when finishing the loop -> move to final
+        addHasReturnTransitionExist(lastState, finalStateId, stmt);
     }
 
-    private void addIterationSuperState(String id, String nextStateId, IterationStmt stmt) {
+    private void addIterationSuperState(String id, String nextStateId, String finalStateId, IterationStmt stmt) {
         // create super state manually
-        StateTable stateTable = new StateTable(id);
+        State initialState = new State(id);
+        State lastState = new State(stateTable.nextStateId());
 
         // create body states
-        State initialState = new State(id);
-        var bodyState = new SuperStateBuilder(mapFuncState, stackSuperStates, stateTable.nextStateId(), stmt.getStmts()).build();
+        StateTable localStateTable = new StateTable(id);
+        var bodyState = new SuperStateBuilder(mapFuncState, stackSuperStates, localStateTable.nextStateId(), stmt.getStmts()).build();
 
-        // link: while -> body
+        // link: initial check loop condition
         initialState.addImmediateTransition(bodyState.getId(), stmt.getExpr());
 
         // body -> back to beginning
-        bodyState.setJoinTargetId(initialState.getId());
+        bodyState.setJoinTargetId(lastState.getId());
 
-        // go to final state
+        // go to next state
         initialState.addImmediateTransition(nextStateId);
+        lastState.addImmediateTransition(initialState.getId());
 
         // add
         superState.getStates().add(initialState);
         superState.getStates().add(bodyState);
+        superState.getStates().add(lastState);
+
+        // check break when finishing the loop -> go to next step
+        addHasBreakTransitionExist(lastState, nextStateId, stmt, true);
+
+        // check return when finishing the loop -> move to final
+        addHasReturnTransitionExist(lastState, finalStateId, stmt);
+    }
+
+    private void addHasBreakTransitionExist(State lastState, String finalStateId, Statement stmt, boolean reset) {
+        var breakTransition = createHasBreakTransitionIfExist(stmt, finalStateId, reset);
+        if (breakTransition != null) {
+            lastState.getOutgoingTransitions().add(0, breakTransition);
+        }
+    }
+
+    private void addHasReturnTransitionExist(State lastState, String finalStateId, Statement stmt) {
+        var returnTransition = createHasReturnTransitionIfExist(stmt, finalStateId);
+        if (returnTransition != null) {
+            // reset all immediate to regular
+            for (Transition outgoingTransition : lastState.getOutgoingTransitions()) {
+                if (outgoingTransition.getTransitionType() == TransitionType.Immediate) {
+                    outgoingTransition.setTransitionType(TransitionType.Regular);
+                }
+            }
+
+            lastState.getOutgoingTransitions().add(0, returnTransition);
+        }
+    }
+
+    private Transition createHasReturnTransitionIfExist(Statement stmt, String finalStateId) {
+        if (!BahnUtil.hasReturnStmtInBlock(stmt))
+            return null;
+
+        var hasReturnVar = findVarDecl(SCChartsUtil.VAR_HAS_RETURN_NAME);
+        if (hasReturnVar != null) {
+            var tran = new Transition(finalStateId, TransitionType.AbortTo);
+            tran.setTrigger(SCChartsUtil.createTrueBooleanTrigger(hasReturnVar));
+            return tran;
+        }
+
+        return null;
+    }
+
+    private Transition createHasBreakTransitionIfExist(Statement stmt, String nextStateId, boolean reset) {
+        if (!BahnUtil.hasBreakStmtInBlock(stmt))
+            return null;
+
+        var hasBreakVar = findVarDecl(SCChartsUtil.VAR_HAS_BREAK);
+        if (hasBreakVar != null) {
+            var transition = new Transition(nextStateId, TransitionType.Immediate);
+            transition.setTrigger(SCChartsUtil.createTrueBooleanTrigger(hasBreakVar));
+
+            // reset break
+            if (reset) {
+                transition.getEffects().add(SCChartsUtil.generateBoolAssignEffect(hasBreakVar, false));
+            }
+
+            return transition;
+        }
+
+        return null;
     }
 
     private State createState(String id, String nextStateId, Statement stmt) {
@@ -270,7 +259,7 @@ public class SuperStateBuilder {
 
             // add has return link to final state
             if (stmt instanceof ReturnStmt) {
-                transition.getEffects().add(generateHasReturnEffect());
+                transition.getEffects().add(SCChartsUtil.generateBoolAssignEffect(findVarDecl(SCChartsUtil.VAR_HAS_RETURN_NAME), true));
             }
 
             var state = new State(id);
@@ -291,7 +280,7 @@ public class SuperStateBuilder {
         if (stmt instanceof VarDeclStmt) {
             VarDeclStmt varDeclStmt = (VarDeclStmt)stmt;
             if (varDeclStmt.getAssignment() != null) {
-                return findRefState(varDeclStmt.getAssignment().getExpr(), createValuedReferenceExpr(varDeclStmt.getDecl()));
+                return findRefState(varDeclStmt.getAssignment().getExpr(), SCChartsUtil.createValuedReferenceExpr(varDeclStmt.getDecl()));
             }
         }
 
@@ -327,12 +316,6 @@ public class SuperStateBuilder {
         return result;
     }
 
-    private ValuedReferenceExpr createValuedReferenceExpr(VarDecl decl) {
-        var expr = BahnFactory.eINSTANCE.createValuedReferenceExpr();
-        expr.setDecl(decl);
-        return expr;
-    }
-
     private Effect generateEffect(Statement stmt) {
         if (stmt instanceof VarDeclStmt) {
 
@@ -366,18 +349,18 @@ public class SuperStateBuilder {
         if (stmt instanceof ReturnStmt) {
             AssignmentEffect effect = new AssignmentEffect();
             effect.setExpression(((ReturnStmt) stmt).getExpr());
-            effect.setVarDeclaration(findVarDecl(VAR_OUTPUT_NAME));
+            effect.setVarDeclaration(findVarDecl(SCChartsUtil.VAR_OUTPUT_NAME));
+            return effect;
+        }
+
+        if (stmt instanceof BreakStmt) {
+            AssignmentEffect effect = new AssignmentEffect();
+            effect.setExpression(BahnUtil.createBooleanLiteral(true));
+            effect.setVarDeclaration(findVarDecl(SCChartsUtil.VAR_HAS_BREAK));
             return effect;
         }
 
         throw new RuntimeException("Statement is not supported");
-    }
-
-    private Effect generateHasReturnEffect() {
-        AssignmentEffect effect = new AssignmentEffect();
-        effect.setExpression(BahnUtil.createBooleanLiteral(true));
-        effect.setVarDeclaration(findVarDecl(VAR_HAS_RETURN_NAME));
-        return effect;
     }
 
     private SVarDeclaration findVarDecl(String name) {

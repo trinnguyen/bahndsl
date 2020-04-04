@@ -1,6 +1,7 @@
 package de.uniba.swt.dsl.validation.validators;
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
 import de.uniba.swt.dsl.validation.typing.HintDataType;
 import de.uniba.swt.dsl.validation.typing.HintDataTypeUtl;
@@ -61,6 +62,14 @@ public class StatementValidator {
             var expectedType = new ExprDataType(foreachStmt.getArrayExpr().getDecl().getType(), false);
             var actualType = new ExprDataType(foreachStmt.getDecl().getType(), foreachStmt.getDecl().isArray());
             checkTypes(expectedType, actualType, BahnPackage.Literals.FOREACH_STMT__DECL);
+        }
+
+        // break
+        if (stmt instanceof BreakStmt) {
+            // ensure having while outside
+            if (!BahnUtil.isInsideIterationStmt(stmt)) {
+                throw new ValidationException("break can only be used inside 'for..in' or 'while' statement", null);
+            }
         }
     }
 

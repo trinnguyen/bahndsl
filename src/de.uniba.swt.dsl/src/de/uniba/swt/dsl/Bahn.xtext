@@ -227,7 +227,7 @@ StatementList:
 ;
 
 Statement:
-	SelectionStmt | IterationStmt | ForeachStmt | VarDeclStmt | AssignmentStmt | FunctionCallStmt | ReturnStmt
+	SelectionStmt | IterationStmt | ForeachStmt | VarDeclStmt | AssignmentStmt | FunctionCallStmt | ReturnStmt | BreakStmt
 ;
 
 SelectionStmt returns Statement:
@@ -277,6 +277,10 @@ FunctionCallStmt returns Statement:
 
 ReturnStmt returns Statement:
 	{ReturnStmt}'return' expr=Expression
+;
+
+BreakStmt returns Statement:
+	{BreakStmt} 'break'
 ;
 
 VariableAssignment:
