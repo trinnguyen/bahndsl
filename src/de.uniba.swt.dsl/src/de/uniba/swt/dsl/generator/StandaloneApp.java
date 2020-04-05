@@ -1,10 +1,8 @@
 package de.uniba.swt.dsl.generator;
 
-import com.google.common.io.Files;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import de.uniba.swt.dsl.common.util.BahnUtil;
-import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.generator.externals.LibraryExternalGenerator;
 import de.uniba.swt.dsl.generator.externals.LowLevelCodeExternalGenerator;
 import org.apache.log4j.Logger;
@@ -71,11 +69,7 @@ public class StandaloneApp {
             outputPath = Paths.get(file.getAbsoluteFile().getParent(), "src-gen").toAbsolutePath().toString();
 
         // Load the resource
-        ResourceSet set = resourceSetProvider.get();
-        if (!StandardLibHelper.loadStandardLibResource(set))
-            return false;
-
-        Resource resource = set.getResource(URI.createFileURI(filePath), true);
+        Resource resource = resourceSetProvider.get().getResource(URI.createFileURI(filePath), true);
 
         // Validate the resource
         List<Issue> list = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);

@@ -34,7 +34,12 @@ public abstract class GeneratorProvider {
         var names = generatedFileNames();
         if (names != null) {
             for (String name : names) {
-                fsa.deleteFile(name);
+                try {
+                    fsa.deleteFile(name);
+                } catch (Exception ex) {
+                    logger.warn("Failed to delete existing file: " + ex.getMessage());
+                }
+
             }
         }
     }

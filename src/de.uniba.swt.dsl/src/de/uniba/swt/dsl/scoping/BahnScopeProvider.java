@@ -4,6 +4,8 @@
 package de.uniba.swt.dsl.scoping;
 
 
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import de.uniba.swt.dsl.bahn.*;
 
 import de.uniba.swt.dsl.common.util.BahnConstants;
@@ -59,12 +61,76 @@ public class BahnScopeProvider extends AbstractBahnScopeProvider {
             }
         }
 
+        // load custom class
+        var instanceClass = reference.getEReferenceType().getInstanceClass();
+        var candidates = getGlobalCandidates(context, instanceClass);
+        if (candidates != null) {
+            var scope = Scopes.scopeFor(candidates);
+
+            // filter for each type of config key
+            if (instanceClass.equals(ConfigKey.class)) {
+                return filterScopeForConfigKey(scope, reference);
+            }
+
+            return scope;
+        }
+
+        // default
         return super.getScope(context, reference);
     }
 
-    private <T extends EObject> IScope getScopes(EObject context, Class<T> type) {
-        EObject rootElement = EcoreUtil2.getRootContainer(context);
-        List<T> candidates = EcoreUtil2.getAllContentsOfType(rootElement, type);
-        return Scopes.scopeFor(candidates);
+    private IScope filterScopeForConfigKey(IScope scope, EReference reference) {
+        return new FilteringScope(scope, input -> {
+            List<String> names = null;
+            if (reference == BahnPackage.Literals.SEGMENT_ELEMENT__KEY_LENGTH) {
+                names = List.of("length");
+            } else if (reference == BahnPackage.Literals.POINT_ELEMENT__KEY) {
+                names = List.of("segment");
+            } else if (reference == BahnPackage.Literals.CROSSING_ELEMENT__KEY) {
+                names = List.of("segment");
+            } else if (reference == BahnPackage.Literals.CONFIG_PROP__KEY) {
+                names = List.of("type", "weight", "length");
+            }
+
+            if (names != null)
+                return input != null && input.getName() != null && names.contains(input.getName().toString());
+
+            return true;
+        });
+    }
+
+    private List<? extends EObject> getGlobalCandidates(EObject context, Class<?> instanceClass) {
+
+        List<? extends EObject> candidates;
+
+        // config key
+        if (instanceClass.equals(ConfigKey.class)) {
+            candidates = getCandidates(context, ConfigKey.class);
+            return candidates;
+        }
+
+        // signal type
+        if (instanceClass.equals(SignalType.class)) {
+            candidates = getCandidates(context, SignalType.class);
+            return candidates;
+        }
+
+        // fundecl
+        if (instanceClass.equals(FuncDecl.class)) {
+            candidates = getCandidates(context, FuncDecl.class);
+            return candidates;
+        }
+
+        // SchemaElement
+        if (instanceClass.equals(SchemaElement.class)) {
+            candidates = getCandidates(context, SchemaElement.class);
+            return candidates;
+        }
+
+        return null;
+    }
+
+    private <T extends EObject> List<T> getCandidates(EObject context, Class<T> type) {
+        return Lists.newArrayList(Iterators.filter(EcoreUtil2.getAllContents(context.eResource().getResourceSet(), false), type));
     }
 }
