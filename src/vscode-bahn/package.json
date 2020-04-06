@@ -2,7 +2,7 @@
     "name": "bahn-language",
     "displayName": "Bahn Language",
     "description": "Bahn support for VS Code",
-    "version": "0.0.15",
+    "version": "0.0.16",
     "publisher": "trinnguyen",
     "repository": "https://github.com/trinnguyen",
     "engines": {
