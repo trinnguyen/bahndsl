@@ -45,16 +45,22 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
             }
         }
 
-        // add peripherals to signals or point depend on the current board
-        // one board can only contain signals or points
+        // add peripherals to signals or point depend on the current board, signals has higher priority
         if (signalsItems.size() > 0) {
             signalsItems.addAll(peripherals);
-            exportSection("signals-board:", signalsItems);
         } else {
             if (pointItems.size() > 0) {
                 pointItems.addAll(peripherals);
-                exportSection("points-board:", pointItems);
             }
+        }
+
+        // exports
+        if (signalsItems.size() > 0) {
+            exportSection("signals-board:", signalsItems);
+        }
+
+        if (pointItems.size() > 0) {
+            exportSection("points-board:", pointItems);
         }
 
         decreaseLevel();
