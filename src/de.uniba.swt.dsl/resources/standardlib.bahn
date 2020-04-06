@@ -5,6 +5,7 @@ schema
         destination string
         path string[]
         sections string[]
+        route_signals string[]
         conflicts string[]
         point_positions string[]
         length float
@@ -29,10 +30,7 @@ schema
 
     point
         id string
-        # initial string
         segment string
-        # normal string
-        # reverse string
     end
 
     train
@@ -40,8 +38,6 @@ schema
         type string
         weight float
         length float
-    #     # peripherals string[]
-    #     # calibration int[]
     end
 
     block
@@ -51,6 +47,7 @@ schema
         length float
         train_types string[]
         overlaps string[]
+        block_signals string[]
     end
 
     crossing
