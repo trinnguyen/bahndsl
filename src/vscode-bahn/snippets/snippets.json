@@ -16,25 +16,37 @@
             "   points $1",
             "   end",
             "",
-            "   trains",
+            "   blocks",
             "   end",
             "",
-            "   blocks",
+            "   crossings",
             "   end",
             "",
             "   layout",
             "   end",
+            "",
+            "   trains",
+            "   end",
+            "",
             "end"
         ],
         "description": "Create new Bahn model"
     },
-    "Interlocking Entry": {
-        "prefix": "interlocking",
+    "Request Route Function": {
+        "prefix": "request_route",
         "body": [
-            "def interlocking(string src_signal_id, string dest_signal_id, string train_id): int",
-            "   return -1",
+            "def request_route(string src_signal_id, string dst_signal_id, string train_id): string",
+            "   return \"\"",
             "end"
         ],
-        "description": "Entry interlocking function"
+        "description": "Request Route Function"
+    },
+    "Drive Route Function": {
+        "prefix": "drive_route",
+        "body": [
+            "def drive_route(string route_id, string train_id, string segment_ids[])",
+            "end"
+        ],
+        "description": "Drive Route Function"
     }
 }

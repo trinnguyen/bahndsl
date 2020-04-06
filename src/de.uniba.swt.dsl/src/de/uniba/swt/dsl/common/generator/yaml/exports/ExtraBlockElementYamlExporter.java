@@ -33,7 +33,10 @@ class ExtraBlockElementYamlExporter extends AbstractElementYamlExporter<ExtraBlo
         list.add(Tuple.of("length", String.format("%.2f%s", length, unit.getLiteral().toLowerCase())));
         list.add(Tuple.of("main", element.getBlockElement().getMainSeg().getName()));
         list.add(Tuple.of("overlaps", overlaps));
-        list.add(Tuple.of("direction", element.getDirection().toString().toLowerCase()));
+        if (element.getDirection() != null) {
+            list.add(Tuple.of("direction", element.getDirection().toString().toLowerCase()));
+        }
+
         list.add(Tuple.of("trains", element.getBlockElement().getTrainTypes().stream().map(trainType -> trainType.getName().toLowerCase()).collect(Collectors.toList())));
         if (element.getSignals() != null) {
             list.add(Tuple.of("signals", element.getSignals()));

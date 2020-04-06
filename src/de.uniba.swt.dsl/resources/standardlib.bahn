@@ -4,6 +4,7 @@ schema
         source string
         destination string
         path string[]
+        sections string[]
         conflicts string[]
         point_positions string[]
         length float
