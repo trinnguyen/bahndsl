@@ -49,6 +49,10 @@ Workflow {
 				generateXtendStub = false
 				generateJavaMain = true
 			}
+			formatter = {
+                generateStub = true
+                generateXtendStub = false
+            }
 			junitSupport = {
 				junitVersion = "5"
 				generateXtendStub = false

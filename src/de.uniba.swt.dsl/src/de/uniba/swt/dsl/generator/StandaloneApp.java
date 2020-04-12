@@ -13,6 +13,8 @@ import org.eclipse.xtext.diagnostics.Severity;
 import org.eclipse.xtext.generator.GeneratorContext;
 import org.eclipse.xtext.generator.GeneratorDelegate;
 import org.eclipse.xtext.generator.JavaIoFileSystemAccess;
+import org.eclipse.xtext.resource.SaveOptions;
+import org.eclipse.xtext.serializer.impl.Serializer;
 import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.IResourceValidator;
@@ -95,6 +97,16 @@ public class StandaloneApp {
 
         // Configure and start the generator
         logger.info("Start generating network layout and SCCharts models");
+        if (generate(resource, outputPath, mode, file)) {
+            System.out.println(String.format("Code generation finished: %s", outputPath));
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean generate(Resource resource, String outputPath, String mode, File file) {
+        // prepare
         fileAccess.setOutputPath(outputPath);
         GeneratorContext context = new GeneratorContext();
         context.setCancelIndicator(CancelIndicator.NullImpl);
@@ -115,11 +127,9 @@ public class StandaloneApp {
         if (genLibrary) {
             libraryGenerator.setSourceFileName(BahnUtil.getNameWithoutExtension(file.getName()));
             logger.info("Start generating dynamic library");
-            if (!libraryGenerator.generate(outputPath))
-                return false;
+            return libraryGenerator.generate(outputPath);
         }
 
-        System.out.println(String.format("Code generation finished: %s", outputPath));
         return true;
     }
 }

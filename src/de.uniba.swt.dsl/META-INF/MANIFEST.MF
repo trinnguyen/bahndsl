@@ -25,6 +25,7 @@ Export-Package: de.uniba.swt.dsl.serializer,
  de.uniba.swt.dsl.services,
  de.uniba.swt.dsl.bahn,
  de.uniba.swt.dsl.parser.antlr,
- de.uniba.swt.dsl.bahn.util
+ de.uniba.swt.dsl.bahn.util,
+ de.uniba.swt.dsl.formatting2
 Import-Package: org.apache.log4j
 Bundle-ClassPath: .
