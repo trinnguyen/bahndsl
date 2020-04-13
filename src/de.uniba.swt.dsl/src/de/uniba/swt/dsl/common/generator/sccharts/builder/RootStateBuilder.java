@@ -8,12 +8,13 @@ import de.uniba.swt.dsl.common.generator.sccharts.models.RootState;
 import de.uniba.swt.dsl.common.generator.sccharts.models.SuperState;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
 public class RootStateBuilder extends SuperStateBuilder {
-    public RootStateBuilder(Map<FuncDecl, RootState> mapFuncState, Stack<SuperState> superStates, FuncDecl funcDecl) {
-        super(mapFuncState, superStates, new StateTable("S_" + funcDecl.getName()), new RootState(funcDecl.getName()), funcDecl.getStmtList());
+    public RootStateBuilder(FuncDecl funcDecl) {
+        super(new HashMap<>(), new Stack<>(), new StateTable("S_" + funcDecl.getName()), new RootState(funcDecl.getName()), funcDecl.getStmtList());
 
         // input
         if (funcDecl.getParamDecls() != null) {

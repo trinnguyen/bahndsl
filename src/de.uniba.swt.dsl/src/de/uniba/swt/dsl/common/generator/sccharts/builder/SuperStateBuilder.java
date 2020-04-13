@@ -300,6 +300,13 @@ public class SuperStateBuilder {
     private SuperState findRefState(Expression expr, ValuedReferenceExpr returnRefExpr) {
         if (expr instanceof RegularFunctionCallExpr) {
             var functionCallExpr = (RegularFunctionCallExpr)expr;
+
+            // add root state if need
+            var decl = functionCallExpr.getDecl();
+            if (!mapFuncState.containsKey(decl)) {
+                mapFuncState.put(decl, buildRootState(decl));
+            }
+
             var refState = mapFuncState.get(functionCallExpr.getDecl());
             if (refState != null) {
                 return createFuncRefState(refState, functionCallExpr.getParams(), returnRefExpr);
@@ -307,6 +314,12 @@ public class SuperStateBuilder {
         }
 
         return null;
+    }
+
+    private static RootState buildRootState(FuncDecl decl) {
+        RootStateBuilder rootStateBuilder = new RootStateBuilder(decl);
+        rootStateBuilder.build();
+        return rootStateBuilder.getRootState();
     }
 
     private static SuperState createFuncRefState(SuperState superState, List<Expression> params, Expression returnExpr) {
