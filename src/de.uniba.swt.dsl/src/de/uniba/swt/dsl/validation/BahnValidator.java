@@ -178,4 +178,54 @@ public class BahnValidator extends AbstractBahnValidator {
             error(e.getMessage(), e.getFeature());
         }
     }
+
+    @Check
+    public void validateRootModule(RootModule module) {
+        int countBlock = 0;
+        int countLayout = 0;
+        int countCrossing = 0;
+
+        int invalidBlockIdx = -1;
+        int invalidLayoutIdx = -1;
+        int invalidCrossingIdx = -1;
+
+        for (int i = 0; i < module.getProperties().size(); i++) {
+            var prop = module.getProperties().get(i);
+            if (prop instanceof BlocksProperty) {
+                countBlock ++;
+                if (countBlock > 1) {
+                    invalidBlockIdx = i;
+                    continue;
+                }
+            }
+
+            if (prop instanceof LayoutProperty) {
+                countLayout++;
+                if (countLayout > 1) {
+                    invalidLayoutIdx = i;
+                    continue;
+                }
+            }
+
+            if (prop instanceof CrossingsProperty) {
+                countCrossing++;
+                if (countCrossing > 1) {
+                    invalidCrossingIdx = i;
+                }
+            }
+        }
+
+        // show error
+        if (invalidBlockIdx >= 0) {
+            error("Only one blocks section is allowed", BahnPackage.Literals.ROOT_MODULE__PROPERTIES, invalidBlockIdx);
+        }
+
+        if (invalidLayoutIdx >= 0) {
+            error("Only one layout section is allowed", BahnPackage.Literals.ROOT_MODULE__PROPERTIES, invalidLayoutIdx);
+        }
+
+        if (invalidCrossingIdx >= 0) {
+            error("Only one crossing section is allowed", BahnPackage.Literals.ROOT_MODULE__PROPERTIES, invalidCrossingIdx);
+        }
+    }
 }
