@@ -293,7 +293,7 @@ BreakStmt returns Statement:
 ;
 
 VariableAssignment:
-	'=' ('{' arrExprs+=Expression (',' arrExprs+=Expression)* '}' | expr=Expression)
+	'=' ('{' arrExprs+=LiteralExpr (',' arrExprs+=LiteralExpr)* '}' | expr=Expression)
 ;
 
 Expression:

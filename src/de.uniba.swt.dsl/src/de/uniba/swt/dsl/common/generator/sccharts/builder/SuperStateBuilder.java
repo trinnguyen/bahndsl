@@ -7,6 +7,7 @@ import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.StringUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -336,14 +337,14 @@ public class SuperStateBuilder {
                 return null;
 
             AssignmentEffect effect = new AssignmentEffect();
-            effect.setExpression(((VarDeclStmt) stmt).getAssignment().getExpr());
+            updateEffect(effect, ((VarDeclStmt) stmt).getAssignment());
             effect.setVarDeclaration(findVarDecl(((VarDeclStmt) stmt).getDecl().getName()));
             return effect;
         }
 
         if (stmt instanceof AssignmentStmt) {
             AssignmentEffect effect = new AssignmentEffect();
-            effect.setExpression(((AssignmentStmt) stmt).getAssignment().getExpr());
+            updateEffect(effect, ((AssignmentStmt) stmt).getAssignment());
 
             var ref = ((AssignmentStmt) stmt).getReferenceExpr();
             effect.setVarDeclaration(findVarDecl(ref.getDecl().getName()));
@@ -374,6 +375,14 @@ public class SuperStateBuilder {
         }
 
         throw new RuntimeException("Statement is not supported");
+    }
+
+    private void updateEffect(AssignmentEffect effect, VariableAssignment assignment) {
+        if (assignment.getExpr() != null) {
+            effect.setExpression(assignment.getExpr());
+        } else if (assignment.getArrExprs() != null){
+            effect.setArrayExprs(assignment.getArrExprs());
+        }
     }
 
     private SVarDeclaration findVarDecl(String name) {

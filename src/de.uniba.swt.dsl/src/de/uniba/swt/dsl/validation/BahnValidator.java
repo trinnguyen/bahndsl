@@ -80,6 +80,16 @@ public class BahnValidator extends AbstractBahnValidator {
     }
 
     @Check
+    public void typeCheckingVariableAssignment(VariableAssignment assignment) {
+        logger.debug("typeCheckingVariableAssignment: " + assignment.getClass().getSimpleName());
+        try {
+            statementValidator.validateAssignment(assignment);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature(), e.getIndex());
+        }
+    }
+
+    @Check
     public void typeCheckingFuncDecl(FuncDecl funcDecl) {
         logger.debug("typeCheckingFuncDecl: " + funcDecl.getClass().getSimpleName());
         try {

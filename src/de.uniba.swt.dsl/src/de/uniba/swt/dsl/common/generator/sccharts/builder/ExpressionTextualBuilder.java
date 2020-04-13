@@ -5,6 +5,7 @@ import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 import de.uniba.swt.dsl.validation.util.ExprUtil;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -12,6 +13,21 @@ public class ExpressionTextualBuilder extends TextualBuilder {
 
     @Inject
     ParamBindingTable paramBindingTable;
+
+    public String buildString(List<LiteralExpr> arrExprs) {
+        clear();
+        append("{");
+        if (arrExprs.size() > 0) {
+            for (int i = 0; i < arrExprs.size(); i++) {
+                generateExpr(arrExprs.get(i));
+                if (i < arrExprs.size() - 1) {
+                    append(",");
+                }
+            }
+        }
+        append("}");
+        return build();
+    }
 
     public String buildString(Expression expression) {
         clear();

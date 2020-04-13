@@ -21,22 +21,6 @@ public class StatementValidator {
      * @param stmt statement
      */
     public void validate(Statement stmt) throws ValidationException {
-        // VarDeclStmt
-        if (stmt instanceof VarDeclStmt) {
-            VarDeclStmt varDeclStmt = (VarDeclStmt) stmt;
-            ExprDataType declType = typeCheckingTable.getDataType(varDeclStmt.getDecl());
-            checkExprType(declType, varDeclStmt.getAssignment().getExpr(), HintDataTypeUtl.from(declType.getDataType()), BahnPackage.Literals.VAR_DECL_STMT__ASSIGNMENT);
-            return;
-        }
-
-        // AssignmentStmt
-        if (stmt instanceof AssignmentStmt) {
-            AssignmentStmt assignmentStmt = (AssignmentStmt) stmt;
-            ExprDataType declType = typeCheckingTable.computeDataType(assignmentStmt.getReferenceExpr());
-            checkExprType(declType, assignmentStmt.getAssignment().getExpr(), HintDataTypeUtl.from(declType.getDataType()), BahnPackage.Literals.ASSIGNMENT_STMT__ASSIGNMENT);
-            return;
-        }
-
         // SelectionStmt
         if (stmt instanceof SelectionStmt) {
             ExprDataType exprType = typeCheckingTable.computeDataType(((SelectionStmt) stmt).getExpr());
@@ -71,6 +55,46 @@ public class StatementValidator {
                 throw new ValidationException("break can only be used inside 'for..in' or 'while' statement", null);
             }
         }
+    }
+
+    public void validateAssignment(VariableAssignment assignment) throws ValidationException {
+        var declType = getDeclDataType(assignment);
+        if (declType == null)
+            return;
+
+        if (assignment.getExpr() != null) {
+            checkExprType(declType, assignment.getExpr(), HintDataTypeUtl.from(declType.getDataType()), BahnPackage.Literals.VARIABLE_ASSIGNMENT__EXPR);
+        }
+        else if (assignment.getArrExprs() != null) {
+            // ensure all elements in the same type
+            if (!declType.isArray()) {
+                throw new ValidationException("Type Error: Expected literal value instead of an array", BahnPackage.Literals.VARIABLE_ASSIGNMENT__ARR_EXPRS);
+            }
+
+            var itemType = new ExprDataType(declType.getDataType(), false);
+            for (int i = 0; i < assignment.getArrExprs().size(); i++) {
+                var arrExpr = assignment.getArrExprs().get(i);
+                if (typeCheckingTable.canComputeType(arrExpr)) {
+                    ExprDataType exprType = typeCheckingTable.computeDataType(arrExpr, HintDataTypeUtl.from(itemType.getDataType()));
+                    if (!itemType.equals(exprType)) {
+                        var err = String.format("Type Error: Expected type %s, actual type: %s", itemType.displayTypeName(), exprType.displayTypeName());
+                        throw new ValidationException(err, BahnPackage.Literals.VARIABLE_ASSIGNMENT__ARR_EXPRS, i);
+                    }
+                }
+            }
+        }
+    }
+
+    private ExprDataType getDeclDataType(VariableAssignment assignment) {
+        if (assignment.eContainer() instanceof VarDeclStmt) {
+            return typeCheckingTable.getDataType(((VarDeclStmt) assignment.eContainer()).getDecl());
+        }
+
+        if (assignment.eContainer() instanceof AssignmentStmt) {
+            return typeCheckingTable.computeDataType(((AssignmentStmt) assignment.eContainer()).getReferenceExpr());
+        }
+
+        return null;
     }
 
     private boolean ensureArray(ValuedReferenceExpr expr) {

@@ -1,5 +1,6 @@
 package de.uniba.swt.dsl.common.generator.sccharts.builder;
 
+import de.uniba.swt.dsl.bahn.AssignmentStmt;
 import de.uniba.swt.dsl.bahn.Expression;
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
 import de.uniba.swt.dsl.common.util.StringUtil;
@@ -213,8 +214,17 @@ public class StateTextualBuilder extends TextualBuilder {
             }
 
             strBuilder.append(" = ");
+
+            // array expr
+            if (assignmentEffect.getArrayExprs() != null) {
+                strBuilder.append(expressionTextualBuilder.buildString(assignmentEffect.getArrayExprs()));
+            }
         }
-        strBuilder.append(generateExpression(effect.getExpression()));
+
+        if (effect.getExpression() != null) {
+            strBuilder.append(generateExpression(effect.getExpression()));
+        }
+
         return strBuilder.toString().trim();
     }
 
