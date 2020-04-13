@@ -151,6 +151,7 @@ BlockElement:
 		'main' mainSeg=[SegmentElement] 
 		('overlap' overlaps+=[SegmentElement])?
 		('trains' (trainTypes+=TrainType)+ 'end')?
+		('speed' maxSpeed=Speed)?
 ;
 
 CrossingElement:
@@ -203,8 +204,16 @@ Length:
 	value=NUMBER unit=LengthUnit
 ;
 
+Speed:
+    value=NUMBER unit=SpeedUnit
+;
+
 enum LengthUnit:
 	CENTIMETRE = 'cm' | METRE = 'm' | KILOMETRE = 'km'
+;
+
+enum SpeedUnit:
+    METERS_SECOND = 'm/s' | KILOMETERS_PER_HOUR = 'km/h'
 ;
 
 Weight:

@@ -42,6 +42,12 @@ class ExtraBlockElementYamlExporter extends AbstractElementYamlExporter<ExtraBlo
             list.add(Tuple.of("signals", element.getSignals()));
         }
 
+        var speed = element.getBlockElement().getMaxSpeed();
+        if (speed != null) {
+            var fmtSpeed = speed.getValue() + speed.getUnit().toString();
+            list.add(Tuple.of("max_speed", fmtSpeed));
+        }
+
         return list;
     }
 }
