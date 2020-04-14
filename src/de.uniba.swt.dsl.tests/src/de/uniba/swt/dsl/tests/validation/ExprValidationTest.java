@@ -93,7 +93,7 @@ public class ExprValidationTest extends AbstractValidationTest {
             // "def test() if 3 int out = 1 end end, Expected type bool, actual type: int"
     })
     public void errorVarDeclTest(String src, String msg) {
-        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.VAR_DECL_STMT, null, msg);
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.VARIABLE_ASSIGNMENT, null, msg);
     }
 
     @Test
@@ -105,7 +105,7 @@ public class ExprValidationTest extends AbstractValidationTest {
                 "def test()\n" +
                 "    bool c = plus(3, 4)\n" +
                 "end";
-        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.VAR_DECL_STMT, null, "Expected type bool, actual type: int");
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.VARIABLE_ASSIGNMENT, null, "Expected type bool, actual type: int");
     }
 
     @Test
@@ -114,7 +114,7 @@ public class ExprValidationTest extends AbstractValidationTest {
                 "    bool b = false\n" +
                 "   b = 4\n" +
                 "end";
-        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.ASSIGNMENT_STMT, null, "Expected type bool, actual type: int");
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.VARIABLE_ASSIGNMENT, null, "Expected type bool, actual type: int");
     }
 
     @Test
