@@ -45,6 +45,7 @@ schema
         segment string
         direction string
         length float
+        speed float
         train_types string[]
         overlaps string[]
         block_signals string[]
