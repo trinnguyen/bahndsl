@@ -41,8 +41,8 @@ public class ExpressionValidator {
             }
 
             // FunctionCallExpr
-            if (expr instanceof FunctionCallExpr) {
-                validateFunctionCallExpr((FunctionCallExpr)expr);
+            if (expr instanceof RegularFunctionCallExpr) {
+                validateRegularFuncCall((RegularFunctionCallExpr)expr);
             }
         }
 
@@ -61,63 +61,6 @@ public class ExpressionValidator {
             if (indexType.getDataType() != DataType.INT_TYPE) {
                 throw new ValidationException("Type Error: Expected int", BahnPackage.Literals.OP_EXPRESSION__LEFT_EXPR);
             }
-        }
-    }
-
-    private void validateFunctionCallExpr(FunctionCallExpr expr) throws ValidationException {
-        if (expr instanceof BehaviourExpr) {
-
-            if (expr instanceof BehaviourGetExpr) {
-                var getter = ((BehaviourGetExpr) expr).getGetExpr();
-                if (getter instanceof GetConfigFuncExpr) {
-                    var configExpr = (GetConfigFuncExpr) getter;
-                    ensureTypeMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(configExpr.getConfigExpr()), BahnPackage.Literals.GET_CONFIG_FUNC_EXPR__CONFIG_EXPR);
-                }
-
-                if (getter instanceof GetTrackStateFuncExpr) {
-                    var trackExpr = (GetTrackStateFuncExpr) getter;
-                    ensureTypeMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(trackExpr.getTrackExpr()), BahnPackage.Literals.GET_TRACK_STATE_FUNC_EXPR__TRACK_EXPR);
-                }
-
-                if (getter instanceof GetRoutesFuncExpr) {
-                    var getRoutesExpr = (GetRoutesFuncExpr) getter;
-                    ensureTypeMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(getRoutesExpr.getSrcSignalExpr()), BahnPackage.Literals.GET_ROUTES_FUNC_EXPR__SRC_SIGNAL_EXPR);
-                    ensureTypeMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(getRoutesExpr.getDestSignalExpr()), BahnPackage.Literals.GET_ROUTES_FUNC_EXPR__DEST_SIGNAL_EXPR);
-                }
-            }
-
-            if (expr instanceof BehaviourSetExpr) {
-                var setter = ((BehaviourSetExpr) expr).getSetExpr();
-
-                if (setter instanceof SetConfigFuncExpr) {
-                    var configExpr = (SetConfigFuncExpr) setter;
-                    ensureTypeMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(configExpr.getConfigExpr()), BahnPackage.Literals.SET_CONFIG_FUNC_EXPR__CONFIG_EXPR);
-                    if (configExpr.getProp().getType() == DataType.STRING_TYPE) {
-                        ensureTypeMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(configExpr.getValueExpr()), BahnPackage.Literals.SET_CONFIG_FUNC_EXPR__VALUE_EXPR);
-                    }
-
-                    return;
-                }
-
-                if (setter instanceof SetTrackStateFuncExpr) {
-                    var trackExpr = (SetTrackStateFuncExpr) setter;
-                    ensureTypeMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(trackExpr.getTrackExpr()), BahnPackage.Literals.SET_TRACK_STATE_FUNC_EXPR__TRACK_EXPR);
-                    return;
-                }
-            }
-
-            if (expr instanceof GrantRouteFuncExpr) {
-                ensureTypeMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(((GrantRouteFuncExpr) expr).getRouteExpr()), BahnPackage.Literals.GRANT_ROUTE_FUNC_EXPR__ROUTE_EXPR);
-                ensureTypeMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(((GrantRouteFuncExpr) expr).getTrainExpr()), BahnPackage.Literals.GRANT_ROUTE_FUNC_EXPR__TRAIN_EXPR);
-            }
-
-            if (expr instanceof EvaluateFuncExpr) {
-                ensureTypeMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(((EvaluateFuncExpr) expr).getObjectExpr()), BahnPackage.Literals.EVALUATE_FUNC_EXPR__OBJECT_EXPR);
-            }
-        }
-
-        if (expr instanceof RegularFunctionCallExpr) {
-            validateRegularFuncCall((RegularFunctionCallExpr)expr);
         }
     }
 
