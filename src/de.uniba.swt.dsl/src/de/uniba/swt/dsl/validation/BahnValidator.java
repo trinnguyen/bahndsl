@@ -9,12 +9,14 @@ import de.uniba.swt.dsl.common.layout.models.CompositeLayoutException;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.validators.LayoutElementValidator;
 import de.uniba.swt.dsl.common.util.BahnConstants;
+import de.uniba.swt.dsl.validation.typing.ExprDataType;
 import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 import de.uniba.swt.dsl.validation.util.ValidationException;
 import de.uniba.swt.dsl.validation.validators.*;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.xtext.validation.Check;
 
 import javax.inject.Inject;
@@ -94,6 +96,16 @@ public class BahnValidator extends AbstractBahnValidator {
         logger.debug("typeCheckingFuncDecl: " + funcDecl.getClass().getSimpleName());
         try {
             declValidator.validateFuncDecl(funcDecl);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingTrainSpeed(SetTrainSpeedFuncExpr funcExpr) {
+        try {
+            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrainExpr()), BahnPackage.Literals.SET_TRAIN_SPEED_FUNC_EXPR__TRAIN_EXPR);
+            ensureValidType(ExprDataType.ScalarInt, typeCheckingTable.computeDataType(funcExpr.getSpeedExpr()), BahnPackage.Literals.SET_TRAIN_SPEED_FUNC_EXPR__SPEED_EXPR);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
@@ -236,6 +248,12 @@ public class BahnValidator extends AbstractBahnValidator {
 
         if (invalidCrossingIdx >= 0) {
             error("Only one crossing section is allowed", BahnPackage.Literals.ROOT_MODULE__PROPERTIES, invalidCrossingIdx);
+        }
+    }
+
+    private static void ensureValidType(ExprDataType expectedType, ExprDataType actualType, EStructuralFeature feature) throws ValidationException {
+        if (!expectedType.equals(actualType)) {
+            throw ValidationException.createTypeException(expectedType, actualType, feature);
         }
     }
 }

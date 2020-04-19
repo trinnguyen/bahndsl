@@ -37,6 +37,10 @@ bool track_state_set_value(const char *id, const char *value);
 
 bool is_segment_occupied(const char *id);
 
+int train_state_get_speed(const char *train_id);
+
+bool train_state_set_speed(const char *train_id, int speed);
+
 char *config_get_point_position(const char *route_id, const char *point_id);
 
 bool string_equals(const char *str1, const char *str2);

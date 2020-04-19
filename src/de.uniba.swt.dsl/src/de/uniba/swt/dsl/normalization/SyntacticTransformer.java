@@ -16,6 +16,10 @@ public class SyntacticTransformer {
 
     private static final String EXTERN_TABLE_GET_ROUTES = "interlocking_table_get_routes";
 
+    private static final String EXTERN_TRAIN_SPEED_GETTER_NAME = "train_state_get_speed";
+
+    private static final String EXTERN_TRAIN_SPEED_SETTER_NAME = "train_state_set_speed";
+
     private static final String EXTERN_STATE_GETTER_NAME = "track_state_get_value";
 
     private static final String EXTERN_STATE_SETTER_NAME = "track_state_set_value";
@@ -53,8 +57,13 @@ public class SyntacticTransformer {
             }
 
             if (getter instanceof GetRoutesFuncExpr) {
-                GetRoutesFuncExpr routesExpr = (GetRoutesFuncExpr) getter;
+                var routesExpr = (GetRoutesFuncExpr) getter;
                 return createExternalFunctionCallExpr(EXTERN_TABLE_GET_ROUTES, List.of(routesExpr.getSrcSignalExpr(), routesExpr.getDestSignalExpr(), arrayLookupTable.createArrayVarExpr(lhsArrayName)));
+            }
+
+            if (getter instanceof GetTrainSpeedFuncExpr) {
+                var speedFuncExpr = (GetTrainSpeedFuncExpr) getter;
+                return createExternalFunctionCallExpr(EXTERN_TRAIN_SPEED_GETTER_NAME, List.of(speedFuncExpr.getTrainExpr()));
             }
 
             if (getter instanceof GetTrackStateFuncExpr) {
@@ -71,6 +80,11 @@ public class SyntacticTransformer {
 
             if (setter instanceof SetConfigFuncExpr) {
                 return normalizeSetConfigFuncExpr((SetConfigFuncExpr)setter);
+            }
+
+            if (setter instanceof SetTrainSpeedFuncExpr) {
+                var setSpeedFuncExpr = (SetTrainSpeedFuncExpr) setter;
+                return createExternalFunctionCallExpr(EXTERN_TRAIN_SPEED_SETTER_NAME, List.of(setSpeedFuncExpr.getTrainExpr(), setSpeedFuncExpr.getSpeedExpr()));
             }
 
             if (setter instanceof SetTrackStateFuncExpr) {

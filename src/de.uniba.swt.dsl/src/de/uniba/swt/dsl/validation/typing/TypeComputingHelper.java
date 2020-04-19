@@ -153,6 +153,10 @@ class TypeComputingHelper {
                     return ExprDataType.ArrayString;
                 }
 
+                if (getter instanceof GetTrainSpeedFuncExpr) {
+                    return ExprDataType.ScalarInt;
+                }
+
                 if (getter instanceof GetTrackStateFuncExpr) {
                     return ExprDataType.ScalarString;
                 }
@@ -160,7 +164,12 @@ class TypeComputingHelper {
 
             if (behaviourExpr instanceof BehaviourSetExpr) {
                 var setter = ((BehaviourSetExpr) behaviourExpr).getSetExpr();
+
                 if (setter instanceof SetConfigFuncExpr) {
+                    return ExprDataType.ScalarBool;
+                }
+
+                if (setter instanceof SetTrainSpeedFuncExpr) {
                     return ExprDataType.ScalarBool;
                 }
 

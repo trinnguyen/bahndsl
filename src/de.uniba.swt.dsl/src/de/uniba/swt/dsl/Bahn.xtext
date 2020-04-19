@@ -373,12 +373,17 @@ BehaviourExpr returns FunctionCallExpr:
 
 BehaviourGetExpr returns BehaviourExpr:
 	{BehaviourGetExpr}
-	'get' getExpr=(GetTrackStateFuncExpr | GetRoutesFuncExpr | GetConfigFuncExpr)
+	'get' getExpr=(GetTrackStateFuncExpr | GetTrainSpeedFuncExpr | GetRoutesFuncExpr | GetConfigFuncExpr)
 ;
 
 GetTrackStateFuncExpr:
 	{GetTrackStateFuncExpr} 
 	'state' trackExpr=PrimaryExpr 
+;
+
+GetTrainSpeedFuncExpr:
+    {GetTrainSpeedFuncExpr}
+    'speed' trainExpr=PrimaryExpr
 ;
 
 GetRoutesFuncExpr returns BehaviourExpr:
@@ -393,12 +398,17 @@ GetConfigFuncExpr:
 
 BehaviourSetExpr returns BehaviourExpr:
 	{BehaviourSetExpr}
-	'set' setExpr=(SetTrackStateFuncExpr | SetConfigFuncExpr)
+	'set' setExpr=(SetTrackStateFuncExpr | SetTrainSpeedFuncExpr | SetConfigFuncExpr)
 ;
 
 SetTrackStateFuncExpr:
 	{SetTrackStateFuncExpr}
 	'state' trackExpr=PrimaryExpr 'to' aspectExpr=TrackState
+;
+
+SetTrainSpeedFuncExpr:
+	{SetTrainSpeedFuncExpr}
+	'train' trainExpr=PrimaryExpr 'speed' 'to' speedExpr=Expression
 ;
 
 SetConfigFuncExpr:
