@@ -88,6 +88,8 @@ public class BahnScopeProvider extends AbstractBahnScopeProvider {
                 names = List.of("segment");
             } else if (reference == BahnPackage.Literals.CROSSING_ELEMENT__KEY) {
                 names = List.of("segment");
+            } else if (reference == BahnPackage.Literals.BLOCK_ELEMENT__LIMIT_KEY) {
+                names = List.of("limit");
             } else if (reference == BahnPackage.Literals.CONFIG_PROP__KEY) {
                 names = List.of("type", "weight", "length");
             }

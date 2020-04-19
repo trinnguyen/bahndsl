@@ -62,6 +62,7 @@ config
     weight
     type
     segment
+    limit
 end
 
 signaltypes
