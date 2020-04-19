@@ -102,10 +102,84 @@ public class BahnValidator extends AbstractBahnValidator {
     }
 
     @Check
-    public void typeCheckingTrainSpeed(SetTrainSpeedFuncExpr funcExpr) {
+    public void typeCheckingGetTrackStateFuncExpr(GetTrackStateFuncExpr funcExpr) {
+        try {
+            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrackExpr()), BahnPackage.Literals.GET_TRACK_STATE_FUNC_EXPR__TRACK_EXPR);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingGetTrainSpeedFuncExpr(GetTrainSpeedFuncExpr funcExpr) {
+        try {
+            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrainExpr()), BahnPackage.Literals.GET_TRAIN_SPEED_FUNC_EXPR__TRAIN_EXPR);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingGetRoutesFuncExpr(GetRoutesFuncExpr funcExpr) {
+        try {
+            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getSrcSignalExpr()), BahnPackage.Literals.GET_ROUTES_FUNC_EXPR__SRC_SIGNAL_EXPR);
+            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getDestSignalExpr()), BahnPackage.Literals.GET_ROUTES_FUNC_EXPR__DEST_SIGNAL_EXPR);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingGetConfigFuncExpr(GetConfigFuncExpr funcExpr) {
+        try {
+            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getConfigExpr()), BahnPackage.Literals.GET_CONFIG_FUNC_EXPR__CONFIG_EXPR);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingSetTrainSpeed(SetTrainSpeedFuncExpr funcExpr) {
         try {
             ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrainExpr()), BahnPackage.Literals.SET_TRAIN_SPEED_FUNC_EXPR__TRAIN_EXPR);
             ensureValidType(ExprDataType.ScalarInt, typeCheckingTable.computeDataType(funcExpr.getSpeedExpr()), BahnPackage.Literals.SET_TRAIN_SPEED_FUNC_EXPR__SPEED_EXPR);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingSetTrackStateFuncExpr(SetTrackStateFuncExpr funcExpr) {
+        try {
+            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrackExpr()), BahnPackage.Literals.SET_TRACK_STATE_FUNC_EXPR__TRACK_EXPR);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingSetConfigFuncExpr(SetConfigFuncExpr funcExpr) {
+        try {
+            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getConfigExpr()), BahnPackage.Literals.SET_CONFIG_FUNC_EXPR__CONFIG_EXPR);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingGrantRouteFuncExpr(GrantRouteFuncExpr funcExpr) {
+        try {
+            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getRouteExpr()), BahnPackage.Literals.GRANT_ROUTE_FUNC_EXPR__ROUTE_EXPR);
+            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrainExpr()), BahnPackage.Literals.GRANT_ROUTE_FUNC_EXPR__TRAIN_EXPR);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingEvaluateFuncExpr(EvaluateFuncExpr funcExpr) {
+        try {
+            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getObjectExpr()), BahnPackage.Literals.EVALUATE_FUNC_EXPR__OBJECT_EXPR);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }

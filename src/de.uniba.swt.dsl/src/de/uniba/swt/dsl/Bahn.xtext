@@ -408,12 +408,12 @@ SetTrackStateFuncExpr:
 
 SetTrainSpeedFuncExpr:
 	{SetTrainSpeedFuncExpr}
-	'train' trainExpr=PrimaryExpr 'speed' 'to' speedExpr=Expression
+	'speed' trainExpr=PrimaryExpr 'to' speedExpr=Expression
 ;
 
 SetConfigFuncExpr:
 	{SetConfigFuncExpr}
-	'config' type=[SchemaElement] '.' prop=[ElementProp] configExpr=PrimaryExpr 'to' valueExpr=PrimaryExpr
+	'config' type=[SchemaElement] '.' prop=[ElementProp] configExpr=PrimaryExpr 'to' valueExpr=Expression
 ;
 
 GrantRouteFuncExpr returns BehaviourExpr:
