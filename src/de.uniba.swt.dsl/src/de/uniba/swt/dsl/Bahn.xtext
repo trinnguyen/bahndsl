@@ -150,8 +150,8 @@ BlockElement:
 		('overlap' overlaps+=[SegmentElement])?
 		'main' mainSeg=[SegmentElement] 
 		('overlap' overlaps+=[SegmentElement])?
-		('trains' (trainTypes+=TrainType)+ 'end')?
 		(limitKey=[ConfigKey] limitSpeed=Speed)?
+		('trains' (trainTypes+=TrainType)+ 'end')?
 ;
 
 CrossingElement:

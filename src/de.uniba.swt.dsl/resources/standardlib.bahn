@@ -64,12 +64,37 @@ config
 end
 
 signaltypes
-    entry 
+    entry # Einfahrsignal
         aspects 
             yellow 0x02 
             green 0x01
             red 0x00
         end 
+        initial red
+    exit # Ausfahrsignal
+        aspects
+            yellow 0x02
+            green 0x01
+            red 0x00
+        end
+        initial red
+    distant # Vorsignal
+        aspects
+            yellow 0x02
+            green 0x01
+        end
+        initial yellow
+    block # Blocksignal
+        aspects
+            green 0x01
+            red 0x00
+        end
+        initial red
+    lightstop # Licht-Sperrsignal
+        aspects
+            white 0x01
+            red 0x00
+        end
         initial red
     peripheral 
         aspects 
