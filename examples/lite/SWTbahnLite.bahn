@@ -1,7 +1,7 @@
 module SWTbahnLite
   boards
     master 0xDA000D680052EF
-      features 
+      features
         0x03:0x14
         0x6E:0x00
       end
@@ -40,40 +40,21 @@ module SWTbahnLite
     seg29 0x1C length 10cm
   end
 
-  aspects
-    yellow 0x02
-    green 0x01
-    red 0x00
-  end
-  
   signals lightcontrol
-    signal1 0x00 aspects yellow green red end initial red
-    signal2 0x01 aspects yellow green red end initial red
-    signal3 0x02 aspects yellow green red end initial red
-    signal4 0x03 aspects yellow green red end initial red
-    signal5 0x04 aspects yellow green red end initial red
-    signal6 0x05 aspects yellow green red end initial red
-    signal7 0x06 aspects green red end initial red
-    signal8 0x07 aspects green red end initial red
-    signal9 0x08 aspects green red end initial red
-    signal10 0x09 aspects green red end initial red
-    signal11 0x0A aspects green red end initial red
-    signal14 0x0B aspects green red end initial red
-  end
-  
-  peripherals lightcontrol
-  	signalends 0x12
-      aspects
-        on 0x00
-        off 0x01
-      end
-      initial on
-    lanterns 0x13
-      aspects
-        on 0x00
-        off 0x01
-      end
-      initial on
+    entry signal2 0x01
+    entry signal1 0x00
+    entry signal3 0x02
+    entry signal4 0x03
+    entry signal5 0x04
+    entry signal6 0x05
+    block signal7 0x06
+    block signal8 0x07
+    block signal9 0x08
+    block signal10 0x09
+    block signal11 0x0A
+    block signal14 0x0B
+    platformlight signalends 0x12
+    platformlight lanterns 0x13
   end
 
   points onecontrol
@@ -88,15 +69,15 @@ module SWTbahnLite
 
   blocks
     # Regular blocks
-    block1 overlap seg20 main seg19 overlap seg18 
+    block1 overlap seg20 main seg19 overlap seg18
       trains
-        cargo passenger 
+        cargo passenger
       end
-    block2 overlap seg7 main seg6 overlap seg5 
+    block2 overlap seg7 main seg6 overlap seg5
     block3 overlap seg3 main seg2 overlap seg1
-    block4 overlap seg16 main seg15 overlap seg14 
+    block4 overlap seg16 main seg15 overlap seg14
     block5 overlap seg11 main seg10 overlap seg9
-    
+
     # buffer blocks
     buffer1 main seg29
     buffer2 main seg25
@@ -136,39 +117,39 @@ module SWTbahnLite
   end
 
   layout
-	
-	  point6.stem -- block1.down
-	  block1.up -- point5.stem
-	  
-	  block2.down -- point2.stem
-	  block2.up -- point1.stem
 
-	  block3.down -- point1.straight
-	  block3.up -- point3.straight
+    point6.stem -- block1.down
+    block1.up -- point5.stem
 
-	  block4.down -- point4.stem
-	  block4.up -- point1.side
+    block2.down -- point2.stem
+    block2.up -- point1.stem
 
-	  block5.down -- point3.stem
-	  block5.up -- point2.straight
+    block3.down -- point1.straight
+    block3.up -- point3.straight
 
-	  platform1.down -- point5.straight
-	  platform2.down -- point7.stem
-	  buffer3.down -- point7.straight 
+    block4.down -- point4.stem
+    block4.up -- point1.side
+
+    block5.down -- point3.stem
+    block5.up -- point2.straight
+
+    platform1.down -- point5.straight
+    platform2.down -- point7.stem
+    buffer3.down -- point7.straight
 
     # signals
     signal1 -- block3.up
-		signal2 -- block3.down
-		signal3 -- block2.up
-		signal4 -- block2.down
-		signal5 -- block5.up
-		signal6 -- block5.down
-		signal7 -- block4.down
-		signal8 -- block4.up
-		signal9 -- block1.up
-		signal10 -- block1.down
-		signal11 -- platform2.down
-		signal14 -- platform1.down
+    signal2 -- block3.down
+    signal3 -- block2.up
+    signal4 -- block2.down
+    signal5 -- block5.up
+    signal6 -- block5.down
+    signal7 -- block4.down
+    signal8 -- block4.up
+    signal9 -- block1.up
+    signal10 -- block1.down
+    signal11 -- platform2.down
+    signal14 -- platform1.down
 
     # points
     point5.side -- point2.side
