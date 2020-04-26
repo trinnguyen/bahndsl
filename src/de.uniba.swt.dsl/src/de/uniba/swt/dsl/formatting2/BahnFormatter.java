@@ -1,6 +1,5 @@
 package de.uniba.swt.dsl.formatting2;
 
-import com.google.inject.internal.cglib.core.$ProcessArrayCallback;
 import de.uniba.swt.dsl.bahn.*;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
