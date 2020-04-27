@@ -6,7 +6,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class StandardLibHelper {
@@ -19,55 +19,53 @@ public class StandardLibHelper {
 	public static void loadStandardLibResource(ResourceSet resourceSet) {
         logger.debug("Start loading standard resource");
         
-        URI uri = URI.createURI(FILE_NAME);
-        var resource = resourceSet.createResource(uri);
-
-        InputStream stream = null;
-        try {
-        	// load stream
-            stream = loadEmbeddedStream();
-            if (stream == null ) {
-            	stream = loadPluginResourceStream();
-            }
-            
-            resource.load(stream, resourceSet.getLoadOptions());
-            if (resource.getErrors().size() > 0) {
-                logger.error("Error on parsing built-in standard library");
-                for (Resource.Diagnostic error : resource.getErrors()) {
-                    logger.error(error);
-                }
-            } else {
-            	logger.info("Success loading standard library");
-            }
-        } catch (IOException e) {
-            logger.error("Error on loading built-in standing library: " + e.getMessage());
-        } finally {
-        	if (stream != null) {
-        		try {
-					stream.close();
-				} catch (IOException e) {
-					logger.error("Failed to close stream: " + e.getMessage());
-				}
-        	}
+        var resource = loadEmbeddedResource(resourceSet);
+        if (resource == null ) {
+        	logger.debug("Failed to load resource from embedded, attempt to load from plugin");
+        	resource = loadPluginResource(resourceSet);
+        }
+        
+        if (resource != null) {        
+	        if (resource.getErrors().size() > 0) {
+	            logger.error("Error on parsing built-in standard library");
+	            for (Resource.Diagnostic error : resource.getErrors()) {
+	                logger.error(error);
+	            }
+	        } else {
+	        	logger.info("Success loading standard library");
+	        }
         }
     }
-    
-    /**
+	
+	/**
      * Load stream from embedded resource of Java application
      * Used in cli compiler and ide server for visual studio code extension
      * @return
      */
-    private static InputStream loadEmbeddedStream() {
-    	return StandardLibHelper.class.getClassLoader().getResourceAsStream(FILE_NAME);
+	private static Resource loadEmbeddedResource(ResourceSet resourceSet) {
+		try (var stream = StandardLibHelper.class.getClassLoader().getResourceAsStream(FILE_NAME)) {
+			if (stream == null)
+				return null;
+			
+			URI uri = URI.createURI(FILE_NAME);
+	        var resource = resourceSet.createResource(uri);
+			resource.load(stream, resourceSet.getLoadOptions());
+			return resource;
+		} catch (IOException e) {
+			logger.error("Failed to load embedded stream: " + e.getMessage());
+		}
+		
+		return null;
 	}
-
-    /**
-     * Load stream from plugin resource
-     * @return
-     * @throws IOException
-     */
-	private static InputStream loadPluginResourceStream() throws IOException  {
-    	var url = new URL("platform:/plugin/de.uniba.swt.dsl/" + RESOURCES_FOLDER_NAME + "/" + FILE_NAME);
-	    return url.openConnection().getInputStream();
+	
+	/**
+	 * Load resource from URI using Eclipse plugin
+	 * Run with Eclipse-based IDE only
+	 * @param resourceSet
+	 * @return
+	 */
+	private static Resource loadPluginResource(ResourceSet resourceSet)  {
+		URI uri = URI.createURI("platform:/plugin/de.uniba.swt.dsl/" + RESOURCES_FOLDER_NAME + "/" + FILE_NAME);
+    	return resourceSet.getResource(uri, true);
     }
 }
