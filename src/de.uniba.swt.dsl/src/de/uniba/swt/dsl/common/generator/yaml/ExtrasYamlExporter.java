@@ -35,12 +35,32 @@ public class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         List<ExtraBlockElement> platforms = rootModule.getProperties().stream().filter(p -> p instanceof PlatformsProperty).map(p -> ((PlatformsProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraItem(b, mapSignals)).collect(Collectors.toList());
         List<CrossingElement> crossings = rootModule.getProperties().stream().filter(p -> p instanceof CrossingsProperty).map(p -> ((CrossingsProperty) p).getItems()).flatMap(Collection::stream).collect(Collectors.toList());
         List<SignalType> signaltypes = getSignalTypes(rootModule);
+        List<CompositionSignalElement> compositeSignals = new ArrayList<>();
+
+        // load
+        for (ModuleProperty property : rootModule.getProperties()) {
+            List<SignalElement> elements = null;
+            if (property instanceof SignalsProperty) {
+                elements = ((SignalsProperty) property).getItems();
+            } else if (property instanceof PeripheralsProperty) {
+                elements = ((PeripheralsProperty) property).getItems();
+            }
+
+            // export
+            if (elements != null) {
+                var items = elements.stream().filter(s -> s instanceof CompositionSignalElement)
+                        .map(s -> (CompositionSignalElement)s)
+                        .collect(Collectors.toList());
+                compositeSignals.addAll(items);
+            }
+        }
 
         // blocks
         exportSection("blocks:", blocks);
         exportSection("platforms:", platforms);
         exportSection("crossings:", crossings);
         exportSection("signaltypes:", signaltypes);
+        exportSection("compositions:", compositeSignals);
     }
 
     private List<SignalType> getSignalTypes(RootModule rootModule) {

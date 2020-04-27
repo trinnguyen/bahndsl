@@ -12,8 +12,13 @@ public class ElementExporterFactory {
             return;
         }
 
-        if (obj instanceof SignalElement) {
-            new SignalElementYamlExporter().build(exporter, (SignalElement) obj);
+        if (obj instanceof RegularSignalElement) {
+            new RegularSignalElementYamlExporter().build(exporter, (RegularSignalElement) obj);
+            return;
+        }
+
+        if (obj instanceof CompositionSignalElement) {
+            new CompositionSignalElementYamlExporter().build(exporter, (CompositionSignalElement) obj);
             return;
         }
 

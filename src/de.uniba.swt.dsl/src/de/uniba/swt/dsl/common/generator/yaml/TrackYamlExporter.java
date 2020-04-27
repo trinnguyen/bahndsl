@@ -3,10 +3,8 @@ package de.uniba.swt.dsl.common.generator.yaml;
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 class TrackYamlExporter extends AbstractBidibYamlExporter {
     @Override
@@ -31,17 +29,17 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
         increaseLevel();
 
         List<Object> pointItems = new ArrayList<>();
-        List<SignalElement> signalsItems = new ArrayList<>();
-        List<SignalElement> peripherals = new ArrayList<>();
+        List<RegularSignalElement> signalsItems = new ArrayList<>();
+        List<RegularSignalElement> peripherals = new ArrayList<>();
         for (ModuleProperty property : properties) {
             if (property instanceof SegmentsProperty) {
                 exportSection("segments:", ((SegmentsProperty) property).getItems());
             } else if (property instanceof SignalsProperty) {
-                signalsItems.addAll(((SignalsProperty) property).getItems());
+                signalsItems.addAll(regularSignalsFrom((SignalsProperty) property));
             } else if (property instanceof PointsProperty) {
                 pointItems.addAll(((PointsProperty) property).getItems());
             } else if (property instanceof PeripheralsProperty) {
-                peripherals.addAll(((PeripheralsProperty) property).getItems());
+                peripherals.addAll(regularSignalsFrom((PeripheralsProperty) property));
             }
         }
 
@@ -64,6 +62,14 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
         }
 
         decreaseLevel();
+    }
+
+    private Collection<? extends RegularSignalElement> regularSignalsFrom(SignalsProperty property) {
+        return property.getItems().stream().filter(s -> s instanceof RegularSignalElement).map(s -> (RegularSignalElement)s).collect(Collectors.toList());
+    }
+
+    private Collection<? extends RegularSignalElement> regularSignalsFrom(PeripheralsProperty property) {
+        return property.getItems().stream().filter(s -> s instanceof RegularSignalElement).map(s -> (RegularSignalElement)s).collect(Collectors.toList());
     }
 
     private Map<String, List<ModuleProperty>> buildMap(RootModule rootModule) {

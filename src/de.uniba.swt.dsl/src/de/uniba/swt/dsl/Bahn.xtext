@@ -90,7 +90,7 @@ BlocksProperty :
 CrossingsProperty:
 	{CrossingsProperty}
     'crossings'
-		(items+=CrossingElement)*
+		(items+=CrossingElement)
 	'end';
 PlatformsProperty :
 	{PlatformsProperty} 'platforms'
@@ -98,7 +98,7 @@ PlatformsProperty :
 	'end';
 TrainsProperty :
 	{TrainsProperty} 'trains'
-		(items+=TrainElement)*
+		(items+=TrainElement)+
 	'end';
 LayoutProperty :
 	{LayoutProperty} 'layout'
@@ -130,7 +130,17 @@ SegmentElement :
 ;
 
 SignalElement :
-	type=[SignalType] name=ID number=HEX 
+	RegularSignalElement | CompositionSignalElement
+;
+
+RegularSignalElement returns SignalElement :
+	{RegularSignalElement}
+	type=[SignalType] name=ID number=HEX
+;
+
+CompositionSignalElement returns SignalElement :
+	{CompositionSignalElement}
+	'composite' name=ID 'signals' (signals+=[RegularSignalElement])+ 'end'
 ;
 
 PointElement:
@@ -159,7 +169,7 @@ CrossingElement:
 ;
 
 TrainElement :
-	name=ID address=HEX 
+	name=ID address=HEX
 		'steps' steps=INT
 		('calibration' (calibrations+=INT)+ 'end')? &
 		('peripherals' (peripherals+=TrainPeripheral)+ 'end')? &
@@ -408,12 +418,12 @@ SetTrackStateFuncExpr:
 
 SetTrainSpeedFuncExpr:
 	{SetTrainSpeedFuncExpr}
-	'speed' trainExpr=PrimaryExpr 'to' speedExpr=Expression
+	'speed' trainExpr=PrimaryExpr 'to' speedExpr=PrimaryExpr
 ;
 
 SetConfigFuncExpr:
 	{SetConfigFuncExpr}
-	'config' type=[SchemaElement] '.' prop=[ElementProp] configExpr=PrimaryExpr 'to' valueExpr=Expression
+	'config' type=[SchemaElement] '.' prop=[ElementProp] configExpr=PrimaryExpr 'to' valueExpr=PrimaryExpr
 ;
 
 GrantRouteFuncExpr returns BehaviourExpr:

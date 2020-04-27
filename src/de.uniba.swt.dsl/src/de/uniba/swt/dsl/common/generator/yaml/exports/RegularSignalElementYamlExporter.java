@@ -7,15 +7,15 @@ import org.eclipse.emf.common.util.EList;
 import java.util.List;
 import java.util.Map;
 
-class SignalElementYamlExporter extends AbstractElementYamlExporter<SignalElement> {
+class RegularSignalElementYamlExporter extends AbstractElementYamlExporter<RegularSignalElement> {
 
     @Override
-    protected String getId(SignalElement element) {
+    protected String getId(RegularSignalElement element) {
         return element.getName();
     }
 
     @Override
-    protected List<Tuple<String, Object>> getProps(SignalElement element) {
+    protected List<Tuple<String, Object>> getProps(RegularSignalElement element) {
         return List.of(Tuple.of("number", element.getNumber()),
                 Tuple.of("aspects", element.getType().getItems()),
                 Tuple.of("initial", element.getType().getInitial().getName()),

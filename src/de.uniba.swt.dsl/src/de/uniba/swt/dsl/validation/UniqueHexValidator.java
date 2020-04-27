@@ -1,14 +1,14 @@
 package de.uniba.swt.dsl.validation;
 
 import de.uniba.swt.dsl.common.models.Util;
-import org.eclipse.emf.common.util.EList;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
 public class UniqueHexValidator {
-    public <T> void validateUniqueAddress(EList<T> items, Function<T, String> addrMapper) throws Exception {
+    public <T> void validateUniqueAddress(List<T> items, Function<T, String> addrMapper) throws Exception {
         Set<Long> set = new HashSet<>();
         for (T item : items) {
             String strVal = addrMapper.apply(item);

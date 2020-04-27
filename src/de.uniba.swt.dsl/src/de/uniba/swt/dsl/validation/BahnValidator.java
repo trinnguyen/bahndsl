@@ -21,6 +21,7 @@ import org.eclipse.xtext.validation.Check;
 
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This class contains custom validation rules.
@@ -126,7 +127,11 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void validateSignalsProperty(SignalsProperty signalsProperty) {
         try {
-            hexValidator.validateUniqueAddress(signalsProperty.getItems(), SignalElement::getNumber);
+            var items = signalsProperty.getItems().stream()
+                    .filter(s -> s instanceof RegularSignalElement)
+                    .map(s -> (RegularSignalElement)s)
+                    .collect(Collectors.toList());
+            hexValidator.validateUniqueAddress(items, RegularSignalElement::getNumber);
             boardRefValidator.validateBoard(signalsProperty, signalsProperty.getBoard());
         } catch (Exception e) {
             error(e.getMessage(), BahnPackage.Literals.SIGNALS_PROPERTY__ITEMS);

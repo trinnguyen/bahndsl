@@ -53,6 +53,13 @@ schema
         id string
         segment string
     end
+
+    composition
+        entry
+        exit
+        block
+        distant
+    end
 end
 
 config
