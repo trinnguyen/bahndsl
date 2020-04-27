@@ -55,10 +55,10 @@ schema
     end
 
     composition
-        entry
-        exit
-        block
-        distant
+        entry string
+        exit string
+        block string
+        distant string
     end
 end
 
