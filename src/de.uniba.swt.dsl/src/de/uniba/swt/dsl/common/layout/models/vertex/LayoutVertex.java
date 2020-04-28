@@ -1,10 +1,5 @@
 package de.uniba.swt.dsl.common.layout.models.vertex;
 
-import de.uniba.swt.dsl.bahn.BlockElement;
-import de.uniba.swt.dsl.bahn.SignalElement;
-import de.uniba.swt.dsl.common.layout.models.LayoutException;
-import de.uniba.swt.dsl.common.models.Signal;
-
 import java.util.*;
 
 public class LayoutVertex {

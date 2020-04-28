@@ -1,6 +1,6 @@
 package de.uniba.swt.dsl.validation;
 
-import de.uniba.swt.dsl.common.models.Util;
+import de.uniba.swt.dsl.common.util.BahnUtil;
 
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +12,7 @@ public class UniqueHexValidator {
         Set<Long> set = new HashSet<>();
         for (T item : items) {
             String strVal = addrMapper.apply(item);
-            Long val = Util.parseHex(strVal);
+            Long val = BahnUtil.parseHex(strVal);
             if (set.contains(val)) {
                 throw new Exception("Address is already used in another element: " + strVal);
             }

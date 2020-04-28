@@ -5,13 +5,11 @@ import de.uniba.swt.dsl.bahn.SegmentElement;
 import de.uniba.swt.dsl.common.layout.models.BlockDirection;
 import de.uniba.swt.dsl.common.layout.models.vertex.BlockVertexMember;
 import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
-import de.uniba.swt.dsl.common.models.Segment;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public class BlockEdge extends AbstractEdge {
 
