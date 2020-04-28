@@ -13,7 +13,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ExtrasYamlExporter extends AbstractBidibYamlExporter {
+class ExtrasYamlExporter extends AbstractBidibYamlExporter {
     private NetworkLayout networkLayout;
 
     public String export(RootModule rootModule, NetworkLayout networkLayout) {

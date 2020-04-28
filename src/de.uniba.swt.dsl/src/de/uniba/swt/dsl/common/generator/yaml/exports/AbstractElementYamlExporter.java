@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractElementYamlExporter<T> {
+abstract class AbstractElementYamlExporter<T> {
 
     public void build(YamlExporter exporter, T element) {
         exporter.appendLine("- %s: %s", getIdName(), getId(element));

@@ -39,12 +39,16 @@ public class BahnNormalizationProvider {
 
         for (FuncDecl decl : decls) {
             // reset
-            varGenerator.resetFunc(decl.getName());
-            arrayLookupTable.resetFunc(decl.getName());
+            beforeNormalize(decl);
 
             // normalize
             normalizeFunc(decl);
         }
+    }
+
+    public void beforeNormalize(FuncDecl decl) {
+        varGenerator.resetFunc(decl.getName());
+        arrayLookupTable.resetFunc(decl.getName());
     }
 
     private void normalizeFunc(FuncDecl funcDecl) {

@@ -6,7 +6,7 @@ import de.uniba.swt.dsl.common.util.Tuple;
 import java.util.List;
 import java.util.Map;
 
-public class TrainPeripheralYamlExporter extends AbstractElementYamlExporter<TrainPeripheral> {
+class TrainPeripheralYamlExporter extends AbstractElementYamlExporter<TrainPeripheral> {
     @Override
     protected String getId(TrainPeripheral element) {
         return element.getName();

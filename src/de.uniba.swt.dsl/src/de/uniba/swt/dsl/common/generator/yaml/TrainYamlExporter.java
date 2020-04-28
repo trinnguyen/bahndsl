@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TrainYamlExporter extends AbstractBidibYamlExporter {
+class TrainYamlExporter extends AbstractBidibYamlExporter {
     @Override
     protected String getHeaderComment() {
         return "Train configuration";
