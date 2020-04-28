@@ -1,3 +1,6 @@
+plugins {
+	id 'jacoco'
+}
 dependencies {
 	compile project(':de.uniba.swt.dsl')
 	testCompile 'org.junit.jupiter:junit-jupiter-api'
