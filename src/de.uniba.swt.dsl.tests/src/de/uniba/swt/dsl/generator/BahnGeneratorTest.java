@@ -126,6 +126,31 @@ class BahnGeneratorTest {
         ensureContains(contentExtras, List.of("compositions:", "- id: signal100", "entry: signal1", "distant: signal2"));
     }
 
+    @Test
+    void testGenerateSCChartsRequestRoute() throws Exception {
+        invokeGenerate("def request_route(string src_signal_id, string dst_signal_id, string train_id): string return \"\" end");
+
+        var files = fsa.getTextFiles();
+        var contentReq = getFile(files, "request_route_sccharts.sctx");
+        ensureContains(contentReq, List.of("scchart request_route"));
+    }
+
+    @Test
+    void testGenerateSCChartsDriveRoute() throws Exception {
+        invokeGenerate("def request_route(string src_signal_id, string dst_signal_id, string train_id): string return \"\" end " +
+                "def drive_route(string route_id, string train_id, string segment_ids[]) end");
+
+        var files = fsa.getTextFiles();
+
+        // ensure request route is exist (mandatory)
+        var contentReq = getFile(files, "request_route_sccharts.sctx");
+        ensureContains(contentReq, List.of("scchart request_route"));
+
+        // ensure drive_route is exist (optional)
+        var contentDrive = getFile(files, "drive_route_sccharts.sctx");
+        ensureContains(contentDrive, List.of("scchart drive_route"));
+    }
+
     private String getFile(Map<String, CharSequence> files, String name) {
         for (String s : files.keySet()) {
             if (s.endsWith(name))
