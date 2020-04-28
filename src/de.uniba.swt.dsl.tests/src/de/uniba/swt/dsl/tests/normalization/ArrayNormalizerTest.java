@@ -2,17 +2,24 @@ package de.uniba.swt.dsl.tests.normalization;
 
 import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.normalization.ArrayNormalizer;
 import de.uniba.swt.dsl.normalization.BahnNormalizationProvider;
 import de.uniba.swt.dsl.tests.BahnInjectorProvider;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.xtext.resource.SaveOptions;
+import org.eclipse.xtext.serializer.impl.Serializer;
 import org.eclipse.xtext.testing.InjectWith;
 import org.eclipse.xtext.testing.extensions.InjectionExtension;
+import org.eclipse.xtext.testing.util.ResourceHelper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,22 +30,18 @@ import java.util.stream.Collectors;
 public class ArrayNormalizerTest {
 
     @Inject
+    ResourceHelper resourceHelper;
+
+    @Inject
     BahnNormalizationProvider provider;
 
     @Inject
     ArrayNormalizer normalizer;
 
     @Test
-    public void TestArray() {
-        var varDecl = BahnFactory.eINSTANCE.createVarDecl();
-        varDecl.setArray(true);
-        varDecl.setName("arr");
-        varDecl.setType(DataType.STRING_TYPE);
-
-        var declStmt = BahnFactory.eINSTANCE.createVarDeclStmt();
-        declStmt.setDecl(varDecl);
-
-        FuncDecl funcDecl = createFuncDecl("test", declStmt);
+    public void testStringArr() throws Exception {
+        var res = resourceHelper.resource("def test() string arr[] end");
+        FuncDecl funcDecl = BahnUtil.getDecls(res).get(0);
 
         // perform
         provider.beforeNormalize(funcDecl);
@@ -59,13 +62,4 @@ public class ArrayNormalizerTest {
         Assert.assertEquals(expectedVars, items);
     }
 
-    private FuncDecl createFuncDecl(String name, Statement stmt) {
-        var decl = BahnFactory.eINSTANCE.createFuncDecl();
-
-        decl.setName(name);
-        decl.setStmtList(BahnFactory.eINSTANCE.createStatementList());
-        decl.getStmtList().getStmts().add(stmt);
-
-        return decl;
-    }
 }

@@ -10,7 +10,6 @@ public abstract class AbstractValidationTest {
 
     protected BahnModel internalParse(String src) {
         var set = getResourceSetProvider().get();
-        StandardLibHelper.loadStandardLibResource(set);
         try {
             return getParseHelper().parse(src, set);
         } catch (Exception e) {
