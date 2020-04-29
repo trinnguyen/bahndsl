@@ -7,7 +7,8 @@ public class OperatorTypeHelper {
         return op == OperatorType.PLUS
                 || op == OperatorType.MINUS
                 || op == OperatorType.MULTIPLY
-                || op == OperatorType.DIVISION;
+                || op == OperatorType.DIVISION
+                || op == OperatorType.MOD;
     }
 
     public static boolean isLogicalOp(OperatorType op) {
