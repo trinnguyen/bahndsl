@@ -250,6 +250,7 @@ public class ExprParsingTest {
 			"def inter() bool b1 = is route1 not available end",
 			"def inter() bool b1 = is seg1 occupied end",
 			"def inter() bool b1 = is seg1 not occupied end",
+			"def inter() int lm = get speed train1 end",
 	})
 	public void validSyntacticSugarTest(String src) {
 		parserTestHelper.assertNoParsingErrors(src);

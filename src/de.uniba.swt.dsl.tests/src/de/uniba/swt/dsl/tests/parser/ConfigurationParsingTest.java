@@ -31,6 +31,8 @@ public class ConfigurationParsingTest {
 			"module test\n" +
 			"    signals master\n" +
 			"        entry sig1 0x00\n" +
+			"        distant sig2 0x02\n" +
+			"        composite sig3 signals sig1 sig2 end\n" +
 			"    end\n" +
 			"end",
 

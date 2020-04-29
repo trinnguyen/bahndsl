@@ -82,6 +82,12 @@ public class TestConstants {
             "return get_shortest_route(ids) " +
             "end";
 
+    public final static String SampleRequestRoute = "def request_route(string src_signal_id, string dst_signal_id, string train_id): string " +
+            "string ids[] = get routes from src_signal_id to dst_signal_id " +
+            "return test() " +
+            "end " +
+            "def test() : string return \"\" end";
+
     public final static String SampleDriveRoute = "def drive_route(string route_id, string train_id, string segment_ids[]) " +
             "string block_id = get_block(route_id, segment_ids) " +
             "string pre_block = get_previous_block(route_id, block_id) " +

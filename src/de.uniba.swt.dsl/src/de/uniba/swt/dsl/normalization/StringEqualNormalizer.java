@@ -10,6 +10,8 @@ import java.util.List;
 
 public class StringEqualNormalizer extends AbstractNormalizer {
 
+    public final static String ExternStringEqualsFuncName = "string_equals";
+
     @Inject
     TypeCheckingTable typeCheckingTable;
 
@@ -22,7 +24,7 @@ public class StringEqualNormalizer extends AbstractNormalizer {
                     && (opExpr.getOp() == OperatorType.EQUAL || opExpr.getOp() == OperatorType.NOT_EQUAL)) {
                 var type = typeCheckingTable.computeDataType(opExpr.getLeftExpr());
                 if (type != null && type.isScalarString()) {
-                    PrimaryExpr externExpr = SyntacticTransformer.createExternalFunctionCallExpr("string_equals", List.of(opExpr.getLeftExpr(), opExpr.getRightExpr()));
+                    PrimaryExpr externExpr = SyntacticTransformer.createExternalFunctionCallExpr(ExternStringEqualsFuncName, List.of(opExpr.getLeftExpr(), opExpr.getRightExpr()));
                     if (opExpr.getOp() == OperatorType.NOT_EQUAL) {
                         var unaryExpr = BahnFactory.eINSTANCE.createUnaryExpr();
                         unaryExpr.setExpr(externExpr);

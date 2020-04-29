@@ -11,6 +11,8 @@ import org.eclipse.xtext.testing.InjectWith;
 import org.eclipse.xtext.testing.extensions.InjectionExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.Map;
@@ -152,18 +154,14 @@ class BahnGeneratorTest {
                 "label=\"point1.normal\""));
     }
 
-    @Test
-    void testGenerateSCChartsRequestRoute() throws Exception {
-        invokeGenerate("def request_route(string src_signal_id, string dst_signal_id, string train_id): string return \"\" end");
-
-        // verify
-        ensureFileContent("request_route_sccharts.sctx", List.of("scchart request_route"));
-    }
-
-    @Test
-    void testGenerateSCChartsDriveRoute() throws Exception {
-        invokeGenerate("def request_route(string src_signal_id, string dst_signal_id, string train_id): string return \"\" end " +
-                "def drive_route(string route_id, string train_id, string segment_ids[]) end");
+    @ParameterizedTest
+    @ValueSource(strings = {
+            TestConstants.SampleRequestRouteForeach,
+            TestConstants.SampleRequestRoute,
+            TestConstants.SampleRequestRouteForeach + " " + TestConstants.SampleDriveRoute
+    })
+    void testGenerateSCCharts(String src) throws Exception {
+        invokeGenerate(src);
 
         // ensure request route is exist (mandatory)
         ensureFileContent("request_route_sccharts.sctx", List.of("scchart request_route"));

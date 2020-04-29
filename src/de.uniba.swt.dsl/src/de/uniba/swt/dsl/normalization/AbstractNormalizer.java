@@ -42,6 +42,11 @@ public abstract class AbstractNormalizer {
             return normalizeExpr(selectionStmt.getExpr());
         }
 
+        if (stmt instanceof ForeachStmt) {
+            normalizeStmtList(((ForeachStmt) stmt).getStmts());
+            return normalizeExpr(((ForeachStmt) stmt).getArrayExpr());
+        }
+
         if (stmt instanceof IterationStmt) {
             normalizeStmtList(((IterationStmt) stmt).getStmts());
             return normalizeExpr(((IterationStmt) stmt).getExpr());

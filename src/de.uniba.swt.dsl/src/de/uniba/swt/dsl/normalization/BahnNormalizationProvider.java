@@ -46,11 +46,16 @@ public class BahnNormalizationProvider {
         }
     }
 
-    public void beforeNormalize(FuncDecl decl) {
+    private void beforeNormalize(FuncDecl decl) {
         varGenerator.resetFunc(decl.getName());
         arrayLookupTable.resetFunc(decl.getName());
     }
 
+    /**
+     * Normalize function with several providers
+     * Order is important
+     * @param funcDecl
+     */
     private void normalizeFunc(FuncDecl funcDecl) {
         // convert list to array with additional length variable
         arrayNormalizer.normalizeFunc(funcDecl);

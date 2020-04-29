@@ -8,7 +8,8 @@ import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.layout.models.CompositeLayoutException;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.validators.LayoutElementValidator;
-import de.uniba.swt.dsl.common.util.BahnConstants;
+import de.uniba.swt.dsl.common.util.BahnUtil;
+import de.uniba.swt.dsl.normalization.SyntacticTransformer;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
 import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 import de.uniba.swt.dsl.validation.util.ValidationException;
@@ -21,7 +22,6 @@ import org.eclipse.xtext.validation.Check;
 
 import javax.inject.Inject;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +50,9 @@ public class BahnValidator extends AbstractBahnValidator {
 
     @Inject
     TypeCheckingTable typeCheckingTable;
+
+    @Inject
+    SyntacticTransformer syntacticTransformer;
 
     @Inject
     ExpressionValidator expressionValidator;
@@ -238,12 +241,50 @@ public class BahnValidator extends AbstractBahnValidator {
     }
 
     @Check
-    public void typeCheckingStatement(Statement statement) {
-        logger.debug("typeCheckingStatement: " + statement.getClass().getSimpleName());
+    public void typeCheckingSelectionStmt(SelectionStmt stmt) {
+        ExprDataType exprType = typeCheckingTable.computeDataType(stmt.getExpr());
         try {
-            statementValidator.validate(statement);
+            checkTypes(ExprDataType.ScalarBool, exprType, BahnPackage.Literals.SELECTION_STMT__EXPR);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingIterationStmt(IterationStmt stmt) {
+        ExprDataType exprType = typeCheckingTable.computeDataType(stmt.getExpr());
+        try {
+            checkTypes(ExprDataType.ScalarBool, exprType, BahnPackage.Literals.SELECTION_STMT__EXPR);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingForeachStmt(ForeachStmt stmt) {
+
+        // ensure array is selected
+        var arrayType = typeCheckingTable.computeDataType(stmt.getArrayExpr());
+        var ensureArray = arrayType.isArray();
+        if (!ensureArray) {
+            error("Type Error: Expected type array", BahnPackage.Literals.FOREACH_STMT__ARRAY_EXPR);
+        }
+
+        // ensure current element is matched
+        var expectedType = new ExprDataType(arrayType.getDataType(), false);
+        var actualType = new ExprDataType(stmt.getDecl().getType(), stmt.getDecl().isArray());
+        try {
+            checkTypes(expectedType, actualType, BahnPackage.Literals.FOREACH_STMT__DECL);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingBreakStmt(BreakStmt stmt) {
+        // ensure having while outside
+        if (!BahnUtil.isInsideIterationStmt(stmt)) {
+            error("break can only be used inside 'for..in", null);
         }
     }
 
@@ -270,7 +311,7 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void typeCheckingGetTrackStateFuncExpr(GetTrackStateFuncExpr funcExpr) {
         try {
-            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrackExpr()), BahnPackage.Literals.GET_TRACK_STATE_FUNC_EXPR__TRACK_EXPR);
+            checkTypes(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrackExpr()), BahnPackage.Literals.GET_TRACK_STATE_FUNC_EXPR__TRACK_EXPR);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
@@ -279,17 +320,27 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void typeCheckingGetTrainSpeedFuncExpr(GetTrainSpeedFuncExpr funcExpr) {
         try {
-            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrainExpr()), BahnPackage.Literals.GET_TRAIN_SPEED_FUNC_EXPR__TRAIN_EXPR);
+            checkTypes(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrainExpr()), BahnPackage.Literals.GET_TRAIN_SPEED_FUNC_EXPR__TRAIN_EXPR);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
     }
 
     @Check
+    public void checkArrayGetter(BehaviourGetExpr expr) {
+        if (syntacticTransformer.isArrayGetter(expr)) {
+            if (!(expr.eContainer() instanceof VariableAssignment)) {
+                error("Missing assignment to an array variable", BahnPackage.Literals.BEHAVIOUR_GET_EXPR__GET_EXPR);
+            }
+        }
+    }
+
+    @Check
     public void typeCheckingGetRoutesFuncExpr(GetRoutesFuncExpr funcExpr) {
         try {
-            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getSrcSignalExpr()), BahnPackage.Literals.GET_ROUTES_FUNC_EXPR__SRC_SIGNAL_EXPR);
-            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getDestSignalExpr()), BahnPackage.Literals.GET_ROUTES_FUNC_EXPR__DEST_SIGNAL_EXPR);
+            // type checking
+            checkTypes(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getSrcSignalExpr()), BahnPackage.Literals.GET_ROUTES_FUNC_EXPR__SRC_SIGNAL_EXPR);
+            checkTypes(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getDestSignalExpr()), BahnPackage.Literals.GET_ROUTES_FUNC_EXPR__DEST_SIGNAL_EXPR);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
@@ -298,7 +349,7 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void typeCheckingGetConfigFuncExpr(GetConfigFuncExpr funcExpr) {
         try {
-            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getConfigExpr()), BahnPackage.Literals.GET_CONFIG_FUNC_EXPR__CONFIG_EXPR);
+            checkTypes(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getConfigExpr()), BahnPackage.Literals.GET_CONFIG_FUNC_EXPR__CONFIG_EXPR);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
@@ -307,8 +358,8 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void typeCheckingSetTrainSpeed(SetTrainSpeedFuncExpr funcExpr) {
         try {
-            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrainExpr()), BahnPackage.Literals.SET_TRAIN_SPEED_FUNC_EXPR__TRAIN_EXPR);
-            ensureValidType(ExprDataType.ScalarInt, typeCheckingTable.computeDataType(funcExpr.getSpeedExpr()), BahnPackage.Literals.SET_TRAIN_SPEED_FUNC_EXPR__SPEED_EXPR);
+            checkTypes(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrainExpr()), BahnPackage.Literals.SET_TRAIN_SPEED_FUNC_EXPR__TRAIN_EXPR);
+            checkTypes(ExprDataType.ScalarInt, typeCheckingTable.computeDataType(funcExpr.getSpeedExpr()), BahnPackage.Literals.SET_TRAIN_SPEED_FUNC_EXPR__SPEED_EXPR);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
@@ -317,7 +368,7 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void typeCheckingSetTrackStateFuncExpr(SetTrackStateFuncExpr funcExpr) {
         try {
-            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrackExpr()), BahnPackage.Literals.SET_TRACK_STATE_FUNC_EXPR__TRACK_EXPR);
+            checkTypes(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrackExpr()), BahnPackage.Literals.SET_TRACK_STATE_FUNC_EXPR__TRACK_EXPR);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
@@ -326,9 +377,9 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void typeCheckingSetConfigFuncExpr(SetConfigFuncExpr funcExpr) {
         try {
-            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getConfigExpr()), BahnPackage.Literals.SET_CONFIG_FUNC_EXPR__CONFIG_EXPR);
+            checkTypes(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getConfigExpr()), BahnPackage.Literals.SET_CONFIG_FUNC_EXPR__CONFIG_EXPR);
             if (funcExpr.getProp().getType() == DataType.STRING_TYPE) {
-                ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getValueExpr()), BahnPackage.Literals.SET_CONFIG_FUNC_EXPR__VALUE_EXPR);
+                checkTypes(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getValueExpr()), BahnPackage.Literals.SET_CONFIG_FUNC_EXPR__VALUE_EXPR);
             }
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
@@ -338,8 +389,8 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void typeCheckingGrantRouteFuncExpr(GrantRouteFuncExpr funcExpr) {
         try {
-            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getRouteExpr()), BahnPackage.Literals.GRANT_ROUTE_FUNC_EXPR__ROUTE_EXPR);
-            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrainExpr()), BahnPackage.Literals.GRANT_ROUTE_FUNC_EXPR__TRAIN_EXPR);
+            checkTypes(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getRouteExpr()), BahnPackage.Literals.GRANT_ROUTE_FUNC_EXPR__ROUTE_EXPR);
+            checkTypes(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrainExpr()), BahnPackage.Literals.GRANT_ROUTE_FUNC_EXPR__TRAIN_EXPR);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
@@ -348,7 +399,7 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void typeCheckingEvaluateFuncExpr(EvaluateFuncExpr funcExpr) {
         try {
-            ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getObjectExpr()), BahnPackage.Literals.EVALUATE_FUNC_EXPR__OBJECT_EXPR);
+            checkTypes(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getObjectExpr()), BahnPackage.Literals.EVALUATE_FUNC_EXPR__OBJECT_EXPR);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
@@ -360,7 +411,7 @@ public class BahnValidator extends AbstractBahnValidator {
         }
     }
 
-    private static void ensureValidType(ExprDataType expectedType, ExprDataType actualType, EStructuralFeature feature) throws ValidationException {
+    private static void checkTypes(ExprDataType expectedType, ExprDataType actualType, EStructuralFeature feature) throws ValidationException {
         if (!expectedType.equals(actualType)) {
             throw ValidationException.createTypeException(expectedType, actualType, feature);
         }

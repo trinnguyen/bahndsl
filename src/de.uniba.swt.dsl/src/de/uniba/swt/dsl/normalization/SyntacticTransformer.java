@@ -14,15 +14,15 @@ public class SyntacticTransformer {
     @Inject
     ArrayLookupTable arrayLookupTable;
 
-    private static final String EXTERN_TABLE_GET_ROUTES = "interlocking_table_get_routes";
+    public static final String EXTERN_TABLE_GET_ROUTES = "interlocking_table_get_routes";
 
-    private static final String EXTERN_TRAIN_SPEED_GETTER_NAME = "train_state_get_speed";
+    public static final String EXTERN_TRAIN_SPEED_GETTER_NAME = "train_state_get_speed";
 
-    private static final String EXTERN_TRAIN_SPEED_SETTER_NAME = "train_state_set_speed";
+    public static final String EXTERN_TRAIN_SPEED_SETTER_NAME = "train_state_set_speed";
 
-    private static final String EXTERN_STATE_GETTER_NAME = "track_state_get_value";
+    public static final String EXTERN_STATE_GETTER_NAME = "track_state_get_value";
 
-    private static final String EXTERN_STATE_SETTER_NAME = "track_state_set_value";
+    public static final String EXTERN_STATE_SETTER_NAME = "track_state_set_value";
 
     private static final String EXTERN_CONFIG_FORMAT = "config_%s_%s_%s_value";
 

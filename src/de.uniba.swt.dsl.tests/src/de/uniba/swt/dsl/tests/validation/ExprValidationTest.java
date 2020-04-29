@@ -87,13 +87,12 @@ public class ExprValidationTest extends AbstractValidationTest {
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "def test() int n = true end, Type Error: Expected type int, actual type: bool",
-            "def test() int n3 = true && false end, Type Error: Expected type int, actual type: bool",
-            // "def test() if 3 int out = 1 end end, Expected type bool, actual type: int"
+    @ValueSource(strings = {
+            "def test() int n = true end",
+            "def test() int n3 = true && false end",
     })
-    public void errorVarDeclTest(String src, String msg) {
-        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.VARIABLE_ASSIGNMENT, null, msg);
+    public void errorVarDeclTest(String src) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.VARIABLE_ASSIGNMENT, null, "Expected type int, actual type: bool");
     }
 
     @Test
@@ -118,13 +117,13 @@ public class ExprValidationTest extends AbstractValidationTest {
     }
 
     @Test
-    public void errorVarDeclTest() {
+    public void errorVarDeclTestBoolInt() {
         var src = "def test()\n" +
                 "    if 3\n" +
                 "        int i1 = 1\n" +
                 "    end\n" +
                 "end";
-        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.SELECTION_STMT, null, "Expected type bool, actual type: int");
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.SELECTION_STMT, null, "Expected bool but actual int");
     }
 
     @Override

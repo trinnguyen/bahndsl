@@ -378,7 +378,7 @@ ExternalFunctionCallExpr returns FunctionCallExpr:
 ;
 
 BehaviourExpr returns FunctionCallExpr:
-	BehaviourGetExpr | BehaviourSetExpr | GetRoutesFuncExpr | GrantRouteFuncExpr | EvaluateFuncExpr
+	BehaviourGetExpr | BehaviourSetExpr | GrantRouteFuncExpr | EvaluateFuncExpr
 ;
 
 BehaviourGetExpr returns BehaviourExpr:
