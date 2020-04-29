@@ -236,7 +236,7 @@ enum WeightUnit:
 
 
 FuncDecl:
-	'def' name=ID ('()' | '(' paramDecls+=ParamDecl (',' paramDecls+=ParamDecl)* ')') (return?=':' returnType=DataType returnArray?='[]'?)?
+	'def' name=EID ('()' | '(' paramDecls+=ParamDecl (',' paramDecls+=ParamDecl)* ')') (return?=':' returnType=DataType returnArray?='[]'?)?
 		stmtList=StatementList
 	'end'
 ;
@@ -275,11 +275,11 @@ VarDeclStmt returns Statement:
 ;
 
 VarDecl:
-	{VarDecl} type=DataType name=ID (array?='[]')?
+	{VarDecl} type=DataType name=EID (array?='[]')?
 ;
 
 ParamDecl:
-	{ParamDecl} type=DataType name=ID array?='[]'?
+	{ParamDecl} type=DataType name=EID array?='[]'?
 ;
 
 RefVarDecl:
@@ -448,6 +448,10 @@ StringLiteral:
 	{StringLiteral} value=STRING
 ;
 
+EID returns ecore::EString:
+	ID
+;
+
 enum DataType:
 	INT_TYPE='int' | FLOAT_TYPE = 'float' | BOOLEAN_TYPE = 'bool' | STRING_TYPE = 'string'
 ;
@@ -461,7 +465,7 @@ enum PlusMinusOp returns OperatorType:
 ;
 
 enum MulDivOp returns OperatorType:
-	MULTIPLY = '*' | DIVISION = '/'
+	MULTIPLY = '*' | DIVISION = '/' | MOD = '%'
 ;
 
 enum OrOp returns OperatorType:
@@ -486,9 +490,6 @@ NUMBER returns ecore::EDouble:
 
 terminal HEX returns ecore::EString:
 	('0x'|'0X') ('0'..'9'|'a'..'f'|'A'..'F')+;
-
-@Override	
-terminal ID: ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
 
 @Override
 terminal SL_COMMENT : '#' !('\n'|'\r')* ('\r'? '\n')?;

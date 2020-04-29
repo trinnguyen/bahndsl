@@ -21,6 +21,7 @@ import org.eclipse.xtext.validation.Check;
 
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -211,7 +212,26 @@ public class BahnValidator extends AbstractBahnValidator {
     public void typeCheckingFuncDecl(FuncDecl funcDecl) {
         logger.debug("typeCheckingFuncDecl: " + funcDecl.getClass().getSimpleName());
         try {
+            ensureValidId(funcDecl.getName(), BahnPackage.Literals.COMPONENT__NAME);
             declValidator.validateFuncDecl(funcDecl);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void checkIdVarDecl(VarDecl varDecl) {
+        try {
+            ensureValidId(varDecl.getName(), BahnPackage.Literals.REF_VAR_DECL__NAME);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void checkIdVarDecl(ParamDecl paramDecl) {
+        try {
+            ensureValidId(paramDecl.getName(), BahnPackage.Literals.REF_VAR_DECL__NAME);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
@@ -331,6 +351,12 @@ public class BahnValidator extends AbstractBahnValidator {
             ensureValidType(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getObjectExpr()), BahnPackage.Literals.EVALUATE_FUNC_EXPR__OBJECT_EXPR);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    private static void ensureValidId(String id, EStructuralFeature feature) throws ValidationException {
+        if (id.startsWith("_")) {
+            throw new ValidationException("Underscore is not allowed at the beginning", feature);
         }
     }
 
