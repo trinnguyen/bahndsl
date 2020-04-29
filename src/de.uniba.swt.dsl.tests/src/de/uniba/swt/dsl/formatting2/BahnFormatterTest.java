@@ -71,7 +71,8 @@ class BahnFormatterTest {
             TestConstants.SampleOperators,
             TestConstants.SampleIfElse,
             TestConstants.SampleWhile,
-            TestConstants.SampleRequestRouteForeach
+            TestConstants.SampleRequestRouteForeach,
+            TestConstants.SampleDriveRoute
     })
     public void testFormatExpressions(String src) throws Exception {
         var result = formatCode(src);
@@ -88,6 +89,15 @@ class BahnFormatterTest {
         // verify
         var resource = testHelper.parseValid(result);
         assertEquals("request_route", BahnUtil.getDecls(resource).get(0).getName());
+    }
+
+    @Test
+    public void testFormatDriveRoute() throws Exception {
+        var result = formatCode(TestConstants.SampleDriveRoute);
+
+        // verify
+        var resource = testHelper.parseValid(result);
+        assertEquals("drive_route", BahnUtil.getDecls(resource).get(0).getName());
     }
 
     @Test

@@ -56,10 +56,6 @@ public class SuperState extends State {
         return referenceBindingExprs;
     }
 
-    public void setReferenceBindingExprs(List<Expression> referenceBindingExprs) {
-        this.referenceBindingExprs = referenceBindingExprs;
-    }
-
     public List<LocalAction> getLocalActions() {
         return localActions;
     }

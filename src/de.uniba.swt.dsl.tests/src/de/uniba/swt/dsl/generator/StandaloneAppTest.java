@@ -76,6 +76,13 @@ class StandaloneAppTest {
         ensureArgsExist(cmd, "cc", List.of("-shared", "-I", "-o", "libinterlocking"));
     }
 
+    @Test
+    void runLibraryGeneratorFailedNoRequestRoute() throws Exception {
+        var res = resourceHelper.resource(TestConstants.SampleDriveRoute);
+        var result = standaloneApp.runGenerator(res, "test.bahn", fsa, "test-gen", "library", runtimeExecutor);
+        assertFalse(result, "No request_route found");
+    }
+
     private void ensureArgsExist(Tuple<String, String[]> command, String expectedCmd, List<String> expectedArgs) {
         // check cli
         assertEquals(expectedCmd, command.getFirst());

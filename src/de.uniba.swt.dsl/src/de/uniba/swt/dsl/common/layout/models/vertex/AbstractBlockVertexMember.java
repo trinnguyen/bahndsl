@@ -3,7 +3,7 @@ package de.uniba.swt.dsl.common.layout.models.vertex;
 import de.uniba.swt.dsl.bahn.BlockElement;
 
 public abstract class AbstractBlockVertexMember extends AbstractVertexMember {
-    private BlockElement block;
+    private final BlockElement block;
 
     public AbstractBlockVertexMember(BlockElement block) {
         this.block = block;
@@ -11,10 +11,6 @@ public abstract class AbstractBlockVertexMember extends AbstractVertexMember {
 
     public BlockElement getBlock() {
         return block;
-    }
-
-    public void setBlock(BlockElement block) {
-        this.block = block;
     }
 
     @Override

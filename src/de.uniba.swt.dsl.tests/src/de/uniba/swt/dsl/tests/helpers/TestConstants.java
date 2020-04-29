@@ -79,6 +79,15 @@ public class TestConstants {
 
     public final static String SampleRequestRouteForeach = "def request_route(string src_signal_id, string dst_signal_id, string train_id): string " +
             "string ids[] = get routes from src_signal_id to dst_signal_id " +
-            "for string id in ids end return ids[ids.len - 1]" +
+            "return get_shortest_route(ids) " +
+            "end";
+
+    public final static String SampleDriveRoute = "def drive_route(string route_id, string train_id, string segment_ids[]) " +
+            "string block_id = get_block(route_id, segment_ids) " +
+            "string pre_block = get_previous_block(route_id, block_id) " +
+            "string signal_ids[] = get config block.block_signals pre_block " +
+            "for string signal_id in signal_ids " +
+            "   set state signal_id to stop " +
+            "end " +
             "end";
 }
