@@ -22,7 +22,11 @@ jacocoTestReport {
 	// serializer is not used (generate the model back to source code)
 	final mainClasses = fileTree(
 			dir: "${project.projectDir.parent}/de.uniba.swt.dsl/build/classes",
-			excludes: ['**/antlr/internal/','**/serializer', '**/generator.externals/**']
+			excludes: [
+					'**/antlr/internal/',
+					'**/bahn/util/**',
+					'**/serializer',
+					'**/generator.externals/**']
 	)
 	additionalClassDirs.setFrom(mainClasses)
 

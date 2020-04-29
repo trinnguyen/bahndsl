@@ -1,12 +1,14 @@
 package de.uniba.swt.dsl.generator.externals;
 
 import org.apache.log4j.Logger;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -14,27 +16,26 @@ public class HeaderFileUtil {
 
     private static final Logger logger = Logger.getLogger(HeaderFileUtil.class);
 
-    public static void updateThreadStatus(String folderPath, String filename, String oldPrefix, String oldSuffix, String newName) {
+    public static void updateThreadStatus(IFileSystemAccess2 fsa, String filename, String oldPrefix, String oldSuffix, String newName) {
         var oldName = oldPrefix + oldSuffix;
 
         // find the typedef enum and remove
-        try {
-            var path = Paths.get(folderPath, filename);
-            var lines = Files.readAllLines(path);
-            var end = findEnumNameLine(oldName, lines);
-            if (end >= 0) {
-                var start = findTypeDefLine(lines, end);
-                if (start >= 0) {
-                    // remove
-                    var newLines = removeAndReplaceLines(lines, start, end, oldName, newName);
+        var lines = Arrays.asList(fsa.readTextFile(filename).toString().split(System.lineSeparator()));
+        var end = findEnumNameLine(oldName, lines);
+        if (end >= 0) {
+            var start = findTypeDefLine(lines, end);
+            if (start >= 0) {
+                // remove
+                var newLines = removeAndReplaceLines(lines, start, end, oldName, newName);
 
-                    // write to file
-                    Files.write(path, newLines);
-                }
+                // write to file
+                fsa.generateFile(filename, mergeString(newLines));
             }
-        } catch (IOException e) {
-            logger.warn("Failed to update thread status in header file", e);
         }
+    }
+
+    private static CharSequence mergeString(List<String> newLines) {
+        return String.join(System.lineSeparator(), newLines);
     }
 
     private static List<String> removeAndReplaceLines(List<String> lines, int start, int end, String oldName, String newName) {

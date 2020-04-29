@@ -21,6 +21,7 @@ import org.eclipse.xtext.validation.IResourceValidator;
 import org.eclipse.xtext.validation.Issue;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -54,24 +55,18 @@ public class StandaloneApp {
 
     public boolean runGenerator(String filePath, String outputPath, String mode) {
 
-        // validate
-        if (filePath == null) {
-            System.err.println("No input file");
-            return false;
-        }
-
-        File file = new File(filePath);
-        if (!file.exists()) {
-            System.err.println("Input file is not exist: " + file.toString());
+        // Load the resource
+        var file = new File(filePath);
+        Resource resource = loadResource(file.getAbsolutePath());
+        if (resource == null) {
+            System.err.println("Invalid input file: " + filePath);
             return false;
         }
 
         // load output
-        if (outputPath == null || outputPath.isEmpty())
+        if (outputPath == null || outputPath.isEmpty()) {
             outputPath = Paths.get(file.getAbsoluteFile().getParent(), "src-gen").toAbsolutePath().toString();
-
-        // Load the resource
-        Resource resource = resourceSetProvider.get().getResource(URI.createFileURI(filePath), true);
+        }
 
         // Validate the resource
         List<Issue> list = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
@@ -97,7 +92,7 @@ public class StandaloneApp {
 
         // Configure and start the generator
         logger.info("Start generating network layout and SCCharts models");
-        if (generate(resource, outputPath, mode, file)) {
+        if (generate(resource, outputPath, mode, file.getName())) {
             System.out.println(String.format("Code generation finished: %s", outputPath));
             return true;
         }
@@ -105,7 +100,7 @@ public class StandaloneApp {
         return false;
     }
 
-    private boolean generate(Resource resource, String outputPath, String mode, File file) {
+    private boolean generate(Resource resource, String outputPath, String mode, String fileName) {
         // prepare
         fileAccess.setOutputPath(outputPath);
         GeneratorContext context = new GeneratorContext();
@@ -120,16 +115,25 @@ public class StandaloneApp {
 
         if (genLowLevelCode) {
             logger.info("Start generating low-level code");
-            if (!lowLevelCodeExternalGenerator.generate(outputPath))
+            if (!lowLevelCodeExternalGenerator.generate(fileAccess))
                 return false;
         }
 
         if (genLibrary) {
-            libraryGenerator.setSourceFileName(BahnUtil.getNameWithoutExtension(file.getName()));
+            libraryGenerator.setSourceFileName(BahnUtil.getNameWithoutExtension(fileName));
             logger.info("Start generating dynamic library");
-            return libraryGenerator.generate(outputPath);
+            return libraryGenerator.generate(fileAccess);
         }
 
         return true;
+    }
+
+    private Resource loadResource(String filePath) {
+        // validate
+        if (filePath == null || !Files.exists(Paths.get(filePath))) {
+            return null;
+        }
+
+        return resourceSetProvider.get().getResource(URI.createFileURI(filePath), true);
     }
 }

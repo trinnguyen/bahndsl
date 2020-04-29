@@ -18,6 +18,8 @@ import org.apache.log4j.Logger;
 
 public class Main {
 
+	private Main() {}
+
 	public static void main(String[] args) {
 		// define
 		var modeDesc = String.format("code generation mode (%s, %s, %s)", StandaloneApp.MODE_DEFAULT, StandaloneApp.MODE_C_CODE, StandaloneApp.MODE_LIBRARY);
@@ -41,6 +43,13 @@ public class Main {
 			return;
 		}
 
+		// load file
+		var inputFile = filterArgs(args, result.getConsumedIndices());
+		if (inputFile == null || inputFile.isBlank()) {
+			showHelp(container,true);
+			return;
+		}
+
 		// verbose
 		if (result.hasOption("v")) {
 			Logger.getRootLogger().setLevel(Level.INFO);
@@ -58,7 +67,6 @@ public class Main {
 		String mode = result.getValue("m", StandaloneApp.MODE_DEFAULT);
 
 		// process
-		var inputFile = filterArgs(args, result.getConsumedIndices());
 		Injector injector = new BahnStandaloneSetup().createInjectorAndDoEMFRegistration();
 		StandaloneApp app = injector.getInstance(StandaloneApp.class);
 

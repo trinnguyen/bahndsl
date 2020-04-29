@@ -2,9 +2,8 @@ package de.uniba.swt.dsl.generator.externals;
 
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import org.apache.log4j.Logger;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import org.eclipse.xtext.generator.AbstractFileSystemAccess;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
 
 public class LowLevelCodeExternalGenerator extends ExternalGenerator {
 
@@ -18,21 +17,20 @@ public class LowLevelCodeExternalGenerator extends ExternalGenerator {
     }
 
     @Override
-    protected boolean execute(String outputPath) {
-        return executeFile(outputPath, BahnConstants.REQUEST_ROUTE_SCTX)
-                && executeFile(outputPath, BahnConstants.DRIVE_ROUTE_SCTX);
+    protected boolean execute(IFileSystemAccess2 fsa) {
+        return executeFile(fsa, BahnConstants.REQUEST_ROUTE_SCTX)
+                && executeFile(fsa, BahnConstants.DRIVE_ROUTE_SCTX);
     }
 
-    private boolean executeFile(String outputPath, String input) {
-        var path = Paths.get(outputPath, input);
-        if (!Files.exists(path)) {
+    private boolean executeFile(IFileSystemAccess2 fsa, String input) {
+        if (!fsa.isFile(input)) {
             logger.debug("File is not exist: " + input);
             return false;
         }
 
         // start code generation
         var args = new String[]{"-s", SCC_GEN_SYSTEM, "-o", ".", input};
-        return executeArgs(args, outputPath);
+        return executeArgs(args, fsa);
     }
 
     @Override

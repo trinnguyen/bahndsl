@@ -24,7 +24,7 @@ public class StandardLibHelper {
         logger.debug("Start loading standard resource");
 
 		var resource = loadPluginResource(resourceSet);
-		logger.debug("Failed to load resource from plugin");
+		logger.debug("Failed to load resource from plugin. Attempt to load from embedded resource");
         if (resource == null ) {
 			resource = loadEmbeddedResource(resourceSet);
         }

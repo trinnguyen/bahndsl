@@ -4,7 +4,9 @@ import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.generator.StandardLibHelper;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +22,8 @@ public class LibraryExternalGenerator extends ExternalGenerator {
     private static final String ThreadStatusName = "ThreadStatus";
 
     private static final String WrapperThreadStatusName = "wrapper_thread_status";
+
+    private static final String TemporaryObjFolderName = "obj";
 
     private static final Logger logger = Logger.getLogger(LibraryExternalGenerator.class);
 
@@ -43,11 +47,11 @@ public class LibraryExternalGenerator extends ExternalGenerator {
     }
 
     @Override
-    protected boolean execute(String outputPath) {
+    protected boolean execute(IFileSystemAccess2 fsa) {
         var genModels = new String[]{BahnConstants.REQUEST_ROUTE_FUNC_NAME, BahnConstants.DRIVE_ROUTE_FUNC_NAME};
 
         // process header
-        preprocessHeaders(outputPath, genModels);
+        preprocessHeaders(fsa, genModels);
 
         // list all c files in the folder
         List<String> fileNames = new ArrayList<>();
@@ -56,13 +60,7 @@ public class LibraryExternalGenerator extends ExternalGenerator {
         }
 
         // generate temporary files
-        Path tmpDir = getTempDir();
-        if (tmpDir == null) {
-            logger.warn("Failed to prepare resource for generating dynamic library");
-            return false;
-        }
-
-        List<String> tmpFiles = generateTempResources(tmpDir.toString());
+        List<String> tmpFiles = generateTempResources(fsa);
         if (tmpFiles != null) {
             logger.debug(String.format("Copied resource files to: %s", String.join(", ", tmpFiles)));
             fileNames.addAll(tmpFiles);
@@ -77,30 +75,22 @@ public class LibraryExternalGenerator extends ExternalGenerator {
         args.add("dynamic_lookup");
         args.addAll(fileNames.stream().filter(f -> f.endsWith(".c")).collect(Collectors.toList()));
         args.add("-I.");
-        args.add("-I" + tmpDir);
+        args.add("-I" + TemporaryObjFolderName);
         args.add("-o");
         args.add(getOutputFileName());
-        var res = executeArgs(args.toArray(new String[0]), outputPath);
+        var res = executeArgs(args.toArray(new String[0]), fsa);
 
-        // clean
-        cleanTemp(tmpDir, tmpFiles);
+        // delete temporary files if needed
+         cleanTemp(fsa, tmpFiles);
+
         return res;
     }
 
-    private void preprocessHeaders(String outputPath, String[] genModels) {
+    private void preprocessHeaders(IFileSystemAccess2 fsa, String[] genModels) {
         for (String genModel : genModels) {
             logger.debug(String.format("Process tick header for: %s", genModel));
             var oldPrefix = BahnUtil.generateLogicNaming(genModel);
-            HeaderFileUtil.updateThreadStatus(outputPath, genModel + ".h", oldPrefix, ThreadStatusName, WrapperThreadStatusName);
-        }
-    }
-
-    private static Path getTempDir() {
-        try {
-            return Files.createTempDirectory("bahn");
-        } catch (IOException e) {
-            logger.warn(e.getMessage(), e);
-            return null;
+            HeaderFileUtil.updateThreadStatus(fsa, genModel + ".h", oldPrefix, ThreadStatusName, WrapperThreadStatusName);
         }
     }
 
@@ -109,17 +99,15 @@ public class LibraryExternalGenerator extends ExternalGenerator {
         return new String[] { getOutputFileName() };
     }
 
-    private List<String> generateTempResources(String tmpDir) {
+    private List<String> generateTempResources(IFileSystemAccess2 fsa) {
         try {
             List<String> result = new ArrayList<>();
             for (Tuple<String, String> resource : resources) {
                 try (var stream = StandardLibHelper.class.getClassLoader().getResourceAsStream(resource.getFirst())) {
                     if (stream != null) {
-                        var target = Paths.get(tmpDir, resource.getSecond());
-                        var res = Files.copy(stream, target, StandardCopyOption.REPLACE_EXISTING);
-                        if (res > 0) {
-                            result.add(target.toString());
-                        }
+                        var name = Path.of(TemporaryObjFolderName, resource.getSecond()).toString();
+                        fsa.generateFile(name, stream);
+                        result.add(name);
                     }
                 }
             }
@@ -146,20 +134,13 @@ public class LibraryExternalGenerator extends ExternalGenerator {
         return "so";
     }
 
-    private static void cleanTemp(Path tmpDir, List<String> tmpFiles) {
+    private static void cleanTemp(IFileSystemAccess2 fsa, List<String> tmpFiles) {
         if (tmpFiles != null) {
-            try {
-                for (String tmpFile : tmpFiles) {
-                    Files.delete(Path.of(tmpFile));
-                }
-
-                var file = tmpDir.toFile();
-                if (file.isDirectory() && file.list() == null) {
-                    file.delete();
-                }
-            } catch (IOException e) {
-                logger.debug("Error deleting temp file: " + e.getMessage());
+            for (String tmpFile : tmpFiles) {
+                fsa.deleteFile(tmpFile);
             }
         }
+
+        fsa.deleteFile(TemporaryObjFolderName);
     }
 }
