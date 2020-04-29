@@ -7,7 +7,7 @@ test:
   image: openjdk:11
   stage: test
   script:
-    - 'src/gradlew -p src de.uniba.swt.dsl.test:test'
+    - 'sh src/build-test.sh'
   artifacts:
     reports:
       junit: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
