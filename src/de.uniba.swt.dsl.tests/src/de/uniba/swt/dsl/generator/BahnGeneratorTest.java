@@ -22,13 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class BahnGeneratorTest {
 
     @Inject
+    InMemoryFileSystemAccess fsa;
+
+    @Inject
     TestHelper testHelper;
 
     @Inject
     BahnGenerator generator;
-
-    @Inject
-    InMemoryFileSystemAccess fsa;
 
     @Test
     void testGenerate4YamlFiles() throws Exception {
@@ -172,6 +172,10 @@ class BahnGeneratorTest {
         ensureFileContent("drive_route_sccharts.sctx", List.of("scchart drive_route"));
     }
 
+    private void ensureFileContent(String name, List<String> items) throws Exception {
+        testHelper.ensureFileContent(fsa, name, items);
+    }
+
     private void invokeGenerate(String src) throws Exception {
         Resource input = testHelper.parseValid(src);
 
@@ -182,28 +186,5 @@ class BahnGeneratorTest {
         } finally {
             generator.afterGenerate(input, fsa, context);
         }
-    }
-
-    private void ensureFileContent(String fileName, List<String> list) throws Exception {
-        var content = getFile(fsa.getTextFiles(), fileName);
-
-        if (content == null) {
-            throw new Exception("content is null");
-        }
-
-        for (String s : list) {
-            if (!content.contains(s)) {
-                throw new Exception(String.format("%s \n does not contain %s", content, s));
-            }
-        }
-    }
-
-    private static String getFile(Map<String, CharSequence> files, String name) {
-        for (String s : files.keySet()) {
-            if (s.endsWith(name))
-                return files.get(s).toString();
-        }
-
-        return null;
     }
 }

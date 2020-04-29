@@ -13,8 +13,10 @@ import java.util.stream.IntStream;
 import de.uniba.swt.dsl.generator.cli.ArgOption;
 import de.uniba.swt.dsl.generator.cli.ArgOptionContainer;
 import de.uniba.swt.dsl.generator.cli.ArgParseResult;
+import de.uniba.swt.dsl.generator.externals.JavaCliRuntimeExecutor;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.xtext.generator.JavaIoFileSystemAccess;
 
 public class Main {
 
@@ -69,8 +71,10 @@ public class Main {
 		// process
 		Injector injector = new BahnStandaloneSetup().createInjectorAndDoEMFRegistration();
 		StandaloneApp app = injector.getInstance(StandaloneApp.class);
+		JavaIoFileSystemAccess fsa = injector.getInstance(JavaIoFileSystemAccess.class);
+		JavaCliRuntimeExecutor runtimeExec = injector.getInstance(JavaCliRuntimeExecutor.class);
 
-		boolean success = app.runGenerator(inputFile, outputPath, mode);
+		boolean success = app.runGenerator(inputFile, fsa, outputPath, mode, runtimeExec);
 		if (!success) {
 			System.exit(1);
 		}

@@ -8,3 +8,5 @@ cd build
 
 # copy the file
 cp -r ../de.uniba.swt.dsl.tests/build/reports ./
+zip -rq test-reports.zip reports
+rm -rf reports

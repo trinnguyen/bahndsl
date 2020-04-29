@@ -4,15 +4,11 @@ import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.generator.StandardLibHelper;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,9 +21,12 @@ public class LibraryExternalGenerator extends ExternalGenerator {
 
     private static final String TemporaryObjFolderName = "obj";
 
+    private static final String SharedLibNamePrefix = "libinterlocking";
+
     private static final Logger logger = Logger.getLogger(LibraryExternalGenerator.class);
 
     private final List<Tuple<String, String>> resources;
+
     private String sourceFileName;
 
     public LibraryExternalGenerator() {
@@ -47,7 +46,8 @@ public class LibraryExternalGenerator extends ExternalGenerator {
     }
 
     @Override
-    protected boolean execute(IFileSystemAccess2 fsa) {
+    protected boolean execute(IFileSystemAccess2 fsa, CliRuntimeExecutor runtimeExec) {
+
         var genModels = new String[]{BahnConstants.REQUEST_ROUTE_FUNC_NAME, BahnConstants.DRIVE_ROUTE_FUNC_NAME};
 
         // process header
@@ -78,7 +78,7 @@ public class LibraryExternalGenerator extends ExternalGenerator {
         args.add("-I" + TemporaryObjFolderName);
         args.add("-o");
         args.add(getOutputFileName());
-        var res = executeArgs(args.toArray(new String[0]), fsa);
+        var res = executeArgs(args.toArray(new String[0]), fsa, runtimeExec);
 
         // delete temporary files if needed
          cleanTemp(fsa, tmpFiles);
@@ -120,7 +120,7 @@ public class LibraryExternalGenerator extends ExternalGenerator {
     }
 
     private String getOutputFileName() {
-        return String.format("libinterlocking_%s.%s", sourceFileName, getOsLibExt());
+        return String.format("%s_%s.%s", SharedLibNamePrefix, sourceFileName, getOsLibExt());
     }
 
     private static String getOsLibExt() {

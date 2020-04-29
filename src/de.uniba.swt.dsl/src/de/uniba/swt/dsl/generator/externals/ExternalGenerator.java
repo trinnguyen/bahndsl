@@ -1,36 +1,19 @@
 package de.uniba.swt.dsl.generator.externals;
 
-import com.google.inject.Inject;
-import org.apache.log4j.Logger;
 import org.eclipse.xtext.generator.AbstractFileSystemAccess;
 import org.eclipse.xtext.generator.AbstractFileSystemAccess2;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 public abstract class ExternalGenerator {
 
-    @Inject
-    RuntimeCliExecutor executor;
-
-    private static final Logger logger = Logger.getLogger(ExternalGenerator.class);
-
     protected abstract String[] supportedTools();
 
-    protected boolean executeArgs(String[] args, IFileSystemAccess2 fsa) {
+    protected boolean executeArgs(String[] args, IFileSystemAccess2 fsa, CliRuntimeExecutor runtimeExec) {
         for (String cli : supportedTools()) {
-            try {
-                int res = executor.internalExecuteCli(cli, args, getDefaultOutputPath(fsa));
-                return res == 0;
-            } catch (IOException e) {
-                logger.debug(String.format("Failed to execute %s, error: %s", cli, e.getMessage()));
-            }
+            if (runtimeExec.internalExecuteCli(cli, args, getDefaultOutputPath(fsa)))
+                return true;
         }
 
         System.err.println(String.format("None of the command lines exist: %s", Arrays.toString(supportedTools())));
@@ -49,12 +32,12 @@ public abstract class ExternalGenerator {
     }
 
 
-    public boolean generate(IFileSystemAccess2 fsa) {
+    public boolean generate(IFileSystemAccess2 fsa, CliRuntimeExecutor runtimeExec) {
         cleanUp(fsa);
-        return execute(fsa);
+        return execute(fsa, runtimeExec);
     }
 
-    protected abstract boolean execute(IFileSystemAccess2 fsa);
+    protected abstract boolean execute(IFileSystemAccess2 fsa, CliRuntimeExecutor runtimeExec);
 
     /**
      * Remove previous generated file

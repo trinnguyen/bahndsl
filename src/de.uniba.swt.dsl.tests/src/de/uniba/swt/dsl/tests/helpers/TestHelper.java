@@ -2,8 +2,11 @@ package de.uniba.swt.dsl.tests.helpers;
 
 import com.google.inject.Inject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.xtext.generator.InMemoryFileSystemAccess;
 import org.eclipse.xtext.testing.util.ResourceHelper;
 import org.eclipse.xtext.testing.validation.ValidationTestHelper;
+
+import java.util.List;
 
 public class TestHelper {
 
@@ -13,9 +16,60 @@ public class TestHelper {
     @Inject
     ValidationTestHelper validationTestHelper;
 
+    /**
+     * Parse source code and ensure no parsing or validation error
+     * @param src
+     * @return
+     * @throws Exception
+     */
     public Resource parseValid(CharSequence src) throws Exception {
         Resource input = resourceHelper.resource(src);
         validationTestHelper.assertNoErrors(input);
         return input;
+    }
+
+    /**
+     * Ensure file contains all string items in the list
+     * @param fsa
+     * @param fileName
+     * @param list
+     * @throws Exception
+     */
+    public void ensureFileContent(InMemoryFileSystemAccess fsa, String fileName, List<String> list) throws Exception {
+        var content = getFileContent(fsa, fileName);
+        ensureTextContent(content, list);
+    }
+
+    /**
+     * Ensure text contains all string items in the list
+     * @param content
+     * @param list
+     * @throws Exception
+     */
+    public void ensureTextContent(String content, List<String> list) throws Exception {
+        if (content == null) {
+            throw new Exception("content is null");
+        }
+
+        for (String s : list) {
+            if (!content.contains(s)) {
+                throw new Exception(String.format("%s \n does not contain %s", content, s));
+            }
+        }
+    }
+
+    /**
+     * Read file content by name
+     * @param fsa
+     * @param name
+     * @return
+     */
+    public String getFileContent(InMemoryFileSystemAccess fsa, String name) {
+        for (String s : fsa.getTextFiles().keySet()) {
+            if (s.endsWith(name))
+                return fsa.getTextFiles().get(s).toString();
+        }
+
+        return null;
     }
 }

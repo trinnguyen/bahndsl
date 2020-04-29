@@ -24,7 +24,8 @@ jacocoTestReport {
 			dir: "${project.projectDir.parent}/de.uniba.swt.dsl/build/classes",
 			excludes: [
 					'**/antlr/internal/',
-					'**/bahn/util/**',
+					'**/bahn/util',
+					'**/bahn/impl',
 					'**/serializer',
 					'**/generator.externals/**']
 	)

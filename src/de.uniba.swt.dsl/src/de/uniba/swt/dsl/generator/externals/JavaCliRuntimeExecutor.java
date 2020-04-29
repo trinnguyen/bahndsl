@@ -7,11 +7,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class RuntimeCliExecutor {
+public class JavaCliRuntimeExecutor extends CliRuntimeExecutor {
 
-    private static final Logger logger = Logger.getLogger(RuntimeCliExecutor.class);
+    private static final Logger logger = Logger.getLogger(CliRuntimeExecutor.class);
 
-    protected int internalExecuteCli(String command, String[] args, String workingDir) throws IOException {
+    @Override
+    protected boolean internalExecuteCli(String command, String[] args, String workingDir) {
         try {
             var argLen = args != null ? args.length : 0;
             String[] cmd = new String[argLen + 1];
@@ -19,10 +20,13 @@ public class RuntimeCliExecutor {
             if (args != null)
                 System.arraycopy(args, 0, cmd, 1, args.length);
 
+            var dir = new File(workingDir);
+
+            // log
+            logger.info(String.format("Working directory: %s", dir.getAbsolutePath()));
             logger.info(String.format("Execute: %s", String.join(" ", cmd)));
 
             // execute
-            var dir = workingDir != null ? new File(workingDir) : null;
             var process = Runtime.getRuntime().exec(cmd, null, dir);
 
             String s;
@@ -39,11 +43,11 @@ public class RuntimeCliExecutor {
                 }
             }
 
-            return process.waitFor();
-        } catch (InterruptedException e) {
+            return process.waitFor() == 0;
+        } catch (InterruptedException | IOException e) {
             logger.warn(e.getMessage(), e);
         }
 
-        return -1;
+        return false;
     }
 }

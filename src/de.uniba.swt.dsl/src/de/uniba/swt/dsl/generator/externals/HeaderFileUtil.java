@@ -2,6 +2,7 @@ package de.uniba.swt.dsl.generator.externals;
 
 import org.apache.log4j.Logger;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
+import org.eclipse.xtext.util.RuntimeIOException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,7 +21,18 @@ public class HeaderFileUtil {
         var oldName = oldPrefix + oldSuffix;
 
         // find the typedef enum and remove
-        var lines = Arrays.asList(fsa.readTextFile(filename).toString().split(System.lineSeparator()));
+        CharSequence text = null;
+        try {
+            text = fsa.readTextFile(filename);
+        } catch (RuntimeIOException ex) {
+            logger.error("Can not read header file to fix status: " + ex.getMessage());
+        }
+
+        if (text == null || text.length() == 0) {
+            return;
+        }
+
+        var lines = Arrays.asList(text.toString().split(System.lineSeparator()));
         var end = findEnumNameLine(oldName, lines);
         if (end >= 0) {
             var start = findTypeDefLine(lines, end);

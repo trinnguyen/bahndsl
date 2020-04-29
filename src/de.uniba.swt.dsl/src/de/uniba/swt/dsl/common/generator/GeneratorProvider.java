@@ -37,7 +37,7 @@ public abstract class GeneratorProvider {
                 try {
                     fsa.deleteFile(name);
                 } catch (Exception ex) {
-                    logger.warn("Failed to delete existing file: " + ex.getMessage());
+                    logger.warn(String.format("Failed to delete file: %s, msg: %s", name, ex.getMessage()));
                 }
 
             }
