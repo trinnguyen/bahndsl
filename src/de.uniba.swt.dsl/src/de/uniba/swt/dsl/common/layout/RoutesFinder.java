@@ -23,10 +23,10 @@ public class RoutesFinder {
     private LayoutVertex srcSignal;
     private LayoutVertex destSignal;
 
-    private Stack<AbstractEdge> currentEdges = new Stack<>();
-    private Stack<LayoutVertex> currentVertices = new Stack<>();
-    private Set<Route> routes = new HashSet<>();
-    private Set<LayoutVertex> flagsOnPath = new HashSet<>();
+    private final Stack<AbstractEdge> currentEdges = new Stack<>();
+    private final Stack<LayoutVertex> currentVertices = new Stack<>();
+    private final Set<Route> routes = new HashSet<>();
+    private final Set<LayoutVertex> flagsOnPath = new HashSet<>();
 
     public Set<Route> findRoutes(NetworkLayout networkLayout, String srcSignalKey, String destSignalKey) {
         this.networkLayout = networkLayout;

@@ -18,7 +18,7 @@ import org.eclipse.xtext.xbase.lib.Pair;
 
 public class BahnFormatter extends AbstractFormatter2 {
 
-    private static Logger logger = Logger.getLogger(BahnFormatter.class);
+    private static final Logger logger = Logger.getLogger(BahnFormatter.class);
 
 
     @Override

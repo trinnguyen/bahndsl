@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class HeaderFileUtil {
 
-    private static Logger logger = Logger.getLogger(HeaderFileUtil.class);
+    private static final Logger logger = Logger.getLogger(HeaderFileUtil.class);
 
     public static void updateThreadStatus(String folderPath, String filename, String oldPrefix, String oldSuffix, String newName) {
         var oldName = oldPrefix + oldSuffix;

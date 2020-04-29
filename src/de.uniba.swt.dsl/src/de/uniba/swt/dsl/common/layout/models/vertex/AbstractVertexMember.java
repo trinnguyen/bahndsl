@@ -11,18 +11,9 @@ public abstract class AbstractVertexMember {
 
     public abstract String getKey();
 
-    @Override
-    public String toString() {
-        return getKey() + "(" + getType() + ")";
-    }
-
     public boolean isSegmentBlock(){
         var type = getType();
         return type == VertexMemberType.Block;
-    }
-
-    public boolean isPoint() {
-        return getType() == VertexMemberType.StandardSwitch || getType() == VertexMemberType.DoubleSlipSwitch;
     }
 }
 

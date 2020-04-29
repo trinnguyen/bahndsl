@@ -13,7 +13,7 @@ import de.uniba.swt.dsl.common.layout.models.vertex.DoubleSlipSwitchVertexMember
 import java.util.*;
 
 public class NetworkRoutesExplorer {
-    private RoutesFinder routesFinder = new RoutesFinder();
+    private final RoutesFinder routesFinder = new RoutesFinder();
 
     public List<Route> findAllRoutes(NetworkLayout networkLayout, Set<String> signals) {
         int id = 0;

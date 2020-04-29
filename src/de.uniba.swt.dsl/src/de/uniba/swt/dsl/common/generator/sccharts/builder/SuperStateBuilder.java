@@ -20,11 +20,11 @@ public class SuperStateBuilder {
      */
     public final int DEFAULT_PARAM_ARRAY_SIZE = BahnConstants.DEFAULT_ARRAY_SIZE;
 
-    private Map<FuncDecl, RootState> mapFuncState;
-    private StateTable stateTable;
+    private final Map<FuncDecl, RootState> mapFuncState;
+    private final StateTable stateTable;
     protected SuperState superState;
-    private StatementList statementList;
-    private Stack<SuperState> stackSuperStates;
+    private final StatementList statementList;
+    private final Stack<SuperState> stackSuperStates;
 
     public SuperStateBuilder(Map<FuncDecl, RootState> mapFuncState, Stack<SuperState> stackSuperStates, String id, StatementList statementList) {
         this(mapFuncState, stackSuperStates, new StateTable(id), new SuperState(id), statementList);

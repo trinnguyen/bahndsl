@@ -13,7 +13,7 @@ import org.eclipse.xtext.generator.IFileSystemAccess2;
 
 public class SCChartsGenerator extends GeneratorProvider {
 
-    private static Logger logger = Logger.getLogger(SCChartsGenerator.class);
+    private static final Logger logger = Logger.getLogger(SCChartsGenerator.class);
 
     @Inject SCChartsTextualBuilder builder;
 

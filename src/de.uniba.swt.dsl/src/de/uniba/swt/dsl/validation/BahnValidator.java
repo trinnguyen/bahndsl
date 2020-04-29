@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  */
 public class BahnValidator extends AbstractBahnValidator {
 
-    private static Logger logger = Logger.getLogger(BahnValidator.class);
+    private static final Logger logger = Logger.getLogger(BahnValidator.class);
 
     @Inject
     BahnLayoutValidator layoutValidator;

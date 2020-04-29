@@ -13,7 +13,7 @@ public class SuperState extends State {
     private List<SVarDeclaration> declarations = new ArrayList<>();
     private Set<String> hostCodeReferences = new HashSet<>();
     private String joinTargetId;
-    private List<LocalAction> localActions = new ArrayList<>();
+    private final List<LocalAction> localActions = new ArrayList<>();
     private List<Expression> referenceBindingExprs = new ArrayList<>();
 
     public SuperState(SuperState other, List<Expression> params) {

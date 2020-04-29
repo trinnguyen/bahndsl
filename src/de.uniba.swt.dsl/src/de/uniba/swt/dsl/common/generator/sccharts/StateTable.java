@@ -6,9 +6,9 @@ import java.util.TreeMap;
 
 public class StateTable {
 
-    private TreeMap<String, Integer> mapId = new TreeMap<>();
+    private final TreeMap<String, Integer> mapId = new TreeMap<>();
 
-    private String idPrefix;
+    private final String idPrefix;
     private int incre = 0;
 
     public StateTable(String superId) {

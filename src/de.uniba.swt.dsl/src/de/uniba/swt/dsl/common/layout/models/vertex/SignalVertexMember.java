@@ -10,23 +10,11 @@ public class SignalVertexMember extends AbstractVertexMember {
         this.connectedBlock = connectedBlock;
     }
 
-    private SignalElement signal;
-    private BlockElement connectedBlock;
-
-    public SignalElement getSignal() {
-        return signal;
-    }
-
-    public void setSignal(SignalElement signal) {
-        this.signal = signal;
-    }
+    private final SignalElement signal;
+    private final BlockElement connectedBlock;
 
     public BlockElement getConnectedBlock() {
         return connectedBlock;
-    }
-
-    public void setConnectedBlock(BlockElement connectedBlock) {
-        this.connectedBlock = connectedBlock;
     }
 
     @Override

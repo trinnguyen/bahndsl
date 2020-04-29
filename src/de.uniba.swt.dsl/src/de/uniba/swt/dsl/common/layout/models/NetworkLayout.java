@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 public class NetworkLayout implements LayoutGraph {
     private final static Logger logger = Logger.getLogger(NetworkLayout.class);
 
-    private List<LayoutVertex> vertices = new ArrayList<>();
-    private Map<String, LayoutVertex> mapVertices = new TreeMap<>();
-    private Map<String, BlockDirection> blockDirectionMap = new TreeMap<>();
+    private final List<LayoutVertex> vertices = new ArrayList<>();
+    private final Map<String, LayoutVertex> mapVertices = new TreeMap<>();
+    private final Map<String, BlockDirection> blockDirectionMap = new TreeMap<>();
 
     public NetworkLayout() {
     }
@@ -105,7 +105,7 @@ public class NetworkLayout implements LayoutGraph {
 
     private void dfsGraph(MutableValueGraph<LayoutVertex, AbstractEdge> graph, Set<String> visitedVertices, Set<String> visitedEdges, LayoutVertex vertex) {
         if (visitedVertices.contains(vertex.getId()))
-            return;;
+            return;
 
         visitedVertices.add(vertex.getId());
         for (AbstractEdge edge : incidentEdges(vertex)) {

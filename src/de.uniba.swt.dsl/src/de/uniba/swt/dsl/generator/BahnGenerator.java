@@ -26,7 +26,7 @@ import de.uniba.swt.dsl.common.layout.LayoutGenerator;
  */
 public class BahnGenerator extends AbstractGenerator {
 
-	private static Logger logger = Logger.getLogger(BahnGenerator.class);
+	private static final Logger logger = Logger.getLogger(BahnGenerator.class);
 
 	@Inject
 	BahnNormalizationProvider normalizationProvider;

@@ -21,9 +21,9 @@ public class LibraryExternalGenerator extends ExternalGenerator {
 
     private static final String WrapperThreadStatusName = "wrapper_thread_status";
 
-    private static Logger logger = Logger.getLogger(LibraryExternalGenerator.class);
+    private static final Logger logger = Logger.getLogger(LibraryExternalGenerator.class);
 
-    private List<Tuple<String, String>> resources;
+    private final List<Tuple<String, String>> resources;
     private String sourceFileName;
 
     public LibraryExternalGenerator() {

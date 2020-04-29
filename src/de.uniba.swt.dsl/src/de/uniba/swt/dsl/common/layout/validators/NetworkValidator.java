@@ -10,10 +10,10 @@ import java.util.*;
 
 public class NetworkValidator {
 
-    private Set<String> cacheElements = new HashSet<>();
-    private GraphStrongConnectedChecker graphValidator = new GraphStrongConnectedChecker();
+    private final Set<String> cacheElements = new HashSet<>();
+    private final GraphStrongConnectedChecker graphValidator = new GraphStrongConnectedChecker();
     private NetworkLayout networkLayout;
-    private Map<VertexMemberType, AbstractConnectorValidator> validators;
+    private final Map<VertexMemberType, AbstractConnectorValidator> validators;
 
     public NetworkValidator() {
         validators = Map.of(

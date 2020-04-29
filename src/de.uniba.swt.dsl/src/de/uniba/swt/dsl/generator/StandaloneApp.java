@@ -32,7 +32,7 @@ public class StandaloneApp {
 
     public static final String MODE_LIBRARY = "library";
 
-    private static Logger logger = Logger.getLogger(StandaloneApp.class);
+    private static final Logger logger = Logger.getLogger(StandaloneApp.class);
 
     @Inject
     private Provider<ResourceSet> resourceSetProvider;

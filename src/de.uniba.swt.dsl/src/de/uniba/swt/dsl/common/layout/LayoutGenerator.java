@@ -19,10 +19,10 @@ public class LayoutGenerator extends GeneratorProvider {
 
 	private final static Logger logger = Logger.getLogger(LayoutGenerator.class);
 
-	private NetworkLayoutBuilder networkLayoutBuilder = new NetworkLayoutBuilder();
-	private NetworkRoutesExplorer routesExplorer = new NetworkRoutesExplorer();
-	private DotExporter dotExporter = new DotExporter();
-	private InterlockingYamlExporter yamlExporter = new InterlockingYamlExporter();
+	private final NetworkLayoutBuilder networkLayoutBuilder = new NetworkLayoutBuilder();
+	private final NetworkRoutesExplorer routesExplorer = new NetworkRoutesExplorer();
+	private final DotExporter dotExporter = new DotExporter();
+	private final InterlockingYamlExporter yamlExporter = new InterlockingYamlExporter();
 	private NetworkLayout networkLayout;
 
 	@Override

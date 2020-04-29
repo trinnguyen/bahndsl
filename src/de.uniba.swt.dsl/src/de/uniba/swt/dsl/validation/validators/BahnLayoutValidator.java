@@ -13,8 +13,8 @@ import java.util.List;
 @Singleton
 public class BahnLayoutValidator {
 
-    private NetworkLayoutBuilder layoutBuilder;
-    private NetworkValidator validator;
+    private final NetworkLayoutBuilder layoutBuilder;
+    private final NetworkValidator validator;
 
     public BahnLayoutValidator() {
         layoutBuilder = new NetworkLayoutBuilder();

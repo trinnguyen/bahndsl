@@ -10,7 +10,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class StandardLibHelper {
-    private static Logger logger = Logger.getLogger(StandardLibHelper.class);
+	private StandardLibHelper() {
+
+	}
+
+    private static final Logger logger = Logger.getLogger(StandardLibHelper.class);
 
     private static final String RESOURCES_FOLDER_NAME = "resources";
     
@@ -18,11 +22,11 @@ public class StandardLibHelper {
 
 	public static void loadStandardLibResource(ResourceSet resourceSet) {
         logger.debug("Start loading standard resource");
-        
-        var resource = loadEmbeddedResource(resourceSet);
+
+		var resource = loadPluginResource(resourceSet);
+		logger.debug("Failed to load resource from plugin");
         if (resource == null ) {
-        	logger.debug("Failed to load resource from embedded, attempt to load from plugin");
-        	resource = loadPluginResource(resourceSet);
+			resource = loadEmbeddedResource(resourceSet);
         }
         
         if (resource != null) {        
@@ -66,6 +70,6 @@ public class StandardLibHelper {
 	 */
 	private static Resource loadPluginResource(ResourceSet resourceSet)  {
 		URI uri = URI.createURI("platform:/plugin/de.uniba.swt.dsl/" + RESOURCES_FOLDER_NAME + "/" + FILE_NAME);
-    	return resourceSet.getResource(uri, true);
+    	return resourceSet.getResource(uri, false);
     }
 }

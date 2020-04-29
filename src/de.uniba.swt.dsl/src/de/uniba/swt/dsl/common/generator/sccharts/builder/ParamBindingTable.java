@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class ParamBindingTable {
-    private Stack<Map<String, String>> bindingStack = new Stack<>();
+    private final Stack<Map<String, String>> bindingStack = new Stack<>();
 
     public void reset() {
         bindingStack.clear();

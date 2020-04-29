@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class ArgOptionContainer {
 
-    private List<ArgOption> options;
+    private final List<ArgOption> options;
 
     public ArgOptionContainer(List<ArgOption> options) {
         this.options = options;

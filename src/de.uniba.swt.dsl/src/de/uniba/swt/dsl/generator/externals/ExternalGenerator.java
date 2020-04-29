@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 public abstract class ExternalGenerator {
 
-    private static Logger logger = Logger.getLogger(ExternalGenerator.class);
+    private static final Logger logger = Logger.getLogger(ExternalGenerator.class);
 
     protected abstract String[] supportedTools();
 

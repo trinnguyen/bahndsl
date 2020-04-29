@@ -11,7 +11,7 @@ import java.util.Map;
 public class TypeCheckingTable {
     private static final Logger logger = Logger.getLogger(TypeCheckingTable.class);
 
-    private Map<Expression, ExprDataType> typeTable = new HashMap<>();
+    private final Map<Expression, ExprDataType> typeTable = new HashMap<>();
 
     public ExprDataType computeDataType(Expression expression) {
         return computeDataType(expression, HintDataType.NONE);

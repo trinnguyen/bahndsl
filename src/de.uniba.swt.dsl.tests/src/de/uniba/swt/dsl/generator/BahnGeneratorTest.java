@@ -2,31 +2,27 @@ package de.uniba.swt.dsl.generator;
 
 import com.google.inject.Inject;
 import de.uniba.swt.dsl.tests.BahnInjectorProvider;
+import de.uniba.swt.dsl.tests.helpers.TestConstants;
+import de.uniba.swt.dsl.tests.helpers.TestHelper;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.generator.GeneratorContext;
-import org.eclipse.xtext.generator.IGeneratorContext;
 import org.eclipse.xtext.generator.InMemoryFileSystemAccess;
 import org.eclipse.xtext.testing.InjectWith;
 import org.eclipse.xtext.testing.extensions.InjectionExtension;
-import org.eclipse.xtext.testing.util.ResourceHelper;
-import org.eclipse.xtext.testing.validation.ValidationTestHelper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(InjectionExtension.class)
 @InjectWith(BahnInjectorProvider.class)
 class BahnGeneratorTest {
 
     @Inject
-    ResourceHelper resourceHelper;
-
-    @Inject
-    ValidationTestHelper validationTestHelper;
+    TestHelper testHelper;
 
     @Inject
     BahnGenerator generator;
@@ -67,9 +63,7 @@ class BahnGeneratorTest {
                 "end");
 
         // check file exist
-        var files = fsa.getTextFiles();
-        var boardContent = getFile(files, "bidib_board_config.yml");
-        ensureContains(boardContent, List.of("boards:", "- id: master", "- id: onecontrol"));
+        ensureFileContent("bidib_board_config.yml", List.of("boards:", "- id: master", "- id: onecontrol"));
     }
 
     @Test
@@ -82,9 +76,7 @@ class BahnGeneratorTest {
                 "end");
 
         // check file exist
-        var files = fsa.getTextFiles();
-        var content = getFile(files, "bidib_track_config.yml");
-        ensureContains(content, List.of("boards:", "- id: master", "segments:", "- id: seg1", "address: 0x00"));
+        ensureFileContent("bidib_track_config.yml", List.of("boards:", "- id: master", "segments:", "- id: seg1", "address: 0x00"));
     }
 
     @Test
@@ -97,42 +89,75 @@ class BahnGeneratorTest {
                 "points master point1 0x03 segment seg1 normal 0x01 reverse 0x00 initial normal end " +
                 "end");
 
-        // check file exist
-        var files = fsa.getTextFiles();
-        var content = getFile(files, "bidib_track_config.yml");
-        ensureContains(content, List.of("points-board:", "point1", "- id: point1", "number: 0x03", "aspects:", "segment: seg1"));
+        // verify
+        ensureFileContent("bidib_track_config.yml", List.of("points-board:", "point1", "- id: point1", "number: 0x03", "aspects:", "segment: seg1"));
+    }
+
+    @Test
+    void testGenerateTrainsOrder1() throws Exception {
+
+        // perform
+        invokeGenerate(TestConstants.SampleTrainConfig1);
+
+        // verify
+        ensureValidTrainOutput();
+    }
+
+    @Test
+    void testGenerateTrainsOrder2() throws Exception {
+
+        // perform
+        invokeGenerate(TestConstants.SampleTrainConfig2);
+
+        // verify
+        ensureValidTrainOutput();
+    }
+
+    private void ensureValidTrainOutput() throws Exception {
+        ensureFileContent("bidib_train_config.yml", List.of("trains:", "- id: cargo_db", "dcc-address: 0x0001", "weight: 100.0g", "length: 7.0cm", "type: cargo"));
     }
 
     @Test
     void testGenerateTrackSignals() throws Exception {
 
         // perform
-        invokeGenerate("module test " +
-                "boards master 0x00 end " +
-                "signals master" +
-                "   entry signal1 0x03 " +
-                "   distant signal2 0x04 " +
-                "   composite signal100 signals signal1 signal2 end " +
-                "end " +
-                "end");
+        invokeGenerate(TestConstants.SampleConfigSignals);
 
         // check content
         var files = fsa.getTextFiles();
-        var content = getFile(files, "bidib_track_config.yml");
-        ensureContains(content, List.of("signals-board:", "- id: signal1", "number: 0x03", "type: entry", "- id: signal2", "number: 0x04", "type: distant"));
+        ensureFileContent("bidib_track_config.yml", List.of("signals-board:", "- id: signal1", "number: 0x03", "type: entry", "- id: signal2", "number: 0x04", "type: distant"));
 
         // check composite
-        var contentExtras = getFile(files, "extras_config.yml");
-        ensureContains(contentExtras, List.of("compositions:", "- id: signal100", "entry: signal1", "distant: signal2"));
+        ensureFileContent("extras_config.yml", List.of("compositions:", "- id: signal100", "entry: signal1", "distant: signal2"));
+    }
+
+    @Test
+    void testLayoutGenerateInterlocking() throws Exception {
+        invokeGenerate(TestConstants.SampleLayoutConfig);
+
+        // ensure having interlocking
+        ensureFileContent("interlocking_table.yml", List.of("interlocking-table"));
+
+        // ensure having 2 routes
+        ensureFileContent("interlocking_table.yml", List.of("- id: 0 #route0", "source: sig6", "destination: sig7"));
+        ensureFileContent("interlocking_table.yml", List.of("- id: 1 #route1", "source: sig5", "destination: sig7"));
+
+        // ensure having DOT diagram file with block
+        ensureFileContent("layout_diagram.dot", List.of(
+                "digraph G",
+                "label=\"block2\"",
+                "label=\"block3\"",
+                "label=\"block4\"",
+                "label=\"point1.reverse\"",
+                "label=\"point1.normal\""));
     }
 
     @Test
     void testGenerateSCChartsRequestRoute() throws Exception {
         invokeGenerate("def request_route(string src_signal_id, string dst_signal_id, string train_id): string return \"\" end");
 
-        var files = fsa.getTextFiles();
-        var contentReq = getFile(files, "request_route_sccharts.sctx");
-        ensureContains(contentReq, List.of("scchart request_route"));
+        // verify
+        ensureFileContent("request_route_sccharts.sctx", List.of("scchart request_route"));
     }
 
     @Test
@@ -140,29 +165,15 @@ class BahnGeneratorTest {
         invokeGenerate("def request_route(string src_signal_id, string dst_signal_id, string train_id): string return \"\" end " +
                 "def drive_route(string route_id, string train_id, string segment_ids[]) end");
 
-        var files = fsa.getTextFiles();
-
         // ensure request route is exist (mandatory)
-        var contentReq = getFile(files, "request_route_sccharts.sctx");
-        ensureContains(contentReq, List.of("scchart request_route"));
+        ensureFileContent("request_route_sccharts.sctx", List.of("scchart request_route"));
 
         // ensure drive_route is exist (optional)
-        var contentDrive = getFile(files, "drive_route_sccharts.sctx");
-        ensureContains(contentDrive, List.of("scchart drive_route"));
-    }
-
-    private String getFile(Map<String, CharSequence> files, String name) {
-        for (String s : files.keySet()) {
-            if (s.endsWith(name))
-                return files.get(s).toString();
-        }
-
-        return null;
+        ensureFileContent("drive_route_sccharts.sctx", List.of("scchart drive_route"));
     }
 
     private void invokeGenerate(String src) throws Exception {
-        Resource input = resourceHelper.resource(src);
-        validationTestHelper.assertNoErrors(input);
+        Resource input = testHelper.parseValid(src);
 
         GeneratorContext context = new GeneratorContext();
         try {
@@ -173,7 +184,9 @@ class BahnGeneratorTest {
         }
     }
 
-    private static void ensureContains(String content, List<String> list) throws Exception {
+    private void ensureFileContent(String fileName, List<String> list) throws Exception {
+        var content = getFile(fsa.getTextFiles(), fileName);
+
         if (content == null) {
             throw new Exception("content is null");
         }
@@ -183,5 +196,14 @@ class BahnGeneratorTest {
                 throw new Exception(String.format("%s \n does not contain %s", content, s));
             }
         }
+    }
+
+    private static String getFile(Map<String, CharSequence> files, String name) {
+        for (String s : files.keySet()) {
+            if (s.endsWith(name))
+                return files.get(s).toString();
+        }
+
+        return null;
     }
 }

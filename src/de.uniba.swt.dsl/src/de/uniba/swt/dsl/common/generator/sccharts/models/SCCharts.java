@@ -5,7 +5,7 @@ import de.uniba.swt.dsl.common.util.LogHelper;
 import java.util.List;
 
 public class SCCharts {
-    private List<RootState> rootStates;
+    private final List<RootState> rootStates;
 
     public SCCharts(List<RootState> rootStates) {
         this.rootStates = rootStates;

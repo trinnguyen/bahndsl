@@ -10,7 +10,7 @@ public class LowLevelCodeExternalGenerator extends ExternalGenerator {
 
     private static final String SCC_GEN_SYSTEM = "de.cau.cs.kieler.sccharts.statebased";
 
-    private static Logger logger = Logger.getLogger(LowLevelCodeExternalGenerator.class);
+    private static final Logger logger = Logger.getLogger(LowLevelCodeExternalGenerator.class);
 
     @Override
     protected String[] supportedTools() {

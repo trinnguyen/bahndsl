@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class GraphStrongConnectedChecker {
     private NetworkLayout networkLayout;
-    private Map<LayoutVertex, Boolean> visitedVertices = new HashMap<>();
+    private final Map<LayoutVertex, Boolean> visitedVertices = new HashMap<>();
 
     public boolean isStrongConnected(NetworkLayout networkLayout) {
         this.networkLayout = networkLayout;

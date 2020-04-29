@@ -6,9 +6,9 @@ import de.uniba.swt.dsl.common.layout.models.BlockDirection;
 import java.util.List;
 
 public class ExtraBlockElement {
-    private BlockElement blockElement;
-    private BlockDirection direction;
-    private List<String> signals;
+    private final BlockElement blockElement;
+    private final BlockDirection direction;
+    private final List<String> signals;
 
     public ExtraBlockElement(BlockElement blockElement, BlockDirection direction, List<String> signals) {
         this.blockElement = blockElement;

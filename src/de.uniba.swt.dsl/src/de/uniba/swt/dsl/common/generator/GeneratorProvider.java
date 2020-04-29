@@ -6,7 +6,7 @@ import org.eclipse.xtext.generator.IFileSystemAccess2;
 
 public abstract class GeneratorProvider {
 
-    private static Logger logger = Logger.getLogger(GeneratorProvider.class);
+    private static final Logger logger = Logger.getLogger(GeneratorProvider.class);
 
     /**
      * Generate code

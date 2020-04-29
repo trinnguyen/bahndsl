@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Singleton
 public class ArrayLookupTable {
-    private Map<String, Tuple<RefVarDecl, VarDecl>> mapArray = new HashMap<>();
+    private final Map<String, Tuple<RefVarDecl, VarDecl>> mapArray = new HashMap<>();
     private String functionName;
     private int counter = 0;
 

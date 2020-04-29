@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class ArgParseResult {
 
-    private Map<String, String> mapValues = new HashMap<>();
+    private final Map<String, String> mapValues = new HashMap<>();
     private Set<Integer> consumedIndices;
 
     public void addOption(ArgOption option) {

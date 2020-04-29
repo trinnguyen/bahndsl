@@ -12,7 +12,7 @@ public class Route {
     private String srcSignal;
     private String destSignal;
     private Stack<AbstractEdge> edges;
-    private Set<String> conflictRouteIds = new HashSet<>();
+    private final Set<String> conflictRouteIds = new HashSet<>();
     private List<String> immediateSignals;
 
     public Route(String srcSignal, String destSignal, Stack<AbstractEdge> edges) {
