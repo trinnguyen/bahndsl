@@ -9,8 +9,9 @@ test:
   script:
     - 'sh src/build-test.sh'
   artifacts:
-    reports:
-      junit: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
+    paths:
+      - src/build/reports
+    expire_in: 1 week
 
 build-rcp-compiler:
   image: openjdk:11
