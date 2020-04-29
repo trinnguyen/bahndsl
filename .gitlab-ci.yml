@@ -10,7 +10,7 @@ test:
     - 'sh src/build-test.sh'
   artifacts:
     paths:
-      - src/build/reports
+      - src/build/
     expire_in: 1 week
 
 build-rcp-compiler:
