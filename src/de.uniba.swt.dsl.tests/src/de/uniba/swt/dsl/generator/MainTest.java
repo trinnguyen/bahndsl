@@ -46,4 +46,13 @@ class MainTest {
         // show help since no params
         testHelper.ensureTextContent(outContent.toString(), List.of("OVERVIEW: Bahn compiler", "USAGE:", "EXAMPLE:"));
     }
+
+    @Test
+    void testMainMissingFile() throws Exception {
+        // perform
+        Main.main(new String[]{"-v", "-o", "test-gen"});
+
+        // show help since no params
+        testHelper.ensureTextContent(outContent.toString(), List.of("OVERVIEW: Bahn compiler", "USAGE:", "EXAMPLE:"));
+    }
 }

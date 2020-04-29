@@ -5,31 +5,20 @@ import de.uniba.swt.dsl.bahn.PointAspectType;
 import java.util.Objects;
 
 public class PointAspect {
-    private PointAspectType aspectType;
-    private String hexValue;
+    private final PointAspectType aspectType;
+    private final String hexValue;
 
     public PointAspect(PointAspectType aspectType, String hexValue) {
         this.aspectType = aspectType;
         this.hexValue = hexValue;
     }
 
-    public PointAspect() {
-    }
-
     public PointAspectType getAspectType() {
         return aspectType;
     }
 
-    public void setAspectType(PointAspectType aspectType) {
-        this.aspectType = aspectType;
-    }
-
     public String getHexValue() {
         return hexValue;
-    }
-
-    public void setHexValue(String hexValue) {
-        this.hexValue = hexValue;
     }
 
     @Override
