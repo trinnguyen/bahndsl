@@ -172,6 +172,17 @@ public class BahnUtil {
         return false;
     }
 
+    public static FuncDecl findFuncDecl(EObject obj) {
+        if (obj instanceof FuncDecl) {
+            return (FuncDecl) obj;
+        }
+
+        if (obj.eContainer() != null)
+            return findFuncDecl(obj.eContainer());
+
+        return null;
+    }
+
     public static Long parseHex(String strValue) throws NumberFormatException {
         return Long.parseLong(strValue.substring(2), 16);
     }
