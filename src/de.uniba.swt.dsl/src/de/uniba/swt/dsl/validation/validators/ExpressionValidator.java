@@ -1,13 +1,13 @@
 package de.uniba.swt.dsl.validation.validators;
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.validation.ValidationErrors;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
 import de.uniba.swt.dsl.validation.typing.HintDataType;
 import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 import de.uniba.swt.dsl.validation.util.ExprUtil;
 import de.uniba.swt.dsl.validation.util.OperatorTypeHelper;
 import de.uniba.swt.dsl.validation.util.ValidationException;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 import javax.inject.Inject;
@@ -20,55 +20,21 @@ public class ExpressionValidator {
     @Inject
     TypeCheckingTable typeCheckingTable;
 
-    /**
-     * validate an expression
-     * @param expr expr
-     */
-    public void validate(Expression expr) throws ValidationException {
-        // PrimaryExpr
-        if (expr instanceof PrimaryExpr) {
-            // UnaryExpr or ParenthesizedExpr
-            if (expr instanceof UnaryExpr) {
-                validate(((UnaryExpr) expr).getExpr());
-            }
-            if (expr instanceof ParenthesizedExpr) {
-                validate(((ParenthesizedExpr) expr).getExpr());
-            }
-
-            // ValuedReferenceExpr
-            if (expr instanceof ValuedReferenceExpr) {
-                validateValuedReferenceExpr((ValuedReferenceExpr)expr);
-            }
-
-            // FunctionCallExpr
-            if (expr instanceof RegularFunctionCallExpr) {
-                validateRegularFuncCall((RegularFunctionCallExpr)expr);
-            }
-        }
-
-        // OpExpression: ensure both side having the same type
-        if (expr instanceof OpExpression) {
-            validateOpExpression((OpExpression)expr);
-        }
-    }
-
-    private void validateValuedReferenceExpr(ValuedReferenceExpr expr) throws ValidationException {
+    public void validateValuedReferenceExpr(ValuedReferenceExpr expr) throws ValidationException {
         if (expr.getIndexExpr() != null) {
             if (!expr.getDecl().isArray())
-                throw new ValidationException(String.format("Invalid value reference. Variable %s is not an array", expr.getDecl().getName()), BahnPackage.Literals.VALUED_REFERENCE_EXPR__INDEX_EXPR);
+                throw new ValidationException(ValidationErrors.TypeExpectedArray, BahnPackage.Literals.VALUED_REFERENCE_EXPR__DECL);
 
             var indexType = typeCheckingTable.computeDataType(expr.getIndexExpr(), HintDataType.INT);
-            if (indexType.getDataType() != DataType.INT_TYPE) {
-                throw new ValidationException("Type Error: Expected int", BahnPackage.Literals.OP_EXPRESSION__LEFT_EXPR);
-            }
+            ensureTypeMatched(ExprDataType.ScalarInt, indexType, BahnPackage.Literals.VALUED_REFERENCE_EXPR__INDEX_EXPR);
         }
     }
 
-    private void validateRegularFuncCall(RegularFunctionCallExpr expr) throws ValidationException {
+    public void validateRegularFuncCall(RegularFunctionCallExpr expr) throws ValidationException {
         var paramDecls = expr.getDecl().getParamDecls();
 
         if (paramDecls.size() != expr.getParams().size()) {
-            String msg = String.format("Expected %d arguments but found %d", paramDecls.size(), expr.getParams().size());
+            String msg = String.format(ValidationErrors.WrongArgumentsSizeFormat, paramDecls.size(), expr.getParams().size());
             throw new ValidationException(msg, BahnPackage.Literals.REGULAR_FUNCTION_CALL_EXPR__PARAMS);
         }
 
@@ -84,7 +50,7 @@ public class ExpressionValidator {
      * @param opExpr expression
      * @throws ValidationException exception
      */
-    private void validateOpExpression(OpExpression opExpr) throws ValidationException {
+    public void validateOpExpression(OpExpression opExpr) throws ValidationException {
         ExprDataType dataTypeLeft = null;
         if (opExpr.getLeftExpr() != null) {
             dataTypeLeft = typeCheckingTable.computeDataType(opExpr.getLeftExpr());
@@ -113,7 +79,7 @@ public class ExpressionValidator {
                     return;
                 }
 
-                throw new ValidationException("Type Error: Expressions must have the same type. Actual: " + dataTypeLeft.displayTypeName() + " and " + dataTypeRight.displayTypeName(), BahnPackage.Literals.OP_EXPRESSION__RIGHT_EXPR);
+                throw new ValidationException(String.format(ValidationErrors.ExpectedSameExpressionType, dataTypeLeft.displayTypeName(), dataTypeRight.displayTypeName()), BahnPackage.Literals.OP_EXPRESSION__RIGHT_EXPR);
             }
         }
     }

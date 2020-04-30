@@ -1,23 +1,49 @@
 package de.uniba.swt.dsl.validation;
 
 import de.uniba.swt.dsl.common.util.BahnUtil;
+import de.uniba.swt.dsl.common.util.Tuple;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 public class UniqueHexValidator {
-    public <T> void validateUniqueAddress(List<T> items, Function<T, String> addrMapper) throws Exception {
-        Set<Long> set = new HashSet<>();
-        for (T item : items) {
+    private final Map<String, Set<Long>> mapBoardHex = new HashMap<>();
+
+    public <T> List<Tuple<String, Integer>> validateUniqueAddress(String boardName, List<T> items, Function<T, String> addrMapper) {
+        List<Tuple<String, Integer>> errors = new ArrayList<>();
+        if (!mapBoardHex.containsKey(boardName)) {
+            mapBoardHex.put(boardName, new HashSet<>());
+        }
+
+        var set = mapBoardHex.get(boardName);
+
+        for (int i = 0; i < items.size(); i++) {
+            T item = items.get(i);
+
+            // verify hex value
             String strVal = addrMapper.apply(item);
-            Long val = BahnUtil.parseHex(strVal);
-            if (set.contains(val)) {
-                throw new Exception("Address is already used in another element: " + strVal);
+            Long val = null;
+            try {
+                val = BahnUtil.parseHex(strVal);
+            } catch (NumberFormatException e) {
+                errors.add(Tuple.of(String.format(ValidationErrors.InvalidHexFormat, strVal), i));
             }
 
-            set.add(val);
+            if (val == null)
+                continue;
+
+            // verify duplication
+            if (set.contains(val)) {
+                errors.add(Tuple.of(String.format(ValidationErrors.DefinedAddressFormat, strVal, boardName), i));
+            } else {
+                set.add(val);
+            }
         }
+
+        return errors;
+    }
+
+    public void clear() {
+        mapBoardHex.clear();
     }
 }

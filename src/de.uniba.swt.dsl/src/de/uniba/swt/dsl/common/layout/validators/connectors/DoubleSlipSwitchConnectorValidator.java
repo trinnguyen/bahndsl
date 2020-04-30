@@ -4,6 +4,7 @@ import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.layout.models.vertex.AbstractVertexMember;
 import de.uniba.swt.dsl.common.layout.models.vertex.DoubleSlipSwitchVertexMember;
+import de.uniba.swt.dsl.validation.ValidationErrors;
 
 import java.util.Objects;
 import java.util.Set;
@@ -29,8 +30,6 @@ public class DoubleSlipSwitchConnectorValidator extends AbstractConnectorValidat
                 .map(e -> networkLayout.findVertex(doubleSlipSwitchMember.generateKey(e)))
                 .filter(Objects::nonNull)
                 .distinct().count();
-        if (countItems != 4) {
-            throw new LayoutException("DoubleSlipSwitch must connect to 4 different blocks: " + member.getName());
-        }
+        ensureEndpoints(member.getName(), 4, (int) countItems);
     }
 }

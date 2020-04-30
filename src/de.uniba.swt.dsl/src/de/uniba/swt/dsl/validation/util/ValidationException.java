@@ -1,5 +1,6 @@
 package de.uniba.swt.dsl.validation.util;
 
+import de.uniba.swt.dsl.validation.ValidationErrors;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -24,7 +25,7 @@ public class ValidationException extends Exception
     }
 
     public static ValidationException createTypeException(String expectedType, String actualType, EStructuralFeature feature) {
-        return new ValidationException(String.format("Type Error: Expected %s but actual %s", expectedType, actualType), feature);
+        return new ValidationException(String.format(ValidationErrors.TypeErrorFormat, expectedType, actualType), feature);
     }
 
     public EStructuralFeature getFeature() {

@@ -1,6 +1,7 @@
 package de.uniba.swt.dsl.common.layout.models.vertex;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class LayoutVertex {
     private final String id = UUID.randomUUID().toString();
@@ -61,16 +62,5 @@ public class LayoutVertex {
                 .findFirst();
     }
 
-    /**
-     * Check if 2 vertices having the same block, same signal or same switch
-     * @param vertex
-     * @param ignoreMemberName
-     * @return
-     */
-    public boolean isConflict(LayoutVertex vertex, String ignoreMemberName) {
-        return getMembers().stream()
-                .filter(m -> !m.getName().equalsIgnoreCase(ignoreMemberName))
-                .anyMatch(m -> vertex.findMemberByName(m.getName()).isPresent());
-    }
 }
 

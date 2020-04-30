@@ -1,6 +1,7 @@
 package de.uniba.swt.dsl.validation.validators;
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.validation.ValidationErrors;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
 import de.uniba.swt.dsl.validation.typing.HintDataTypeUtl;
 import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
@@ -18,12 +19,12 @@ public class DeclValidator {
             // ensure having return statement
             var expectedType = new ExprDataType(decl.getReturnType(), decl.isReturnArray());
             if (!ensureReturnStmt(decl.getStmtList(), expectedType)) {
-                throw new ValidationException("Missing return statement", BahnPackage.Literals.FUNC_DECL__RETURN_TYPE);
+                throw new ValidationException(ValidationErrors.MissingReturn, BahnPackage.Literals.FUNC_DECL__RETURN_TYPE);
             }
         } else {
             // ensure having no return statement
             if (!ensureNoReturnStatement(decl.getStmtList())) {
-                throw new ValidationException("Unexpected return statement", BahnPackage.Literals.FUNC_DECL__STMT_LIST);
+                throw new ValidationException(ValidationErrors.UnexpectedReturn, BahnPackage.Literals.FUNC_DECL__STMT_LIST);
             }
         }
     }

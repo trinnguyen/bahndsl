@@ -9,6 +9,7 @@ import de.uniba.swt.dsl.common.layout.models.CompositeLayoutException;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.validators.LayoutElementValidator;
 import de.uniba.swt.dsl.common.util.BahnUtil;
+import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.normalization.SyntacticTransformer;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
 import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
@@ -21,7 +22,8 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.xtext.validation.Check;
 
 import javax.inject.Inject;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -37,13 +39,16 @@ public class BahnValidator extends AbstractBahnValidator {
     BahnLayoutValidator layoutValidator;
 
     @Inject
-    UniqueSegmentValidator segmentValidator;
+    UniqueSegmentUsageValidator segmentValidator;
 
     @Inject
     UniqueHexValidator hexValidator;
 
     @Inject
-    BoardRefValidator boardRefValidator;
+    UniqueIdValidator uniqueIdValidator;
+
+    @Inject
+    BoardValidator boardValidator;
 
     @Inject
     DeclValidator declValidator;
@@ -63,92 +68,106 @@ public class BahnValidator extends AbstractBahnValidator {
     @Override
     public boolean validate(EDataType eDataType, Object value, DiagnosticChain diagnostics, Map<Object, Object> context) {
         typeCheckingTable.clear();
+        hexValidator.clear();
+        uniqueIdValidator.clear();
+        segmentValidator.clear();
         return super.validate(eDataType, value, diagnostics, context);
     }
 
-
     @Check
     public void validateRootModule(RootModule module) {
-        int countBlock = 0;
-        int countLayout = 0;
-        int countCrossing = 0;
-
-        int invalidBlockIdx = -1;
-        int invalidLayoutIdx = -1;
-        int invalidCrossingIdx = -1;
-
-        for (int i = 0; i < module.getProperties().size(); i++) {
-            var prop = module.getProperties().get(i);
-            if (prop instanceof BlocksProperty) {
-                countBlock ++;
-                if (countBlock > 1) {
-                    invalidBlockIdx = i;
-                    continue;
-                }
-            }
-
-            if (prop instanceof LayoutProperty) {
-                countLayout++;
-                if (countLayout > 1) {
-                    invalidLayoutIdx = i;
-                    continue;
-                }
-            }
-
-            if (prop instanceof CrossingsProperty) {
-                countCrossing++;
-                if (countCrossing > 1) {
-                    invalidCrossingIdx = i;
-                }
-            }
+        // ensure single board
+        var errors = boardValidator.findSingleSectionError(module);
+        for (Tuple<String, Integer> error : errors) {
+            error(error.getFirst(), BahnPackage.Literals.ROOT_MODULE__PROPERTIES, error.getSecond());
         }
 
-        // show error
-        if (invalidBlockIdx >= 0) {
-            error("Only one blocks section is allowed", BahnPackage.Literals.ROOT_MODULE__PROPERTIES, invalidBlockIdx);
-        }
-
-        if (invalidLayoutIdx >= 0) {
-            error("Only one layout section is allowed", BahnPackage.Literals.ROOT_MODULE__PROPERTIES, invalidLayoutIdx);
-        }
-
-        if (invalidCrossingIdx >= 0) {
-            error("Only one crossing section is allowed", BahnPackage.Literals.ROOT_MODULE__PROPERTIES, invalidCrossingIdx);
+        // single track by board
+        var boardErrors = boardValidator.findSingleTrackByBoardErrors(module);
+        for (Tuple<String, Integer> error : boardErrors) {
+            error(error.getFirst(), BahnPackage.Literals.ROOT_MODULE__PROPERTIES, error.getSecond());
         }
     }
 
     @Check
-    public void validateSegmentsProperty(SegmentsProperty segmentsProperty) {
-        logger.debug("validateSegmentsProperty: " + segmentsProperty.getClass().getSimpleName());
-        try {
-            hexValidator.validateUniqueAddress(segmentsProperty.getItems(), SegmentElement::getAddress);
-            boardRefValidator.validateBoard(segmentsProperty, segmentsProperty.getBoard());
-        } catch (Exception e) {
-            error(e.getMessage(), BahnPackage.Literals.SEGMENTS_PROPERTY__ITEMS);
+    public void validateBoards(BoardsProperty boardsProperty) {
+        // ensure no duplicated address in board
+        var errors = boardValidator.validateUniqueHex(boardsProperty.getItems(), BoardElement::getUniqueId);
+        for (Tuple<String, Integer> error : errors) {
+            error(error.getFirst(), BahnPackage.Literals.BOARDS_PROPERTY__ITEMS, error.getSecond());
         }
+
+        // ensure no duplicated id
+        validateUniqueName(boardsProperty.getItems(), BoardElement::getName, BahnPackage.Literals.BOARDS_PROPERTY__ITEMS);
     }
 
     @Check
-    public void validateSignalsProperty(SignalsProperty signalsProperty) {
-        try {
-            var items = signalsProperty.getItems().stream()
-                    .filter(s -> s instanceof RegularSignalElement)
-                    .map(s -> (RegularSignalElement)s)
-                    .collect(Collectors.toList());
-            hexValidator.validateUniqueAddress(items, RegularSignalElement::getNumber);
-            boardRefValidator.validateBoard(signalsProperty, signalsProperty.getBoard());
-        } catch (Exception e) {
-            error(e.getMessage(), BahnPackage.Literals.SIGNALS_PROPERTY__ITEMS);
-        }
+    public void validateSegmentsProperty(SegmentsProperty prop) {
+        validateUniqueHexInBoard(prop.getBoard().getName(), prop.getItems(), SegmentElement::getAddress, BahnPackage.Literals.SEGMENTS_PROPERTY__ITEMS);
+        validateUniqueName(prop.getItems(), SegmentElement::getName, BahnPackage.Literals.SEGMENTS_PROPERTY__ITEMS);
     }
 
     @Check
-    public void validatePointsProperty(PointsProperty pointsProperty) {
-        try {
-            hexValidator.validateUniqueAddress(pointsProperty.getItems(), PointElement::getNumber);
-            boardRefValidator.validateBoard(pointsProperty, pointsProperty.getBoard());
-        } catch (Exception e) {
-            error(e.getMessage(), BahnPackage.Literals.POINTS_PROPERTY__ITEMS);
+    public void validateSignalsProperty(SignalsProperty prop) {
+        var items = prop.getItems().stream()
+                .filter(s -> s instanceof RegularSignalElement)
+                .map(s -> (RegularSignalElement)s)
+                .collect(Collectors.toList());
+        validateUniqueHexInBoard(prop.getBoard().getName(), items, RegularSignalElement::getNumber, BahnPackage.Literals.SIGNALS_PROPERTY__ITEMS);
+        validateUniqueName(prop.getItems(), SignalElement::getName, BahnPackage.Literals.SIGNALS_PROPERTY__ITEMS);
+    }
+
+    @Check
+    public void validatePeripheralsProperty(PeripheralsProperty prop) {
+        var items = prop.getItems().stream()
+                .filter(s -> s instanceof RegularSignalElement)
+                .map(s -> (RegularSignalElement)s)
+                .collect(Collectors.toList());
+        validateUniqueHexInBoard(prop.getBoard().getName(), items, RegularSignalElement::getNumber, BahnPackage.Literals.PERIPHERALS_PROPERTY__ITEMS);
+        validateUniqueName(prop.getItems(), SignalElement::getName, BahnPackage.Literals.PERIPHERALS_PROPERTY__ITEMS);
+    }
+
+    @Check
+    public void validatePointsProperty(PointsProperty prop) {
+        validateUniqueHexInBoard(prop.getBoard().getName(), prop.getItems(), PointElement::getNumber, BahnPackage.Literals.POINTS_PROPERTY__ITEMS);
+        validateUniqueName(prop.getItems(), PointElement::getName, BahnPackage.Literals.POINTS_PROPERTY__ITEMS);
+    }
+
+    @Check
+    public void validateBlocksProperty(BlocksProperty prop) {
+        validateUniqueName(prop.getItems(), BlockElement::getName, BahnPackage.Literals.BLOCKS_PROPERTY__ITEMS);
+    }
+
+    @Check
+    public void validateBlocksProperty(PlatformsProperty prop) {
+        validateUniqueName(prop.getItems(), BlockElement::getName, BahnPackage.Literals.PLATFORMS_PROPERTY__ITEMS);
+    }
+
+    @Check
+    public void validateBlocksProperty(CrossingsProperty prop) {
+        validateUniqueName(prop.getItems(), CrossingElement::getName, BahnPackage.Literals.CROSSINGS_PROPERTY__ITEMS);
+    }
+
+    @Check
+    public void validateBlocksProperty(TrainsProperty prop) {
+        validateUniqueName(prop.getItems(), TrainElement::getName, BahnPackage.Literals.TRAINS_PROPERTY__ITEMS);
+    }
+
+    private <T> void validateUniqueHexInBoard(String boardName, List<T> items, Function<T, String> addrMapper, EStructuralFeature feature) {
+        var errors = hexValidator.validateUniqueAddress(boardName, items, addrMapper);
+        for (Tuple<String, Integer> error : errors) {
+            error(error.getFirst(), feature, error.getSecond());
+        }
+    }
+
+    private <T> void validateUniqueName(List<T> items, Function<T, String> provider, EStructuralFeature feature) {
+        for (int i = 0; i < items.size(); i++) {
+            var name = provider.apply(items.get(i));
+            if (uniqueIdValidator.lookup(name)) {
+                error(String.format(ValidationErrors.DefinedConfigNameFormat, name), feature, i);
+            } else {
+                uniqueIdValidator.insert(name);
+            }
         }
     }
 
@@ -267,7 +286,7 @@ public class BahnValidator extends AbstractBahnValidator {
         var arrayType = typeCheckingTable.computeDataType(stmt.getArrayExpr());
         var ensureArray = arrayType.isArray();
         if (!ensureArray) {
-            error("Type Error: Expected type array", BahnPackage.Literals.FOREACH_STMT__ARRAY_EXPR);
+            error(ValidationErrors.TypeExpectedArray, BahnPackage.Literals.FOREACH_STMT__ARRAY_EXPR);
         }
 
         // ensure current element is matched
@@ -284,7 +303,7 @@ public class BahnValidator extends AbstractBahnValidator {
     public void typeCheckingBreakStmt(BreakStmt stmt) {
         // ensure having while outside
         if (!BahnUtil.isInsideIterationStmt(stmt)) {
-            error("break can only be used inside 'for..in", null);
+            error(ValidationErrors.BreakInIteration, null);
         }
     }
 
@@ -299,12 +318,49 @@ public class BahnValidator extends AbstractBahnValidator {
     }
 
     @Check
-    public void typeCheckingExpression(Expression expression) {
-        logger.debug("expression: " + expression.getClass().getSimpleName());
+    public void typeCheckingValuedReferenceExpr(ValuedReferenceExpr expr) {
         try {
-            expressionValidator.validate(expression);
+            expressionValidator.validateValuedReferenceExpr(expr);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingRegularFunctionCallExpr(RegularFunctionCallExpr expr) {
+        try {
+            expressionValidator.validateRegularFuncCall(expr);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingOpExpression(OpExpression expr) {
+        try {
+            if (expr.getLeftExpr() != null && expr.getRightExpr() != null) {
+                expressionValidator.validateOpExpression(expr);
+            }
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void typeCheckingValuedReferenceExpr(UnaryExpr expr) {
+        try {
+            checkTypes(ExprDataType.ScalarBool, typeCheckingTable.computeDataType(expr.getExpr()), BahnPackage.Literals.UNARY_EXPR__EXPR);
+        } catch (ValidationException e) {
+            error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void checkArrayGetter(BehaviourGetExpr expr) {
+        if (syntacticTransformer.isArrayGetter(expr)) {
+            if (!(expr.eContainer() instanceof VariableAssignment)) {
+                error(ValidationErrors.MissingArrayAssignment, BahnPackage.Literals.BEHAVIOUR_GET_EXPR__GET_EXPR);
+            }
         }
     }
 
@@ -323,15 +379,6 @@ public class BahnValidator extends AbstractBahnValidator {
             checkTypes(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrainExpr()), BahnPackage.Literals.GET_TRAIN_SPEED_FUNC_EXPR__TRAIN_EXPR);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
-        }
-    }
-
-    @Check
-    public void checkArrayGetter(BehaviourGetExpr expr) {
-        if (syntacticTransformer.isArrayGetter(expr)) {
-            if (!(expr.eContainer() instanceof VariableAssignment)) {
-                error("Missing assignment to an array variable", BahnPackage.Literals.BEHAVIOUR_GET_EXPR__GET_EXPR);
-            }
         }
     }
 
@@ -407,7 +454,7 @@ public class BahnValidator extends AbstractBahnValidator {
 
     private static void ensureValidId(String id, EStructuralFeature feature) throws ValidationException {
         if (id.startsWith("_")) {
-            throw new ValidationException("Underscore is not allowed at the beginning", feature);
+            throw new ValidationException(ValidationErrors.IdUnderscoreNotAllowedBeginning, feature);
         }
     }
 

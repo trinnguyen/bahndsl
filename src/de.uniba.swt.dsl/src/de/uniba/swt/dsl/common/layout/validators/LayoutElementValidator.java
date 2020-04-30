@@ -2,6 +2,7 @@ package de.uniba.swt.dsl.common.layout.validators;
 
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.util.BahnConstants;
+import de.uniba.swt.dsl.validation.ValidationErrors;
 import de.uniba.swt.dsl.validation.util.ValidationException;
 
 import java.util.HashSet;
@@ -18,18 +19,18 @@ public class LayoutElementValidator {
 
                 if (!(leftRef.getElem() instanceof BlockElement)
                         || !(rightRef.getElem() instanceof BlockElement)) {
-                    throw new ValidationException("Direction is allowed for block only", BahnPackage.Literals.LAYOUT_ELEMENT__CONNECTORS);
+                    throw new ValidationException(ValidationErrors.DirectionBlockOnly, BahnPackage.Literals.LAYOUT_ELEMENT__CONNECTORS);
                 }
 
                 if (!leftRef.getElem().equals(rightRef.getElem())) {
-                    throw new ValidationException("Direction must be configured on the same block", BahnPackage.Literals.LAYOUT_ELEMENT__CONNECTORS);
+                    throw new ValidationException(ValidationErrors.DirectionSameBlock, BahnPackage.Literals.LAYOUT_ELEMENT__CONNECTORS);
                 }
 
                 if (!isBlockProp(leftRef.getProp().getLiteral())
                         || !isBlockProp(rightRef.getProp().getLiteral())
                         || leftRef.getProp().getLiteral().equalsIgnoreCase(rightRef.getProp().getLiteral())) {
                     var hint = String.join(",", BahnConstants.BLOCK_PROPS);
-                    throw new ValidationException("Invalid connector property, use: " + hint, BahnPackage.Literals.LAYOUT_ELEMENT__CONNECTORS);
+                    throw new ValidationException(ValidationErrors.InvalidConnectorsFormat, BahnPackage.Literals.LAYOUT_ELEMENT__CONNECTORS);
                 }
             }
         }
@@ -44,7 +45,7 @@ public class LayoutElementValidator {
             if (!reference.isNotSignal())
                 return;
 
-            throw new ValidationException("Signal should have no connector property", BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
+            throw new ValidationException(ValidationErrors.SinglaConnectorNoAllowed, BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
         }
 
         String prop = reference.getProp().getLiteral();
@@ -61,14 +62,14 @@ public class LayoutElementValidator {
 
         // validate
         if (prop == null || prop.isEmpty()) {
-            throw new ValidationException("Missing connector property", BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
+            throw new ValidationException(ValidationErrors.MissingConnector, BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
         }
 
         if (allowedProps == null || allowedProps.isEmpty())
-            throw new ValidationException("Connector is allowed for signal, point, block, platform, crossing, unexpected " + reference.getElem().getClass().getSimpleName(), BahnPackage.Literals.LAYOUT_REFERENCE__ELEM);
+            throw new ValidationException(String.format(ValidationErrors.NotSupportedConnectorElementFormat, reference.getElem().getClass().getSimpleName()), BahnPackage.Literals.LAYOUT_REFERENCE__ELEM);
 
         if (!allowedProps.contains(prop)) {
-            throw new ValidationException("Invalid connector property, use: " + String.join(",", allowedProps), BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
+            throw new ValidationException(String.format(ValidationErrors.InvalidConnectorsFormat, String.join(",", allowedProps)), BahnPackage.Literals.LAYOUT_REFERENCE__PROP);
         }
     }
 }

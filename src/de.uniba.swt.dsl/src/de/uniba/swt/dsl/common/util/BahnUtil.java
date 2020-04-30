@@ -172,11 +172,8 @@ public class BahnUtil {
         return false;
     }
 
-    public static Long parseHex(String strValue) throws Exception {
-        try	{
-            return Long.parseLong(strValue.substring(2), 16);
-        } catch (NumberFormatException ex) {
-            throw new Exception("Invalid hex value: " + strValue);
-        }
+    public static Long parseHex(String strValue) throws NumberFormatException {
+        return Long.parseLong(strValue.substring(2), 16);
     }
+
 }

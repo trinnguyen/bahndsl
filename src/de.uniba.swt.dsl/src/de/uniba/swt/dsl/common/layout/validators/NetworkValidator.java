@@ -5,6 +5,7 @@ import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.layout.models.vertex.VertexMemberType;
 import de.uniba.swt.dsl.common.layout.validators.connectors.*;
+import de.uniba.swt.dsl.validation.ValidationErrors;
 
 import java.util.*;
 
@@ -31,7 +32,7 @@ public class NetworkValidator {
 
         // 2. ensure all vertices are reachable
         if (!graphValidator.isStrongConnected(networkLayout))
-            throw new CompositeLayoutException("Network layout is not strongly connected");
+            throw new CompositeLayoutException(ValidationErrors.NetworkNotValid);
     }
 
     private void validateConnectors() throws CompositeLayoutException {

@@ -3,7 +3,9 @@ package de.uniba.swt.dsl.common.layout.validators.connectors;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.layout.models.vertex.AbstractVertexMember;
+import de.uniba.swt.dsl.common.layout.models.vertex.CrossingVertexMember;
 import de.uniba.swt.dsl.common.layout.models.vertex.StandardSwitchVertexMember;
+import de.uniba.swt.dsl.validation.ValidationErrors;
 
 import java.util.Objects;
 import java.util.Set;
@@ -22,23 +24,13 @@ public class StandardSwitchConnectorValidator extends AbstractConnectorValidator
         if (!(member instanceof StandardSwitchVertexMember))
             return;
 
-        StandardSwitchVertexMember standardSwitchMember = (StandardSwitchVertexMember) member;
+        var switchMember = (StandardSwitchVertexMember) member;
 
         // find vertices
-        var items = endpoints.stream()
-                .map(e -> networkLayout.findVertex(standardSwitchMember.generateKey(e)))
+        var countItems = endpoints.stream()
+                .map(e -> networkLayout.findVertex(switchMember.generateKey(e)))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        if (items.size() == 3) {
-            // ensure no conflict
-            boolean isConflict = items.get(0).isConflict(items.get(1), member.getName())
-                    || items.get(0).isConflict(items.get(2), member.getName())
-                    || items.get(1).isConflict(items.get(2), member.getName());
-            if (!isConflict)
-                return;
-        }
-
-        throw new LayoutException("Point must connect to 3 different blocks: " + member.getName());
+                .distinct().count();
+        ensureEndpoints(member.getName(), 3, (int) countItems);
     }
 }
