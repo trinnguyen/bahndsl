@@ -68,5 +68,7 @@ public class ValidationErrors {
 
     public final static String BreakInIteration = "break can only be used inside 'for..in";
 
+    public final static String DefinedEID = "'%s' is already defined";
+
     private ValidationErrors() {}
 }

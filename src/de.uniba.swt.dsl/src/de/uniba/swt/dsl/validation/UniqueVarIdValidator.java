@@ -1,15 +1,9 @@
 package de.uniba.swt.dsl.validation;
 
-
-import de.uniba.swt.dsl.common.util.Tuple;
-
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
-public class UniqueIdValidator {
+public class UniqueVarIdValidator {
     private final Set<String> ids = new HashSet<>();
 
     public void clear() {
@@ -21,6 +15,6 @@ public class UniqueIdValidator {
     }
 
     public void insert(String id) {
-        ids.add(id);
+        ids.add(id.toLowerCase());
     }
 }

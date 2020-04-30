@@ -14,7 +14,7 @@ public class DeclValidator {
     @Inject
     TypeCheckingTable typeCheckingTable;
 
-    public void validateFuncDecl(FuncDecl decl) throws ValidationException {
+    public void validateReturn(FuncDecl decl) throws ValidationException {
         if (decl.isReturn()) {
             // ensure having return statement
             var expectedType = new ExprDataType(decl.getReturnType(), decl.isReturnArray());

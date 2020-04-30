@@ -24,7 +24,6 @@ import org.eclipse.xtext.validation.Check;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * This class contains custom validation rules.
@@ -45,7 +44,10 @@ public class BahnValidator extends AbstractBahnValidator {
     UniqueHexValidator hexValidator;
 
     @Inject
-    UniqueIdValidator uniqueIdValidator;
+    UniqueConfigNameValidator uniqueConfigNameValidator;
+
+    @Inject
+    UniqueVarIdValidator uniqueVarIdValidator;
 
     @Inject
     BoardValidator boardValidator;
@@ -64,14 +66,14 @@ public class BahnValidator extends AbstractBahnValidator {
 
     @Inject
     StatementValidator statementValidator;
-
-    @Override
-    public boolean validate(EDataType eDataType, Object value, DiagnosticChain diagnostics, Map<Object, Object> context) {
-        typeCheckingTable.clear();
+    
+    @Check
+    public void valdiateModel(BahnModel model) {
         hexValidator.clear();
-        uniqueIdValidator.clear();
+        uniqueConfigNameValidator.clear();
         segmentValidator.clear();
-        return super.validate(eDataType, value, diagnostics, context);
+        typeCheckingTable.clear();
+        uniqueVarIdValidator.clear();
     }
 
     @Check
@@ -168,10 +170,10 @@ public class BahnValidator extends AbstractBahnValidator {
     private <T> void validateUniqueName(List<T> items, Function<T, String> provider, EStructuralFeature feature) {
         for (int i = 0; i < items.size(); i++) {
             var name = provider.apply(items.get(i));
-            if (uniqueIdValidator.lookup(name)) {
+            if (uniqueConfigNameValidator.lookup(name)) {
                 error(String.format(ValidationErrors.DefinedConfigNameFormat, name), feature, i);
             } else {
-                uniqueIdValidator.insert(name);
+                uniqueConfigNameValidator.insert(name);
             }
         }
     }
@@ -263,7 +265,7 @@ public class BahnValidator extends AbstractBahnValidator {
         logger.debug("typeCheckingFuncDecl: " + funcDecl.getClass().getSimpleName());
         try {
             ensureValidId(funcDecl.getName(), BahnPackage.Literals.COMPONENT__NAME);
-            declValidator.validateFuncDecl(funcDecl);
+            declValidator.validateReturn(funcDecl);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
         }
@@ -279,7 +281,7 @@ public class BahnValidator extends AbstractBahnValidator {
     }
 
     @Check
-    public void checkIdVarDecl(ParamDecl paramDecl) {
+    public void checkIdParamDecl(ParamDecl paramDecl) {
         try {
             ensureValidId(paramDecl.getName(), BahnPackage.Literals.REF_VAR_DECL__NAME);
         } catch (ValidationException e) {
@@ -480,9 +482,17 @@ public class BahnValidator extends AbstractBahnValidator {
         }
     }
 
-    private static void ensureValidId(String id, EStructuralFeature feature) throws ValidationException {
+    private void ensureValidId(String id, EStructuralFeature feature) throws ValidationException {
+        // ensure not starting with Id
         if (id.startsWith("_")) {
             throw new ValidationException(ValidationErrors.IdUnderscoreNotAllowedBeginning, feature);
+        }
+
+        // ensure unique
+        if (uniqueConfigNameValidator.lookup(id)) {
+            error(String.format(ValidationErrors.DefinedEID, id), feature);
+        } else {
+            uniqueConfigNameValidator.insert(id);
         }
     }
 
