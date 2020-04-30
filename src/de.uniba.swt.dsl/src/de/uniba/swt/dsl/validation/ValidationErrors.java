@@ -42,6 +42,10 @@ public class ValidationErrors {
 
     public final static String NetworkNotValid = "Network layout is not strongly connected";
 
+    public static String UsedSignalInCompositionFormat = "'%s' is already used";
+
+    public static String UsedSignalTypeInCompositionFormat = "Type '%s' is already used";
+
     /**
      * Errors for expression
      */

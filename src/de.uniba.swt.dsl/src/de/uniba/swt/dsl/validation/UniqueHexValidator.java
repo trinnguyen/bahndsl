@@ -22,6 +22,9 @@ public class UniqueHexValidator {
 
             // verify hex value
             String strVal = addrMapper.apply(item);
+            if (strVal == null || strVal.isBlank())
+                continue;
+
             Long val = null;
             try {
                 val = BahnUtil.parseHex(strVal);

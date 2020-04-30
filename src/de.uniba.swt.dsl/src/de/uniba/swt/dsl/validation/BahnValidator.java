@@ -109,21 +109,26 @@ public class BahnValidator extends AbstractBahnValidator {
 
     @Check
     public void validateSignalsProperty(SignalsProperty prop) {
-        var items = prop.getItems().stream()
-                .filter(s -> s instanceof RegularSignalElement)
-                .map(s -> (RegularSignalElement)s)
-                .collect(Collectors.toList());
-        validateUniqueHexInBoard(prop.getBoard().getName(), items, RegularSignalElement::getNumber, BahnPackage.Literals.SIGNALS_PROPERTY__ITEMS);
+        validateUniqueHexInBoard(prop.getBoard().getName(), prop.getItems(), p -> {
+            if (p instanceof RegularSignalElement) {
+                return ((RegularSignalElement) p).getNumber();
+            }
+
+            return null;
+        }, BahnPackage.Literals.SIGNALS_PROPERTY__ITEMS);
         validateUniqueName(prop.getItems(), SignalElement::getName, BahnPackage.Literals.SIGNALS_PROPERTY__ITEMS);
     }
 
     @Check
     public void validatePeripheralsProperty(PeripheralsProperty prop) {
-        var items = prop.getItems().stream()
-                .filter(s -> s instanceof RegularSignalElement)
-                .map(s -> (RegularSignalElement)s)
-                .collect(Collectors.toList());
-        validateUniqueHexInBoard(prop.getBoard().getName(), items, RegularSignalElement::getNumber, BahnPackage.Literals.PERIPHERALS_PROPERTY__ITEMS);
+        validateUniqueHexInBoard(prop.getBoard().getName(), prop.getItems(), p -> {
+            if (p instanceof RegularSignalElement) {
+                return ((RegularSignalElement) p).getNumber();
+            }
+
+            return null;
+        }, BahnPackage.Literals.SIGNALS_PROPERTY__ITEMS);
+        validateUniqueName(prop.getItems(), SignalElement::getName, BahnPackage.Literals.PERIPHERALS_PROPERTY__ITEMS);
         validateUniqueName(prop.getItems(), SignalElement::getName, BahnPackage.Literals.PERIPHERALS_PROPERTY__ITEMS);
     }
 
@@ -195,6 +200,29 @@ public class BahnValidator extends AbstractBahnValidator {
             segmentValidator.validateSegment(crossingElement);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void validateCompositionSignalElement(CompositionSignalElement element) {
+        Set<String> usedNames = new HashSet<>();
+        Set<String> usedTypes = new HashSet<>();
+        for (int i = 0; i < element.getSignals().size(); i++) {
+            var signal = element.getSignals().get(i);
+
+            // check names
+            if (usedNames.contains(signal.getName())) {
+                error(String.format(ValidationErrors.UsedSignalInCompositionFormat, signal.getName()), BahnPackage.Literals.COMPOSITION_SIGNAL_ELEMENT__SIGNALS, i);
+            } else {
+                usedNames.add(signal.getName());
+            }
+
+            // check type
+            if (usedTypes.contains(signal.getType().getName())) {
+                error(String.format(ValidationErrors.UsedSignalTypeInCompositionFormat, signal.getType().getName()), BahnPackage.Literals.COMPOSITION_SIGNAL_ELEMENT__SIGNALS, i);
+            } else {
+                usedTypes.add(signal.getType().getName());
+            }
         }
     }
 
