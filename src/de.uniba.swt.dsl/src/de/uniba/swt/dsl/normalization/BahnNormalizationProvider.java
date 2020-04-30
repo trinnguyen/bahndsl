@@ -3,11 +3,16 @@ package de.uniba.swt.dsl.normalization;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import de.uniba.swt.dsl.bahn.*;
+import org.apache.log4j.Logger;
+import org.eclipse.xtext.resource.SaveOptions;
+import org.eclipse.xtext.serializer.impl.Serializer;
 
 import java.util.List;
 
 @Singleton
 public class BahnNormalizationProvider {
+
+    private final static Logger logger = Logger.getLogger(BahnNormalizationProvider.class);
 
     @Inject
     ArrayLookupTable arrayLookupTable;
@@ -29,6 +34,9 @@ public class BahnNormalizationProvider {
 
     @Inject
     ForeachNormalizer foreachNormalizer;
+
+    @Inject
+    Serializer serializer;
 
     public BahnNormalizationProvider() {
     }
@@ -57,6 +65,9 @@ public class BahnNormalizationProvider {
      * @param funcDecl
      */
     private void normalizeFunc(FuncDecl funcDecl) {
+        // break multiple operator expression into small (basic) statement
+        basicStatementNormalizer.normalizeFunc(funcDecl);
+
         // convert list to array with additional length variable
         arrayNormalizer.normalizeFunc(funcDecl);
 
@@ -68,8 +79,12 @@ public class BahnNormalizationProvider {
 
         // convert all getter/setter for configuration and track state
         syntacticExprNormalizer.normalizeFunc(funcDecl);
+    }
 
-        // break multiple operator expression into small (basic) statement
-        basicStatementNormalizer.normalizeFunc(funcDecl);
+    private void log(FuncDecl funcDecl) {
+        if (funcDecl.getName().equals("test")) {
+            var input = funcDecl.eResource().getContents().get(0);
+            logger.debug(serializer.serialize(input, SaveOptions.newBuilder().format().getOptions()));
+        }
     }
 }

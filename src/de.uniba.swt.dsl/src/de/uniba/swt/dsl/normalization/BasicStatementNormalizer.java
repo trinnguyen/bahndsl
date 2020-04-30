@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
+import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,7 +13,10 @@ import java.util.List;
 public class BasicStatementNormalizer extends AbstractNormalizer {
 
     @Inject
-    TemporaryVarGenerator varGenerator;
+    TemporaryVarGenerator temporaryVarGenerator;
+
+    @Inject
+    TypeCheckingTable typeCheckingTable;
 
     @Override
     protected Collection<Statement> normalizeStmt(Statement stmt) {
@@ -23,11 +27,31 @@ public class BasicStatementNormalizer extends AbstractNormalizer {
             if (expr instanceof RegularFunctionCallExpr) {
                 var decl = ((RegularFunctionCallExpr) expr).getDecl();
                 if (decl.isReturn()) {
-                    VarDecl temp = varGenerator.createTempVar(new ExprDataType(decl.getReturnType(), decl.isReturnArray()));
+                    VarDecl temp = temporaryVarGenerator.createTempVar(new ExprDataType(decl.getReturnType(), decl.isReturnArray()));
                     var replaceStmt = createVarDeclStmt(temp, expr);
                     BahnUtil.replaceEObject(stmt, replaceStmt);
                     return List.of();
                 }
+            }
+        }
+
+        // ensure foreach using temporary array
+        if (stmt instanceof ForeachStmt) {
+            var foreachStmt = (ForeachStmt) stmt;
+            if (!(foreachStmt.getArrayExpr() instanceof ValuedReferenceExpr)) {
+
+                // introduce new temporary for variable
+                var type = typeCheckingTable.computeDataType(foreachStmt.getArrayExpr());
+                VarDecl tempArrayVar = temporaryVarGenerator.createTempVar(type);
+
+                // keep
+                var tempArrayVarDeclStmt = createVarDeclStmt(tempArrayVar, foreachStmt.getArrayExpr());
+
+                //replace
+                foreachStmt.setArrayExpr(createVarRef(tempArrayVar));
+
+                // return
+                return List.of(tempArrayVarDeclStmt);
             }
         }
 
@@ -55,7 +79,7 @@ public class BasicStatementNormalizer extends AbstractNormalizer {
         }
 
         // create variable reference
-        VarDecl temp = varGenerator.createTempVar(new ExprDataType(funcExpr.getDecl().getReturnType(), funcExpr.getDecl().isReturnArray()));
+        VarDecl temp = temporaryVarGenerator.createTempVar(new ExprDataType(funcExpr.getDecl().getReturnType(), funcExpr.getDecl().isReturnArray()));
         ValuedReferenceExpr ref = BahnFactory.eINSTANCE.createValuedReferenceExpr();
         ref.setDecl(temp);
 

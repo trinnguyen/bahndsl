@@ -136,6 +136,12 @@ public abstract class AbstractNormalizer {
         return exprs.stream().map(this::normalizeExpr).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toList());
     }
 
+    protected ValuedReferenceExpr createVarRef(VarDecl indexDecl) {
+        var indexRef = BahnFactory.eINSTANCE.createValuedReferenceExpr();
+        indexRef.setDecl(indexDecl);
+        return indexRef;
+    }
+
     protected VarDeclStmt createVarDeclStmt(VarDecl decl, Expression expr) {
         // set value
         VariableAssignment assignment = BahnFactory.eINSTANCE.createVariableAssignment();

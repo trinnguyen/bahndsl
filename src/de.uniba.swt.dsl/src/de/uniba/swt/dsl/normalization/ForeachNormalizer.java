@@ -27,32 +27,37 @@ public class ForeachNormalizer extends AbstractNormalizer {
         if (stmt instanceof ForeachStmt) {
             var foreachStmt = (ForeachStmt) stmt;
 
-            // index
-            var indexDecl = temporaryVarGenerator.createTempVar(ExprDataType.ScalarInt);
-            var declStmt = createVarDeclStmt(indexDecl, createNumLiteral(0));
+            // ensure ref
+            if (foreachStmt.getArrayExpr() instanceof ValuedReferenceExpr) {
+                var arrRef = (ValuedReferenceExpr) foreachStmt.getArrayExpr();
 
-            // condition and current element
-            var condition = createConditionExpr(indexDecl, foreachStmt.getArrayExpr().getDecl().getName());
+                // index
+                var indexDecl = temporaryVarGenerator.createTempVar(ExprDataType.ScalarInt);
+                var declStmt = createVarDeclStmt(indexDecl, createNumLiteral(0));
 
-            // update stmt list with start and stop
-            var elementStmt = createVarDeclStmt(foreachStmt.getDecl(), createArrayIndexRef(foreachStmt.getArrayExpr().getDecl().getName(), indexDecl));
-            var stmtList = foreachStmt.getStmts();
-            stmtList.getStmts().add(0, elementStmt);
+                // condition and current element
+                var condition = createConditionExpr(indexDecl, arrRef.getDecl().getName());
 
-            // stop
-            var indexIncreStmt = createIndexIncrementStmt(indexDecl);
-            stmtList.getStmts().add(indexIncreStmt);
+                // update stmt list with start and stop
+                var elementStmt = createVarDeclStmt(foreachStmt.getDecl(), createArrayIndexRef(arrRef.getDecl().getName(), indexDecl));
+                var stmtList = foreachStmt.getStmts();
+                stmtList.getStmts().add(0, elementStmt);
 
-            // form while stmt
-            var whileStmt = BahnFactory.eINSTANCE.createIterationStmt();
-            whileStmt.setExpr(condition);
-            whileStmt.setStmts(foreachStmt.getStmts());
+                // stop
+                var indexIncreStmt = createIndexIncrementStmt(indexDecl);
+                stmtList.getStmts().add(indexIncreStmt);
 
-            // replace
-            BahnUtil.replaceEObject(foreachStmt, whileStmt);
+                // form while stmt
+                var whileStmt = BahnFactory.eINSTANCE.createIterationStmt();
+                whileStmt.setExpr(condition);
+                whileStmt.setStmts(foreachStmt.getStmts());
 
-            // additional decl stmt
-            return List.of(declStmt);
+                // replace
+                BahnUtil.replaceEObject(foreachStmt, whileStmt);
+
+                // additional decl stmt
+                return List.of(declStmt);
+            }
         }
 
         return super.normalizeStmt(stmt);
@@ -72,12 +77,6 @@ public class ForeachNormalizer extends AbstractNormalizer {
         assignmentStmt.setReferenceExpr(createVarRef(indexDecl));
         assignmentStmt.setAssignment(assignmentVariable);
         return assignmentStmt;
-    }
-
-    private ValuedReferenceExpr createVarRef(VarDecl indexDecl) {
-        var indexRef = BahnFactory.eINSTANCE.createValuedReferenceExpr();
-        indexRef.setDecl(indexDecl);
-        return indexRef;
     }
 
     private Expression createArrayIndexRef(String name, VarDecl indexDecl) {

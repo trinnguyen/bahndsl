@@ -57,8 +57,20 @@ class BahnNormalizationProviderTest {
             "def test() bool items[] for bool id in items end end",
             "def test() float items[] for float id in items end end",
     })
-    void testForeach(String src) throws Exception {
+    void testForeachStmt(String src) throws Exception {
         ensureNormalize(src, List.of("while", "int _test_items_cnt_1 = 1024", "int _test_t1 = 0"));
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
+            "def test(string items[]) for string id in items end end",
+            "def test(int items[]) for int id in items end end",
+            "def test(bool items[]) for bool id in items end end",
+            "def test(float items[]) for float id in items end end",
+            //"def test() for int id in run() end end def run(): int[] int i[] return i end",
+    })
+    void testForeachParam(String src) throws Exception {
+        ensureNormalize(src, List.of("while", "int _test_items_cnt_1", "int _test_t1 = 0"));
     }
 
     @ParameterizedTest
@@ -82,7 +94,7 @@ class BahnNormalizationProviderTest {
 
     @ParameterizedTest
     @ValueSource (strings = {
-            // "def test(string src, string dst) get routes from src to dst end",
+             "def test(string src, string dst) string ids[] = get routes from src to dst end",
             "def test() string ids[] = get routes from \"a\" to \"b\" end",
     })
     void testDomainGetRoutes(String src) throws Exception {

@@ -265,7 +265,7 @@ IterationStmt returns Statement:
 ;
 
 ForeachStmt returns Statement:
-	{ForeachStmt} 'for' decl=VarDecl 'in' arrayExpr=ValuedReferenceExpr
+	{ForeachStmt} 'for' decl=VarDecl 'in' arrayExpr=PrimaryExpr
 		stmts=StatementList
 	'end'
 ;

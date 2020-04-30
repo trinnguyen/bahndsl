@@ -20,14 +20,15 @@ public class ArrayNormalizer extends AbstractNormalizer {
         while (i < funcDecl.getParamDecls().size()) {
             var paramDecl = funcDecl.getParamDecls().get(i);
             if (paramDecl.isArray()) {
-                // add to lookup
-                arrayLookupTable.insert(paramDecl);
 
                 // add the size param to the list
                 ParamDecl lenParamDecl = BahnFactory.eINSTANCE.createParamDecl();
                 lenParamDecl.setArray(false);
                 lenParamDecl.setType(DataType.INT_TYPE);
-                lenParamDecl.setName(arrayLookupTable.lookupLengthName(paramDecl.getName()));
+                lenParamDecl.setName(arrayLookupTable.generateTempLenVar(paramDecl.getName()));
+
+                // add to lookup
+                arrayLookupTable.insert(paramDecl, lenParamDecl);
 
                 // add to list
                 funcDecl.getParamDecls().add(++i, lenParamDecl);
@@ -47,8 +48,13 @@ public class ArrayNormalizer extends AbstractNormalizer {
             if (varDeclStmt.getDecl().isArray()) {
                 String name = varDeclStmt.getDecl().getName();
 
+                // create  new var decl for int length
+                VarDecl lenDecl = BahnFactory.eINSTANCE.createVarDecl();
+                lenDecl.setType(DataType.INT_TYPE);
+                lenDecl.setName(arrayLookupTable.generateTempLenVar(name));
+
                 // insert
-                arrayLookupTable.insert(varDeclStmt.getDecl());
+                arrayLookupTable.insert(varDeclStmt.getDecl(), lenDecl);
 
                 // set default assignment
                 VariableAssignment assignment = BahnFactory.eINSTANCE.createVariableAssignment();
@@ -56,7 +62,7 @@ public class ArrayNormalizer extends AbstractNormalizer {
 
                 // add new stmt
                 var lenDeclStmt = BahnFactory.eINSTANCE.createVarDeclStmt();
-                lenDeclStmt.setDecl(arrayLookupTable.lookupLengthDecl(name));
+                lenDeclStmt.setDecl(lenDecl);
                 lenDeclStmt.setAssignment(assignment);
 
                 return List.of(lenDeclStmt);
