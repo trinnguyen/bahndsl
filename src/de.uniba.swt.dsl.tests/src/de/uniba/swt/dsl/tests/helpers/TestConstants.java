@@ -11,19 +11,23 @@ public class TestConstants {
             "end";
 
     public final static String SampleLayoutConfig = "module layout1 " +
-            "boards master 0x00 end " +
+            "boards " +
+            "   master 0x00 " +
+            "   lightc 0x01 " +
+            "   conc 0x02 " +
+            "end " +
             "segments master " +
             "   seg1 0x01 length 11cm " +
             "   seg2 0x02 length 11cm " +
             "   seg3 0x03 length 11cm " +
             "   seg4 0x04 length 11cm " +
             "end " +
-            "signals master " +
+            "signals lightc " +
             "   entry sig5 0x05 " +
             "   entry sig6 0x06 " +
             "   entry sig7 0x07 " +
             "end " +
-            "points master " +
+            "points conc " +
             "   point1 0x01 segment seg1 normal 0x01 reverse 0x00 initial normal " +
             "end " +
             "blocks " +

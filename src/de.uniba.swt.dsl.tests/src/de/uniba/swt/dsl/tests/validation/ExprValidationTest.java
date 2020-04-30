@@ -76,10 +76,10 @@ public class ExprValidationTest extends AbstractValidationTest {
 
     @ParameterizedTest
     @CsvSource({
-            "def test() int a1 = false + 1 end, Expected int or float",
-            "def test() bool a1 = false || 3 end, Expected bool",
-            "def test() bool a1 = 3 == true end, Expressions must have the same type",
-            "def test() bool a1 = false > true end, Expected int or float",
+            "def test() int a1 = false + 1 end, Expected 'int or float' but found 'bool'",
+            "def test() bool a1 = false || 3 end, Expected 'bool' but found 'int'",
+            "def test() bool a1 = 3 == true end, Expected same type but found",
+            "def test() bool a1 = false > true end, Expected 'int or float' but found 'bool'",
 
     })
     public void errorOpExprTest(String src, String msg) {
@@ -123,7 +123,7 @@ public class ExprValidationTest extends AbstractValidationTest {
                 "        int i1 = 1\n" +
                 "    end\n" +
                 "end";
-        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.SELECTION_STMT, null, "Expected bool but actual int");
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.SELECTION_STMT, null, "Expected 'bool' but found 'int'");
     }
 
     @Override

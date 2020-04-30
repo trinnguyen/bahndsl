@@ -38,7 +38,7 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
             "        seg1 0x00 length 11cm\n" +
             "    end\n" +
             "    signals master\n" +
-            "        entry sig1 0x00\n" +
+            "        entry sig1 0x01\n" +
             "    end\n" +
             "    blocks\n" +
             "        b1 main seg1\n" +
@@ -59,7 +59,7 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
             "        seg4 0x03 length 11cm\n" +
             "    end\n" +
             "    points master\n" +
-            "        p1 0x00 segment seg1 normal 0x00 reverse 0x00 initial normal\n" +
+            "        p1 0x04 segment seg1 normal 0x00 reverse 0x00 initial normal\n" +
             "    end\n" +
             "    blocks\n" +
             "        b1 main seg2\n" +
@@ -85,7 +85,7 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
             "        seg5 0x04 length 11cm\n" +
             "    end\n" +
             "    points master\n" +
-            "        p1 0x00 segment seg1 normal 0x00 reverse 0x00 initial normal\n" +
+            "        p1 0x05 segment seg1 normal 0x00 reverse 0x00 initial normal\n" +
             "    end\n" +
             "    blocks\n" +
             "        b1 main seg2\n" +
@@ -139,45 +139,49 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
     public void errorPointConnectorTest() throws Exception {
         var src = "module test\n" +
                 "    boards master 0x01 end\n" +
-                "    segments master seg1 0x01 length 11cm end\n" +
+                "    segments master " +
+                "       seg1 0x01 length 11cm " +
+                "       seg2 0x02 length 11cm " +
+                "       seg3 0x03 length 11cm " +
+                "   end\n" +
                 "    points master\n" +
                 "        p1 0x00 segment seg1 normal 0x00 reverse 0x00 initial normal\n" +
                 "    end\n" +
                 "    blocks\n" +
-                "        b1 main seg1\n" +
-                "        b2 main seg1\n" +
+                "        b1 main seg2\n" +
+                "        b2 main seg3\n" +
                 "    end\n" +
                 "    layout\n" +
                 "        p1.stem -- b1.down\n" +
                 "        p1.straight -- b2.down\n" +
-                "        p1.side -- b1.up\n" +
                 "    end\n" +
                 "end";
-        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.LAYOUT_PROPERTY, null, "Point must connect to 3 different blocks: p1");
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.LAYOUT_PROPERTY, null, "p1 must connect to 3 different");
     }
 
     @Test
     public void testErrorBlockConnector() throws Exception {
         var src = "module test\n" +
                 "    boards master 0x01 end\n" +
-                "    segments master seg1 0x01 length 11cm end\n" +
-                "    points master\n" +
-                "        p1 0x00 segment seg1 normal 0x00 reverse 0x00 initial normal\n" +
-                "    end\n" +
+                "    segments master " +
+                "       seg1 0x01 length 11cm\n" +
+                "       seg2 0x02 length 11cm\n" +
+                "       seg3 0x03 length 11cm\n" +
+                "   end\n" +
                 "    blocks\n" +
-                "        b1 main seg1\n" +
-                "        b2 main seg1\n" +
+                "        b1 main seg2\n" +
+                "        b2 main seg3\n" +
                 "    end\n" +
                 "    layout\n" +
-                "        b1.down -- p1.stem\n" +
-                "        b1.up -- p1.side\n" +
+                "        b1.down -- b2.down\n" +
+                "        b1.up -- b2.down\n" +
                 "    end\n" +
                 "end";
-        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.LAYOUT_PROPERTY, null, "Block must connect to 2 different blocks: b1");
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.LAYOUT_PROPERTY, null, "b1 must connect to 2 different");
     }
 
     @Test
-    public void testErrorNotConnected() throws Exception {
+    public void testErrorNotConnected() {
         var src = "module test\n" +
                 "    boards master 0x01 end\n" +
                 "    segments master\n" +
