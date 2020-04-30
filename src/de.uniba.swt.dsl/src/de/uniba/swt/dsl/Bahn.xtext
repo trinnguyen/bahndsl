@@ -90,7 +90,7 @@ BlocksProperty :
 CrossingsProperty:
 	{CrossingsProperty}
     'crossings'
-		(items+=CrossingElement)
+		(items+=CrossingElement)*
 	'end';
 PlatformsProperty :
 	{PlatformsProperty} 'platforms'
@@ -98,7 +98,7 @@ PlatformsProperty :
 	'end';
 TrainsProperty :
 	{TrainsProperty} 'trains'
-		(items+=TrainElement)+
+		(items+=TrainElement)*
 	'end';
 LayoutProperty :
 	{LayoutProperty} 'layout'
