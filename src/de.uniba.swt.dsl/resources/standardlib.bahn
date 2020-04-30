@@ -55,6 +55,7 @@ schema
     end
 
     composition
+        id string
         entry string
         exit string
         block string
@@ -189,4 +190,8 @@ def is_block_occupied(string block_id): bool
     end
 
     return true
+end
+
+def is_composition_signal(string id): bool
+    return get config composition.id id == id
 end
