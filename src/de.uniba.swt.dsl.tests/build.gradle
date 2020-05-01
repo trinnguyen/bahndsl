@@ -15,22 +15,6 @@ test {
 	testLogging.showStandardStreams = true
 }
 
-sourceSets {
-	intTest {
-		compileClasspath += sourceSets.main.output
-		runtimeClasspath += sourceSets.main.output
-	}
-}
-
-configurations {
-	intTestImplementation.extendsFrom implementation
-	intTestRuntimeOnly.extendsFrom runtimeOnly
-}
-
-dependencies {
-	intTestImplementation 'junit:junit:4.12'
-}
-
 jacocoTestReport {
 	// additionalSourceDirs.setFrom(fileTree("${project.projectDir.parent}/de.uniba.swt.dsl/src"))
 
