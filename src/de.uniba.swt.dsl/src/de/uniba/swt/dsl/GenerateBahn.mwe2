@@ -61,12 +61,6 @@ Workflow {
 			parserGenerator = {
 				debugGrammar = true
 			}
-			projectWizard = {
-				generate = true
-			}
-			fileWizard = {
-		        generate = true
-		    }
 		}
 	}
 }
