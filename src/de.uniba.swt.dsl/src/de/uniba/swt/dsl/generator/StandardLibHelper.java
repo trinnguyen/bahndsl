@@ -36,7 +36,7 @@ public class StandardLibHelper {
 	                logger.error(error);
 	            }
 	        } else {
-	        	logger.info("Success loading standard library");
+	        	logger.debug("Success loading standard library");
 	        }
         }
     }

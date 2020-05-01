@@ -37,12 +37,12 @@ public class TestConstants {
             "   lightcontrol2 0x05000D6B0067EC " +
             "   master 0xDA000D680001EE features 0x03:0x14 end " +
             "end " +
-            "segments master end " +
-            "signals lightcontrol1 end " +
+            "segments master seg2 0x00 length 11cm end " +
+            "signals lightcontrol1 entry sign1 0x00 end " +
             "signals lightcontrol2 end " +
-            "points onecontrol1 end " +
+            "points onecontrol1 point1 0x00 segment seg2 normal 0x01 reverse 0x00 initial normal end " +
             "points onecontrol2 end " +
-            "peripherals onecontrol1 end " +
+            "peripherals onecontrol1 entry sign2 0x02 end " +
             "peripherals onecontrol2 end " +
             "crossings end " +
             "blocks end " +

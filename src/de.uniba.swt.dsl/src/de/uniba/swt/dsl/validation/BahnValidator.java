@@ -131,7 +131,6 @@ public class BahnValidator extends AbstractBahnValidator {
             return null;
         }, BahnPackage.Literals.SIGNALS_PROPERTY__ITEMS);
         validateUniqueName(prop.getItems(), SignalElement::getName, BahnPackage.Literals.PERIPHERALS_PROPERTY__ITEMS);
-        validateUniqueName(prop.getItems(), SignalElement::getName, BahnPackage.Literals.PERIPHERALS_PROPERTY__ITEMS);
     }
 
     @Check
