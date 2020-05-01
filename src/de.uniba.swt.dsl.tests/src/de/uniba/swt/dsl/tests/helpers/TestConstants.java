@@ -113,6 +113,67 @@ public class TestConstants {
             "end " +
             "end";
 
+    public final static String SampleLayoutDoubleSlipConfig = "module layout1 " +
+            "boards " +
+            "   master 0x00 " +
+            "   conc 0x02 " +
+            "end " +
+            "segments master " +
+            "   seg1 0x01 length 11cm " +
+            "   seg2 0x02 length 11cm " +
+            "   seg3 0x03 length 11cm " +
+            "   seg4 0x04 length 11cm " +
+            "   seg5 0x05 length 11cm " +
+            "end " +
+            "points conc " +
+            "   point1 0x05 segment seg5 normal 0x01 reverse 0x00 initial normal " +
+            "end " +
+            "blocks " +
+            "   block1 main seg1 " +
+            "   block2 main seg2 " +
+            "   block3 main seg3 " +
+            "   block4 main seg4 " +
+            "end " +
+            "layout " +
+            "   block1.up -- point1.down1 " +
+            "   block2.up -- point1.down2 " +
+            "   block3.down -- point1.up1 " +
+            "   block4.down -- point1.up2 " +
+            "end " +
+            "end";
+
+    public final static String SampleLayoutCrossingConfig = "module layout1 " +
+            "boards " +
+            "   master 0x00 " +
+            "end " +
+            "segments master " +
+            "   seg0 0x00 length 11cm " +
+            "   seg1 0x01 length 11cm " +
+            "   seg2 0x02 length 11cm " +
+            "   seg3 0x03 length 11cm " +
+            "   seg4 0x04 length 11cm " +
+            "   seg5 0x05 length 11cm " +
+            "end " +
+            "crossings " +
+            "   cross1 segment seg5 " +
+            "end " +
+            "blocks " +
+            "   block0 main seg0 " +
+            "   block1 main seg1 " +
+            "   block2 main seg2 " +
+            "   block3 main seg3 " +
+            "   block4 main seg4 " +
+            "end " +
+            "layout " +
+            "   block0.down -- block1.down " +
+            "   block0.up -- block2.down " +
+            "   block1.up -- cross1.down1 " +
+            "   block2.up -- cross1.down2 " +
+            "   block3.down -- cross1.up1 " +
+            "   block4.down -- cross1.up2 " +
+            "end " +
+            "end";
+
     public final static String SampleTrainConfig1 = "module test " +
             "trains " +
             "   cargo_db 0x0001 " +

@@ -38,26 +38,11 @@ class BahnFormatterTest {
     @ParameterizedTest
     @ValueSource (strings = {
             TestConstants.SampleLayoutConfig,
-            TestConstants.SampleLayoutConfig,
+            TestConstants.SampleLayoutDoubleSlipConfig,
             TestConstants.SampleTrainConfig1,
             TestConstants.SampleTrainConfig2,
     })
     public void testFormatConfigNoError(String src) throws Exception {
-        var result = formatCode(src);
-
-        // check again
-        var resource = testHelper.parseValid(result);
-        var model = BahnUtil.getRootModule(resource);
-        assertTrue(model.getName() != null && !model.getName().isEmpty(), "Model name must be exist");
-    }
-
-    @ParameterizedTest
-    @ValueSource (strings = {
-            TestConstants.SampleLayoutConfig,
-            TestConstants.SampleTrainConfig1,
-            TestConstants.SampleTrainConfig2,
-    })
-    public void testFormatExprNoError(String src) throws Exception {
         var result = formatCode(src);
 
         // check again

@@ -41,6 +41,9 @@ class BahnGeneratorTest {
     @ValueSource(strings = {
             "module test end",
             TestConstants.SampleEmptyConfig,
+            TestConstants.SampleLayoutConfig,
+            TestConstants.SampleLayoutDoubleSlipConfig,
+            TestConstants.SampleLayoutCrossingConfig,
             TestConstants.SampleLiteConfig,
             TestConstants.SampleStandardConfig,
     })
@@ -53,14 +56,13 @@ class BahnGeneratorTest {
                 "bidib_track_config.yml",
                 "bidib_train_config.yml",
                 "extras_config.yml");
-        var msgNames = String.join(",", expectedNames);
 
-        // ensure all 4 files are exist with non-empty data
         var files = fsa.getTextFiles();
-        for (var entry : files.entrySet()) {
-            var inList = expectedNames.stream().anyMatch(i -> entry.getKey().endsWith(i));
-            assertTrue(inList, () -> "Actual " + entry.getKey() + ", expected one of the: " + msgNames);
-            assertTrue(entry.getValue().length() > 0);
+        var msgNames = String.join(",", files.keySet());
+        for (String expectedName : expectedNames) {
+            var inList = files.entrySet().stream().filter(entry -> entry.getKey().endsWith(expectedName)).findFirst();
+            assertTrue(inList.isPresent(), "Expected having " + expectedName + " generated. Actual list: " + msgNames);
+            assertTrue(inList.get().getValue().length() > 0);
         }
     }
 
