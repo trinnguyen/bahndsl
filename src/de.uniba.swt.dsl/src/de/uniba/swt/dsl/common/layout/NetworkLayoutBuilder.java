@@ -6,6 +6,7 @@ import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.layout.models.vertex.*;
 import de.uniba.swt.dsl.common.util.BahnConstants;
+import de.uniba.swt.dsl.validation.ValidationErrors;
 
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class NetworkLayoutBuilder {
     private List<AbstractVertexMember> convertToVertexMembers(LayoutReference firstRef, LayoutReference secondRef) throws LayoutException {
         if (isSignal(firstRef)) {
             if (!isBlock(secondRef)) {
-                throw new LayoutException("Signal can only connect to a block");
+                throw new LayoutException(ValidationErrors.SingleToBlockOnly);
             }
             var signalMember = new SignalVertexMember((SignalElement) firstRef.getElem(), (BlockElement)secondRef.getElem());
             var blockMember = new BlockVertexMember((BlockElement)secondRef.getElem(), secondRef.getProp().getLiteral());
@@ -61,7 +62,7 @@ public class NetworkLayoutBuilder {
 
         if (isSignal(secondRef)) {
             if (!isBlock(firstRef)) {
-                throw new LayoutException("Signal can only connect to a block");
+                throw new LayoutException(ValidationErrors.SingleToBlockOnly);
             }
             var signalMember = new SignalVertexMember((SignalElement) secondRef.getElem(), (BlockElement)firstRef.getElem());
             var blockMember = new BlockVertexMember((BlockElement)firstRef.getElem(), firstRef.getProp().getLiteral());
@@ -97,7 +98,7 @@ public class NetworkLayoutBuilder {
             // update
             String name = firstBlockMem.getBlock().getName();
             if (networkLayout.getBlockDirection(name) != BlockDirection.Bidirectional)
-                throw new LayoutException("Block direction is already defined: " + name);
+                throw new LayoutException(ValidationErrors.DefinedBlockDirectionFormat);
 
             networkLayout.setBlockDirection(name, direction);
         }

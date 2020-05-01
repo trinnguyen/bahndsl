@@ -18,7 +18,7 @@ public class ValidationErrors {
 
     public final static String SingleSectionFormat = "'%s' section is already defined";
 
-    public final static String SingleSectionByBoardFormat = "'%s' is already defined for board '%s'";
+    public final static String SingleSectionByBoardFormat = "'%s' section is already defined for board '%s'";
 
     public final static String UsedSegmentFormat = "Segment '%s' is already used by '%s'";
 
@@ -42,9 +42,13 @@ public class ValidationErrors {
 
     public final static String NetworkNotValid = "Network layout is not strongly connected";
 
-    public static String UsedSignalInCompositionFormat = "'%s' is already used";
+    public final static String SingleToBlockOnly = "Signal can only connect to a block";
 
-    public static String UsedSignalTypeInCompositionFormat = "Type '%s' is already used";
+    public final static String DefinedBlockDirectionFormat = "Direction of '%s' is already defined" ;
+
+    public final static String UsedSignalInCompositionFormat = "'%s' is already used";
+
+    public final static String UsedSignalTypeInCompositionFormat = "Type '%s' is already used";
 
     /**
      * Errors for expression

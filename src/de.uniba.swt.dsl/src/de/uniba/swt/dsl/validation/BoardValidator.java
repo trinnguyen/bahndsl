@@ -41,9 +41,9 @@ public class BoardValidator {
     }
 
     public List<Tuple<String, Integer>> findSingleTrackByBoardErrors(RootModule module) {
-        List<Tuple<String, Integer>> items = new ArrayList<>();
+        List<Tuple<String, Integer>> errors = new ArrayList<>();
 
-        Set<String> flags = new HashSet<>();
+        Set<Tuple<String, String>> flags = new HashSet<>();
         for (int i = 0; i < module.getProperties().size(); i++) {
             var prop = module.getProperties().get(i);
             Tuple<String, String> sectionBoardPair = getSectionInfo(prop);
@@ -51,31 +51,33 @@ public class BoardValidator {
                 continue;
 
             // add up
-            if (!flags.contains(sectionBoardPair.getFirst())) {
-                flags.add(sectionBoardPair.getFirst());
+            if (!flags.contains(sectionBoardPair)) {
+                flags.add(sectionBoardPair);
             } else {
-                items.add(Tuple.of(String.format(ValidationErrors.SingleSectionByBoardFormat, sectionBoardPair.getFirst(), sectionBoardPair.getSecond()), i));
+                var boardName = sectionBoardPair.getFirst();
+                var sectionName = sectionBoardPair.getSecond();
+                errors.add(Tuple.of(String.format(ValidationErrors.SingleSectionByBoardFormat, sectionName, boardName), i));
             }
         }
 
-        return items;
+        return errors;
     }
 
     private Tuple<String, String> getSectionInfo(ModuleProperty prop) {
         if (prop instanceof SegmentsProperty) {
-            return Tuple.of("segments", ((SegmentsProperty) prop).getBoard().getName());
+            return Tuple.of(((SegmentsProperty) prop).getBoard().getName(), "segments");
         }
 
         if (prop instanceof SignalsProperty) {
-            return Tuple.of("signals", ((SignalsProperty) prop).getBoard().getName());
+            return Tuple.of(((SignalsProperty) prop).getBoard().getName(), "signals");
         }
 
         if (prop instanceof PeripheralsProperty) {
-            return Tuple.of("peripherals", ((PeripheralsProperty) prop).getBoard().getName());
+            return Tuple.of(((PeripheralsProperty) prop).getBoard().getName(), "peripherals");
         }
 
         if (prop instanceof PointsProperty) {
-            return Tuple.of("points", ((PointsProperty) prop).getBoard().getName());
+            return Tuple.of(((PointsProperty) prop).getBoard().getName(), "points");
         }
 
         return null;
