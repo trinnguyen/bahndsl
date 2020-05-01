@@ -100,9 +100,9 @@ public class ExprValidationTest extends AbstractValidationTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "def test() string a = \"x\" + \"y\" end",
-            "def test() string a0 string a = \"x\" + a0 end",
-            "def test() string a0 string a1 string a2 = a0 + a1 end",
+            // "def test() string a = \"x\" + \"y\" end",
+            // "def test() string a0 string a = \"x\" + a0 end",
+            // "def test() string a0 string a1 string a2 = a0 + a1 end",
             "def test() bool b = \"x\" == \"y\" end",
             "def test() string a0 bool b = \"x\" == a0 end",
             "def test() string a0 string a1 bool b = a0 == a1 end",
@@ -147,7 +147,7 @@ public class ExprValidationTest extends AbstractValidationTest {
 
     @ParameterizedTest
     @CsvSource({
-            "def test() int a1 = false + 1 end, Expected 'int or float or string' but found 'bool'", // concat for string
+            "def test() int a1 = false + 1 end, Expected 'int or float' but found 'bool'", // concat for string
             "def test() bool a1 = false || 3 end, Expected 'bool' but found 'int'",
             "def test() bool a1 = 3 == true end, Expected same type but found",
             "def test() bool a1 = false > true end, Expected 'int or float' but found 'bool'",

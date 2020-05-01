@@ -12,7 +12,7 @@ public class StringEqualNormalizer extends AbstractNormalizer {
 
     public final static String ExternStringEqualsFuncName = "string_equals";
 
-    public final static String ExternStringConcatFuncName = "string_concat";
+    // public final static String ExternStringConcatFuncName = "string_concat";
 
     @Inject
     TypeCheckingTable typeCheckingTable;
@@ -58,9 +58,9 @@ public class StringEqualNormalizer extends AbstractNormalizer {
             return ExternStringEqualsFuncName;
         }
 
-        if (op == OperatorType.PLUS) {
-            return ExternStringConcatFuncName;
-        }
+//        if (op == OperatorType.PLUS) {
+//            return ExternStringConcatFuncName;
+//        }
 
         return null;
     }

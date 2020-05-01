@@ -103,6 +103,7 @@ class BahnNormalizationProviderTest {
         }
     }
 
+    /*
     @ParameterizedTest
     @ValueSource (strings = {
             "def test(): string return \"a\" + \"a\" end",
@@ -112,6 +113,7 @@ class BahnNormalizationProviderTest {
     void testStringConcat(String src) throws Exception {
         ensureNormalize(src, List.of("return extern string_concat ( "));
     }
+    */
 
     @ParameterizedTest
     @ValueSource (strings = {

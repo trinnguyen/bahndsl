@@ -88,9 +88,9 @@ public class ExpressionValidator {
         // + for string concat
         // number for all
         if (OperatorTypeHelper.isArithmeticOp(op)) {
-            if (op == OperatorType.PLUS) {
-                return new ExprDataType[]{ ExprDataType.ScalarInt, ExprDataType.ScalarFloat, ExprDataType.ScalarString};
-            }
+//            if (op == OperatorType.PLUS) {
+//                return new ExprDataType[]{ ExprDataType.ScalarInt, ExprDataType.ScalarFloat, ExprDataType.ScalarString};
+//            }
 
             return new ExprDataType[]{ ExprDataType.ScalarInt, ExprDataType.ScalarFloat};
         }
