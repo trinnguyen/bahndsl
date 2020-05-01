@@ -85,11 +85,22 @@ public class ExpressionValidator {
     }
 
     private static ExprDataType[] getChildOpDataTypes(OperatorType op) {
+        // + for string concat
+        // number for all
+        if (OperatorTypeHelper.isArithmeticOp(op)) {
+            if (op == OperatorType.PLUS) {
+                return new ExprDataType[]{ ExprDataType.ScalarInt, ExprDataType.ScalarFloat, ExprDataType.ScalarString};
+            }
 
-        if (OperatorTypeHelper.isArithmeticOp(op) || OperatorTypeHelper.isRelationalOp(op)) {
             return new ExprDataType[]{ ExprDataType.ScalarInt, ExprDataType.ScalarFloat};
         }
 
+        // number if both side of relational expr
+        if (OperatorTypeHelper.isRelationalOp(op)) {
+            return new ExprDataType[]{ ExprDataType.ScalarInt, ExprDataType.ScalarFloat};
+        }
+
+        // boolean for logical
         if (OperatorTypeHelper.isLogicalOp(op))
             return new ExprDataType[]{ ExprDataType.ScalarBool};
 

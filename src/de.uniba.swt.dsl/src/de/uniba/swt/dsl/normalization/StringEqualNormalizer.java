@@ -12,6 +12,8 @@ public class StringEqualNormalizer extends AbstractNormalizer {
 
     public final static String ExternStringEqualsFuncName = "string_equals";
 
+    public final static String ExternStringConcatFuncName = "string_concat";
+
     @Inject
     TypeCheckingTable typeCheckingTable;
 
@@ -20,23 +22,44 @@ public class StringEqualNormalizer extends AbstractNormalizer {
         if (expr instanceof OpExpression) {
             var opExpr = (OpExpression) expr;
             if (opExpr.getLeftExpr() != null
-                    && opExpr.getRightExpr() != null
-                    && (opExpr.getOp() == OperatorType.EQUAL || opExpr.getOp() == OperatorType.NOT_EQUAL)) {
-                var type = typeCheckingTable.computeDataType(opExpr.getLeftExpr());
-                if (type != null && type.isScalarString()) {
-                    PrimaryExpr externExpr = SyntacticTransformer.createExternalFunctionCallExpr(ExternStringEqualsFuncName, List.of(opExpr.getLeftExpr(), opExpr.getRightExpr()));
-                    if (opExpr.getOp() == OperatorType.NOT_EQUAL) {
-                        var unaryExpr = BahnFactory.eINSTANCE.createUnaryExpr();
-                        unaryExpr.setExpr(externExpr);
-                        externExpr = unaryExpr;
+                    && opExpr.getRightExpr() != null) {
+                var typeLeft = typeCheckingTable.computeDataType(opExpr.getLeftExpr());
+                var typeRight = typeCheckingTable.computeDataType(opExpr.getLeftExpr());
+
+                // verify 2 sides are string
+                if (typeLeft != null && typeLeft.isScalarString() && typeRight != null && typeRight.isScalarString()) {
+
+                    String externName = getExternName(opExpr.getOp());
+                    if (externName != null && !externName.isBlank()) {
+                        PrimaryExpr externExpr = SyntacticTransformer.createExternalFunctionCallExpr(externName, List.of(opExpr.getLeftExpr(), opExpr.getRightExpr()));
+
+                        // create unary if not equal
+                        if (opExpr.getOp() == OperatorType.NOT_EQUAL) {
+                            var unaryExpr = BahnFactory.eINSTANCE.createUnaryExpr();
+                            unaryExpr.setExpr(externExpr);
+                            externExpr = unaryExpr;
+                        }
+
+                        // replace
+                        BahnUtil.replaceEObject(expr, externExpr);
+
+                        return List.of();
                     }
 
-                    // replace
-                    BahnUtil.replaceEObject(expr, externExpr);
-
-                    return List.of();
                 }
             }
+        }
+
+        return null;
+    }
+
+    private String getExternName(OperatorType op) {
+        if (op == OperatorType.EQUAL || op == OperatorType.NOT_EQUAL) {
+            return ExternStringEqualsFuncName;
+        }
+
+        if (op == OperatorType.PLUS) {
+            return ExternStringConcatFuncName;
         }
 
         return null;

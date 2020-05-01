@@ -68,6 +68,15 @@ public class ExprValidationTest extends AbstractValidationTest {
     void definedVariableName(String src) {
         validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.REF_VAR_DECL, null, "Variable", "is already defined");
     }
+    @ParameterizedTest
+    @CsvSource(value = {
+            "def test(): bool string id return id end, Expected 'bool' but found 'string'",
+            "def test() return 0 end, Unexpected return",
+            "def test(): int end, Missing return",
+    })
+    void invalidReturnType(String src, String msg) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.FUNC_DECL, null, msg);
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {
@@ -138,7 +147,7 @@ public class ExprValidationTest extends AbstractValidationTest {
 
     @ParameterizedTest
     @CsvSource({
-            "def test() int a1 = false + 1 end, Expected 'int or float' but found 'bool'",
+            "def test() int a1 = false + 1 end, Expected 'int or float or string' but found 'bool'", // concat for string
             "def test() bool a1 = false || 3 end, Expected 'bool' but found 'int'",
             "def test() bool a1 = 3 == true end, Expected same type but found",
             "def test() bool a1 = false > true end, Expected 'int or float' but found 'bool'",

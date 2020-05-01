@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(InjectionExtension.class)
@@ -31,6 +32,10 @@ class BahnGeneratorTest {
 
     @Inject
     BahnGenerator generator;
+
+    private final static String RequestRouteFilename = "request_route_sccharts.sctx";
+
+    private final static String DriveRouteFilename = "drive_route_sccharts.sctx";
 
     @ParameterizedTest
     @ValueSource(strings = {
@@ -167,17 +172,29 @@ class BahnGeneratorTest {
             TestConstants.SampleRequestRouteForeach + "\n" + TestConstants.SampleDriveRoute,
 
             TestConstants.SampleRequestRouteEmpty,
-            TestConstants.SampleDriveRouteEmpty,
             TestConstants.SampleInterlockingEmpty,
     })
     void testGenerateSCCharts(String src) throws Exception {
         invokeGenerate(src);
 
         // ensure request route is exist (mandatory)
-        ensureFileContent("request_route_sccharts.sctx", List.of("scchart request_route"));
+        ensureFileContent(RequestRouteFilename, List.of("scchart request_route"));
 
         // ensure drive_route is exist (optional)
-        ensureFileContent("drive_route_sccharts.sctx", List.of("scchart drive_route"));
+        ensureFileContent(DriveRouteFilename, List.of("scchart drive_route"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            TestConstants.SampleDriveRouteEmpty,
+            TestConstants.SampleDriveRoute,
+    })
+    void errorGenerateSCChartsMissingRequestRoute(String src) throws Exception {
+        invokeGenerate(src);
+
+        // ensure no
+        assertNull(testHelper.getFileContent(fsa, RequestRouteFilename), "Expected request route sccharts not generated because missing required func");
+        assertNull(testHelper.getFileContent(fsa, DriveRouteFilename), "Expected drive route sccharts not generated because missing required func");
     }
 
     private void ensureFileContent(String name, List<String> items) throws Exception {

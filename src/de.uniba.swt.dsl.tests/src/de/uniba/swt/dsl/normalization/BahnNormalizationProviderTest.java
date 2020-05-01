@@ -97,10 +97,20 @@ class BahnNormalizationProviderTest {
     })
     void testStringEquals(String src) throws Exception {
         if (src.contains("!=")) {
-            ensureNormalize(src, List.of("return ! extern string_equals"));
+            ensureNormalize(src, List.of("return ! extern string_equals ( "));
         } else {
-            ensureNormalize(src, List.of("return extern string_equals"));
+            ensureNormalize(src, List.of("return extern string_equals ( "));
         }
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
+            "def test(): string return \"a\" + \"a\" end",
+            "def test(string id): string return \"a\" + id end",
+            "def test(string id1, string id2): string return id1 + id2 end"
+    })
+    void testStringConcat(String src) throws Exception {
+        ensureNormalize(src, List.of("return extern string_concat ( "));
     }
 
     @ParameterizedTest

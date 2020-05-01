@@ -59,7 +59,7 @@ public class DeclValidator {
             if (stmt instanceof ReturnStmt) {
                 ExprDataType computedType = typeCheckingTable.computeDataType(((ReturnStmt) stmt).getExpr(), HintDataTypeUtl.from(expectedType.getDataType()));
                 if (!typeCheckingTable.isValidType(computedType, expectedType)) {
-                    throw ValidationException.createTypeException(expectedType, computedType, BahnPackage.Literals.RETURN_STMT__EXPR);
+                    throw ValidationException.createTypeException(expectedType, computedType, BahnPackage.Literals.FUNC_DECL__RETURN);
                 }
 
                 return true;
