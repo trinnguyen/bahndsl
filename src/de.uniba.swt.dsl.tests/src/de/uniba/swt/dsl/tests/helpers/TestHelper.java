@@ -6,6 +6,9 @@ import org.eclipse.xtext.generator.InMemoryFileSystemAccess;
 import org.eclipse.xtext.testing.util.ResourceHelper;
 import org.eclipse.xtext.testing.validation.ValidationTestHelper;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class TestHelper {
@@ -71,5 +74,16 @@ public class TestHelper {
         }
 
         return null;
+    }
+
+    public Resource readFromResourcePath(String filename) throws Exception {
+        var path = Paths.get("resources", filename);
+        try {
+            var content = Files.readString(path);
+            return resourceHelper.resource(content);
+        } catch (IOException e) {
+            throw new Exception("Failed to read file: " + e.getMessage());
+        }
+
     }
 }

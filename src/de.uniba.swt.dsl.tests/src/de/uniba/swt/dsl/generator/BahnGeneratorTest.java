@@ -195,12 +195,12 @@ class BahnGeneratorTest {
         invokeGenerate(src);
 
         // ensure no
-        assertNull(testHelper.getFileContent(fsa, RequestRouteFilename), "Expected request route sccharts not generated because missing required func");
-        assertNull(testHelper.getFileContent(fsa, DriveRouteFilename), "Expected drive route sccharts not generated because missing required func");
+        assertNull(TestHelper.getFileContent(fsa, RequestRouteFilename), "Expected request route sccharts not generated because missing required func");
+        assertNull(TestHelper.getFileContent(fsa, DriveRouteFilename), "Expected drive route sccharts not generated because missing required func");
     }
 
     private void ensureFileContent(String name, List<String> items) throws Exception {
-        testHelper.ensureFileContent(fsa, name, items);
+        TestHelper.ensureFileContent(fsa, name, items);
     }
 
     private void invokeGenerate(String src) throws Exception {

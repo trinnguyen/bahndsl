@@ -8,12 +8,28 @@ dependencies {
 	testRuntime 'org.junit.jupiter:junit-jupiter-engine'
 	testCompile "org.eclipse.xtext:org.eclipse.xtext.testing:${xtextVersion}"
 	testCompile "org.eclipse.xtext:org.eclipse.xtext.xbase.testing:${xtextVersion}"
+
+	compile group: 'org.yaml', name: 'snakeyaml', version: '1.26'
 }
 
 test {
 	useJUnitPlatform()
 	testLogging.showStandardStreams = true
 }
+
+// run uni tests again the module
+task testUnit(type: Test) {
+	dependsOn(test)
+	//	exclude external integration test
+	exclude '**/clibahnc/**'
+}
+
+// call black-box to test agains bahnc cli
+// run 'sh clibahnc.sh' first to prepare
+task testCliBahnc(type: Test) {
+	dependsOn(test)
+}
+
 jacocoTestReport {
 	// additionalSourceDirs.setFrom(fileTree("${project.projectDir.parent}/de.uniba.swt.dsl/src"))
 

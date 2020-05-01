@@ -16,6 +16,8 @@ import org.eclipse.xtext.testing.util.ResourceHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -81,6 +83,23 @@ class StandaloneAppTest {
         var res = resourceHelper.resource(TestConstants.SampleDriveRoute);
         var result = standaloneApp.runGenerator(res, "test.bahn", fsa, "test-gen", "library", runtimeExecutor);
         assertFalse(result, "No request_route found");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "config_empty.bahn",
+            "default.bahn",
+            "drive_only.bahn",
+            "empty_config_request_drive.bahn",
+            "empty_request_route.bahn",
+            "lite.bahn",
+            "request_only.bahn",
+            "standard.bahn"
+    })
+    void successRunResourceFiles(String filename) throws Exception {
+        var res = testHelper.readFromResourcePath(filename);
+        var result = standaloneApp.runGenerator(res, filename, fsa, "test-gen", null, runtimeExecutor);
+        assertTrue(result, "Expected run standalone again resource to be success: " + filename);
     }
 
     private void ensureArgsExist(Tuple<String, String[]> command, String expectedCmd, List<String> expectedArgs) {

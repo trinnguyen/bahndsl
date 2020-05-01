@@ -76,10 +76,6 @@ module SWTbahnStandard
 		entry signal15 0x06
 		entry signal16 0x07
 		entry signal18 0x08
-
-        # sample signals for testing composition
-		distant signal99 0xABCD
-		composite signal100 signals signal16 signal99 end
 	end
 
 	points onecontrol1
@@ -230,4 +226,31 @@ module SWTbahnStandard
             head_light bit 4 initial 1
         end
 	end
+end
+
+def test()
+    if is_composite_signal("signal100")
+        string sg1 = get config composition.entry "signal100"
+        string sg2 = get config composition.distant "signal100"
+
+        set state sg1 to stop
+        set state sg2 to stop
+
+        # get state of distant
+        string st = get state sg2
+    else
+        set state "signal100" to stop
+    end
+
+    # set state "signal100" to stop
+    # -> switch entry signal to stop
+    # -> switch distant signal to stop
+
+    # set state "signal100" to clear
+    # set state "signal100" to caution
+end
+
+def is_composite_signal(string name): bool
+    string id = get config composition.id name
+    return id != ""
 end
