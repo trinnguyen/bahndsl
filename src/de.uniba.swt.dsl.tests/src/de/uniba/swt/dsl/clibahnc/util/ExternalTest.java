@@ -1,9 +1,11 @@
 package de.uniba.swt.dsl.clibahnc.util;
 
 import de.uniba.swt.dsl.common.util.Tuple;
+import de.uniba.swt.dsl.tests.helpers.TestConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,10 +31,24 @@ public class ExternalTest {
     @BeforeEach
     void setup() {
         try {
-            Files.deleteIfExists(Paths.get(DefaultOutputFolderName));
-            Files.deleteIfExists(Paths.get(TestOutputName));
-        } catch (IOException e) {
+            deleteFolder(DefaultOutputFolderName);
+            deleteFolder(TestOutputName);
+        } catch (Exception e) {
             System.out.println("Warning: " + e.getMessage());
+        }
+    }
+
+    private void deleteFolder(String name) {
+        var file = Path.of(ExternalTestConfig.ResourcesFolder, name).toFile();
+        if (file.isDirectory()) {
+            var files = file.listFiles();
+            if (files != null) {
+                for (File item : files) {
+                    item.delete();
+                }
+            }
+
+            file.delete();
         }
     }
 
