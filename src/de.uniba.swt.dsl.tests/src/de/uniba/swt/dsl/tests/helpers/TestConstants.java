@@ -1,6 +1,74 @@
 package de.uniba.swt.dsl.tests.helpers;
 
 public class TestConstants {
+    public final static String SampleEmptyConfig = "module config_empty\n" +
+            "   boards\n" +
+            "       master 0x00\n" +
+            "   end\n" +
+            "\n" +
+            "   segments master\n" +
+            "   end\n" +
+            "\n" +
+            "   signals master\n" +
+            "   end\n" +
+            "\n" +
+            "   points master\n" +
+            "   end\n" +
+            "\n" +
+            "   blocks\n" +
+            "   end\n" +
+            "\n" +
+            "   crossings\n" +
+            "   end\n" +
+            "\n" +
+            "   layout\n" +
+            "   end\n" +
+            "\n" +
+            "   trains\n" +
+            "   end\n" +
+            "\n" +
+            "end";
+
+    public final static String SampleStandardConfig = "module standard " +
+            "boards " +
+            "   onecontrol1 0x05000D7500E8ED " +
+            "   onecontrol2 0x05000D7500DAED " +
+            "   lightcontrol1 0x05000D6B0072EC " +
+            "   lightcontrol2 0x05000D6B0067EC " +
+            "   master 0xDA000D680001EE features 0x03:0x14 end " +
+            "end " +
+            "segments master end " +
+            "signals lightcontrol1 end " +
+            "signals lightcontrol2 end " +
+            "points onecontrol1 end " +
+            "points onecontrol2 end " +
+            "peripherals onecontrol1 end " +
+            "peripherals onecontrol2 end " +
+            "crossings end " +
+            "blocks end " +
+            "platforms end " +
+            "layout end " +
+            "trains end " +
+            "end";
+
+    public final static String SampleLiteConfig = "module standard " +
+            "boards master 0xDA000D680052EF\n" +
+            "      features\n" +
+            "        0x03:0x14\n" +
+            "        0x6E:0x00\n" +
+            "      end\n" +
+            "    lightcontrol 0x05000D6B0083EC\n" +
+            "    onecontrol 0x05000D7500DBED\n" +
+            "end " +
+            "segments master end " +
+            "signals lightcontrol end " +
+            "points onecontrol end " +
+            "blocks end " +
+            "platforms end " +
+            "layout end " +
+            "trains end " +
+            "end";
+
     public final static String SampleConfigSignals = "module test " +
             "boards master 0x00 end " +
             "signals master" +
@@ -80,6 +148,13 @@ public class TestConstants {
     public final static String SampleWhile = "def test_expr(): int int s = 0 while s < 10 s = s + 1 end return s end";
 
     public final static String SampleOperators = "def test_expr() int a = 3 + 4 bool b = true && !(a == 5) float c = 4 / 5 end";
+
+    public final static String SampleRequestRouteEmpty = "def request_route(string src_signal_id, string dst_signal_id, string train_id): string " +
+            "return \"\" end";
+
+    public final static String SampleDriveRouteEmpty = "def drive_route(string route_id, string train_id, string segment_ids[]) end";
+
+    public final static String SampleInterlockingEmpty = SampleRequestRouteEmpty + "\n" + SampleDriveRouteEmpty;
 
     public final static String SampleRequestRouteForeach = "def request_route(string src_signal_id, string dst_signal_id, string train_id): string " +
             "string ids[] = get routes from src_signal_id to dst_signal_id " +

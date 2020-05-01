@@ -55,10 +55,21 @@ class BahnNormalizationProviderTest {
             "def test() string items[] for string id in items end end",
             "def test() int items[] for int id in items end end",
             "def test() bool items[] for bool id in items end end",
-            "def test() float items[] for float id in items end end",
+            "def test() float items[] for float id in items end end"
     })
     void testForeachStmt(String src) throws Exception {
         ensureNormalize(src, List.of("while", "int _test_items_cnt_1 = 1024", "int _test_t1 = 0"));
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
+            "def test() for int id in {2,3} end end",
+            "def test() for float id in {2.2,3} end end",
+            "def test() for bool id in {true, false} end end",
+            "def test() for string id in {\"a\", \"b\"} end end",
+    })
+    void testForeachStmtLiteralArray(String src) throws Exception {
+        ensureNormalize(src, List.of("while", "_test_t1 [] = {", "int _test__test_t1_cnt_1 = "));
     }
 
     @ParameterizedTest

@@ -303,7 +303,7 @@ BreakStmt returns Statement:
 ;
 
 VariableAssignment:
-	'=' ('{' arrExprs+=LiteralExpr (',' arrExprs+=LiteralExpr)* '}' | expr=Expression)
+	'=' expr=Expression
 ;
 
 Expression:
@@ -338,6 +338,7 @@ MultiplicativeExpr returns OpExpression:
 PrimaryExpr:
     UnaryExpr
 	| ParenthesizedExpr
+	| ArrayLiteralExpr 
 	| LiteralExpr 
 	| ValuedReferenceExpr
 	| FunctionCallExpr
@@ -349,6 +350,11 @@ UnaryExpr:
 
 ParenthesizedExpr:
 	'(' expr=Expression ')'
+;
+
+ArrayLiteralExpr:
+	{ArrayLiteralExpr}
+	'{' arrExprs+=LiteralExpr (',' arrExprs+=LiteralExpr)* '}'
 ;
 
 LiteralExpr:

@@ -378,11 +378,7 @@ public class SuperStateBuilder {
     }
 
     private void updateEffect(AssignmentEffect effect, VariableAssignment assignment) {
-        if (assignment.getExpr() != null) {
-            effect.setExpression(assignment.getExpr());
-        } else if (assignment.getArrExprs() != null){
-            effect.setArrayExprs(assignment.getArrExprs());
-        }
+        effect.setExpression(assignment.getExpr());
     }
 
     private SVarDeclaration findVarDecl(String name) {

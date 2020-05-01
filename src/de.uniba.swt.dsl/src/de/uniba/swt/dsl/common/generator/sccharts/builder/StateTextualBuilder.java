@@ -214,11 +214,6 @@ public class StateTextualBuilder extends TextualBuilder {
             }
 
             strBuilder.append(" = ");
-
-            // array expr
-            if (assignmentEffect.getArrayExprs() != null) {
-                strBuilder.append(expressionTextualBuilder.buildString(assignmentEffect.getArrayExprs()));
-            }
         }
 
         if (effect.getExpression() != null) {

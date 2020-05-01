@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import de.uniba.swt.dsl.bahn.BahnModel;
 import de.uniba.swt.dsl.bahn.BahnPackage;
 import de.uniba.swt.dsl.tests.BahnInjectorProvider;
+import de.uniba.swt.dsl.tests.helpers.TestConstants;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.testing.InjectWith;
 import org.eclipse.xtext.testing.extensions.InjectionExtension;
@@ -28,6 +29,20 @@ public class ExprValidationTest extends AbstractValidationTest {
     @Inject
     ValidationTestHelper validationTestHelper;
 
+    /**
+     * Sample snippet generated in Visual Studio code and Eclipse IDE
+     * @param src
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {
+            TestConstants.SampleRequestRouteEmpty,
+            TestConstants.SampleDriveRoute,
+            TestConstants.SampleInterlockingEmpty,
+    })
+    void validSampleFunction(String src) {
+        validationTestHelper.assertNoErrors(internalParse(src));
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {
             "def test() end",
@@ -39,12 +54,59 @@ public class ExprValidationTest extends AbstractValidationTest {
             "    return a + b\n" +
             "end"
     })
-    public void validExprsTest(String src) {
+    void validExprsTest(String src) {
+        validationTestHelper.assertNoErrors(internalParse(src));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "def test() int i int i end",
+            "def test() int i float i end",
+            "def test(string ids[]) int ids[] end",
+            "def test(string ids[], int ids) end",
+    })
+    void definedVariableName(String src) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.REF_VAR_DECL, null, "Variable", "is already defined");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "def test() end def test() end",
+            "def test() end def test(int id) end",
+    })
+    void definedFunction(String src) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.FUNC_DECL, null, "Function", "is already defined");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "def test() int ids[] = {1,2,3} end",
+            "def test() bool f[] = {false,true,false} end",
+            "def test() test2({1.5,41}) end def test2(float arr[]) end",
+            "def test() for int a in {2,3} end end",
+    })
+    void validLiteralArray(String src) {
+        validationTestHelper.assertNoErrors(internalParse(src));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "def test() string a = \"x\" + \"y\" end",
+            "def test() string a0 string a = \"x\" + a0 end",
+            "def test() string a0 string a1 string a2 = a0 + a1 end",
+            "def test() bool b = \"x\" == \"y\" end",
+            "def test() string a0 bool b = \"x\" == a0 end",
+            "def test() string a0 string a1 bool b = a0 == a1 end",
+            "def test() bool b = \"x\" != \"y\" end",
+            "def test() string a0 bool b = \"x\" != a0 end",
+            "def test() string a0 string a1 bool b = a0 != a1 end",
+    })
+    void validStringOperators(String src) {
         validationTestHelper.assertNoErrors(internalParse(src));
     }
 
     @Test
-    public void testValuedRefInvalidVarDecl() throws Exception {
+    void testValuedRefInvalidVarDecl() {
         var src = "def plus(int a, int b): int\n" +
                 "    return a + b + c\n" +
                 "end";
@@ -52,7 +114,7 @@ public class ExprValidationTest extends AbstractValidationTest {
     }
 
     @Test
-    public void testValuedRefInvalidCrossParamDecl() throws Exception {
+    void testValuedRefInvalidCrossParamDecl() throws Exception {
         var src = "def plus(int a, int b)\n" +
                 "    return a + b\n" +
                 "end\n" +
@@ -63,7 +125,7 @@ public class ExprValidationTest extends AbstractValidationTest {
     }
 
     @Test
-    public void testValuedRefInvalidCrossVarDecl() throws Exception {
+    void testValuedRefInvalidCrossVarDecl() throws Exception {
         var src = "def plus(int a, int b)\n" +
                 "    int c = a + b\n" +
                 "    return c\n" +
@@ -82,7 +144,7 @@ public class ExprValidationTest extends AbstractValidationTest {
             "def test() bool a1 = false > true end, Expected 'int or float' but found 'bool'",
 
     })
-    public void errorOpExprTest(String src, String msg) {
+    void errorOpExprTest(String src, String msg) {
         validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.OP_EXPRESSION, null, msg);
     }
 
@@ -91,12 +153,12 @@ public class ExprValidationTest extends AbstractValidationTest {
             "def test() int n = true end",
             "def test() int n3 = true && false end",
     })
-    public void errorVarDeclTest(String src) {
+    void errorVarDeclTest(String src) {
         validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.VARIABLE_ASSIGNMENT, null, "Expected type int, actual type: bool");
     }
 
     @Test
-    public void errorVarDeclFuncCall() {
+    void errorVarDeclFuncCall() {
         var src = "def plus(int a, int b): int\n" +
                 "    return a + b\n" +
                 "end\n" +
@@ -108,7 +170,7 @@ public class ExprValidationTest extends AbstractValidationTest {
     }
 
     @Test
-    public void testTypeAssignmentStmt() {
+    void testTypeAssignmentStmt() {
         var src = "def test()\n" +
                 "    bool b = false\n" +
                 "   b = 4\n" +
@@ -117,7 +179,7 @@ public class ExprValidationTest extends AbstractValidationTest {
     }
 
     @Test
-    public void errorVarDeclTestBoolInt() {
+    void errorVarDeclTestBoolInt() {
         var src = "def test()\n" +
                 "    if 3\n" +
                 "        int i1 = 1\n" +

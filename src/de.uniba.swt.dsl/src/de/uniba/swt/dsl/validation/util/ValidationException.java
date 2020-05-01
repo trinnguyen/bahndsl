@@ -25,7 +25,7 @@ public class ValidationException extends Exception
     }
 
     public static ValidationException createTypeException(String expectedType, String actualType, EStructuralFeature feature) {
-        return new ValidationException(String.format(ValidationErrors.TypeErrorFormat, expectedType, actualType), feature);
+        return new ValidationException(ValidationErrors.createTypeErrorMsg(expectedType, actualType), feature);
     }
 
     public EStructuralFeature getFeature() {

@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import de.uniba.swt.dsl.bahn.BahnModel;
 import de.uniba.swt.dsl.bahn.BahnPackage;
 import de.uniba.swt.dsl.tests.BahnInjectorProvider;
+import de.uniba.swt.dsl.tests.helpers.TestConstants;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.testing.InjectWith;
 import org.eclipse.xtext.testing.extensions.InjectionExtension;
@@ -131,12 +132,49 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
             "    end\n" +
             "end"
     })
-    public void validLayoutTest(String src) throws Exception {
+    public void validLayoutTest(String src) {
         validationTestHelper.assertNoErrors(internalParse(src));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {
+            TestConstants.SampleEmptyConfig,
+            TestConstants.SampleStandardConfig,
+            TestConstants.SampleLiteConfig,
+            TestConstants.SampleConfigSignals,
+            TestConstants.SampleLayoutConfig,
+            TestConstants.SampleTrainConfig1,
+            TestConstants.SampleTrainConfig2,
+    })
+    public void validSampleCode(String src) {
+        validationTestHelper.assertNoErrors(internalParse(src));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "module test boards master 0x00 end segments master end segments master end end",
+            "module test boards master 0x00 end signals master end signals master end end",
+            "module test boards master 0x00 end points master end points master end end",
+            "module test boards master 0x00 end peripherals master end peripherals master end end"
+    })
+    public void errorMultipleSectionsByBoard(String src) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.ROOT_MODULE, null, "section is already defined for board");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "module test boards master 0x00 end blocks end blocks end end",
+            "module test boards master 0x00 end platforms end platforms end end",
+            "module test boards master 0x00 end crossings end crossings end end",
+            "module test boards master 0x00 end trains end trains end end",
+            "module test boards master 0x00 end layout end layout end end",
+    })
+    public void errorMultipleSection(String src) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.ROOT_MODULE, null, "section is already defined");
+    }
+
     @Test
-    public void errorPointConnectorTest() throws Exception {
+    public void errorPointConnectorTest() {
         var src = "module test\n" +
                 "    boards master 0x01 end\n" +
                 "    segments master " +
@@ -218,7 +256,7 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
                 "        b1.up -> b1.down\n" +
                 "    end\n" +
                 "end";
-        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.LAYOUT_PROPERTY, null, "Block direction is already defined");
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.LAYOUT_PROPERTY, null, "Direction of", "is already defined");
     }
 
     @Test

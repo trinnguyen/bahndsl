@@ -21,16 +21,6 @@ public class AssignmentEffect extends Effect {
         this.indexExpr = indexExpr;
     }
 
-    private List<LiteralExpr> arrayExprs;
-
-    public List<LiteralExpr> getArrayExprs() {
-        return arrayExprs;
-    }
-
-    public void setArrayExprs(List<LiteralExpr> arrayExprs) {
-        this.arrayExprs = arrayExprs;
-    }
-
     public Expression getIndexExpr() {
         return indexExpr;
     }

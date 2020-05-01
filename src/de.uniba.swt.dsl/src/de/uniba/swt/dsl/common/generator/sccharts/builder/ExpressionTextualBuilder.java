@@ -14,21 +14,6 @@ public class ExpressionTextualBuilder extends TextualBuilder {
     @Inject
     ParamBindingTable paramBindingTable;
 
-    public String buildString(List<LiteralExpr> arrExprs) {
-        clear();
-        append("{");
-        if (arrExprs.size() > 0) {
-            for (int i = 0; i < arrExprs.size(); i++) {
-                generateExpr(arrExprs.get(i));
-                if (i < arrExprs.size() - 1) {
-                    append(",");
-                }
-            }
-        }
-        append("}");
-        return build();
-    }
-
     public String buildString(Expression expression) {
         clear();
         generateExpr(expression);
@@ -81,6 +66,12 @@ public class ExpressionTextualBuilder extends TextualBuilder {
             return;
         }
 
+        // ArrayLiteralExpr
+        if (expression instanceof ArrayLiteralExpr) {
+            generateExprArrayLiteralExpr((ArrayLiteralExpr) expression);
+            return;
+        }
+
         // LiteralExpr
         if (expression instanceof LiteralExpr) {
             generateExpr((LiteralExpr)expression);
@@ -115,6 +106,19 @@ public class ExpressionTextualBuilder extends TextualBuilder {
             }
             append(")");
         }
+    }
+
+    private void generateExprArrayLiteralExpr(ArrayLiteralExpr expression) {
+        append("{");
+        if (expression.getArrExprs().size() > 0) {
+            for (int i = 0; i < expression.getArrExprs().size(); i++) {
+                generateExpr(expression.getArrExprs().get(i));
+                if (i < expression.getArrExprs().size() - 1) {
+                    append(",");
+                }
+            }
+        }
+        append("}");
     }
 
     /**

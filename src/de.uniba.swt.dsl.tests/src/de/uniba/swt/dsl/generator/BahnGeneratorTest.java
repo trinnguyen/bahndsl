@@ -32,10 +32,16 @@ class BahnGeneratorTest {
     @Inject
     BahnGenerator generator;
 
-    @Test
-    void testGenerate4YamlFiles() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "module test end",
+            TestConstants.SampleEmptyConfig,
+            TestConstants.SampleLiteConfig,
+            TestConstants.SampleStandardConfig,
+    })
+    void testGenerate4YamlFiles(String src) throws Exception {
         // perform
-        invokeGenerate("module test end");
+        invokeGenerate(src);
 
         // verify
         var expectedNames = List.of("bidib_board_config.yml",
@@ -158,7 +164,11 @@ class BahnGeneratorTest {
     @ValueSource(strings = {
             TestConstants.SampleRequestRouteForeach,
             TestConstants.SampleRequestRoute,
-            TestConstants.SampleRequestRouteForeach + " " + TestConstants.SampleDriveRoute
+            TestConstants.SampleRequestRouteForeach + "\n" + TestConstants.SampleDriveRoute,
+
+            TestConstants.SampleRequestRouteEmpty,
+            TestConstants.SampleDriveRouteEmpty,
+            TestConstants.SampleInterlockingEmpty,
     })
     void testGenerateSCCharts(String src) throws Exception {
         invokeGenerate(src);

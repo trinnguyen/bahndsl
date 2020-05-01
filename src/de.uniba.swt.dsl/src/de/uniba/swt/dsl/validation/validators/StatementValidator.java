@@ -21,27 +21,7 @@ public class StatementValidator {
         if (declType == null)
             return;
 
-        if (assignment.getExpr() != null) {
-            checkExprType(declType, assignment.getExpr(), HintDataTypeUtl.from(declType.getDataType()), BahnPackage.Literals.VARIABLE_ASSIGNMENT__EXPR);
-        }
-        else if (assignment.getArrExprs() != null) {
-            // ensure all elements in the same type
-            if (!declType.isArray()) {
-                throw new ValidationException("Type Error: Expected literal value instead of an array", BahnPackage.Literals.VARIABLE_ASSIGNMENT__ARR_EXPRS);
-            }
-
-            var itemType = new ExprDataType(declType.getDataType(), false);
-            for (int i = 0; i < assignment.getArrExprs().size(); i++) {
-                var arrExpr = assignment.getArrExprs().get(i);
-                if (typeCheckingTable.canComputeType(arrExpr)) {
-                    ExprDataType exprType = typeCheckingTable.computeDataType(arrExpr, HintDataTypeUtl.from(itemType.getDataType()));
-                    if (!itemType.equals(exprType)) {
-                        var err = String.format("Type Error: Expected type %s, actual type: %s", itemType.displayTypeName(), exprType.displayTypeName());
-                        throw new ValidationException(err, BahnPackage.Literals.VARIABLE_ASSIGNMENT__ARR_EXPRS, i);
-                    }
-                }
-            }
-        }
+        checkExprType(declType, assignment.getExpr(), HintDataTypeUtl.from(declType.getDataType()), BahnPackage.Literals.VARIABLE_ASSIGNMENT__EXPR);
     }
 
     private ExprDataType getDeclDataType(VariableAssignment assignment) {

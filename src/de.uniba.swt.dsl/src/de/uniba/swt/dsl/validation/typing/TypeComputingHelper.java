@@ -42,6 +42,14 @@ class TypeComputingHelper {
                 return computeOpExpression(opExpr, hintType);
         }
 
+        if (expr instanceof ArrayLiteralExpr) {
+            var arrExpr = (ArrayLiteralExpr) expr;
+            if (arrExpr.getArrExprs().size() > 0) {
+                var itemType = computeExpr(arrExpr.getArrExprs().get(0), HintDataType.NONE);
+                return new ExprDataType(itemType.getDataType(), true);
+            }
+        }
+
         throw new RuntimeException("Unable to compute data type for expression: " + expr);
     }
 
