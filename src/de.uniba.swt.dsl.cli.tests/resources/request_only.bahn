@@ -1,0 +1,3 @@
+def request_route(string src_signal_id, string dst_signal_id, string train_id): string
+   return ""
+end

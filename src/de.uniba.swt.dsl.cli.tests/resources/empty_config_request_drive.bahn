@@ -1,0 +1,34 @@
+module empty_config_request_drive
+   boards
+       master 0x00
+   end
+
+   segments master
+   end
+
+   signals master
+   end
+
+   points master
+   end
+
+   blocks
+   end
+
+   crossings
+   end
+
+   layout
+   end
+
+   trains
+   end
+
+end
+
+def request_route(string src_signal_id, string dst_signal_id, string train_id): string
+   return ""
+end
+
+def drive_route(string route_id, string train_id, string segment_ids[])
+end

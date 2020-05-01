@@ -1,4 +1,4 @@
-package de.uniba.swt.dsl.clibahnc.util;
+package cli.util;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

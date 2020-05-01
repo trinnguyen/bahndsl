@@ -1,7 +1,6 @@
-package de.uniba.swt.dsl.clibahnc.util;
+package cli.util;
 
 import de.uniba.swt.dsl.common.util.Tuple;
-import de.uniba.swt.dsl.tests.helpers.TestConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -10,7 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 

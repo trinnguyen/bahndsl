@@ -1,8 +1,8 @@
-package de.uniba.swt.dsl.clibahnc;
+package cli;
 
-import de.uniba.swt.dsl.clibahnc.util.ExternalTest;
-import de.uniba.swt.dsl.clibahnc.util.ExternalTestConfig;
-import de.uniba.swt.dsl.clibahnc.util.RuntimeExternalTestHelper;
+import cli.util.ExternalTest;
+import cli.util.ExternalTestConfig;
+import cli.util.RuntimeExternalTestHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

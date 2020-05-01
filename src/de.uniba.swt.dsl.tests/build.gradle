@@ -8,8 +8,6 @@ dependencies {
 	testRuntime 'org.junit.jupiter:junit-jupiter-engine'
 	testCompile "org.eclipse.xtext:org.eclipse.xtext.testing:${xtextVersion}"
 	testCompile "org.eclipse.xtext:org.eclipse.xtext.xbase.testing:${xtextVersion}"
-
-	compile group: 'org.yaml', name: 'snakeyaml', version: '1.26'
 }
 
 test {
@@ -17,17 +15,20 @@ test {
 	testLogging.showStandardStreams = true
 }
 
-// run uni tests again the module
-task testUnit(type: Test) {
-	dependsOn(test)
-	//	exclude external integration test
-	exclude '**/clibahnc/**'
+sourceSets {
+	intTest {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+	}
 }
 
-// call black-box to test agains bahnc cli
-// run 'sh clibahnc.sh' first to prepare
-task testCliBahnc(type: Test) {
-	dependsOn(test)
+configurations {
+	intTestImplementation.extendsFrom implementation
+	intTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
+dependencies {
+	intTestImplementation 'junit:junit:4.12'
 }
 
 jacocoTestReport {
@@ -50,6 +51,7 @@ jacocoTestReport {
 		html.enabled true
 	}
 }
+
 //this is an eclipse plugin project
 eclipseClasspath.enabled=false
 cleanEclipseClasspath.enabled=false

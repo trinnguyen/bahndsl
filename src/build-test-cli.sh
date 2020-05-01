@@ -6,11 +6,11 @@ cd "$(dirname "$0")"
 sh build-gradle.sh
 
 # unzip
-MODULE=de.uniba.swt.dsl.tests
+MODULE=de.uniba.swt.dsl.cli.tests
 BUILD=$MODULE/build
 rm -rf $BUILD/bahnc*
 unzip build/bahnc-*.zip -d $BUILD
 mv $BUILD/bahnc-* $BUILD/bahnc
 
 # run test
-./gradlew $MODULE:testCliBahnc
+./gradlew $MODULE:test
