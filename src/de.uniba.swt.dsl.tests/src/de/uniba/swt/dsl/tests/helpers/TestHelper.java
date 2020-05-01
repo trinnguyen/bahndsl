@@ -35,7 +35,7 @@ public class TestHelper {
      * @param list
      * @throws Exception
      */
-    public void ensureFileContent(InMemoryFileSystemAccess fsa, String fileName, List<String> list) throws Exception {
+    public static void ensureFileContent(InMemoryFileSystemAccess fsa, String fileName, List<String> list) throws Exception {
         var content = getFileContent(fsa, fileName);
         ensureTextContent(content, list);
     }
@@ -46,7 +46,7 @@ public class TestHelper {
      * @param list
      * @throws Exception
      */
-    public void ensureTextContent(String content, List<String> list) throws Exception {
+    public static void ensureTextContent(String content, List<String> list) throws Exception {
         if (content == null) {
             throw new Exception("content is null");
         }
@@ -64,7 +64,7 @@ public class TestHelper {
      * @param name
      * @return
      */
-    public String getFileContent(InMemoryFileSystemAccess fsa, String name) {
+    public static String getFileContent(InMemoryFileSystemAccess fsa, String name) {
         for (String s : fsa.getTextFiles().keySet()) {
             if (s.endsWith(name))
                 return fsa.getTextFiles().get(s).toString();

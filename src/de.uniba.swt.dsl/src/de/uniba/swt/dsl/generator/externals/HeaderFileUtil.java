@@ -15,8 +15,20 @@ import java.util.regex.Pattern;
 
 public class HeaderFileUtil {
 
-    private static final Logger logger = Logger.getLogger(HeaderFileUtil.class);
+    private HeaderFileUtil(){}
 
+    private final static Logger logger = Logger.getLogger(HeaderFileUtil.class);
+
+    public final static String IncludeHeaderText = "#include \"tick_wrapper.h\"";
+
+    /**
+     * Remove enum Thread status and include tick wrapper for header file
+     * @param fsa
+     * @param filename
+     * @param oldPrefix
+     * @param oldSuffix
+     * @param newName
+     */
     public static void updateThreadStatus(IFileSystemAccess2 fsa, String filename, String oldPrefix, String oldSuffix, String newName) {
         var oldName = oldPrefix + oldSuffix;
 
@@ -52,7 +64,7 @@ public class HeaderFileUtil {
 
     private static List<String> removeAndReplaceLines(List<String> lines, int start, int end, String oldName, String newName) {
         List<String> newLines = new ArrayList<>();
-        newLines.add("#include \"tick_wrapper.h\"");
+        newLines.add(IncludeHeaderText);
         for (int i = 0; i < lines.size(); i++) {
             if (i >= start && i<= end) {
                 continue;
