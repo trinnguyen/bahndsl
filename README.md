@@ -12,9 +12,11 @@ Respository for Masters thesis on BahnDSL: A Domain-Specific Language for Config
 ### bahnc (Bahn Compiler CLI)
 - [macOS/Linux/Windows: bahnc-1.0.0.zip](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/bahnc-1.0.0.zip?job=build-rcp-compiler)
 
-### Bahn Language Support for VS Code
-- [Bahn Language VS Code Extension: bahn-language-0.0.1.vsix](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/bahn-language-0.0.1.vsix?job=deploy-vscode)
+### Test Reports
+- [test-reports.tar.gz](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/test-reports.tar.gz?job=test)
 
+### Bahn Language Support for VS Code (manually release to Marketplace)
+- [Bahn Language VS Code Extension](https://marketplace.visualstudio.com/items?itemName=trinnguyen.bahn-language)
 
 ### Fix damaged macOS application
 - Run command line: `xattr -c "Bahn IDE.app"`
@@ -43,5 +45,46 @@ Respository for Masters thesis on BahnDSL: A Domain-Specific Language for Config
 - Compile to custom output folder: `bahnc model.bahn custom/src-gen`
 
 ## Development
-- Build and run all tests with Tycho Maven: `make verify`
-- Development with gradle: `gradle build`
+
+### Source code location
+- Folder **src**
+
+### Build systems
+- **maven**: Build Eclipse plugins and Bahn IDE standalone application (Eclipse RCP product)
+- **gradle**: Build command line compiler, language server application and run tests
+- **npm (Node JS)**:  Build Visual Studio Code extension
+
+### Build scripts (Bash)
+
+- Output folder: **build**
+
+- Build Eclipse-based IDE (Bahn IDE)
+```
+sh build-maven-rcp.sh
+```
+
+- Build command line compiler **bahnc**
+```
+sh build-gradle.sh
+```
+
+- Build Visual Studio Code extension
+```
+sh build-gradle.sh
+sh build-node-vscode.sh
+```
+
+- Publish Visual Studio Code extension (run in vscode-bahn)
+```
+vsce publish
+```
+
+- Run unit tests
+```
+sh build-test.sh
+```
+
+- Run integration tests for command line compiler
+```
+build-test-cli.sh
+```
