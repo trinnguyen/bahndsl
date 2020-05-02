@@ -1,0 +1,27 @@
+module config_empty
+   boards
+       master 0x00
+   end
+
+   segments master
+   end
+
+   signals master
+   end
+
+   points master
+   end
+
+   blocks
+   end
+
+   crossings
+   end
+
+   layout
+   end
+
+   trains
+   end
+
+end

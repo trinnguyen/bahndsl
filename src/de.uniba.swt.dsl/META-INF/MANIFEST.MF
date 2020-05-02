@@ -1,0 +1,31 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: de.uniba.swt.dsl
+Bundle-ManifestVersion: 2
+Bundle-Name: de.uniba.swt.dsl
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: de.uniba.swt.dsl; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
+ org.eclipse.xtext.util,
+ org.eclipse.emf.common,
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Export-Package: de.uniba.swt.dsl.serializer,
+ de.uniba.swt.dsl.generator,
+ de.uniba.swt.dsl,
+ de.uniba.swt.dsl.validation,
+ de.uniba.swt.dsl.bahn.impl,
+ de.uniba.swt.dsl.parser.antlr.internal,
+ de.uniba.swt.dsl.scoping,
+ de.uniba.swt.dsl.services,
+ de.uniba.swt.dsl.bahn,
+ de.uniba.swt.dsl.parser.antlr,
+ de.uniba.swt.dsl.bahn.util,
+ de.uniba.swt.dsl.formatting2
+Import-Package: org.apache.log4j
+Bundle-ClassPath: .

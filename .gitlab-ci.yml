@@ -1,0 +1,35 @@
+cache:
+  key: "$CI_JOB_NAME"
+  paths:
+    - .m2/repository
+
+test:
+  image: openjdk:11
+  stage: test
+  script:
+    - 'sh src/build-test.sh'
+  artifacts:
+    paths:
+      - src/build/
+    expire_in: 1 week
+
+build-rcp-compiler:
+  image: openjdk:11
+  stage: build
+  script:
+    - 'sh src/build-gradle.sh'
+    - 'sh src/build-maven-rcp.sh'
+  artifacts:
+    paths:
+    - src/build/
+    expire_in: 1 week
+
+deploy-vscode:
+  image: node:latest
+  stage: deploy
+  script:
+    - 'sh src/build-node-vscode.sh'
+  artifacts:
+    paths:
+    - src/build/
+    expire_in: 1 week

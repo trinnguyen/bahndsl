@@ -1,0 +1,61 @@
+{
+    "name": "bahn-language",
+    "displayName": "Bahn Language",
+    "description": "Bahn support for VS Code",
+    "version": "0.0.23",
+    "publisher": "trinnguyen",
+    "repository": "https://github.com/trinnguyen",
+    "engines": {
+        "vscode": "^1.41.0"
+    },
+    "categories": [
+        "Programming Languages",
+        "Snippets"
+    ],
+    "activationEvents": [
+        "onLanguage:bahn"
+    ],
+    "main": "out/extension",
+    "contributes": {
+        "languages": [
+            {
+                "id": "bahn",
+                "aliases": [
+                    "Bahn",
+                    "bahn"
+                ],
+                "extensions": [
+                    "bahn"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "bahn",
+                "scopeName": "source.bahn",
+                "path": "./syntaxes/bahn.tmLanguage.json"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "bahn",
+                "path": "snippets/snippets.json"
+            }
+        ]
+    },
+    "dependencies": {
+        "vscode-languageclient": "^5.2.1"
+    },
+    "devDependencies": {
+        "@types/node": "^11.13.2",
+        "typescript": "^3.3.400",
+        "vsce": "^1.72.0",
+        "vscode": "^1.1.35"
+    },
+    "scripts": {
+        "compile": "tsc -p ./src",
+        "package": "tsc -p ./src && vsce package",
+        "publish": "tsc -p ./src && vsce publish patch"
+    }
+}

@@ -1,0 +1,25 @@
+plugins {
+	id "application"
+}
+application {
+	mainClassName = "org.eclipse.xtext.ide.server.ServerLauncher"
+	applicationDefaultJvmArgs = ["--add-opens","java.base/java.lang=ALL-UNNAMED"]
+}
+distributions {
+	main {
+		distributionBaseName = "bahn-ide-server"
+	}
+}
+tasks.withType(CreateStartScripts) {
+	applicationName = "bahn-ide-server"
+}
+
+dependencies {
+	implementation project(":de.uniba.swt.dsl")
+	implementation "org.eclipse.xtext:org.eclipse.xtext.ide:${xtextVersion}"
+	implementation "org.eclipse.xtext:org.eclipse.xtext.xbase.ide:${xtextVersion}"
+}
+
+//this is an eclipse plugin project
+eclipseClasspath.enabled=false
+cleanEclipseClasspath.enabled=false

@@ -1,0 +1,34 @@
+//
+// Created by Tri Nguyen on 27/03/2020.
+//
+
+#ifndef TICK_WRAPPER_H
+#define TICK_WRAPPER_H
+
+typedef struct {
+    char* src_signal_id;                                                    // Input
+    char* dst_signal_id;                                                    // Input
+    char* train_id;                                                         // Input
+    char* out;                                                              // Output
+
+    int terminated;
+} request_route_tick_data;
+
+typedef struct {
+    char* route_id;                                                    // Input
+    char* train_id;                                                    // Input
+    char* segment_ids[1024];                                           // Input
+    int count_segments;                                                // Input
+
+    int terminated;
+} drive_route_tick_data;
+
+// The chosen scheduling regime (IUR) uses four states to maintain the status of threads.
+typedef enum {
+    TERMINATED,                                 // thread is dead until spawned again (e.g. via fork)
+    RUNNING,                                    // thread is running
+    READY,                                      // thread is waiting to be selected as running
+    PAUSING                                     // thread is paused for this tick instance
+} wrapper_thread_status;
+
+#endif

@@ -1,0 +1,4 @@
+include 'de.uniba.swt.dsl'
+include 'de.uniba.swt.dsl.ide'
+include 'de.uniba.swt.dsl.tests'
+include 'de.uniba.swt.dsl.cli.tests'

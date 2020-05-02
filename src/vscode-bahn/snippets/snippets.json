@@ -1,0 +1,52 @@
+{
+    "Module": {
+        "prefix": "module",
+        "body": [
+            "module $TM_FILENAME_BASE",
+            "   boards",
+            "       $1 $2",
+            "   end",
+            "",
+            "   segments $1",
+            "   end",
+            "",
+            "   signals $1",
+            "   end",
+            "",
+            "   points $1",
+            "   end",
+            "",
+            "   blocks",
+            "   end",
+            "",
+            "   crossings",
+            "   end",
+            "",
+            "   layout",
+            "   end",
+            "",
+            "   trains",
+            "   end",
+            "",
+            "end"
+        ],
+        "description": "Create new Bahn model"
+    },
+    "Request Route Function": {
+        "prefix": "request_route",
+        "body": [
+            "def request_route(string src_signal_id, string dst_signal_id, string train_id): string",
+            "   return \"\"",
+            "end"
+        ],
+        "description": "Request Route Function"
+    },
+    "Drive Route Function": {
+        "prefix": "drive_route",
+        "body": [
+            "def drive_route(string route_id, string train_id, string segment_ids[])",
+            "end"
+        ],
+        "description": "Drive Route Function"
+    }
+}

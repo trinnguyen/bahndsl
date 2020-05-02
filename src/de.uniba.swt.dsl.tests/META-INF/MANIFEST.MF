@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: de.uniba.swt.dsl.tests
+Bundle-ManifestVersion: 2
+Bundle-Name: de.uniba.swt.dsl.tests
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: de.uniba.swt.dsl.tests; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: de.uniba.swt.dsl,
+ org.junit.jupiter.api;bundle-version="[5.0.0,6.0.0)",
+ org.eclipse.xtext.testing,
+ org.eclipse.xtext.xbase.testing,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
+ org.junit.jupiter.params;bundle-version="5.5.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Export-Package: de.uniba.swt.dsl.tests;x-internal=true
