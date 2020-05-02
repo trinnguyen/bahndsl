@@ -25,8 +25,7 @@ public final class SampleBahnProject extends AbstractProjectTemplate {
     final Procedure1<PluginProjectFactory> _function = (PluginProjectFactory it) -> {
       it.setProjectName(this.getProjectInfo().getProjectName());
       it.setLocation(this.getProjectInfo().getLocationPath());
-      List<String> _projectNatures = it.getProjectNatures();
-      Iterables.<String>addAll(_projectNatures, Collections.<String>unmodifiableList(CollectionLiterals.<String>newArrayList(XtextProjectHelper.NATURE_ID)));
+      
       List<String> _builderIds = it.getBuilderIds();
       Iterables.<String>addAll(_builderIds, Collections.<String>unmodifiableList(CollectionLiterals.<String>newArrayList(XtextProjectHelper.BUILDER_ID)));
       
