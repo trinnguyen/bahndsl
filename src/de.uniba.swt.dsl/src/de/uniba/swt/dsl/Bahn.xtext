@@ -498,6 +498,9 @@ terminal HEX returns ecore::EString:
 	('0x'|'0X') ('0'..'9'|'a'..'f'|'A'..'F')+;
 
 @Override
+terminal ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+
+@Override
 terminal SL_COMMENT : '#' !('\n'|'\r')* ('\r'? '\n')?;
 
 @Override
