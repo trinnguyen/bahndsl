@@ -60,7 +60,7 @@ class BahnNormalizationProviderTest {
             "def test() float arr[] end",
     })
     void testArrayStmt(String src) throws Exception {
-        ensureNormalize(src, List.of("int _test_arr_cnt_1 = 1024"));
+        ensureNormalize(src, List.of("int _arr_cnt = 1024"));
     }
 
     @ParameterizedTest
@@ -71,7 +71,38 @@ class BahnNormalizationProviderTest {
             "def test(float arr[]) end",
     })
     void testArrayParams(String src) throws Exception {
-        ensureNormalize(src, List.of("int _test_arr_cnt_1"));
+        ensureNormalize(src, List.of("int _arr_cnt"));
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
+            "def test() for int i in {1,2,3} end end"
+    })
+    void testArrayForeachInitial(String src) throws Exception {
+        ensureNormalize(src, List.of("int _test_t1 [] = { 1,2,3}"));
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
+            "def test() foo({1,2,3}, {true, false}) end def foo(int arr[], bool arr2[]) end"
+    })
+    void testArrayFunctonInitial(String src) throws Exception {
+        ensureNormalize(src, List.of(
+                "int _test_t1 [] = { 1,2,3}",
+                "bool _test_t2 [] = { true, false}",
+                "int __test_t1_cnt",
+                "int __test_t2_cnt",
+                "foo( _test_t1 , __test_t1_cnt , _test_t2 , __test_t2_cnt )",
+                "def foo(int arr[], int _arr_cnt , bool arr2[] , int _arr2_cnt )"));
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
+            "def test(int arr[]) int x = arr.len end",
+            "def test() int arr[] int x = arr.len end"
+    })
+    void testArrayLen(String src) throws Exception {
+        ensureNormalize(src, List.of("int x = _arr_cnt"));
     }
 
     @ParameterizedTest
@@ -82,7 +113,7 @@ class BahnNormalizationProviderTest {
             "def test() float items[] for float id in items end end"
     })
     void testForeachStmt(String src) throws Exception {
-        ensureNormalize(src, List.of("while", "int _test_items_cnt_1 = 1024", "int _test_t1 = 0"));
+        ensureNormalize(src, List.of("while", "int _items_cnt = 1024", "int _test_t1 = 0"));
     }
 
     @ParameterizedTest
@@ -93,7 +124,7 @@ class BahnNormalizationProviderTest {
             "def test() for string id in {\"a\", \"b\"} end end",
     })
     void testForeachStmtLiteralArray(String src) throws Exception {
-        ensureNormalize(src, List.of("while", "_test_t1 [] = {", "int _test__test_t1_cnt_1 = "));
+        ensureNormalize(src, List.of("while", "_test_t1 [] = {", "int __test_t1_cnt = "));
     }
 
     @ParameterizedTest
@@ -105,7 +136,7 @@ class BahnNormalizationProviderTest {
             //"def test() for int id in run() end end def run(): int[] int i[] return i end",
     })
     void testForeachParam(String src) throws Exception {
-        ensureNormalize(src, List.of("while", "int _test_items_cnt_1", "int _test_t1 = 0"));
+        ensureNormalize(src, List.of("while", "int _items_cnt", "int _test_t1 = 0"));
     }
 
     @ParameterizedTest

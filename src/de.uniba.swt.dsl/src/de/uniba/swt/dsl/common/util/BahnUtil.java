@@ -25,6 +25,7 @@
 package de.uniba.swt.dsl.common.util;
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.validation.typing.ExprDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -211,4 +212,44 @@ public class BahnUtil {
         return Long.parseLong(strValue.substring(2), 16);
     }
 
+    public static VarDeclStmt createVarDeclStmt(String name, ExprDataType dataType, Expression initialValue) {
+
+        var decl = BahnFactory.eINSTANCE.createVarDecl();
+        decl.setName(name);
+        decl.setType(dataType.getDataType());
+        decl.setArray(dataType.isArray());
+
+        return createVarDeclStmt(decl, initialValue);
+    }
+
+    public static VarDeclStmt createVarDeclStmt(VarDecl decl, Expression initialValue) {
+        var stmt = BahnFactory.eINSTANCE.createVarDeclStmt();
+        stmt.setDecl(decl);
+
+        if (initialValue != null)
+            assignExpression(stmt, initialValue);
+
+        return stmt;
+    }
+
+    public static ValuedReferenceExpr createVarRef(VarDeclStmt temp) {
+        return createVarRef(temp.getDecl());
+    }
+
+    public static ValuedReferenceExpr createVarRef(RefVarDecl decl) {
+        var ref = BahnFactory.eINSTANCE.createValuedReferenceExpr();
+        ref.setLength(false);
+        ref.setIndexExpr(null);
+        ref.setDecl(decl);
+        return ref;
+    }
+
+    public static void assignExpression(VarDeclStmt declStmt, Expression expr) {
+        if (expr != null) {
+            var assignment = BahnFactory.eINSTANCE.createVariableAssignment();
+            assignment.setExpr(expr);
+
+            declStmt.setAssignment(assignment);
+        }
+    }
 }

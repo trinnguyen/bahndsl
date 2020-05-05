@@ -26,7 +26,10 @@ package de.uniba.swt.dsl.normalization;
 
 import com.google.inject.Singleton;
 import de.uniba.swt.dsl.bahn.BahnFactory;
+import de.uniba.swt.dsl.bahn.Expression;
 import de.uniba.swt.dsl.bahn.VarDecl;
+import de.uniba.swt.dsl.bahn.VarDeclStmt;
+import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
 
 @Singleton
@@ -41,18 +44,12 @@ public class TemporaryVarGenerator {
         counter = 1;
     }
 
-    public VarDecl createTempVar(ExprDataType dataType) {
+    public VarDeclStmt createTempVarStmt(ExprDataType dataType) {
         String name = nextTempVarName();
-
-        var decl = BahnFactory.eINSTANCE.createVarDecl();
-        decl.setName(name);
-        decl.setType(dataType.getDataType());
-        decl.setArray(dataType.isArray());
-
-        return decl;
+        return BahnUtil.createVarDeclStmt(name, dataType, null);
     }
 
-    private String nextTempVarName() {
+    public String nextTempVarName() {
         String prefix = "t";
         return String.format("_%s_%s%d", functionName, prefix, counter++);
     }

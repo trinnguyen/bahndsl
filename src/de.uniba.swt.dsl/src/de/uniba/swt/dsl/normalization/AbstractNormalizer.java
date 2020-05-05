@@ -24,8 +24,10 @@
 
 package de.uniba.swt.dsl.normalization;
 
+import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.*;
-import org.eclipse.xtext.EcoreUtil2;
+import de.uniba.swt.dsl.common.util.BahnUtil;
+import de.uniba.swt.dsl.validation.typing.ExprDataType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +36,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class AbstractNormalizer {
+
+    @Inject
+    TemporaryVarGenerator temporaryVarGenerator;
+
     public void normalizeFunc(FuncDecl funcDecl) {
         normalizeStmtList(funcDecl.getStmtList());
     }
@@ -160,23 +166,19 @@ public abstract class AbstractNormalizer {
         return exprs.stream().map(this::normalizeExpr).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toList());
     }
 
-    protected ValuedReferenceExpr createVarRef(VarDecl indexDecl) {
-        var indexRef = BahnFactory.eINSTANCE.createValuedReferenceExpr();
-        indexRef.setDecl(indexDecl);
-        return indexRef;
-    }
+    protected VarDeclStmt refactorUsingTemporaryVar(Expression expression, ExprDataType dataType) {
+        VarDeclStmt temp = temporaryVarGenerator.createTempVarStmt(dataType);
 
-    protected VarDeclStmt createVarDeclStmt(VarDecl decl, Expression expr) {
-        // set value
-        VariableAssignment assignment = BahnFactory.eINSTANCE.createVariableAssignment();
-        assignment.setExpr(expr);
+        // create ref
+        ValuedReferenceExpr ref = BahnUtil.createVarRef(temp);
 
+        // update
+        BahnUtil.replaceEObject(expression, ref);
 
-        VarDeclStmt stmt = BahnFactory.eINSTANCE.createVarDeclStmt();
-        stmt.setDecl(decl);
-        stmt.setAssignment(assignment);
+        // set assignment to temp
+        BahnUtil.assignExpression(temp, expression);
 
-        return stmt;
+        return temp;
     }
 
     protected abstract Collection<Statement> processExpr(Expression expr);

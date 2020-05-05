@@ -80,7 +80,7 @@ public class BahnNormalizationProvider {
 
     private void beforeNormalize(FuncDecl decl) {
         varGenerator.resetFunc(decl.getName());
-        arrayLookupTable.resetFunc(decl.getName());
+        arrayLookupTable.resetFunc();
     }
 
     /**
@@ -103,10 +103,12 @@ public class BahnNormalizationProvider {
 
         // convert all getter/setter for configuration and track state
         syntacticExprNormalizer.normalizeFunc(funcDecl);
+
+        log(funcDecl);
     }
 
     private void log(FuncDecl funcDecl) {
-        if (funcDecl.getName().equals("test")) {
+        if (funcDecl.getName().equals("drive_route")) {
             var input = funcDecl.eResource().getContents().get(0);
             logger.debug(serializer.serialize(input, SaveOptions.newBuilder().format().getOptions()));
         }

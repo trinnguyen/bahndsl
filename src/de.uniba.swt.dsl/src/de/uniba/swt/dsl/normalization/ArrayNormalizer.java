@@ -28,14 +28,21 @@ import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.BahnUtil;
+import de.uniba.swt.dsl.validation.typing.ExprDataType;
+import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ArrayNormalizer extends AbstractNormalizer {
 
     @Inject
     ArrayLookupTable arrayLookupTable;
+
+    @Inject
+    TypeCheckingTable typeCheckingTable;
 
     @Override
     public void normalizeFunc(FuncDecl funcDecl) {
@@ -45,17 +52,13 @@ public class ArrayNormalizer extends AbstractNormalizer {
             var paramDecl = funcDecl.getParamDecls().get(i);
             if (paramDecl.isArray()) {
 
-                // add the size param to the list
-                ParamDecl lenParamDecl = BahnFactory.eINSTANCE.createParamDecl();
-                lenParamDecl.setArray(false);
-                lenParamDecl.setType(DataType.INT_TYPE);
-                lenParamDecl.setName(arrayLookupTable.generateTempLenVar(paramDecl.getName()));
-
                 // add to lookup
-                arrayLookupTable.insert(paramDecl, lenParamDecl);
+                arrayLookupTable.insert(paramDecl);
 
                 // add to list
-                funcDecl.getParamDecls().add(++i, lenParamDecl);
+                var lenDecl = arrayLookupTable.lookupLengthDecl(paramDecl.getName());
+                if (lenDecl instanceof ParamDecl)
+                    funcDecl.getParamDecls().add(++i, (ParamDecl) lenDecl);
             }
 
             i++;
@@ -69,35 +72,45 @@ public class ArrayNormalizer extends AbstractNormalizer {
 
         if (stmt instanceof VarDeclStmt) {
             VarDeclStmt varDeclStmt = (VarDeclStmt) stmt;
-            if (varDeclStmt.getDecl().isArray()) {
-                String name = varDeclStmt.getDecl().getName();
+            var result = normalizeArrayVarDecl(varDeclStmt);
+            if (result != null)
+                return List.of(result);
+        }
 
-                // create  new var decl for int length
-                VarDecl lenDecl = BahnFactory.eINSTANCE.createVarDecl();
-                lenDecl.setType(DataType.INT_TYPE);
-                lenDecl.setName(arrayLookupTable.generateTempLenVar(name));
-
-                // insert
-                arrayLookupTable.insert(varDeclStmt.getDecl(), lenDecl);
-
-                // set default assignment
-                VariableAssignment assignment = BahnFactory.eINSTANCE.createVariableAssignment();
-                assignment.setExpr(BahnUtil.createNumLiteral(BahnConstants.DEFAULT_ARRAY_SIZE));
-
-                // add new stmt
-                var lenDeclStmt = BahnFactory.eINSTANCE.createVarDeclStmt();
-                lenDeclStmt.setDecl(lenDecl);
-                lenDeclStmt.setAssignment(assignment);
-
-                return List.of(lenDeclStmt);
-            }
+        // ensure foreach using temporary array instead of vecotr
+        if (stmt instanceof ForeachStmt) {
+            return generateArrayVarIfNeeded(((ForeachStmt) stmt).getArrayExpr());
         }
 
         return super.normalizeStmt(stmt);
     }
 
+    private Statement normalizeArrayVarDecl(VarDeclStmt varDeclStmt) {
+        if (varDeclStmt.getDecl().isArray()) {
+            // insert
+            arrayLookupTable.insert(varDeclStmt.getDecl());
+
+            // set default assignment
+            VariableAssignment assignment = BahnFactory.eINSTANCE.createVariableAssignment();
+            assignment.setExpr(BahnUtil.createNumLiteral(BahnConstants.DEFAULT_ARRAY_SIZE));
+
+            // add new stmt
+            var lenDecl = arrayLookupTable.lookupLengthDecl(varDeclStmt.getDecl().getName());
+            if (lenDecl instanceof VarDecl) {
+                var lenDeclStmt = BahnFactory.eINSTANCE.createVarDeclStmt();
+                lenDeclStmt.setDecl((VarDecl) lenDecl);
+                lenDeclStmt.setAssignment(assignment);
+
+                return lenDeclStmt;
+            }
+        }
+
+        return null;
+    }
+
     @Override
     protected Collection<Statement> processExpr(Expression expr) {
+        // normalise .len property
         if (expr instanceof ValuedReferenceExpr) {
             ValuedReferenceExpr refExpr = (ValuedReferenceExpr) expr;
             if (refExpr.isLength()) {
@@ -113,21 +126,57 @@ public class ArrayNormalizer extends AbstractNormalizer {
 
         // add size param to regular function call
         if (expr instanceof RegularFunctionCallExpr) {
-            var regularFunctionCallExpr = (RegularFunctionCallExpr) expr;
-            int i = 0;
-            while (i < regularFunctionCallExpr.getParams().size()) {
-                var param = regularFunctionCallExpr.getParams().get(i);
-                if (param instanceof ValuedReferenceExpr) {
-                    var refParam = (ValuedReferenceExpr) param;
-                    if (refParam.getDecl().isArray()) {
 
-                        // add the size to the list
-                        regularFunctionCallExpr.getParams().add(++i, arrayLookupTable.createLenVarExpr(refParam.getDecl().getName()));
-                    }
+            var callExpr = (RegularFunctionCallExpr) expr;
+            List<Statement> stmts = generateArrayVarIfNeeded(callExpr.getParams());
+
+            // add size param to function call after normalising the array vector
+             addLengthParamIfNeeded(callExpr);
+
+            // result
+            if (stmts != null && stmts.size() > 0)
+                return stmts;
+        }
+
+        return null;
+    }
+
+    private void addLengthParamIfNeeded(RegularFunctionCallExpr expr) {
+        int i = 0;
+        while (i < expr.getParams().size()) {
+            var param = expr.getParams().get(i);
+            if (param instanceof ValuedReferenceExpr) {
+                var refParam = (ValuedReferenceExpr) param;
+                if (refParam.getDecl().isArray()) {
+
+                    // add the size to the list
+                    expr.getParams().add(++i, arrayLookupTable.createLenVarExpr(refParam.getDecl().getName()));
                 }
-
-                i++;
             }
+
+            i++;
+        }
+    }
+
+    private List<Statement> generateArrayVarIfNeeded(List<Expression> exprs) {
+        return exprs.stream().map(this::generateArrayVarIfNeeded).filter(lst -> lst != null && lst.size() > 0).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    private Collection<Statement> generateArrayVarIfNeeded(Expression expr) {
+        if (expr instanceof ArrayLiteralExpr) {
+            var arrayLiteralExpr = (ArrayLiteralExpr) expr;
+
+            // introduce new temporary for variable
+            var type = typeCheckingTable.computeDataType(arrayLiteralExpr);
+
+            var tempArrayStmt = refactorUsingTemporaryVar(arrayLiteralExpr, type);
+
+            // return
+            var norLen = normalizeArrayVarDecl(tempArrayStmt);
+            if (norLen != null)
+                return List.of(norLen, tempArrayStmt);
+
+            return List.of(tempArrayStmt);
         }
 
         return null;

@@ -58,7 +58,9 @@ public class SyntacticExprNormalizer extends AbstractNormalizer {
                 // add temporary bool for setter
                 if (replacementExpr.eContainer() instanceof FunctionCallStmt && isSetter) {
                     var callStmt = (FunctionCallStmt) replacementExpr.eContainer();
-                    var stmt = createVarDeclStmt(varGenerator.createTempVar(ExprDataType.ScalarBool), replacementExpr);
+                    var stmt = varGenerator.createTempVarStmt(ExprDataType.ScalarBool);
+                    BahnUtil.assignExpression(stmt, replacementExpr);
+
                     BahnUtil.replaceEObject(callStmt, stmt);
                 }
 

@@ -26,6 +26,7 @@ package de.uniba.swt.dsl.normalization;
 
 import com.google.inject.Singleton;
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.Tuple;
 
 import java.util.HashMap;
@@ -34,23 +35,32 @@ import java.util.Map;
 @Singleton
 public class ArrayLookupTable {
     private final Map<String, Tuple<RefVarDecl, RefVarDecl>> mapArray = new HashMap<>();
-    private String functionName;
-    private int counter = 0;
 
-    public void resetFunc(String name) {
+    public void resetFunc() {
         this.mapArray.clear();
-        this.functionName = name.toLowerCase();
-        this.counter = 0;
     }
 
-    public void insert(RefVarDecl decl, RefVarDecl lenDecl) {
+    public void insert(RefVarDecl decl) {
 
-        // add to map
-        mapArray.put(decl.getName(), Tuple.of(decl, lenDecl));
+        // create length variable
+        RefVarDecl lenDecl = null;
+        if (decl instanceof VarDecl) {
+            lenDecl = BahnFactory.eINSTANCE.createVarDecl();
+        } else if (decl instanceof ParamDecl) {
+            lenDecl = BahnFactory.eINSTANCE.createParamDecl();
+        }
+
+        if (lenDecl != null) {
+            lenDecl.setType(DataType.INT_TYPE);
+            lenDecl.setName(generateTempLenVar(decl.getName()));
+
+            // add to map
+            mapArray.put(decl.getName(), Tuple.of(decl, lenDecl));
+        }
     }
 
     public String generateTempLenVar(String name) {
-        return String.format("_%s_%s_cnt_%d", functionName, name, ++counter);
+        return String.format("_%s_cnt", name);
     }
 
     public RefVarDecl lookupVarDecl(String name) {
@@ -63,19 +73,11 @@ public class ArrayLookupTable {
         return tuple != null ? tuple.getSecond() : null;
     }
 
-    public ValuedReferenceExpr createArrayVarExpr(String name) {
-        var ref = BahnFactory.eINSTANCE.createValuedReferenceExpr();
-        ref.setLength(false);
-        ref.setIndexExpr(null);
-        ref.setDecl(lookupVarDecl(name));
-        return ref;
+    public ValuedReferenceExpr createArrayVarExpr(String arrName) {
+        return BahnUtil.createVarRef(lookupVarDecl(arrName));
     }
 
-    public ValuedReferenceExpr createLenVarExpr(String name) {
-        var ref = BahnFactory.eINSTANCE.createValuedReferenceExpr();
-        ref.setLength(false);
-        ref.setIndexExpr(null);
-        ref.setDecl(lookupLengthDecl(name));
-        return ref;
+    public ValuedReferenceExpr createLenVarExpr(String arrName) {
+        return BahnUtil.createVarRef(lookupLengthDecl(arrName));
     }
 }
