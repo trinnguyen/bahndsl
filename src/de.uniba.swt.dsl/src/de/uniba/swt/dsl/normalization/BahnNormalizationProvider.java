@@ -68,33 +68,12 @@ public class BahnNormalizationProvider {
 
     private List<AbstractNormalizer> normalizers;
 
-    public BahnNormalizationProvider() {
-        normalizers = new ArrayList<>();
-
-        // break multiple operator expression into small (basic) statement
-        normalizers.add(basicStatementNormalizer);
-
-        // convert list to array with additional length variable
-        normalizers.add(arrayNormalizer);
-
-        // convert syntactic sugar foreach to while iteration
-        normalizers.add(foreachNormalizer);
-
-        // convert string comparision expression using extern C function
-        normalizers.add(stringEqualNormalizer);
-
-        // convert all getter/setter for configuration and track state
-        normalizers.add(syntacticExprNormalizer);
-
-        // rename before sending to sccharts model
-        normalizers.add(variableNameNormalizer);
-    }
-
     public void setNormalizers(List<AbstractNormalizer> normalizers) {
         this.normalizers = normalizers;
     }
 
     public void normalize(List<FuncDecl> decls) {
+        prepare();
         if (decls == null || decls.size() == 0)
             return;
 
@@ -104,6 +83,30 @@ public class BahnNormalizationProvider {
 
             // normalize
             normalizeFunc(decl);
+        }
+    }
+
+    private void prepare() {
+        if (normalizers == null) {
+            normalizers = new ArrayList<>();
+
+            // break multiple operator expression into small (basic) statement
+            normalizers.add(basicStatementNormalizer);
+
+            // convert list to array with additional length variable
+            normalizers.add(arrayNormalizer);
+
+            // convert syntactic sugar foreach to while iteration
+            normalizers.add(foreachNormalizer);
+
+            // convert string comparision expression using extern C function
+            normalizers.add(stringEqualNormalizer);
+
+            // convert all getter/setter for configuration and track state
+            normalizers.add(syntacticExprNormalizer);
+
+            // rename before sending to sccharts model
+            normalizers.add(variableNameNormalizer);
         }
     }
 
