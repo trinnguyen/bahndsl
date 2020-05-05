@@ -35,6 +35,7 @@ import org.eclipse.xtext.resource.SaveOptions;
 import org.eclipse.xtext.serializer.impl.Serializer;
 import org.eclipse.xtext.testing.InjectWith;
 import org.eclipse.xtext.testing.extensions.InjectionExtension;
+import org.eclipse.xtext.validation.IResourceValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -51,6 +52,9 @@ class BahnFormatterTest {
 
     @Inject
     TestHelper testHelper;
+
+    @Inject
+    IResourceValidator validator;
 
     @Test
     public void testFormatterExpr() throws Exception {
@@ -112,7 +116,7 @@ class BahnFormatterTest {
     @Test
     public void testFormatStandardLib() throws Exception {
         var input = testHelper.parseValid("");
-        StandardLibHelper.loadStandardLibResource(input.getResourceSet());
+        StandardLibHelper.loadStandardLibResource(validator, input.getResourceSet());
 
         // find the standard lib resource
         Resource standardRes = null;

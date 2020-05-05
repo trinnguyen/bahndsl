@@ -28,10 +28,15 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.xtext.util.CancelIndicator;
+import org.eclipse.xtext.validation.CheckMode;
+import org.eclipse.xtext.validation.IResourceValidator;
+import org.eclipse.xtext.validation.Issue;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 public class StandardLibHelper {
 	private StandardLibHelper() {
@@ -44,7 +49,7 @@ public class StandardLibHelper {
     
     public static final String FILE_NAME = "standardlib.bahn";
 
-	public static void loadStandardLibResource(ResourceSet resourceSet) {
+	public static void loadStandardLibResource(IResourceValidator validator, ResourceSet resourceSet) {
         logger.debug("Start loading standard resource");
 
 		var resource = loadPluginResource(resourceSet);
@@ -53,10 +58,11 @@ public class StandardLibHelper {
 			resource = loadEmbeddedResource(resourceSet);
         }
         
-        if (resource != null) {        
-	        if (resource.getErrors().size() > 0) {
+        if (resource != null) {
+			List<Issue> issues = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
+	        if (issues != null && issues.size() > 0) {
 	            logger.error("Error on parsing built-in standard library");
-	            for (Resource.Diagnostic error : resource.getErrors()) {
+	            for (var error : issues) {
 	                logger.error(error);
 	            }
 	        } else {
