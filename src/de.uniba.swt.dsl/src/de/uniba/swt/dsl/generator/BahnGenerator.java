@@ -99,14 +99,16 @@ public class BahnGenerator extends AbstractGenerator {
 
 	private void checkInterlockingFunctions(Resource resource) {
 		var bahnModel = BahnUtil.getBahnModel(resource);
+		if (bahnModel == null)
+			return;
 
-		var result = swtBahnFuncValidator.hasRequestAndDriveRoute(bahnModel);
+		var result = swtBahnFuncValidator.hasRequestAndDriveRoute(bahnModel, false);
 		if (!result.getFirst()) {
 			logger.error("Missing function for requesting route. SCCharts code generation is skipped.");
 			return;
 		}
 
-		if (!result.getSecond()) {
+		if (!result.getSecond() && bahnModel.getComponents() != null) {
 			logger.warn("Adding empty driving route function");
 			FuncDecl decl = swtBahnFuncValidator.generateDriveRouteFuncDecl();
 			bahnModel.getComponents().add(decl);

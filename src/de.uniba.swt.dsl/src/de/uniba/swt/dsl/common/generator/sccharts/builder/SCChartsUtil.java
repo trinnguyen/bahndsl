@@ -29,11 +29,11 @@ import de.uniba.swt.dsl.common.generator.sccharts.models.*;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 
 public class SCChartsUtil {
-    public final static String VAR_OUTPUT_NAME = "_out";
+    public final static String VAR_OUTPUT_NAME = "__out";
 
-    public final static String VAR_HAS_RETURN_NAME = "_has_return";
+    public final static String VAR_HAS_RETURN_NAME = "__has_return";
 
-    public final static String VAR_HAS_BREAK = "_has_break";
+    public final static String VAR_HAS_BREAK = "__has_break";
 
     public static OpExpression createTrueBooleanTrigger(SVarDeclaration varDecl) {
         // generate decl

@@ -84,6 +84,8 @@ public class BahnNormalizationProvider {
             // normalize
             normalizeFunc(decl);
         }
+
+        log(decls.get(0));
     }
 
     private void prepare() {
