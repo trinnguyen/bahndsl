@@ -252,4 +252,15 @@ public class BahnUtil {
             declStmt.setAssignment(assignment);
         }
     }
+
+    public static AssignmentStmt createAssignmentStmt(RefVarDecl decl, Expression expr) {
+        var assignment = BahnFactory.eINSTANCE.createVariableAssignment();
+        assignment.setExpr(expr);
+
+        var stmt = BahnFactory.eINSTANCE.createAssignmentStmt();
+        stmt.setReferenceExpr(createVarRef(decl));
+        stmt.setAssignment(assignment);
+
+        return stmt;
+    }
 }

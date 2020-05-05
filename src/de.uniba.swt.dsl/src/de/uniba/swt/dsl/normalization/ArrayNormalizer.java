@@ -25,6 +25,7 @@
 package de.uniba.swt.dsl.normalization;
 
 import com.google.inject.Inject;
+import com.google.inject.internal.util.$StackTraceElements;
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.BahnUtil;
@@ -70,11 +71,24 @@ public class ArrayNormalizer extends AbstractNormalizer {
     @Override
     protected Collection<Statement> normalizeStmt(Statement stmt) {
 
+        // add new stmt for len
         if (stmt instanceof VarDeclStmt) {
             VarDeclStmt varDeclStmt = (VarDeclStmt) stmt;
             var result = normalizeArrayVarDecl(varDeclStmt);
             if (result != null)
                 return List.of(result);
+        }
+
+        if (stmt instanceof AssignmentStmt) {
+            var assignStmt = (AssignmentStmt) stmt;
+            var ref = assignStmt.getReferenceExpr();
+            if (ref.getDecl().isArray() && !ref.isLength()) {
+                // add new statement
+                var lenAssign = BahnUtil.createAssignmentStmt(
+                        arrayLookupTable.lookupLengthDecl(ref.getDecl().getName()),
+                        BahnUtil.createNumLiteral(computeArrayLen(assignStmt.getAssignment())));
+                return List.of(lenAssign);
+            }
         }
 
         // ensure foreach using temporary array instead of vecotr
@@ -90,18 +104,14 @@ public class ArrayNormalizer extends AbstractNormalizer {
             // insert
             arrayLookupTable.insert(varDeclStmt.getDecl());
 
-            // set default assignment
-            VariableAssignment assignment = BahnFactory.eINSTANCE.createVariableAssignment();
-            assignment.setExpr(BahnUtil.createNumLiteral(BahnConstants.DEFAULT_ARRAY_SIZE));
-
             // add new stmt
             var lenDecl = arrayLookupTable.lookupLengthDecl(varDeclStmt.getDecl().getName());
             if (lenDecl instanceof VarDecl) {
-                var lenDeclStmt = BahnFactory.eINSTANCE.createVarDeclStmt();
-                lenDeclStmt.setDecl((VarDecl) lenDecl);
-                lenDeclStmt.setAssignment(assignment);
 
-                return lenDeclStmt;
+                // find len if initial with literal
+                int len = computeArrayLen(varDeclStmt.getAssignment());
+
+                return BahnUtil.createVarDeclStmt((VarDecl) lenDecl, BahnUtil.createNumLiteral(len));
             }
         }
 
@@ -180,5 +190,26 @@ public class ArrayNormalizer extends AbstractNormalizer {
         }
 
         return null;
+    }
+
+
+    private static int computeArrayLen(VariableAssignment assignment) {
+        if (assignment != null && assignment.getExpr() != null) {
+            return computeArrayLen(assignment.getExpr());
+        }
+
+        return 0;
+    }
+
+    private static int computeArrayLen(Expression expression) {
+        if (expression instanceof ArrayLiteralExpr) {
+            return ((ArrayLiteralExpr) expression).getArrExprs().size();
+        }
+
+        if (expression instanceof ParenthesizedExpr) {
+            return computeArrayLen(((ParenthesizedExpr) expression).getExpr());
+        }
+
+        return 0;
     }
 }

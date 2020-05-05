@@ -83,15 +83,17 @@ public class SyntacticExprNormalizer extends AbstractNormalizer {
                 var stmt = (VarDeclStmt) expr.eContainer().eContainer();
 
                 // add new assignment for len
-                var arrName = stmt.getDecl().getName();
-                var assignStmt = BahnFactory.eINSTANCE.createAssignmentStmt();
-                assignStmt.setReferenceExpr(arrayLookupTable.createLenVarExpr(arrName));
-                assignStmt.setAssignment(stmt.getAssignment());
+                var replacementStmt = BahnUtil.createAssignmentStmt(arrayLookupTable.lookupLengthDecl(stmt.getDecl().getName()), stmt.getAssignment().getExpr());
 
                 // remove assignment from stmt
                 stmt.setAssignment(null);
+                if (stmt.eContainer() instanceof StatementList) {
+                    var list = ((StatementList) stmt.eContainer()).getStmts();
+                    int index = list.indexOf(stmt);
+                    list.add(index + 1, replacementStmt);
+                }
 
-                return List.of(assignStmt);
+                return null;
             }
 
             // replace lhs

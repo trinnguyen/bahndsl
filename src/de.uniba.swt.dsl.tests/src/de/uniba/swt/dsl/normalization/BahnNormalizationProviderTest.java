@@ -60,7 +60,29 @@ class BahnNormalizationProviderTest {
             "def test() float arr[] end",
     })
     void testArrayStmt(String src) throws Exception {
-        ensureNormalize(src, List.of("int _arr_cnt = 1024"));
+        ensureNormalize(src, List.of("int _arr_cnt = 0"));
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
+            "def test() string arr[] = {\"a\", \"b\"} end",
+            "def test() int arr[] = {2,3} end",
+            "def test() bool arr[] = {true, false} end",
+            "def test() float arr[] = {4.5,9.5} end",
+    })
+    void testArrayLiteralStmt(String src) throws Exception {
+        ensureNormalize(src, List.of("int _arr_cnt = 2"));
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
+            "def test() string arr[] arr = {\"a\", \"b\"} end",
+            "def test() int arr[] arr = {2,3} end",
+            "def test() bool arr[] arr = {true, false} end",
+            "def test() float arr[] arr = {4.5,9.5} end",
+    })
+    void testArrayAssignment(String src) throws Exception {
+        ensureNormalize(src, List.of("int _arr_cnt = 0", "_arr_cnt = 2"));
     }
 
     @ParameterizedTest
@@ -113,18 +135,18 @@ class BahnNormalizationProviderTest {
             "def test() float items[] for float id in items end end"
     })
     void testForeachStmt(String src) throws Exception {
-        ensureNormalize(src, List.of("while", "int _items_cnt = 1024", "int _test_t1 = 0"));
+        ensureNormalize(src, List.of("while", "int _items_cnt = 0", "int _test_t1 = 0"));
     }
 
     @ParameterizedTest
     @ValueSource (strings = {
             "def test() for int id in {2,3} end end",
-            "def test() for float id in {2.2,3} end end",
+            "def test() for float id in {2.2,4} end end",
             "def test() for bool id in {true, false} end end",
             "def test() for string id in {\"a\", \"b\"} end end",
     })
     void testForeachStmtLiteralArray(String src) throws Exception {
-        ensureNormalize(src, List.of("while", "_test_t1 [] = {", "int __test_t1_cnt = "));
+        ensureNormalize(src, List.of("while", "_test_t1 [] = {", "int __test_t1_cnt = 2"));
     }
 
     @ParameterizedTest
@@ -136,7 +158,11 @@ class BahnNormalizationProviderTest {
             //"def test() for int id in run() end end def run(): int[] int i[] return i end",
     })
     void testForeachParam(String src) throws Exception {
-        ensureNormalize(src, List.of("while", "int _items_cnt", "int _test_t1 = 0"));
+        ensureNormalize(src, List.of("items[] , int _items_cnt )",
+                "int _test_t1 = 0",
+                "while _test_t1 < _items_cnt",
+                "id = items [ _test_t1 ]",
+                "_test_t1 = _test_t1 + 1"));
     }
 
     @ParameterizedTest
@@ -172,20 +198,35 @@ class BahnNormalizationProviderTest {
 
     @ParameterizedTest
     @ValueSource (strings = {
-             "def test(string src, string dst) string ids[] = get routes from src to dst end",
-            "def test() string ids[] = get routes from \"a\" to \"b\" end",
+             "def test(string src, string dst) string ids[] = get routes from src to dst end"
     })
     void testDomainGetRoutes(String src) throws Exception {
-        ensureNormalize(src, List.of(SyntacticTransformer.EXTERN_TABLE_GET_ROUTES));
+        ensureNormalize(src, List.of("int _ids_cnt = 0", "string ids[]", "_ids_cnt = extern interlocking_table_get_routes ( src , dst , ids )"));
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
+            "def test(string id) string ids[] = get config route.path id end",
+    })
+    void testGetConfigArray(String src) throws Exception {
+        ensureNormalize(src, List.of("int _ids_cnt = 0", "string ids[]", "_ids_cnt = extern config_get_array_string_value ( \"route\" , id , \"path\" , ids )"));
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
+            "def test(string id) string src = get config route.source id end",
+    })
+    void testGetConfigScalar(String src) throws Exception {
+        ensureNormalize(src, List.of("string src = extern config_get_scalar_string_value ( \"route\" , id , \"source\" )"));
     }
 
     @ParameterizedTest
     @ValueSource (strings = {
             "def test(string id) get state id end",
-            "def test() get state \"sig1\" end",
+            "def test() string id = \"a\" string st = get state id end",
     })
     void testDomainGetState(String src) throws Exception {
-        ensureNormalize(src, List.of(SyntacticTransformer.EXTERN_STATE_GETTER_NAME));
+        ensureNormalize(src, List.of("extern track_state_get_value ( id )"));
     }
 
     @ParameterizedTest
@@ -287,9 +328,9 @@ class BahnNormalizationProviderTest {
         // perform
         var decls = BahnUtil.getDecls(input);
         provider.normalize(decls);
-        var out = serializer.serialize(input.getContents().get(0), SaveOptions.newBuilder().format().getOptions());
+        var out = serializer.serialize(input.getContents().get(0), SaveOptions.newBuilder().getOptions());
 
         // verify
-        testHelper.ensureTextContent(out, expectedItems);
+        TestHelper.ensureTextContent(out, expectedItems);
     }
 }
