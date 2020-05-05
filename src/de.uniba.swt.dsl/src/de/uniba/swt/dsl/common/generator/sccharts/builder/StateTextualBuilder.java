@@ -163,9 +163,9 @@ public class StateTextualBuilder extends TextualBuilder {
         if (decl.isOutput())
             append("output");
 
-        append(decl.getDataType().toString().toLowerCase());
+        append(decl.formatDataType());
         append(decl.getName());
-        if (decl.getCardinality() > 0) {
+        if (decl.isArray()) {
             append("[" + decl.getCardinality() + "]");
         }
     }

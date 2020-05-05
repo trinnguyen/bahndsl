@@ -24,65 +24,57 @@
 
 package de.uniba.swt.dsl.common.generator.sccharts.models;
 
-import de.uniba.swt.dsl.bahn.Expression;
-
-import java.util.List;
+import de.uniba.swt.dsl.bahn.RefVarDecl;
 
 public class SVarDeclaration {
-    private boolean isInput;
-    private boolean isOutput;
-    private String name;
-    private SDataType dataType;
+    private final RefVarDecl varDecl;
+    private final boolean isInput;
+    private final boolean isOutput;
     private int cardinality;
+
+    public SVarDeclaration(RefVarDecl varDecl, boolean isInput, boolean isOutput) {
+
+        this.varDecl = varDecl;
+        this.isInput = isInput;
+        this.isOutput = isOutput;
+    }
 
     public boolean isInput() {
         return isInput;
-    }
-
-    public void setInput(boolean input) {
-        isInput = input;
     }
 
     public boolean isOutput() {
         return isOutput;
     }
 
-    public void setOutput(boolean output) {
-        isOutput = output;
-    }
-
     public String getName() {
-        return name;
+        return varDecl.getName();
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String formatDataType() {
+        switch (varDecl.getType()) {
+            case INT_TYPE:
+                return "int";
+            case FLOAT_TYPE:
+                return "float";
+            case BOOLEAN_TYPE:
+                return "bool";
+            case STRING_TYPE:
+                return "string";
+        }
+
+        throw new RuntimeException("Data type is not supported: " + varDecl.getType());
     }
 
-    public SDataType getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(SDataType dataType) {
-        this.dataType = dataType;
-    }
-
-    public int getCardinality() {
-        return cardinality;
+    public boolean isArray() {
+        return varDecl.isArray();
     }
 
     public void setCardinality(int cardinality) {
         this.cardinality = cardinality;
     }
 
-    @Override
-    public String toString() {
-        return "SVarDeclaration{" +
-                "isInput=" + isInput +
-                ", isOutput=" + isOutput +
-                ", name='" + name + '\'' +
-                ", dataType=" + dataType +
-                ", cardinality=" + cardinality +
-                '}';
+    public int getCardinality() {
+        return cardinality;
     }
 }

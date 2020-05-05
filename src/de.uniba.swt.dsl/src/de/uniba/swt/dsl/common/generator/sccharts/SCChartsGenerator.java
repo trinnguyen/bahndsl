@@ -74,17 +74,17 @@ public class SCChartsGenerator extends GeneratorProvider {
                 break;
         }
 
-        // generate
-        var rootRequest = createRootState(declRequest);
-        logger.debug("Generate SCCharts for " + rootRequest.getId());
-        fsa.generateFile(BahnConstants.REQUEST_ROUTE_SCTX, builder.buildString(rootRequest));
-
-        // drive
+        // generate request and drive models
+        generateModel(fsa, declRequest, BahnConstants.REQUEST_ROUTE_SCTX);
         if (declDrive != null) {
-            var rootDrive = createRootState(declDrive);
-            logger.debug("Generate SCCharts for " + rootDrive.getId());
-            fsa.generateFile(BahnConstants.DRIVE_ROUTE_SCTX, builder.buildString(rootDrive));
+            generateModel(fsa, declDrive, BahnConstants.DRIVE_ROUTE_SCTX);
         }
+    }
+
+    private void generateModel(IFileSystemAccess2 fsa, FuncDecl decl, String fileName) {
+        RootState rootRequest = createRootState(decl);
+        logger.debug("Generate SCCharts for " + rootRequest.getId());
+        fsa.generateFile(fileName, builder.buildString(rootRequest));
     }
 
     private RootState createRootState(FuncDecl decl) {

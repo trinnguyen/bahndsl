@@ -42,7 +42,7 @@ void drive_route_sync_input(drive_route_tick_data *tick_data) {
         {
             intern_drive.intern_drive_route_logiciface.segment_ids[i] = tick_data->segment_ids[i];
         }
-        intern_drive.intern_drive_route_logiciface._drive_route_segment_ids_cnt_1 = tick_data->count_segments;
+        intern_drive.intern_drive_route_logiciface._segment_ids_cnt = tick_data->count_segments;
     }
 }
 
