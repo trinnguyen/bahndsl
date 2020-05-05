@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.xtext.resource.SaveOptions;
 import org.eclipse.xtext.serializer.impl.Serializer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Singleton
@@ -60,9 +61,37 @@ public class BahnNormalizationProvider {
     ForeachNormalizer foreachNormalizer;
 
     @Inject
+    VariableNameNormalizer variableNameNormalizer;
+
+    @Inject
     Serializer serializer;
 
+    private List<AbstractNormalizer> normalizers;
+
     public BahnNormalizationProvider() {
+        normalizers = new ArrayList<>();
+
+        // break multiple operator expression into small (basic) statement
+        normalizers.add(basicStatementNormalizer);
+
+        // convert list to array with additional length variable
+        normalizers.add(arrayNormalizer);
+
+        // convert syntactic sugar foreach to while iteration
+        normalizers.add(foreachNormalizer);
+
+        // convert string comparision expression using extern C function
+        normalizers.add(stringEqualNormalizer);
+
+        // convert all getter/setter for configuration and track state
+        normalizers.add(syntacticExprNormalizer);
+
+        // rename before sending to sccharts model
+        normalizers.add(variableNameNormalizer);
+    }
+
+    public void setNormalizers(List<AbstractNormalizer> normalizers) {
+        this.normalizers = normalizers;
     }
 
     public void normalize(List<FuncDecl> decls) {
@@ -89,28 +118,15 @@ public class BahnNormalizationProvider {
      * @param funcDecl
      */
     private void normalizeFunc(FuncDecl funcDecl) {
-        // break multiple operator expression into small (basic) statement
-        basicStatementNormalizer.normalizeFunc(funcDecl);
-
-        // convert list to array with additional length variable
-        arrayNormalizer.normalizeFunc(funcDecl);
-
-        // convert syntactic sugar foreach to while iteration
-        foreachNormalizer.normalizeFunc(funcDecl);
-
-        // convert string comparision expression using extern C function
-        stringEqualNormalizer.normalizeFunc(funcDecl);
-
-        // convert all getter/setter for configuration and track state
-        syntacticExprNormalizer.normalizeFunc(funcDecl);
-
-        log(funcDecl);
+        for (AbstractNormalizer normalizer : normalizers) {
+            normalizer.normalizeFunc(funcDecl);
+        }
     }
 
     private void log(FuncDecl funcDecl) {
-        if (funcDecl.getName().equals("drive_route")) {
-            var input = funcDecl.eResource().getContents().get(0);
-            logger.debug(serializer.serialize(input, SaveOptions.newBuilder().format().getOptions()));
+        var input = funcDecl.eResource();
+        if (input.getContents() != null && input.getContents().size() > 0) {
+            logger.debug(serializer.serialize(input.getContents().get(0), SaveOptions.newBuilder().format().getOptions()));
         }
     }
 }

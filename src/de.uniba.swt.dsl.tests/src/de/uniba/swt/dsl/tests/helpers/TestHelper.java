@@ -85,6 +85,18 @@ public class TestHelper {
         }
     }
 
+    public static void ensureTextNotExist(String content, List<String> list) throws Exception {
+        if (content == null) {
+            throw new Exception("content is null");
+        }
+
+        for (String s : list) {
+            if (content.contains(s)) {
+                throw new Exception(String.format("%s \n contains %s", content, s));
+            }
+        }
+    }
+
     /**
      * Read file content by name
      * @param fsa

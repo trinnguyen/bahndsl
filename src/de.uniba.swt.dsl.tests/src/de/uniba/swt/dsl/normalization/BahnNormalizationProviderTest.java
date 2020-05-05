@@ -32,6 +32,8 @@ import org.eclipse.xtext.resource.SaveOptions;
 import org.eclipse.xtext.serializer.impl.Serializer;
 import org.eclipse.xtext.testing.InjectWith;
 import org.eclipse.xtext.testing.extensions.InjectionExtension;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -44,6 +46,24 @@ import java.util.List;
 class BahnNormalizationProviderTest {
 
     @Inject
+    SyntacticExprNormalizer syntacticExprNormalizer;
+
+    @Inject
+    BasicStatementNormalizer basicStatementNormalizer;
+
+    @Inject
+    StringEqualNormalizer stringEqualNormalizer;
+
+    @Inject
+    ArrayNormalizer arrayNormalizer;
+
+    @Inject
+    ForeachNormalizer foreachNormalizer;
+
+    @Inject
+    VariableNameNormalizer variableNameNormalizer;
+
+    @Inject
     BahnNormalizationProvider provider;
 
     @Inject
@@ -51,6 +71,11 @@ class BahnNormalizationProviderTest {
 
     @Inject
     TestHelper testHelper;
+
+    @BeforeEach
+    void prepare() {
+        provider.setNormalizers(List.of(basicStatementNormalizer, arrayNormalizer, foreachNormalizer, stringEqualNormalizer, syntacticExprNormalizer));
+    }
 
     @ParameterizedTest
     @ValueSource (strings = {
@@ -322,15 +347,31 @@ class BahnNormalizationProviderTest {
         ensureNormalize(src, List.of("bool _test_t1 = run()", "while _test_t1 && true"));
     }
 
+    @ParameterizedTest
+    @ValueSource (strings = {
+            "def test(string a1[]) end",
+            "def test() string a1[] end",
+            "def test(int i1, string a1) end",
+            "def test() int a1 end",
+            "def test() float a1 end",
+            "def test() bool a1 end",
+    })
+    void testRenameNormalizer(String src) throws Exception {
+        provider.setNormalizers(List.of(variableNameNormalizer));
+        ensureNormalize(src, List.of("_a1"));
+    }
+
     private void ensureNormalize(String src, List<String> expectedItems) throws Exception {
+        // verify
+        TestHelper.ensureTextContent(normalize(src), expectedItems);
+    }
+
+    private String normalize(String src) throws Exception {
         var input = testHelper.parseValid(src);
 
         // perform
         var decls = BahnUtil.getDecls(input);
         provider.normalize(decls);
-        var out = serializer.serialize(input.getContents().get(0), SaveOptions.newBuilder().getOptions());
-
-        // verify
-        TestHelper.ensureTextContent(out, expectedItems);
+        return serializer.serialize(input.getContents().get(0), SaveOptions.newBuilder().getOptions());
     }
 }
