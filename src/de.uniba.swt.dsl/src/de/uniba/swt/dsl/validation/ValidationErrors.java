@@ -100,6 +100,8 @@ public class ValidationErrors {
 
     public final static String DefinedFuncFormat = "Function '%s' is already defined";
 
+    public final static String ReadonlyParameterFormat = "'%s' is readonly parameter";
+
     private ValidationErrors() {}
 
     public static String createTypeErrorMsg(String expectedType, String actualType) {

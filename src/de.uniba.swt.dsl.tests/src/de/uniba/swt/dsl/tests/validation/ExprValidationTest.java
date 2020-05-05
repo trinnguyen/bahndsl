@@ -221,6 +221,16 @@ public class ExprValidationTest extends AbstractValidationTest {
         validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.SELECTION_STMT, null, "Expected 'bool' but found 'int'");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "def test(int id) id = 2 end",
+            "def test(string arr[]) arr[0] = \"a\" end",
+            "def test(string arr[]) arr = {\"a\"} end",
+    })
+    void testErrorReadonlyParamters(String src) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.ASSIGNMENT_STMT, null, "is readonly parameter");
+    }
+
     @Override
     protected ParseHelper<BahnModel> getParseHelper() {
         return parseHelper;

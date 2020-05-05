@@ -359,6 +359,13 @@ public class BahnValidator extends AbstractBahnValidator {
     }
 
     @Check
+    public void ensureFunctionArgumentsAreValid(AssignmentStmt assignmentStmt) {
+        if (assignmentStmt.getReferenceExpr().getDecl() instanceof ParamDecl) {
+            error(String.format(ValidationErrors.ReadonlyParameterFormat, assignmentStmt.getReferenceExpr().getDecl().getName()), BahnPackage.Literals.ASSIGNMENT_STMT__REFERENCE_EXPR);
+        }
+    }
+
+    @Check
     public void typeCheckingVariableAssignment(VariableAssignment assignment) {
         logger.debug("typeCheckingVariableAssignment: " + assignment.getClass().getSimpleName());
         try {
