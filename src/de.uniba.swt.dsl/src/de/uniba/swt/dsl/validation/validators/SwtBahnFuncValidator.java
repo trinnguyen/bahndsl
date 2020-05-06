@@ -1,24 +1,25 @@
 /*
+ *
+ * Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
+ * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
+ *
  * This file is part of the BahnDSL project, a domain-specific language
- * for configuring and modelling model railways
+ * for configuring and modelling model railways.
  *
  * BahnDSL is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * BahnDSL is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with BahnDSL.  If not, see <https://www.gnu.org/licenses/>.
+ * BahnDSL is a RESEARCH PROTOTYPE and distributed WITHOUT ANY WARRANTY, without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
  *
  * The following people contributed to the conception and realization of the
  * present BahnDSL (in alphabetic order by surname):
  *
  * - Tri Nguyen <https://github.com/trinnguyen>
+ *
  */
 
 package de.uniba.swt.dsl.validation.validators;
@@ -35,11 +36,15 @@ import java.util.List;
  */
 public class SwtBahnFuncValidator {
 
+    private static String varNamePrefix(boolean normalized) {
+        return normalized ? "_" : "";
+    }
+
     /**
      * Check whether request_route and drive_route are existed
      * @param bahnModel model
      */
-    public Tuple<Boolean, Boolean> hasRequestAndDriveRoute(BahnModel bahnModel) {
+    public static Tuple<Boolean, Boolean> hasRequestAndDriveRoute(BahnModel bahnModel, boolean normalized) {
         if (bahnModel == null)
             return Tuple.of(false, false);
 
@@ -51,12 +56,12 @@ public class SwtBahnFuncValidator {
                 if (hasRequestRoute && hasDriveRoute)
                     break;
 
-                if (!hasRequestRoute && isRequestRoute(decl)) {
+                if (!hasRequestRoute && isRequestRoute(decl, normalized)) {
                     hasRequestRoute = true;
                     continue;
                 }
 
-                if (!hasDriveRoute && isDriveRoute(decl))
+                if (!hasDriveRoute && isDriveRoute(decl, normalized))
                     hasDriveRoute = true;
             }
         }
@@ -64,12 +69,12 @@ public class SwtBahnFuncValidator {
         return Tuple.of(hasRequestRoute, hasDriveRoute);
     }
 
-    public boolean isRequestRoute(FuncDecl funcDecl) {
-        return match(generateRequestRouteFuncDecl(), funcDecl);
+    public static boolean isRequestRoute(FuncDecl funcDecl, boolean normalized) {
+        return match(generateRequestRouteFuncDecl(normalized), funcDecl);
     }
 
-    public boolean isDriveRoute(FuncDecl funcDecl) {
-        return match(generateDriveRouteFuncDecl(), funcDecl);
+    public static boolean isDriveRoute(FuncDecl funcDecl, boolean normalized) {
+        return match(generateDriveRouteFuncDecl(normalized), funcDecl);
     }
 
     private static boolean match(FuncDecl expected, FuncDecl actual) {
@@ -98,24 +103,27 @@ public class SwtBahnFuncValidator {
         return true;
     }
 
-    private FuncDecl generateRequestRouteFuncDecl() {
+    private static FuncDecl generateRequestRouteFuncDecl(boolean normalized) {
         var decl = BahnFactory.eINSTANCE.createFuncDecl();
         decl.setName(BahnConstants.REQUEST_ROUTE_FUNC_NAME);
-        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, "src_signal_id"));
-        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, "dst_signal_id"));
-        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, "train_id"));
+        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix(normalized) + "src_signal_id"));
+        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix(normalized) + "dst_signal_id"));
+        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix(normalized) + "train_id"));
         decl.setReturn(true);
         decl.setReturnType(DataType.STRING_TYPE);
         decl.setReturnArray(false);
         return decl;
     }
 
-    public FuncDecl generateDriveRouteFuncDecl() {
+    public static FuncDecl generateDriveRouteFuncDecl(boolean normalized) {
         var decl = BahnFactory.eINSTANCE.createFuncDecl();
         decl.setName(BahnConstants.DRIVE_ROUTE_FUNC_NAME);
-        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, "route_id"));
-        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, "train_id"));
-        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, true, "segment_ids"));
+        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix(normalized) + "route_id"));
+        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix(normalized) + "train_id"));
+        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, true, varNamePrefix(normalized) + "segment_ids"));
+        if (normalized) {
+            decl.getParamDecls().add(createParam(DataType.INT_TYPE, false, varNamePrefix(normalized) + "_segment_ids_cnt"));
+        }
         decl.setStmtList(BahnFactory.eINSTANCE.createStatementList());
         decl.setReturn(false);
         decl.setReturnArray(false);

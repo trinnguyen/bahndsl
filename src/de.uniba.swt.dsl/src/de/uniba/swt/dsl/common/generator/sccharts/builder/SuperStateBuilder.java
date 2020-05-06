@@ -1,24 +1,25 @@
 /*
+ *
+ * Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
+ * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
+ *
  * This file is part of the BahnDSL project, a domain-specific language
- * for configuring and modelling model railways
+ * for configuring and modelling model railways.
  *
  * BahnDSL is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * BahnDSL is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with BahnDSL.  If not, see <https://www.gnu.org/licenses/>.
+ * BahnDSL is a RESEARCH PROTOTYPE and distributed WITHOUT ANY WARRANTY, without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
  *
  * The following people contributed to the conception and realization of the
  * present BahnDSL (in alphabetic order by surname):
  *
  * - Tri Nguyen <https://github.com/trinnguyen>
+ *
  */
 
 package de.uniba.swt.dsl.common.generator.sccharts.builder;
@@ -445,18 +446,7 @@ public class SuperStateBuilder {
                 VarDecl varDecl = varDeclStmt.getDecl();
 
                 // array cardinality must be a int literal
-                int arraySize = varDecl.isArray() ? BahnConstants.DEFAULT_ARRAY_SIZE : 0;
-                /*
-                if (varDecl.isArray()) {
-                    if (varDecl.getCardinality() instanceof NumberLiteral) {
-                        arraySize = (int) ((NumberLiteral) varDecl.getCardinality()).getValue();
-                    } else {
-                        throw new BahnException("Array cardinality must be a literal integer");
-                    }
-                }
-                 */
-
-                superState.getDeclarations().add(convertDeclaration(varDecl.getType(), varDecl.getName(), arraySize, false, false));
+                superState.getDeclarations().add(convertDeclaration(varDecl, false, false));
 
                 // find reference expression
                 if (varDeclStmt.getAssignment() != null) {
@@ -536,36 +526,15 @@ public class SuperStateBuilder {
 
     /**
      * Convert from Bahn decl to SCChart interface decl
-     * Initial value is not supported, generated as a separated transaction
-     * @param type
-     * @param name
-     * @param arrayCardinality
+     * Initial value is not supported, generated as a separated transition
+     * @param varDecl
      * @param isInput
      * @param isOutput
      * @return
      */
-    protected SVarDeclaration convertDeclaration(DataType type, String name, int arrayCardinality, boolean isInput, boolean isOutput) {
-        var result = new SVarDeclaration();
-        result.setDataType(convertDataType(type));
-        result.setName(name);
-        result.setInput(isInput);
-        result.setOutput(isOutput);
-        result.setCardinality(arrayCardinality);
+    protected SVarDeclaration convertDeclaration(RefVarDecl varDecl, boolean isInput, boolean isOutput) {
+        var result = new SVarDeclaration(varDecl, isInput, isOutput);
+        result.setCardinality(DEFAULT_PARAM_ARRAY_SIZE);
         return result;
-    }
-
-    private SDataType convertDataType(DataType type) {
-        switch (type) {
-            case INT_TYPE:
-                return SDataType.INT;
-            case FLOAT_TYPE:
-                return SDataType.FLOAT;
-            case BOOLEAN_TYPE:
-                return SDataType.BOOL;
-            case STRING_TYPE:
-                return SDataType.STRING;
-        }
-
-        throw new RuntimeException("Type is not supported: " + type);
     }
 }

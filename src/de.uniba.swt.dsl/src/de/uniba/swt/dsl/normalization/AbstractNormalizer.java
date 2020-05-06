@@ -1,30 +1,33 @@
 /*
+ *
+ * Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
+ * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
+ *
  * This file is part of the BahnDSL project, a domain-specific language
- * for configuring and modelling model railways
+ * for configuring and modelling model railways.
  *
  * BahnDSL is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * BahnDSL is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with BahnDSL.  If not, see <https://www.gnu.org/licenses/>.
+ * BahnDSL is a RESEARCH PROTOTYPE and distributed WITHOUT ANY WARRANTY, without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
  *
  * The following people contributed to the conception and realization of the
  * present BahnDSL (in alphabetic order by surname):
  *
  * - Tri Nguyen <https://github.com/trinnguyen>
+ *
  */
 
 package de.uniba.swt.dsl.normalization;
 
+import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.*;
-import org.eclipse.xtext.EcoreUtil2;
+import de.uniba.swt.dsl.common.util.BahnUtil;
+import de.uniba.swt.dsl.validation.typing.ExprDataType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +36,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class AbstractNormalizer {
+
+    @Inject
+    TemporaryVarGenerator temporaryVarGenerator;
+
     public void normalizeFunc(FuncDecl funcDecl) {
         normalizeStmtList(funcDecl.getStmtList());
     }
@@ -159,23 +166,19 @@ public abstract class AbstractNormalizer {
         return exprs.stream().map(this::normalizeExpr).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toList());
     }
 
-    protected ValuedReferenceExpr createVarRef(VarDecl indexDecl) {
-        var indexRef = BahnFactory.eINSTANCE.createValuedReferenceExpr();
-        indexRef.setDecl(indexDecl);
-        return indexRef;
-    }
+    protected VarDeclStmt refactorUsingTemporaryVar(Expression expression, ExprDataType dataType) {
+        VarDeclStmt temp = temporaryVarGenerator.createTempVarStmt(dataType);
 
-    protected VarDeclStmt createVarDeclStmt(VarDecl decl, Expression expr) {
-        // set value
-        VariableAssignment assignment = BahnFactory.eINSTANCE.createVariableAssignment();
-        assignment.setExpr(expr);
+        // create ref
+        ValuedReferenceExpr ref = BahnUtil.createVarRef(temp);
 
+        // update
+        BahnUtil.replaceEObject(expression, ref);
 
-        VarDeclStmt stmt = BahnFactory.eINSTANCE.createVarDeclStmt();
-        stmt.setDecl(decl);
-        stmt.setAssignment(assignment);
+        // set assignment to temp
+        BahnUtil.assignExpression(temp, expression);
 
-        return stmt;
+        return temp;
     }
 
     protected abstract Collection<Statement> processExpr(Expression expr);

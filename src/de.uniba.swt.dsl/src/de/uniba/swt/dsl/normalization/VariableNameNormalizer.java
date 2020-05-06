@@ -22,28 +22,41 @@
  *
  */
 
-package de.uniba.swt.dsl.common.generator.yaml.exports;
+package de.uniba.swt.dsl.normalization;
 
-import de.uniba.swt.dsl.bahn.BoardFeatureElement;
-import de.uniba.swt.dsl.common.util.Tuple;
+import de.uniba.swt.dsl.bahn.*;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 
-class BoardFeatureElementYamlExporter extends AbstractElementYamlExporter<BoardFeatureElement> {
+public class VariableNameNormalizer extends AbstractNormalizer {
 
     @Override
-    protected String getIdName() {
-        return "number";
+    public void normalizeFunc(FuncDecl funcDecl) {
+        for (ParamDecl paramDecl : funcDecl.getParamDecls()) {
+            renameVariable(paramDecl);
+        }
+        super.normalizeFunc(funcDecl);
     }
 
     @Override
-    protected String getId(BoardFeatureElement element) {
-        return element.getNumber();
+    protected Collection<Statement> normalizeStmt(Statement stmt) {
+        if (stmt instanceof VarDeclStmt) {
+            var varDeclStmt = (VarDeclStmt) stmt;
+            renameVariable(varDeclStmt.getDecl());
+        }
+        return super.normalizeStmt(stmt);
     }
 
     @Override
-    protected List<Tuple<String, Object>> getProps(BoardFeatureElement element) {
-        return List.of(Tuple.of("value", element.getValue()));
+    protected Collection<Statement> processExpr(Expression expr) {
+        return null;
+    }
+
+    /**
+     * Add underscore as prefix for all variable to prevent usage of SCCharts keywords
+     * @param varDecl
+     */
+    private void renameVariable(RefVarDecl varDecl) {
+        varDecl.setName("_" + varDecl.getName());
     }
 }

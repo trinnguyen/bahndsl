@@ -1,24 +1,25 @@
 /*
+ *
+ * Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
+ * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
+ *
  * This file is part of the BahnDSL project, a domain-specific language
- * for configuring and modelling model railways
+ * for configuring and modelling model railways.
  *
  * BahnDSL is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * BahnDSL is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with BahnDSL.  If not, see <https://www.gnu.org/licenses/>.
+ * BahnDSL is a RESEARCH PROTOTYPE and distributed WITHOUT ANY WARRANTY, without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
  *
  * The following people contributed to the conception and realization of the
  * present BahnDSL (in alphabetic order by surname):
  *
  * - Tri Nguyen <https://github.com/trinnguyen>
+ *
  */
 
 package de.uniba.swt.dsl.generator;
@@ -27,10 +28,15 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.xtext.util.CancelIndicator;
+import org.eclipse.xtext.validation.CheckMode;
+import org.eclipse.xtext.validation.IResourceValidator;
+import org.eclipse.xtext.validation.Issue;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 public class StandardLibHelper {
 	private StandardLibHelper() {
@@ -43,7 +49,7 @@ public class StandardLibHelper {
     
     public static final String FILE_NAME = "standardlib.bahn";
 
-	public static void loadStandardLibResource(ResourceSet resourceSet) {
+	public static void loadStandardLibResource(IResourceValidator validator, ResourceSet resourceSet) {
         logger.debug("Start loading standard resource");
 
 		var resource = loadPluginResource(resourceSet);
@@ -52,10 +58,11 @@ public class StandardLibHelper {
 			resource = loadEmbeddedResource(resourceSet);
         }
         
-        if (resource != null) {        
-	        if (resource.getErrors().size() > 0) {
+        if (resource != null) {
+			List<Issue> issues = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
+	        if (issues != null && issues.size() > 0) {
 	            logger.error("Error on parsing built-in standard library");
-	            for (Resource.Diagnostic error : resource.getErrors()) {
+	            for (var error : issues) {
 	                logger.error(error);
 	            }
 	        } else {

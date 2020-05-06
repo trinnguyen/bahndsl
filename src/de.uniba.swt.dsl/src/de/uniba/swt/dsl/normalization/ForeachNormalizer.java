@@ -1,24 +1,25 @@
 /*
+ *
+ * Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
+ * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
+ *
  * This file is part of the BahnDSL project, a domain-specific language
- * for configuring and modelling model railways
+ * for configuring and modelling model railways.
  *
  * BahnDSL is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * BahnDSL is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with BahnDSL.  If not, see <https://www.gnu.org/licenses/>.
+ * BahnDSL is a RESEARCH PROTOTYPE and distributed WITHOUT ANY WARRANTY, without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
  *
  * The following people contributed to the conception and realization of the
  * present BahnDSL (in alphabetic order by surname):
  *
  * - Tri Nguyen <https://github.com/trinnguyen>
+ *
  */
 
 package de.uniba.swt.dsl.normalization;
@@ -55,19 +56,19 @@ public class ForeachNormalizer extends AbstractNormalizer {
                 var arrRef = (ValuedReferenceExpr) foreachStmt.getArrayExpr();
 
                 // index
-                var indexDecl = temporaryVarGenerator.createTempVar(ExprDataType.ScalarInt);
-                var declStmt = createVarDeclStmt(indexDecl, createNumLiteral(0));
+                VarDeclStmt indexVarStmt = temporaryVarGenerator.createTempVarStmt(ExprDataType.ScalarInt);
+                BahnUtil.assignExpression(indexVarStmt, createNumLiteral(0));
 
                 // condition and current element
-                var condition = createConditionExpr(indexDecl, arrRef.getDecl().getName());
+                Expression condition = createConditionExpr(indexVarStmt, arrRef.getDecl().getName());
 
                 // update stmt list with start and stop
-                var elementStmt = createVarDeclStmt(foreachStmt.getDecl(), createArrayIndexRef(arrRef.getDecl().getName(), indexDecl));
+                VarDeclStmt elementStmt = BahnUtil.createVarDeclStmt(foreachStmt.getDecl(), createArrayIndexRef(arrRef.getDecl().getName(), indexVarStmt));
                 var stmtList = foreachStmt.getStmts();
                 stmtList.getStmts().add(0, elementStmt);
 
                 // stop
-                var indexIncreStmt = createIndexIncrementStmt(indexDecl);
+                var indexIncreStmt = createIndexIncrementStmt(indexVarStmt);
                 stmtList.getStmts().add(indexIncreStmt);
 
                 // form while stmt
@@ -79,17 +80,17 @@ public class ForeachNormalizer extends AbstractNormalizer {
                 BahnUtil.replaceEObject(foreachStmt, whileStmt);
 
                 // additional decl stmt
-                return List.of(declStmt);
+                return List.of(indexVarStmt);
             }
         }
 
         return super.normalizeStmt(stmt);
     }
 
-    private Statement createIndexIncrementStmt(VarDecl indexDecl) {
+    private Statement createIndexIncrementStmt(VarDeclStmt declStmt) {
         // op
         var opExpr = BahnFactory.eINSTANCE.createOpExpression();
-        opExpr.setLeftExpr(createVarRef(indexDecl));
+        opExpr.setLeftExpr(BahnUtil.createVarRef(declStmt));
         opExpr.setOp(OperatorType.PLUS);
         opExpr.setRightExpr(createNumLiteral(1));
 
@@ -97,21 +98,21 @@ public class ForeachNormalizer extends AbstractNormalizer {
         assignmentVariable.setExpr(opExpr);
 
         var assignmentStmt = BahnFactory.eINSTANCE.createAssignmentStmt();
-        assignmentStmt.setReferenceExpr(createVarRef(indexDecl));
+        assignmentStmt.setReferenceExpr(BahnUtil.createVarRef(declStmt));
         assignmentStmt.setAssignment(assignmentVariable);
         return assignmentStmt;
     }
 
-    private Expression createArrayIndexRef(String name, VarDecl indexDecl) {
+    private Expression createArrayIndexRef(String name, VarDeclStmt declStmt) {
         var expr = BahnFactory.eINSTANCE.createValuedReferenceExpr();
         expr.setDecl(arrayLookupTable.createArrayVarExpr(name).getDecl());
-        expr.setIndexExpr(createVarRef(indexDecl));
+        expr.setIndexExpr(BahnUtil.createVarRef(declStmt));
         return expr;
     }
 
-    private Expression createConditionExpr(VarDecl indexDecl, String name) {
+    private Expression createConditionExpr(VarDeclStmt declStmt, String name) {
         var expr = BahnFactory.eINSTANCE.createOpExpression();
-        expr.setLeftExpr(createVarRef(indexDecl));
+        expr.setLeftExpr(BahnUtil.createVarRef(declStmt));
         expr.setOp(OperatorType.LESS);
         expr.setRightExpr(arrayLookupTable.createLenVarExpr(name));
         return expr;

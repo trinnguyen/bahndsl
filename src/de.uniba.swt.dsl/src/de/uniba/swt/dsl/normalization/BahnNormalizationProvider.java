@@ -1,24 +1,25 @@
 /*
+ *
+ * Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
+ * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
+ *
  * This file is part of the BahnDSL project, a domain-specific language
- * for configuring and modelling model railways
+ * for configuring and modelling model railways.
  *
  * BahnDSL is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * BahnDSL is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with BahnDSL.  If not, see <https://www.gnu.org/licenses/>.
+ * BahnDSL is a RESEARCH PROTOTYPE and distributed WITHOUT ANY WARRANTY, without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
  *
  * The following people contributed to the conception and realization of the
  * present BahnDSL (in alphabetic order by surname):
  *
  * - Tri Nguyen <https://github.com/trinnguyen>
+ *
  */
 
 package de.uniba.swt.dsl.normalization;
@@ -30,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.xtext.resource.SaveOptions;
 import org.eclipse.xtext.serializer.impl.Serializer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Singleton
@@ -59,12 +61,19 @@ public class BahnNormalizationProvider {
     ForeachNormalizer foreachNormalizer;
 
     @Inject
+    VariableNameNormalizer variableNameNormalizer;
+
+    @Inject
     Serializer serializer;
 
-    public BahnNormalizationProvider() {
+    private List<AbstractNormalizer> normalizers;
+
+    public void setNormalizers(List<AbstractNormalizer> normalizers) {
+        this.normalizers = normalizers;
     }
 
     public void normalize(List<FuncDecl> decls) {
+        prepare();
         if (decls == null || decls.size() == 0)
             return;
 
@@ -75,11 +84,37 @@ public class BahnNormalizationProvider {
             // normalize
             normalizeFunc(decl);
         }
+
+        log(decls.get(0));
+    }
+
+    private void prepare() {
+        if (normalizers == null) {
+            normalizers = new ArrayList<>();
+
+            // break multiple operator expression into small (basic) statement
+            normalizers.add(basicStatementNormalizer);
+
+            // convert list to array with additional length variable
+            normalizers.add(arrayNormalizer);
+
+            // convert syntactic sugar foreach to while iteration
+            normalizers.add(foreachNormalizer);
+
+            // convert string comparision expression using extern C function
+            normalizers.add(stringEqualNormalizer);
+
+            // convert all getter/setter for configuration and track state
+            normalizers.add(syntacticExprNormalizer);
+
+            // rename before sending to sccharts model
+            normalizers.add(variableNameNormalizer);
+        }
     }
 
     private void beforeNormalize(FuncDecl decl) {
         varGenerator.resetFunc(decl.getName());
-        arrayLookupTable.resetFunc(decl.getName());
+        arrayLookupTable.resetFunc();
     }
 
     /**
@@ -88,26 +123,15 @@ public class BahnNormalizationProvider {
      * @param funcDecl
      */
     private void normalizeFunc(FuncDecl funcDecl) {
-        // break multiple operator expression into small (basic) statement
-        basicStatementNormalizer.normalizeFunc(funcDecl);
-
-        // convert list to array with additional length variable
-        arrayNormalizer.normalizeFunc(funcDecl);
-
-        // convert syntactic sugar foreach to while iteration
-        foreachNormalizer.normalizeFunc(funcDecl);
-
-        // convert string comparision expression using extern C function
-        stringEqualNormalizer.normalizeFunc(funcDecl);
-
-        // convert all getter/setter for configuration and track state
-        syntacticExprNormalizer.normalizeFunc(funcDecl);
+        for (AbstractNormalizer normalizer : normalizers) {
+            normalizer.normalizeFunc(funcDecl);
+        }
     }
 
     private void log(FuncDecl funcDecl) {
-        if (funcDecl.getName().equals("test")) {
-            var input = funcDecl.eResource().getContents().get(0);
-            logger.debug(serializer.serialize(input, SaveOptions.newBuilder().format().getOptions()));
+        var input = funcDecl.eResource();
+        if (input.getContents() != null && input.getContents().size() > 0) {
+            logger.debug(serializer.serialize(input.getContents().get(0), SaveOptions.newBuilder().format().getOptions()));
         }
     }
 }

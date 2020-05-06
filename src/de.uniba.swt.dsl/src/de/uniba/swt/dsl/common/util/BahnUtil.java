@@ -1,29 +1,31 @@
 /*
+ *
+ * Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
+ * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
+ *
  * This file is part of the BahnDSL project, a domain-specific language
- * for configuring and modelling model railways
+ * for configuring and modelling model railways.
  *
  * BahnDSL is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * BahnDSL is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with BahnDSL.  If not, see <https://www.gnu.org/licenses/>.
+ * BahnDSL is a RESEARCH PROTOTYPE and distributed WITHOUT ANY WARRANTY, without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
  *
  * The following people contributed to the conception and realization of the
  * present BahnDSL (in alphabetic order by surname):
  *
  * - Tri Nguyen <https://github.com/trinnguyen>
+ *
  */
 
 package de.uniba.swt.dsl.common.util;
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.validation.typing.ExprDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -210,4 +212,55 @@ public class BahnUtil {
         return Long.parseLong(strValue.substring(2), 16);
     }
 
+    public static VarDeclStmt createVarDeclStmt(String name, ExprDataType dataType, Expression initialValue) {
+
+        var decl = BahnFactory.eINSTANCE.createVarDecl();
+        decl.setName(name);
+        decl.setType(dataType.getDataType());
+        decl.setArray(dataType.isArray());
+
+        return createVarDeclStmt(decl, initialValue);
+    }
+
+    public static VarDeclStmt createVarDeclStmt(VarDecl decl, Expression initialValue) {
+        var stmt = BahnFactory.eINSTANCE.createVarDeclStmt();
+        stmt.setDecl(decl);
+
+        if (initialValue != null)
+            assignExpression(stmt, initialValue);
+
+        return stmt;
+    }
+
+    public static ValuedReferenceExpr createVarRef(VarDeclStmt temp) {
+        return createVarRef(temp.getDecl());
+    }
+
+    public static ValuedReferenceExpr createVarRef(RefVarDecl decl) {
+        var ref = BahnFactory.eINSTANCE.createValuedReferenceExpr();
+        ref.setLength(false);
+        ref.setIndexExpr(null);
+        ref.setDecl(decl);
+        return ref;
+    }
+
+    public static void assignExpression(VarDeclStmt declStmt, Expression expr) {
+        if (expr != null) {
+            var assignment = BahnFactory.eINSTANCE.createVariableAssignment();
+            assignment.setExpr(expr);
+
+            declStmt.setAssignment(assignment);
+        }
+    }
+
+    public static AssignmentStmt createAssignmentStmt(RefVarDecl decl, Expression expr) {
+        var assignment = BahnFactory.eINSTANCE.createVariableAssignment();
+        assignment.setExpr(expr);
+
+        var stmt = BahnFactory.eINSTANCE.createAssignmentStmt();
+        stmt.setReferenceExpr(createVarRef(decl));
+        stmt.setAssignment(assignment);
+
+        return stmt;
+    }
 }

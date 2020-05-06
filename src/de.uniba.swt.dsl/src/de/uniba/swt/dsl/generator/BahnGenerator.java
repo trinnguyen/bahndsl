@@ -1,24 +1,25 @@
 /*
+ *
+ * Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
+ * <https://www.uni-bamberg.de/>, <http://www.swt-bamberg.de/>
+ *
  * This file is part of the BahnDSL project, a domain-specific language
- * for configuring and modelling model railways
+ * for configuring and modelling model railways.
  *
  * BahnDSL is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * BahnDSL is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with BahnDSL.  If not, see <https://www.gnu.org/licenses/>.
+ * BahnDSL is a RESEARCH PROTOTYPE and distributed WITHOUT ANY WARRANTY, without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
  *
  * The following people contributed to the conception and realization of the
  * present BahnDSL (in alphabetic order by surname):
  *
  * - Tri Nguyen <https://github.com/trinnguyen>
+ *
  */
 
 /*
@@ -63,8 +64,7 @@ public class BahnGenerator extends AbstractGenerator {
 	@Inject
 	LayoutGenerator layoutGenerator;
 
-	@Inject
-	SwtBahnFuncValidator swtBahnFuncValidator;
+	private boolean shouldGenerateSCCharts;
 
 	@Override
 	public void beforeGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
@@ -73,7 +73,7 @@ public class BahnGenerator extends AbstractGenerator {
 			return;
 
 		// check required function
-		checkInterlockingFunctions(input);
+		shouldGenerateSCCharts = checkInterlockingFunctions(input);
 
 		// normalize
 		normalizationProvider.normalize(BahnUtil.getDecls(input.getResourceSet()));
@@ -93,22 +93,30 @@ public class BahnGenerator extends AbstractGenerator {
 		yamlConfigGenerator.generate(fsa, bahnModel);
 
 		// sccharts
-		scChartsGenerator.generate(fsa, bahnModel);
+		if (shouldGenerateSCCharts) {
+			scChartsGenerator.generate(fsa, bahnModel);
+		} else {
+			logger.warn("Missing function for requesting route. SCCharts code generation is skipped.");
+		}
 	}
 
-	private void checkInterlockingFunctions(Resource resource) {
+	private static boolean checkInterlockingFunctions(Resource resource) {
 		var bahnModel = BahnUtil.getBahnModel(resource);
+		if (bahnModel == null)
+			return false;
 
-		var result = swtBahnFuncValidator.hasRequestAndDriveRoute(bahnModel);
+		var result = SwtBahnFuncValidator.hasRequestAndDriveRoute(bahnModel, false);
 		if (!result.getFirst()) {
-			logger.error("Missing function for requesting route. SCCharts code generation is skipped.");
-			return;
+			logger.error("Missing function for requesting route");
+			return false;
 		}
 
-		if (!result.getSecond()) {
+		if (!result.getSecond() && bahnModel.getComponents() != null) {
 			logger.warn("Adding empty driving route function");
-			FuncDecl decl = swtBahnFuncValidator.generateDriveRouteFuncDecl();
+			FuncDecl decl = SwtBahnFuncValidator.generateDriveRouteFuncDecl(false);
 			bahnModel.getComponents().add(decl);
 		}
+
+		return true;
 	}
 }
