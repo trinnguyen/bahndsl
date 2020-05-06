@@ -25,13 +25,14 @@
 package de.uniba.swt.dsl.common.generator.sccharts;
 
 import com.google.inject.Inject;
-import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.bahn.BahnModel;
+import de.uniba.swt.dsl.bahn.Component;
+import de.uniba.swt.dsl.bahn.FuncDecl;
 import de.uniba.swt.dsl.common.generator.GeneratorProvider;
 import de.uniba.swt.dsl.common.generator.sccharts.builder.RootStateBuilder;
 import de.uniba.swt.dsl.common.generator.sccharts.builder.SCChartsTextualBuilder;
 import de.uniba.swt.dsl.common.generator.sccharts.models.RootState;
 import de.uniba.swt.dsl.common.util.BahnConstants;
-import de.uniba.swt.dsl.validation.validators.SwtBahnFuncValidator;
 import org.apache.log4j.Logger;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
@@ -41,9 +42,6 @@ public class SCChartsGenerator extends GeneratorProvider {
 
     @Inject SCChartsTextualBuilder builder;
 
-    @Inject
-    SwtBahnFuncValidator swtBahnFuncValidator;
-
     @Override
     protected String[] generatedFileNames() {
         return new String[]{ BahnConstants.REQUEST_ROUTE_SCTX, BahnConstants.DRIVE_ROUTE_SCTX};
@@ -51,12 +49,6 @@ public class SCChartsGenerator extends GeneratorProvider {
 
     @Override
     protected void execute(IFileSystemAccess2 fsa, BahnModel bahnModel) {
-        var result = swtBahnFuncValidator.hasRequestAndDriveRoute(bahnModel, true);
-        if (!result.getFirst()) {
-            logger.warn("Missing function for requesting route. SCCharts code generation is skipped.");
-            return;
-        }
-
         // get decls
         FuncDecl declRequest = null;
         FuncDecl declDrive = null;
@@ -77,7 +69,7 @@ public class SCChartsGenerator extends GeneratorProvider {
         // generate request and drive models
         generateModel(fsa, declRequest, BahnConstants.REQUEST_ROUTE_SCTX);
 
-        if (result.getSecond() && declDrive != null) {
+        if (declDrive != null) {
             generateModel(fsa, declDrive, BahnConstants.DRIVE_ROUTE_SCTX);
         }
     }
