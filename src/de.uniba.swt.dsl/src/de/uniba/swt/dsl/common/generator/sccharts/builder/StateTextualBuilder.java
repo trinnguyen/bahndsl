@@ -39,9 +39,6 @@ public class StateTextualBuilder extends TextualBuilder {
     @Inject
     ExpressionTextualBuilder expressionTextualBuilder;
 
-    @Inject
-    ParamBindingTable paramBindingTable;
-
     private RootState rootState;
 
     public String buildString(RootState rootState) {
@@ -52,15 +49,11 @@ public class StateTextualBuilder extends TextualBuilder {
     }
 
     private void generateRootState() {
-        paramBindingTable.reset();
         append("scchart").append(rootState.getId());
         generateSuperState(rootState, true);
     }
 
     private void generateSuperState(SuperState superState, boolean generateInputOutput) {
-
-        // add the mapping
-        paramBindingTable.addBindingMappingIfNeeded(superState);
 
         append("{");
         increaseIndent().appendLine("");
@@ -97,14 +90,37 @@ public class StateTextualBuilder extends TextualBuilder {
         if (StringUtil.isNotEmpty(superState.getJoinTargetId())) {
             appendLine("join to " + superState.getJoinTargetId());
         }
-
-        // remove binding
-        paramBindingTable.removeBindingMappingIfNeeded(superState);
     }
 
     private void generateRegularState(State state) {
         appendLine("");
         generateStateId(state);
+
+        // binding state
+        if (state instanceof BindingState) {
+            var bindingState = (BindingState)state;
+            append("is").append(bindingState.getFunctionName());
+            if ((bindingState.getArguments() != null && bindingState.getArguments().size() > 0)
+                    || bindingState.getReturnRef() != null) {
+
+                append("(");
+                String argsText = null;
+                if (bindingState.getArguments() != null) {
+                    argsText = bindingState.getArguments().stream().map(this::generateExpression).collect(Collectors.joining(","));
+                    append(argsText);
+                }
+
+                if (bindingState.getReturnRef() != null) {
+                    if (argsText != null && !argsText.isBlank()) {
+                        append(",");
+                    }
+
+                    append(generateExpression(bindingState.getReturnRef()));
+                }
+
+                append(")");
+            }
+        }
 
         // transitions
         if (state.getOutgoingTransitions() != null) {
@@ -225,10 +241,7 @@ public class StateTextualBuilder extends TextualBuilder {
         var strBuilder = new StringBuilder();
         if (effect instanceof AssignmentEffect) {
             var assignmentEffect = (AssignmentEffect) effect;
-            var declName = assignmentEffect.getVarDeclaration().getName();
-            var name = paramBindingTable.lookupBindingName(declName);
-
-            strBuilder.append(name);
+            strBuilder.append(assignmentEffect.getVarDeclaration().getName());
 
             // array index
             if (assignmentEffect.getIndexExpr() != null) {

@@ -42,15 +42,21 @@ public class SCChartsTextualBuilder extends TextualBuilder {
     @Inject
     StateTextualBuilder stateBuilder;
 
-    public String buildString(RootState rootState) {
+    public String buildString(RootState rootState, List<RootState> refStates) {
         clear();
 
         // append hostcode
         append(BahnUtil.generateCodeNaming(rootState.getId()));
+        appendLine("#hostcode \"#include \\\"bahn_data_util.h\\\"\"");
         // appendLine("#resource \"bahn_data_util.h\"");
         // appendLine("#resource \"bahn_data_util.c\"");
-         appendLine("#hostcode \"#include \\\"bahn_data_util.h\\\"\"");
+
         appendLine(stateBuilder.buildString(rootState));
+        if (refStates != null) {
+            for (RootState refState : refStates) {
+                appendLine(stateBuilder.buildString(refState));
+            }
+        }
         return build();
     }
 }

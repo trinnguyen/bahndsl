@@ -35,9 +35,6 @@ import java.util.Stack;
 
 public class ExpressionTextualBuilder extends TextualBuilder {
 
-    @Inject
-    ParamBindingTable paramBindingTable;
-
     public String buildString(Expression expression) {
         clear();
         generateExpr(expression);
@@ -105,7 +102,7 @@ public class ExpressionTextualBuilder extends TextualBuilder {
         // ValuedReferenceExpr
         if (expression instanceof ValuedReferenceExpr) {
             ValuedReferenceExpr referenceExpr = (ValuedReferenceExpr) expression;
-            append(paramBindingTable.lookupBindingName(((ValuedReferenceExpr) expression).getDecl().getName()));
+            append(((ValuedReferenceExpr) expression).getDecl().getName());
 
             // index
             if (referenceExpr.getIndexExpr() != null) {

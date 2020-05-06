@@ -30,7 +30,7 @@ import org.eclipse.xtext.generator.IFileSystemAccess2;
 
 public class LowLevelCodeExternalGenerator extends ExternalGenerator {
 
-    public static final String SCC_GEN_SYSTEM = "de.cau.cs.kieler.sccharts.statebased";
+    public static final String SCC_GEN_SYSTEM = "de.cau.cs.kieler.sccharts.statebased.lean";
 
     private static final Logger logger = Logger.getLogger(LowLevelCodeExternalGenerator.class);
 

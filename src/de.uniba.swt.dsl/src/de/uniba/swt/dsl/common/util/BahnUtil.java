@@ -31,9 +31,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.EcoreUtil2;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -262,5 +260,23 @@ public class BahnUtil {
         stmt.setAssignment(assignment);
 
         return stmt;
+    }
+
+    public static void findCalledFunctions(Set<FuncDecl> set, FuncDecl decl) {
+        if (decl == null || decl.getStmtList() == null || decl.getStmtList().getStmts() == null)
+            return;
+
+        var exprs = EcoreUtil2.eAllOfType(decl, RegularFunctionCallExpr.class);
+        if (exprs.size() > 0) {
+            for (RegularFunctionCallExpr expr : exprs) {
+                if (set.contains(expr.getDecl()))
+                    continue;
+
+                set.add(expr.getDecl());
+
+                // subcall
+                findCalledFunctions(set, expr.getDecl());
+            }
+        }
     }
 }

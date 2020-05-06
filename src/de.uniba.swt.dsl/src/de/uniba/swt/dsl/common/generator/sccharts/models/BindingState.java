@@ -22,39 +22,36 @@
  *
  */
 
-package de.uniba.swt.dsl.common.generator.sccharts;
+package de.uniba.swt.dsl.common.generator.sccharts.models;
 
-import java.util.TreeMap;
+import de.uniba.swt.dsl.bahn.Expression;
+import de.uniba.swt.dsl.bahn.ValuedReferenceExpr;
+import org.eclipse.emf.common.util.EList;
 
-public class StateTable {
+import java.util.List;
 
-    private final TreeMap<String, Integer> mapId = new TreeMap<>();
+public class BindingState extends State {
+    private final String functionName;
 
-    private final String idPrefix;
-    private int incre = 0;
+    private final List<Expression> arguments;
 
-    public StateTable(String superId) {
-        this.idPrefix = superId + "_";
+    private final ValuedReferenceExpr returnRef;
+
+    public BindingState(String name, EList<Expression> params, ValuedReferenceExpr returnRef) {
+        this.functionName = name;
+        this.arguments = params;
+        this.returnRef = returnRef;
     }
 
-    public String nextStateId() {
-        return idPrefix + (incre++);
+    public String getFunctionName() {
+        return functionName;
     }
 
-    public String finalStateId() {
-        return idPrefix + "FINAL";
+    public List<Expression> getArguments() {
+        return arguments;
     }
 
-    private String nextId(String id) {
-        int num = 0;
-        if (id != null) {
-            if (mapId.containsKey(id)) {
-                num = mapId.get(id) + 1;
-            }
-        }
-
-        String resultId = idPrefix + num;
-        mapId.put(resultId, num);
-        return resultId;
+    public ValuedReferenceExpr getReturnRef() {
+        return returnRef;
     }
 }
