@@ -64,8 +64,7 @@ public class BahnGenerator extends AbstractGenerator {
 	@Inject
 	LayoutGenerator layoutGenerator;
 
-	@Inject
-	SwtBahnFuncValidator swtBahnFuncValidator;
+	private boolean shouldGenerateSCCharts;
 
 	@Override
 	public void beforeGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
@@ -74,7 +73,7 @@ public class BahnGenerator extends AbstractGenerator {
 			return;
 
 		// check required function
-		checkInterlockingFunctions(input);
+		shouldGenerateSCCharts = checkInterlockingFunctions(input);
 
 		// normalize
 		normalizationProvider.normalize(BahnUtil.getDecls(input.getResourceSet()));
@@ -94,24 +93,30 @@ public class BahnGenerator extends AbstractGenerator {
 		yamlConfigGenerator.generate(fsa, bahnModel);
 
 		// sccharts
-		scChartsGenerator.generate(fsa, bahnModel);
+		if (shouldGenerateSCCharts) {
+			scChartsGenerator.generate(fsa, bahnModel);
+		} else {
+			logger.warn("Missing function for requesting route. SCCharts code generation is skipped.");
+		}
 	}
 
-	private void checkInterlockingFunctions(Resource resource) {
+	private static boolean checkInterlockingFunctions(Resource resource) {
 		var bahnModel = BahnUtil.getBahnModel(resource);
 		if (bahnModel == null)
-			return;
+			return false;
 
-		var result = swtBahnFuncValidator.hasRequestAndDriveRoute(bahnModel, false);
+		var result = SwtBahnFuncValidator.hasRequestAndDriveRoute(bahnModel, false);
 		if (!result.getFirst()) {
-			logger.error("Missing function for requesting route. SCCharts code generation is skipped.");
-			return;
+			logger.error("Missing function for requesting route");
+			return false;
 		}
 
 		if (!result.getSecond() && bahnModel.getComponents() != null) {
 			logger.warn("Adding empty driving route function");
-			FuncDecl decl = swtBahnFuncValidator.generateDriveRouteFuncDecl();
+			FuncDecl decl = SwtBahnFuncValidator.generateDriveRouteFuncDecl(false);
 			bahnModel.getComponents().add(decl);
 		}
+
+		return true;
 	}
 }

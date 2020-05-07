@@ -36,9 +36,7 @@ import java.util.List;
  */
 public class SwtBahnFuncValidator {
 
-    private boolean normalized;
-
-    private String varNamePrefix() {
+    private static String varNamePrefix(boolean normalized) {
         return normalized ? "_" : "";
     }
 
@@ -46,8 +44,7 @@ public class SwtBahnFuncValidator {
      * Check whether request_route and drive_route are existed
      * @param bahnModel model
      */
-    public Tuple<Boolean, Boolean> hasRequestAndDriveRoute(BahnModel bahnModel, boolean normalized) {
-        this.normalized = normalized;
+    public static Tuple<Boolean, Boolean> hasRequestAndDriveRoute(BahnModel bahnModel, boolean normalized) {
         if (bahnModel == null)
             return Tuple.of(false, false);
 
@@ -59,12 +56,12 @@ public class SwtBahnFuncValidator {
                 if (hasRequestRoute && hasDriveRoute)
                     break;
 
-                if (!hasRequestRoute && isRequestRoute(decl)) {
+                if (!hasRequestRoute && isRequestRoute(decl, normalized)) {
                     hasRequestRoute = true;
                     continue;
                 }
 
-                if (!hasDriveRoute && isDriveRoute(decl))
+                if (!hasDriveRoute && isDriveRoute(decl, normalized))
                     hasDriveRoute = true;
             }
         }
@@ -72,12 +69,12 @@ public class SwtBahnFuncValidator {
         return Tuple.of(hasRequestRoute, hasDriveRoute);
     }
 
-    public boolean isRequestRoute(FuncDecl funcDecl) {
-        return match(generateRequestRouteFuncDecl(), funcDecl);
+    public static boolean isRequestRoute(FuncDecl funcDecl, boolean normalized) {
+        return match(generateRequestRouteFuncDecl(normalized), funcDecl);
     }
 
-    public boolean isDriveRoute(FuncDecl funcDecl) {
-        return match(generateDriveRouteFuncDecl(), funcDecl);
+    public static boolean isDriveRoute(FuncDecl funcDecl, boolean normalized) {
+        return match(generateDriveRouteFuncDecl(normalized), funcDecl);
     }
 
     private static boolean match(FuncDecl expected, FuncDecl actual) {
@@ -106,26 +103,26 @@ public class SwtBahnFuncValidator {
         return true;
     }
 
-    private FuncDecl generateRequestRouteFuncDecl() {
+    private static FuncDecl generateRequestRouteFuncDecl(boolean normalized) {
         var decl = BahnFactory.eINSTANCE.createFuncDecl();
         decl.setName(BahnConstants.REQUEST_ROUTE_FUNC_NAME);
-        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix() + "src_signal_id"));
-        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix() + "dst_signal_id"));
-        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix() + "train_id"));
+        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix(normalized) + "src_signal_id"));
+        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix(normalized) + "dst_signal_id"));
+        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix(normalized) + "train_id"));
         decl.setReturn(true);
         decl.setReturnType(DataType.STRING_TYPE);
         decl.setReturnArray(false);
         return decl;
     }
 
-    public FuncDecl generateDriveRouteFuncDecl() {
+    public static FuncDecl generateDriveRouteFuncDecl(boolean normalized) {
         var decl = BahnFactory.eINSTANCE.createFuncDecl();
         decl.setName(BahnConstants.DRIVE_ROUTE_FUNC_NAME);
-        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix() + "route_id"));
-        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix() + "train_id"));
-        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, true, varNamePrefix() + "segment_ids"));
+        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix(normalized) + "route_id"));
+        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, false, varNamePrefix(normalized) + "train_id"));
+        decl.getParamDecls().add(createParam(DataType.STRING_TYPE, true, varNamePrefix(normalized) + "segment_ids"));
         if (normalized) {
-            decl.getParamDecls().add(createParam(DataType.INT_TYPE, false, varNamePrefix() + "_segment_ids_cnt"));
+            decl.getParamDecls().add(createParam(DataType.INT_TYPE, false, varNamePrefix(normalized) + "_segment_ids_cnt"));
         }
         decl.setStmtList(BahnFactory.eINSTANCE.createStatementList());
         decl.setReturn(false);

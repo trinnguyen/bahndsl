@@ -56,12 +56,6 @@ public class SCChartsGenerator extends GeneratorProvider {
 
     @Override
     protected void execute(IFileSystemAccess2 fsa, BahnModel bahnModel) {
-        var result = swtBahnFuncValidator.hasRequestAndDriveRoute(bahnModel, true);
-        if (!result.getFirst()) {
-            logger.warn("Missing function for requesting route. SCCharts code generation is skipped.");
-            return;
-        }
-
         // get decls
         FuncDecl declRequest = null;
         FuncDecl declDrive = null;
@@ -82,7 +76,7 @@ public class SCChartsGenerator extends GeneratorProvider {
         // generate request and drive models
         generateModel(fsa, declRequest, BahnConstants.REQUEST_ROUTE_SCTX);
 
-        if (result.getSecond() && declDrive != null) {
+        if (declDrive != null) {
             generateModel(fsa, declDrive, BahnConstants.DRIVE_ROUTE_SCTX);
         }
     }
