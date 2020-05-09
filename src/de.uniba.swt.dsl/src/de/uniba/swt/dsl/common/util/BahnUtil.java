@@ -114,13 +114,9 @@ public class BahnUtil {
         var names = new String[]{
                 prefix + "_tick",
                 prefix + "_reset",
-                generateLogicNaming(id),
+                prefix + "_logic",
                 prefix + "_tick_data"};
         return  "#code.naming \"" + String.join("\",\"", names) + "\"";
-    }
-
-    public static String generateLogicNaming(String id) {
-        return CodeNamingPrefix + id.toLowerCase() + "_logic";
     }
 
     public static boolean hasBreakStmtInBlock(Statement blockStmt) {

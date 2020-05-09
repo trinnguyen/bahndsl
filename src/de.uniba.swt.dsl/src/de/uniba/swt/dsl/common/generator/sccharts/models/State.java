@@ -102,14 +102,6 @@ public class State {
                 '}';
     }
 
-    public void addRegularTransition(String id) {
-        addTransition(id, TransitionType.Regular, null);
-    }
-
-    public void addAbortTo(String id, Expression expr) {
-        addTransition(id, TransitionType.AbortTo, expr);
-    }
-
     public void addImmediateTransition(String id) {
         addImmediateTransition(id, null);
     }

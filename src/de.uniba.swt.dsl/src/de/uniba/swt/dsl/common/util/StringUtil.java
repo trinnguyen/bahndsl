@@ -32,4 +32,11 @@ public class StringUtil {
     public static boolean isNotEmpty(String val) {
         return !isNullOrEmpty(val);
     }
+
+    public static String capitalize(String val) {
+        if (val == null || val.isBlank())
+            return val;
+
+        return val.substring(0, 1).toUpperCase() + val.substring(1);
+    }
 }

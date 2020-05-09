@@ -204,10 +204,10 @@ class BahnGeneratorTest {
         invokeGenerate(src);
 
         // ensure request route is exist (mandatory)
-        ensureFileContent(RequestRouteFilename, List.of("scchart request_route"));
+        ensureFileContent(RequestRouteFilename, List.of("scchart Request_route"));
 
         // ensure drive_route is exist (optional)
-        ensureFileContent(DriveRouteFilename, List.of("scchart drive_route"));
+        ensureFileContent(DriveRouteFilename, List.of("scchart Drive_route"));
     }
 
     @ParameterizedTest

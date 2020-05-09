@@ -25,7 +25,6 @@
 package de.uniba.swt.dsl.generator.externals;
 
 import de.uniba.swt.dsl.common.util.BahnConstants;
-import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.generator.StandardLibHelper;
 import org.apache.log4j.Logger;
@@ -56,7 +55,8 @@ public class LibraryExternalGenerator extends ExternalGenerator {
     public LibraryExternalGenerator() {
         resources = List.of(
                 Tuple.of("tick_wrapper_header.code", "tick_wrapper.h"),
-                Tuple.of("tick_wrapper.code", "tick_wrapper.c"),
+                Tuple.of("drive_route_wrapper.code", "drive_route_wrapper.c"),
+                Tuple.of("request_route_wrapper.code", "request_route_wrapper.c"),
                 Tuple.of("bahn_data_util.code", "bahn_data_util.h"));
     }
 
@@ -102,19 +102,18 @@ public class LibraryExternalGenerator extends ExternalGenerator {
         args.add("-I" + TemporaryObjFolderName);
         args.add("-o");
         args.add(getOutputFileName());
-        var res = executeArgs(args.toArray(new String[0]), fsa, runtimeExec);
-
-        // delete temporary files if needed
-         cleanTemp(fsa, tmpFiles);
-
-        return res;
+        return executeArgs(args.toArray(new String[0]), fsa, runtimeExec);
     }
 
     private void preprocessHeaders(IFileSystemAccess2 fsa, String[] genModels) {
         for (String genModel : genModels) {
             logger.debug(String.format("Process tick header for: %s", genModel));
-            var oldPrefix = BahnUtil.generateLogicNaming(genModel);
-            HeaderFileUtil.updateThreadStatus(fsa, genModel + ".h", oldPrefix, ThreadStatusName, WrapperThreadStatusName);
+
+            // update ThreadStatus
+            HeaderFileUtil.updateThreadStatus(fsa, genModel + ".h", ThreadStatusName, WrapperThreadStatusName);
+
+            // update logic, tick and reset
+            SourceNamingUtil.updateNaming(fsa, genModel);
         }
     }
 
@@ -124,14 +123,19 @@ public class LibraryExternalGenerator extends ExternalGenerator {
     }
 
     private List<String> generateTempResources(IFileSystemAccess2 fsa) {
+        // clean
+        List<String> tempFiles = resources.stream().map(r -> getTempPath(r.getSecond())).collect(Collectors.toList());
+        cleanTemp(fsa, tempFiles);
+
+        // generate
         try {
             List<String> result = new ArrayList<>();
             for (Tuple<String, String> resource : resources) {
                 try (var stream = StandardLibHelper.class.getClassLoader().getResourceAsStream(resource.getFirst())) {
                     if (stream != null) {
-                        var name = Path.of(TemporaryObjFolderName, resource.getSecond()).toString();
-                        fsa.generateFile(name, stream);
-                        result.add(name);
+                        var filePath = getTempPath(resource.getSecond());
+                        fsa.generateFile(filePath, stream);
+                        result.add(filePath);
                     }
                 }
             }
@@ -141,6 +145,10 @@ public class LibraryExternalGenerator extends ExternalGenerator {
         }
 
         return null;
+    }
+
+    private static String getTempPath(String filname) {
+        return Path.of(TemporaryObjFolderName, filname).toString();
     }
 
     private String getOutputFileName() {

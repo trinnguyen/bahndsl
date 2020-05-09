@@ -217,11 +217,11 @@ public class SuperStateBuilder {
         var returnTransition = createHasReturnTransitionIfExist(stmt, finalStateId);
         if (returnTransition != null) {
             // reset all immediate to regular
-            for (Transition outgoingTransition : lastState.getOutgoingTransitions()) {
-                if (outgoingTransition.getTransitionType() == TransitionType.Immediate) {
-                    outgoingTransition.setTransitionType(TransitionType.Regular);
-                }
-            }
+//            for (Transition outgoingTransition : lastState.getOutgoingTransitions()) {
+//                if (outgoingTransition.getTransitionType() == TransitionType.Immediate) {
+//                    outgoingTransition.setTransitionType(TransitionType.Regular);
+//                }
+//            }
 
             lastState.getOutgoingTransitions().add(0, returnTransition);
         }

@@ -45,11 +45,15 @@ public class SCChartsTextualBuilder extends TextualBuilder {
     public String buildString(RootState rootState, List<RootState> refStates) {
         clear();
 
-        // append hostcode
-        append(BahnUtil.generateCodeNaming(rootState.getId()));
+        // code naming is disabled since it is not supported in KIELER v1.1.0 (bug)
+        // append(BahnUtil.generateCodeNaming(rootState.getId()));
         appendLine("#hostcode \"#include \\\"bahn_data_util.h\\\"\"");
         // appendLine("#resource \"bahn_data_util.h\"");
         // appendLine("#resource \"bahn_data_util.c\"");
+
+        // rename the root state to capitalize to prevent generated SCCharts model
+        // Bug in KIERLER Tool v1.1.0 for statebased lean (template)
+        rootState.setId(StringUtil.capitalize(rootState.getId()));
 
         appendLine(stateBuilder.buildString(rootState));
         if (refStates != null) {

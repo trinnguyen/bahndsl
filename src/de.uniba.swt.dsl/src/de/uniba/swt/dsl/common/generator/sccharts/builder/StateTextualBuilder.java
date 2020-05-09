@@ -188,7 +188,7 @@ public class StateTextualBuilder extends TextualBuilder {
 
     private void generateTransition(Transition transition) {
         appendLine("");
-        if (transition.getTransitionType() == TransitionType.Immediate) {
+        if (transition.getTransitionType() == TransitionType.Immediate || transition.getTransitionType() == TransitionType.AbortTo) {
             append("immediate");
         }
 
