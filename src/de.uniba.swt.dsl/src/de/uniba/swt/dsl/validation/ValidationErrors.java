@@ -94,7 +94,7 @@ public class ValidationErrors {
 
     public final static String UnexpectedReturn = "Unexpected return statement";
 
-    public final static String BreakInIteration = "break can only be used inside 'for..in";
+    public final static String BreakInIteration = "break can only be used inside 'for..in' or 'while'";
 
     public final static String DefinedVariableFormat = "Variable '%s' is already defined";
 

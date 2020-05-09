@@ -49,12 +49,10 @@ public class HeaderFileUtil {
      * Remove enum Thread status and include tick wrapper for header file
      * @param fsa
      * @param filename
-     * @param oldPrefix
-     * @param oldSuffix
+     * @param oldName
      * @param newName
      */
-    public static void updateThreadStatus(IFileSystemAccess2 fsa, String filename, String oldPrefix, String oldSuffix, String newName) {
-        var oldName = oldPrefix + oldSuffix;
+    public static void updateThreadStatus(IFileSystemAccess2 fsa, String filename, String oldName, String newName) {
 
         // find the typedef enum and remove
         CharSequence text = null;

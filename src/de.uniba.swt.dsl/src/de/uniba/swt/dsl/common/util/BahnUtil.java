@@ -31,9 +31,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.EcoreUtil2;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -116,13 +114,9 @@ public class BahnUtil {
         var names = new String[]{
                 prefix + "_tick",
                 prefix + "_reset",
-                generateLogicNaming(id),
+                prefix + "_logic",
                 prefix + "_tick_data"};
         return  "#code.naming \"" + String.join("\",\"", names) + "\"";
-    }
-
-    public static String generateLogicNaming(String id) {
-        return CodeNamingPrefix + id.toLowerCase() + "_logic";
     }
 
     public static boolean hasBreakStmtInBlock(Statement blockStmt) {
@@ -262,5 +256,23 @@ public class BahnUtil {
         stmt.setAssignment(assignment);
 
         return stmt;
+    }
+
+    public static void findCalledFunctions(Set<FuncDecl> set, FuncDecl decl) {
+        if (decl == null || decl.getStmtList() == null || decl.getStmtList().getStmts() == null)
+            return;
+
+        var exprs = EcoreUtil2.eAllOfType(decl, RegularFunctionCallExpr.class);
+        if (exprs.size() > 0) {
+            for (RegularFunctionCallExpr expr : exprs) {
+                if (set.contains(expr.getDecl()))
+                    continue;
+
+                set.add(expr.getDecl());
+
+                // subcall
+                findCalledFunctions(set, expr.getDecl());
+            }
+        }
     }
 }

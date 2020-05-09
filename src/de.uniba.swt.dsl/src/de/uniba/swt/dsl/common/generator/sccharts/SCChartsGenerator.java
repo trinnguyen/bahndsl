@@ -25,22 +25,29 @@
 package de.uniba.swt.dsl.common.generator.sccharts;
 
 import com.google.inject.Inject;
-import de.uniba.swt.dsl.bahn.BahnModel;
-import de.uniba.swt.dsl.bahn.Component;
-import de.uniba.swt.dsl.bahn.FuncDecl;
+import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.generator.GeneratorProvider;
 import de.uniba.swt.dsl.common.generator.sccharts.builder.RootStateBuilder;
 import de.uniba.swt.dsl.common.generator.sccharts.builder.SCChartsTextualBuilder;
 import de.uniba.swt.dsl.common.generator.sccharts.models.RootState;
 import de.uniba.swt.dsl.common.util.BahnConstants;
+import de.uniba.swt.dsl.common.util.BahnUtil;
+import de.uniba.swt.dsl.validation.validators.SwtBahnFuncValidator;
 import org.apache.log4j.Logger;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SCChartsGenerator extends GeneratorProvider {
 
     private static final Logger logger = Logger.getLogger(SCChartsGenerator.class);
 
     @Inject SCChartsTextualBuilder builder;
+
+    @Inject
+    SwtBahnFuncValidator swtBahnFuncValidator;
 
     @Override
     protected String[] generatedFileNames() {
@@ -75,9 +82,19 @@ public class SCChartsGenerator extends GeneratorProvider {
     }
 
     private void generateModel(IFileSystemAccess2 fsa, FuncDecl decl, String fileName) {
-        RootState rootRequest = createRootState(decl);
-        logger.debug("Generate SCCharts for " + rootRequest.getId());
-        fsa.generateFile(fileName, builder.buildString(rootRequest));
+        List<RootState> refStates = generateReferencedStates(decl);
+        var scchart = createRootState(decl);
+
+        // print
+        logger.debug("Generate SCCharts for " + scchart.getId());
+
+        fsa.generateFile(fileName, builder.buildString(scchart, refStates));
+    }
+
+    private List<RootState> generateReferencedStates(FuncDecl decl) {
+        var set = new HashSet<FuncDecl>();
+        BahnUtil.findCalledFunctions(set, decl);
+        return set.stream().map(this::createRootState).collect(Collectors.toList());
     }
 
     private RootState createRootState(FuncDecl decl) {

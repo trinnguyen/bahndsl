@@ -179,17 +179,17 @@ end
 def is_block_occupied(string block_id): bool
     string main_seg = get config block.segment block_id
     if is main_seg occupied
-        return false
+        return true
     end
 
     string overlaps[] = get config block.overlaps block_id
     for string segment_id in overlaps
         if is segment_id occupied
-            return false
+            return true
         end
     end
 
-    return true
+    return false
 end
 
 def is_composition_signal(string id): bool

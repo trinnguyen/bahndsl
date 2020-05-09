@@ -183,11 +183,11 @@ public class SyntacticTransformer {
     private String convertTrackState(TrackState trackState) {
         switch (trackState) {
             case STOP:
-                return "red";
+                return "stop";
             case CAUTION:
-                return "yellow";
+                return "caution";
             case CLEAR:
-                return "green";
+                return "clear";
             case NORMAL:
                 return "normal";
             case REVERSE:

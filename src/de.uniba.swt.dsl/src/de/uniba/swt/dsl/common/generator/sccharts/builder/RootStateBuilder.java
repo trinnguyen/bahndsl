@@ -24,20 +24,19 @@
 
 package de.uniba.swt.dsl.common.generator.sccharts.builder;
 
-import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.bahn.BahnFactory;
+import de.uniba.swt.dsl.bahn.FuncDecl;
+import de.uniba.swt.dsl.bahn.RefVarDecl;
 import de.uniba.swt.dsl.common.generator.sccharts.StateTable;
 import de.uniba.swt.dsl.common.generator.sccharts.models.RootState;
-import de.uniba.swt.dsl.common.generator.sccharts.models.SuperState;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 
 public class RootStateBuilder extends SuperStateBuilder {
     public RootStateBuilder(FuncDecl funcDecl) {
-        super(new HashMap<>(), new Stack<>(), new StateTable("S_" + funcDecl.getName()), new RootState(funcDecl.getName()), funcDecl.getStmtList());
+        super(new Stack<>(), new StateTable("S_" + funcDecl.getName()), new RootState(funcDecl.getName()), funcDecl.getStmtList());
 
         // input
         if (funcDecl.getParamDecls() != null) {
