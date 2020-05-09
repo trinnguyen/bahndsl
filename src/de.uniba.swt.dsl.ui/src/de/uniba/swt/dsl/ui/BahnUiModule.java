@@ -4,6 +4,8 @@
 package de.uniba.swt.dsl.ui;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.xtext.ui.wizard.IProjectCreator;
+import org.eclipse.xtext.ui.wizard.template.DefaultTemplateProjectCreator;
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -12,5 +14,10 @@ public class BahnUiModule extends AbstractBahnUiModule {
 
 	public BahnUiModule(AbstractUIPlugin plugin) {
 		super(plugin);
+	}
+	
+	// contributed by org.eclipse.xtext.xtext.generator.ui.projectWizard.TemplateProjectWizardFragment
+	public Class<? extends IProjectCreator> bindIProjectCreator() {
+		return DefaultTemplateProjectCreator.class;
 	}
 }

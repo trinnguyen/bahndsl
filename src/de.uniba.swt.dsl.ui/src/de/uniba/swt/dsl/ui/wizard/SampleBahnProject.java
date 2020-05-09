@@ -26,8 +26,8 @@ public final class SampleBahnProject extends AbstractProjectTemplate {
       it.setProjectName(this.getProjectInfo().getProjectName());
       it.setLocation(this.getProjectInfo().getLocationPath());
       
-      List<String> _builderIds = it.getBuilderIds();
-      Iterables.<String>addAll(_builderIds, Collections.<String>unmodifiableList(CollectionLiterals.<String>newArrayList(XtextProjectHelper.BUILDER_ID)));
+      it.getBuilderIds().add(XtextProjectHelper.BUILDER_ID);
+      it.getProjectNatures().add(XtextProjectHelper.NATURE_ID);
       
       this.addFile(it, "untitled.bahn", BahnUiSnippet.EmptyBahnSource);
     };
