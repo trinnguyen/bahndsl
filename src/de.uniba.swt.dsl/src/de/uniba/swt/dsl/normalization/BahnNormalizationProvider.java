@@ -28,6 +28,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import de.uniba.swt.dsl.bahn.*;
 import org.apache.log4j.Logger;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.resource.SaveOptions;
 import org.eclipse.xtext.serializer.impl.Serializer;
 
@@ -129,9 +130,10 @@ public class BahnNormalizationProvider {
     }
 
     private void log(FuncDecl funcDecl) {
-        var input = funcDecl.eResource();
-        if (input.getContents() != null && input.getContents().size() > 0) {
-            logger.debug(serializer.serialize(input.getContents().get(0), SaveOptions.newBuilder().format().getOptions()));
+        for (Resource resource : funcDecl.eResource().getResourceSet().getResources()) {
+            if (resource.getContents().size() > 0) {
+                logger.debug(serializer.serialize(resource.getContents().get(0), SaveOptions.newBuilder().format().getOptions()));
+            }
         }
     }
 }

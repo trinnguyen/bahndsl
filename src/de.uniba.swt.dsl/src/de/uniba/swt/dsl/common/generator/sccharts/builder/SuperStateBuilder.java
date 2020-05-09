@@ -31,31 +31,23 @@ import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.StringUtil;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
 public class SuperStateBuilder {
 
-    /**
-     * temporary allocate param array size to 1024
-     * TODO should guess the size of param based on function call
-     */
     public final int DEFAULT_PARAM_ARRAY_SIZE = BahnConstants.DEFAULT_ARRAY_SIZE;
 
-    private final Map<FuncDecl, RootState> mapFuncState;
     private final StateTable stateTable;
     protected SuperState superState;
     private final StatementList statementList;
     private final Stack<SuperState> stackSuperStates;
 
-    public SuperStateBuilder(Map<FuncDecl, RootState> mapFuncState, Stack<SuperState> stackSuperStates, String id, StatementList statementList) {
-        this(mapFuncState, stackSuperStates, new StateTable(id), new SuperState(id), statementList);
+    public SuperStateBuilder(Stack<SuperState> stackSuperStates, String id, StatementList statementList) {
+        this(stackSuperStates, new StateTable(id), new SuperState(id), statementList);
     }
 
-    protected SuperStateBuilder(Map<FuncDecl, RootState> mapFuncState, Stack<SuperState> stackSuperStates, StateTable stateTable, SuperState superState, StatementList statementList) {
-        this.mapFuncState = mapFuncState;
+    protected SuperStateBuilder(Stack<SuperState> stackSuperStates, StateTable stateTable, SuperState superState, StatementList statementList) {
         this.stackSuperStates = stackSuperStates;
         this.stateTable = stateTable;
         this.superState = superState;
@@ -148,14 +140,14 @@ public class SuperStateBuilder {
 
         // initial -> then
         StateTable localStateTable = new StateTable(id);
-        var thenState = new SuperStateBuilder(mapFuncState, stackSuperStates, localStateTable.nextStateId(), stmt.getThenStmts()).build();
+        var thenState = new SuperStateBuilder(stackSuperStates, localStateTable.nextStateId(), stmt.getThenStmts()).build();
         thenState.setJoinTargetId(lastStateId);
         initialState.addImmediateTransition(thenState.getId(), stmt.getExpr());
 
         // initial -> else
         SuperState elseState = null;
         if (stmt.getElseStmts() != null) {
-            elseState = new SuperStateBuilder(mapFuncState, stackSuperStates, localStateTable.nextStateId(), stmt.getElseStmts()).build();
+            elseState = new SuperStateBuilder(stackSuperStates, localStateTable.nextStateId(), stmt.getElseStmts()).build();
             elseState.setJoinTargetId(lastStateId);
             initialState.addImmediateTransition(elseState.getId());
         }
@@ -190,7 +182,7 @@ public class SuperStateBuilder {
 
         // create body states
         StateTable localStateTable = new StateTable(id);
-        var bodyState = new SuperStateBuilder(mapFuncState, stackSuperStates, localStateTable.nextStateId(), stmt.getStmts()).build();
+        var bodyState = new SuperStateBuilder(stackSuperStates, localStateTable.nextStateId(), stmt.getStmts()).build();
 
         // link: initial check loop condition
         initialState.addImmediateTransition(bodyState.getId(), stmt.getExpr());
@@ -225,11 +217,11 @@ public class SuperStateBuilder {
         var returnTransition = createHasReturnTransitionIfExist(stmt, finalStateId);
         if (returnTransition != null) {
             // reset all immediate to regular
-            for (Transition outgoingTransition : lastState.getOutgoingTransitions()) {
-                if (outgoingTransition.getTransitionType() == TransitionType.Immediate) {
-                    outgoingTransition.setTransitionType(TransitionType.Regular);
-                }
-            }
+//            for (Transition outgoingTransition : lastState.getOutgoingTransitions()) {
+//                if (outgoingTransition.getTransitionType() == TransitionType.Immediate) {
+//                    outgoingTransition.setTransitionType(TransitionType.Regular);
+//                }
+//            }
 
             lastState.getOutgoingTransitions().add(0, returnTransition);
         }
@@ -270,10 +262,12 @@ public class SuperStateBuilder {
     }
 
     private State createState(String id, String nextStateId, Statement stmt) {
-        var superState = findFunctionCallSuperState(stmt);
-        if (superState != null) {
-            updateFunctionCallSuperState(superState, id, nextStateId);
-            return superState;
+        var bindingState = findFunctionCallSuperState(stmt);
+        if (bindingState != null) {
+            // update id and target
+            bindingState.setId(id);
+            bindingState.addImmediateTransition(nextStateId);
+            return bindingState;
         }
 
         // transition
@@ -295,47 +289,35 @@ public class SuperStateBuilder {
         return null;
     }
 
-    private void updateFunctionCallSuperState(SuperState superState, String id, String nextStateId) {
-        // update id and target
-        superState.setId(id);
-        superState.setJoinTargetId(nextStateId);
-    }
-
-    private SuperState findFunctionCallSuperState(Statement stmt) {
+    private BindingState findFunctionCallSuperState(Statement stmt) {
         if (stmt instanceof VarDeclStmt) {
             VarDeclStmt varDeclStmt = (VarDeclStmt)stmt;
             if (varDeclStmt.getAssignment() != null) {
-                return findRefState(varDeclStmt.getAssignment().getExpr(), SCChartsUtil.createValuedReferenceExpr(varDeclStmt.getDecl()));
+                return buildBindingState(varDeclStmt.getAssignment().getExpr(), SCChartsUtil.createValuedReferenceExpr(varDeclStmt.getDecl()));
             }
         }
 
         if (stmt instanceof AssignmentStmt) {
             AssignmentStmt assignmentStmt = (AssignmentStmt) stmt;
-            return findRefState(assignmentStmt.getAssignment().getExpr(), assignmentStmt.getReferenceExpr());
+            return buildBindingState(assignmentStmt.getAssignment().getExpr(), assignmentStmt.getReferenceExpr());
         }
 
         if (stmt instanceof FunctionCallStmt) {
             FunctionCallStmt functionCallStmt = (FunctionCallStmt) stmt;
-            return findRefState(functionCallStmt.getExpr(), null);
+            return buildBindingState(functionCallStmt.getExpr(), null);
         }
 
         return null;
     }
 
-    private SuperState findRefState(Expression expr, ValuedReferenceExpr returnRefExpr) {
+    private BindingState buildBindingState(Expression expr, ValuedReferenceExpr returnRef) {
+        if (expr instanceof ParenthesizedExpr) {
+            return buildBindingState(((ParenthesizedExpr) expr).getExpr(), returnRef);
+        }
+
         if (expr instanceof RegularFunctionCallExpr) {
-            var functionCallExpr = (RegularFunctionCallExpr)expr;
-
-            // add root state if need
-            var decl = functionCallExpr.getDecl();
-            if (!mapFuncState.containsKey(decl)) {
-                mapFuncState.put(decl, buildRootState(decl));
-            }
-
-            var refState = mapFuncState.get(functionCallExpr.getDecl());
-            if (refState != null) {
-                return createFuncRefState(refState, functionCallExpr.getParams(), returnRefExpr);
-            }
+            var callExp = (RegularFunctionCallExpr) expr;
+            return new BindingState(callExp.getDecl().getName(), callExp.getParams(), returnRef);
         }
 
         return null;

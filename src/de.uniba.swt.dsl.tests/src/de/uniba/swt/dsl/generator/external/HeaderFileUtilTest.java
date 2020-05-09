@@ -40,11 +40,10 @@ public class HeaderFileUtilTest {
 
     @ParameterizedTest
     @CsvSource(value = {
-            "request_route.h, intern_request_route_logic, ThreadStatus",
-            "drive_route.h, intern_drive_route_logic, ThreadStatus",
+            "request_route.h, ThreadStatus",
+            "drive_route.h, ThreadStatus",
     })
-    void testHeaderReplaceThreadEnum(String filename, String oldPrefix, String oldSuffix) throws Exception {
-        String oldEnumName = oldPrefix + oldSuffix;
+    void testHeaderReplaceThreadEnum(String filename, String oldEnumName) throws Exception {
         var newName = "wrapper_thread_status";
 
         // prepare file
@@ -59,7 +58,7 @@ public class HeaderFileUtilTest {
         fsa.generateFile(filename, src);
 
         // invoke
-        HeaderFileUtil.updateThreadStatus(fsa, filename, oldPrefix, oldSuffix, newName);
+        HeaderFileUtil.updateThreadStatus(fsa, filename, oldEnumName, newName);
 
         // verify by checking if the tickwrapper header is included
         var content = TestHelper.getFileContent(fsa, filename);
@@ -71,16 +70,16 @@ public class HeaderFileUtilTest {
 
     @ParameterizedTest
     @CsvSource(value = {
-            "request_route.h, intern_request_route_logic, ThreadStatus",
-            "drive_route.h, intern_drive_route_logic, ThreadStatus",
+            "request_route.h, ThreadStatus",
+            "drive_route.h, ThreadStatus",
     })
-    void testHeaderReplaceEmptyFile(String filename, String oldPrefix, String oldSuffix) throws Exception {
+    void testHeaderReplaceEmptyFile(String filename, String oldName) throws Exception {
         var newName = "wrapper_thread_status";
         var src = "void test();";
         fsa.generateFile(filename, src);
 
         // invoke
-        HeaderFileUtil.updateThreadStatus(fsa, filename, oldPrefix, oldSuffix, newName);
+        HeaderFileUtil.updateThreadStatus(fsa, filename, oldName, newName);
 
         // ensure empty
         Assertions.assertEquals(src, TestHelper.getFileContent(fsa, filename));

@@ -22,21 +22,36 @@
  *
  */
 
-package de.uniba.swt.dsl.common.util;
+package de.uniba.swt.dsl.common.generator.sccharts.models;
 
-public class StringUtil {
-    public static boolean isNullOrEmpty(String val) {
-        return val == null || val.isEmpty();
+import de.uniba.swt.dsl.bahn.Expression;
+import de.uniba.swt.dsl.bahn.ValuedReferenceExpr;
+import org.eclipse.emf.common.util.EList;
+
+import java.util.List;
+
+public class BindingState extends State {
+    private final String functionName;
+
+    private final List<Expression> arguments;
+
+    private final ValuedReferenceExpr returnRef;
+
+    public BindingState(String name, EList<Expression> params, ValuedReferenceExpr returnRef) {
+        this.functionName = name;
+        this.arguments = params;
+        this.returnRef = returnRef;
     }
 
-    public static boolean isNotEmpty(String val) {
-        return !isNullOrEmpty(val);
+    public String getFunctionName() {
+        return functionName;
     }
 
-    public static String capitalize(String val) {
-        if (val == null || val.isBlank())
-            return val;
+    public List<Expression> getArguments() {
+        return arguments;
+    }
 
-        return val.substring(0, 1).toUpperCase() + val.substring(1);
+    public ValuedReferenceExpr getReturnRef() {
+        return returnRef;
     }
 }
