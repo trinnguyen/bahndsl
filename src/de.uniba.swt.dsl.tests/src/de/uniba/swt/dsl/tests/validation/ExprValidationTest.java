@@ -231,6 +231,35 @@ public class ExprValidationTest extends AbstractValidationTest {
         validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.ASSIGNMENT_STMT, null, "is readonly parameter");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "def test() int a break a = 3 end",
+            "def test() : int if true break end return 2 end"
+    })
+    void testErrorBreak(String src) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.BREAK_STMT, null, "break can only be used inside 'for..in' or 'while'");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "def test(): int end",
+            "def test(): int if true return 1 end end",
+            "def test(): int while true return 1 end end",
+    })
+    void testErrorMissingReturn(String src) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.FUNC_DECL, null, "Missing return statement");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "def test() return 1 end",
+            "def test() if true return 1 end end",
+            "def test() int while true return 1 end end",
+    })
+    void testErrorUnexpectedReturn(String src) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.FUNC_DECL, null, "Unexpected return statement");
+    }
+
     @Override
     protected ParseHelper<BahnModel> getParseHelper() {
         return parseHelper;

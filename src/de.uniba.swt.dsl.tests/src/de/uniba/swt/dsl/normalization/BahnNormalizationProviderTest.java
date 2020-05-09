@@ -37,6 +37,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
@@ -209,18 +210,6 @@ class BahnNormalizationProviderTest {
         }
     }
 
-    /*
-    @ParameterizedTest
-    @ValueSource (strings = {
-            "def test(): string return \"a\" + \"a\" end",
-            "def test(string id): string return \"a\" + id end",
-            "def test(string id1, string id2): string return id1 + id2 end"
-    })
-    void testStringConcat(String src) throws Exception {
-        ensureNormalize(src, List.of("return extern string_concat ( "));
-    }
-    */
-
     @ParameterizedTest
     @ValueSource (strings = {
              "def test(string src, string dst) string ids[] = get routes from src to dst end"
@@ -252,15 +241,6 @@ class BahnNormalizationProviderTest {
     })
     void testDomainGetState(String src) throws Exception {
         ensureNormalize(src, List.of("extern track_state_get_value ( id )"));
-    }
-
-    @ParameterizedTest
-    @ValueSource (strings = {
-            "def test(string id) set state id to clear end",
-            "def test() set state \"sig1\" to normal end",
-    })
-    void testDomainSetState(String src) throws Exception {
-        ensureNormalize(src, List.of(SyntacticTransformer.EXTERN_STATE_SETTER_NAME));
     }
 
     @ParameterizedTest
@@ -333,6 +313,25 @@ class BahnNormalizationProviderTest {
     })
     void testDomainRouteAvailable(String src) throws Exception {
         ensureNormalize(src, List.of("extern config_get_scalar_string_value", "route", "train"));
+    }
+
+    @ParameterizedTest
+    @CsvSource( value = {
+            "def test(string sig) set state sig to stop end, stop",
+            "def test(string sig) set state sig to caution end, caution",
+            "def test(string sig) set state sig to clear end, clear",
+    })
+    void testDomainSetSignal(String src, String param) throws Exception {
+        ensureNormalize(src, List.of("extern track_state_set_value ( sig , \"" + param + "\""));
+    }
+
+    @ParameterizedTest
+    @CsvSource( value = {
+            "def test(string pt) set state pt to normal end, normal",
+            "def test(string pt) set state pt to reverse end, reverse"
+    })
+    void testDomainSetPoint(String src, String param) throws Exception {
+        ensureNormalize(src, List.of("extern track_state_set_value ( pt , \"" + param + "\""));
     }
 
     @Test

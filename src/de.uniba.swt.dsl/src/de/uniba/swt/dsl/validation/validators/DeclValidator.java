@@ -72,10 +72,12 @@ public class DeclValidator {
     private boolean ensureReturnStmt(StatementList stmtList, ExprDataType expectedType) throws ValidationException {
         for (var stmt : stmtList.getStmts()) {
 
+            // require both branch of if having return
             if (stmt instanceof SelectionStmt) {
                 SelectionStmt selectionStmt = (SelectionStmt) stmt;
                 if (ensureReturnStmt(selectionStmt.getThenStmts(), expectedType)
-                    && (selectionStmt.getElseStmts() == null || ensureReturnStmt(selectionStmt.getElseStmts(), expectedType))) {
+                        && selectionStmt.getElseStmts() != null
+                        && ensureReturnStmt(selectionStmt.getElseStmts(), expectedType)) {
                     return true;
                 }
             }
