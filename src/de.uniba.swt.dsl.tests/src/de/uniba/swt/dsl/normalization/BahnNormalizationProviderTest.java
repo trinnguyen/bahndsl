@@ -228,6 +228,14 @@ class BahnNormalizationProviderTest {
 
     @ParameterizedTest
     @ValueSource (strings = {
+            "def test(string rid, string pid) get position pid in rid end",
+    })
+    void testGetPointPosition(String src) throws Exception {
+        ensureNormalize(src, List.of("extern config_get_point_position ( rid , pid )"));
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
             "def test(string id) string src = get config route.source id end",
     })
     void testGetConfigScalar(String src) throws Exception {

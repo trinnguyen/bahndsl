@@ -25,6 +25,7 @@
 package de.uniba.swt.dsl.generator.externals;
 
 import de.uniba.swt.dsl.common.util.BahnConstants;
+import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.generator.StandardLibHelper;
 import org.apache.log4j.Logger;
@@ -95,8 +96,14 @@ public class LibraryExternalGenerator extends ExternalGenerator {
         // start code generation
         List<String> args = new ArrayList<>();
         args.add("-shared");
-        args.add("-undefined");
-        args.add("dynamic_lookup");
+        args.add("-fPIC");
+
+        // custom depend on os
+        if (BahnUtil.isMacOS()) {
+            args.add("-undefined");
+            args.add("dynamic_lookup");
+        }
+
         args.addAll(fileNames.stream().filter(f -> f.endsWith(".c")).collect(Collectors.toList()));
         args.add("-I.");
         args.add("-I" + TemporaryObjFolderName);
@@ -156,11 +163,10 @@ public class LibraryExternalGenerator extends ExternalGenerator {
     }
 
     private static String getOsLibExt() {
-        String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("mac"))
+        if (BahnUtil.isMacOS())
             return "dylib";
 
-        if (os.contains("win"))
+        if (BahnUtil.isWindows())
             return "dll";
 
         return "so";

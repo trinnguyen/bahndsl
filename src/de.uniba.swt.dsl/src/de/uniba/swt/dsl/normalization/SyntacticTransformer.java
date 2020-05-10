@@ -50,6 +50,8 @@ public class SyntacticTransformer {
 
     private static final String EXTERN_CONFIG_FORMAT = "config_%s_%s_%s_value";
 
+    public static final String EXTERN_CONFIG_POINT_POSITION = "config_get_point_position";
+
     public boolean isSetter(BehaviourExpr expr) {
         return expr instanceof BehaviourSetExpr || expr instanceof GrantRouteFuncExpr;
     }
@@ -72,12 +74,17 @@ public class SyntacticTransformer {
 
         // getter
         if (expr instanceof BehaviourGetExpr) {
-            var getter = ((BehaviourGetExpr) expr).getGetExpr();
+            BehaviourSubGetExpr getter = ((BehaviourGetExpr) expr).getGetExpr();
 
             // find assignment
             String lhsArrayName = getArrayDeclName(expr);
             if (getter instanceof GetConfigFuncExpr) {
                 return normalizeGetConfigFuncExpr((GetConfigFuncExpr) getter, lhsArrayName);
+            }
+
+            if (getter instanceof GetPointPositionFuncExpr) {
+                var positionFunExpr = (GetPointPositionFuncExpr) getter;
+                return createExternalFunctionCallExpr(EXTERN_CONFIG_POINT_POSITION, List.of(positionFunExpr.getRouteExpr(), positionFunExpr.getPointEpxr()));
             }
 
             if (getter instanceof GetRoutesFuncExpr) {
@@ -100,7 +107,7 @@ public class SyntacticTransformer {
 
         // setter
         if (expr instanceof BehaviourSetExpr) {
-            var setter = ((BehaviourSetExpr) expr).getSetExpr();
+            BehaviourSubSetExpr setter = ((BehaviourSetExpr) expr).getSetExpr();
 
             if (setter instanceof SetConfigFuncExpr) {
                 return normalizeSetConfigFuncExpr((SetConfigFuncExpr)setter);

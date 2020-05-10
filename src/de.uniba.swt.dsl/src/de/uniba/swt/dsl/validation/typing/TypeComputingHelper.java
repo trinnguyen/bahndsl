@@ -165,7 +165,7 @@ class TypeComputingHelper {
             BehaviourExpr behaviourExpr = (BehaviourExpr) expr;
 
             if (behaviourExpr instanceof BehaviourGetExpr) {
-                var getter = ((BehaviourGetExpr) expr).getGetExpr();
+                BehaviourSubGetExpr getter = ((BehaviourGetExpr) expr).getGetExpr();
                 if (getter instanceof GetConfigFuncExpr) {
                     var prop = ((GetConfigFuncExpr) getter).getProp();
                     boolean isArray = prop.isArray();
@@ -179,6 +179,10 @@ class TypeComputingHelper {
                         case STRING_TYPE:
                             return isArray ? ExprDataType.ArrayString : ExprDataType.ScalarString;
                     }
+                }
+
+                if (getter instanceof GetPointPositionFuncExpr) {
+                    return ExprDataType.ScalarString;
                 }
 
                 if (getter instanceof GetRoutesFuncExpr) {

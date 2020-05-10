@@ -275,4 +275,17 @@ public class BahnUtil {
             }
         }
     }
+
+    private static String getOsName() {
+        var result = System.getProperty("os.name");
+        return result != null ? result.toLowerCase() : "";
+    }
+
+    public static boolean isMacOS() {
+        return getOsName().startsWith("mac");
+    }
+
+    public static boolean isWindows() {
+        return getOsName().startsWith("win");
+    }
 }

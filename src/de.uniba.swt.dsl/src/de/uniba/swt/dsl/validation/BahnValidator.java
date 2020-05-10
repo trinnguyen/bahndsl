@@ -456,6 +456,12 @@ public class BahnValidator extends AbstractBahnValidator {
     }
 
     @Check
+    public void typeCheckingGetPointPositionFuncExpr(GetPointPositionFuncExpr funcExpr) {
+        ensureTypesMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getPointEpxr()), BahnPackage.Literals.GET_POINT_POSITION_FUNC_EXPR__POINT_EPXR);
+        ensureTypesMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getRouteExpr()), BahnPackage.Literals.GET_POINT_POSITION_FUNC_EXPR__ROUTE_EXPR);
+    }
+
+    @Check
     public void typeCheckingSetTrainSpeed(SetTrainSpeedFuncExpr funcExpr) {
         ensureTypesMatched(ExprDataType.ScalarString, typeCheckingTable.computeDataType(funcExpr.getTrainExpr()), BahnPackage.Literals.SET_TRAIN_SPEED_FUNC_EXPR__TRAIN_EXPR);
         ensureTypesMatched(ExprDataType.ScalarInt, typeCheckingTable.computeDataType(funcExpr.getSpeedExpr()), BahnPackage.Literals.SET_TRAIN_SPEED_FUNC_EXPR__SPEED_EXPR);

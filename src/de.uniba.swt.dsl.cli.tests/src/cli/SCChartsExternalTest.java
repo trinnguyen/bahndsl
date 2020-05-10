@@ -79,18 +79,18 @@ public class SCChartsExternalTest extends ExternalTest {
         try {
             ensureTextContent(content, List.of("#hostcode \"#include \\\"bahn_data_util.h\\\"\""));
             if (SCChartsFiles.indexOf(filename) == 0) {
-                ensureTextContent(content, List.of("scchart request_route {",
-                        "input string src_signal_id",
-                        "input string dst_signal_id",
-                        "input string train_id",
-                        "output string _out"));
+                ensureTextContent(content, List.of("scchart Request_route {",
+                        "input string _src_signal_id",
+                        "input string _dst_signal_id",
+                        "input string _train_id",
+                        "output string __out"));
             }
 
             if (SCChartsFiles.indexOf(filename) == 1) {
-                ensureTextContent(content, List.of("scchart drive_route {",
-                        "input string route_id",
-                        "input string train_id",
-                        "input string segment_ids ["));
+                ensureTextContent(content, List.of("scchart Drive_route {",
+                        "input string _route_id",
+                        "input string _train_id",
+                        "input string _segment_ids ["));
             }
         } catch (Exception ex) {
             Assertions.fail(ex.getMessage());

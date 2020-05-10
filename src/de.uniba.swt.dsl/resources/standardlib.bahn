@@ -12,10 +12,6 @@ schema
         train string
     end
 
-    route_point
-        position string
-    end
-
     segment
         id string
         length float
