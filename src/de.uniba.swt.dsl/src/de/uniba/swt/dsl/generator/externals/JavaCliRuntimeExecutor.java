@@ -24,6 +24,7 @@
 
 package de.uniba.swt.dsl.generator.externals;
 
+import de.uniba.swt.dsl.common.util.BahnUtil;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -78,8 +79,6 @@ public class JavaCliRuntimeExecutor extends CliRuntimeExecutor {
     }
 
     private static String getPrefixIfNeeded() {
-        String osName = System.getProperty("os.name");
-        var isWindows = osName != null && osName.toLowerCase().startsWith("win");
-        return isWindows ? "cmd /c " : "";
+        return BahnUtil.isWindows() ? "cmd /c " : "";
     }
 }
