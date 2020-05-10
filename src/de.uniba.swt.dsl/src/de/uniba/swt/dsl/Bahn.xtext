@@ -389,45 +389,58 @@ BehaviourExpr returns FunctionCallExpr:
 
 BehaviourGetExpr returns BehaviourExpr:
 	{BehaviourGetExpr}
-	'get' getExpr=(GetTrackStateFuncExpr | GetTrainSpeedFuncExpr | GetRoutesFuncExpr | GetConfigFuncExpr)
+	'get' getExpr=BehaviourSubGetExpr
 ;
 
-GetTrackStateFuncExpr:
+BehaviourSubGetExpr:
+	GetTrackStateFuncExpr | GetTrainSpeedFuncExpr | GetRoutesFuncExpr | GetConfigFuncExpr | GetPointPositionFuncExpr
+;
+
+GetTrackStateFuncExpr returns BehaviourSubGetExpr:
 	{GetTrackStateFuncExpr} 
 	'state' trackExpr=PrimaryExpr 
 ;
 
-GetTrainSpeedFuncExpr:
+GetTrainSpeedFuncExpr returns BehaviourSubGetExpr:
     {GetTrainSpeedFuncExpr}
     'speed' trainExpr=PrimaryExpr
 ;
 
-GetRoutesFuncExpr returns BehaviourExpr:
+GetRoutesFuncExpr returns BehaviourSubGetExpr:
 	{GetRoutesFuncExpr}
 	'routes' 'from' srcSignalExpr=PrimaryExpr 'to' destSignalExpr=PrimaryExpr
 ;
 
-GetConfigFuncExpr:
+GetConfigFuncExpr returns BehaviourSubGetExpr:
 	{GetConfigFuncExpr}
-	'config' type=[SchemaElement] '.' prop=[ElementProp] configExpr=PrimaryExpr
+	'config' type=[SchemaElement] '.' prop=[ElementProp] configExpr=PrimaryExpr 
+;
+
+GetPointPositionFuncExpr returns BehaviourSubGetExpr:
+	{GetPointPositionFuncExpr}
+	'position' pointEpxr=PrimaryExpr 'in' routeExpr=PrimaryExpr
 ;
 
 BehaviourSetExpr returns BehaviourExpr:
 	{BehaviourSetExpr}
-	'set' setExpr=(SetTrackStateFuncExpr | SetTrainSpeedFuncExpr | SetConfigFuncExpr)
+	'set' setExpr=BehaviourSubSetExpr
 ;
 
-SetTrackStateFuncExpr:
+BehaviourSubSetExpr:
+	SetTrackStateFuncExpr | SetTrainSpeedFuncExpr | SetConfigFuncExpr
+; 
+
+SetTrackStateFuncExpr returns BehaviourSubSetExpr:
 	{SetTrackStateFuncExpr}
 	'state' trackExpr=PrimaryExpr 'to' aspectExpr=TrackState
 ;
 
-SetTrainSpeedFuncExpr:
+SetTrainSpeedFuncExpr returns BehaviourSubSetExpr:
 	{SetTrainSpeedFuncExpr}
 	'speed' trainExpr=PrimaryExpr 'to' speedExpr=PrimaryExpr
 ;
 
-SetConfigFuncExpr:
+SetConfigFuncExpr returns BehaviourSubSetExpr:
 	{SetConfigFuncExpr}
 	'config' type=[SchemaElement] '.' prop=[ElementProp] configExpr=PrimaryExpr 'to' valueExpr=PrimaryExpr
 ;
