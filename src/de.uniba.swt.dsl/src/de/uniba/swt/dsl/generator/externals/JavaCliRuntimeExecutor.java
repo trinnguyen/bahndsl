@@ -38,20 +38,22 @@ public class JavaCliRuntimeExecutor extends CliRuntimeExecutor {
     @Override
     protected boolean internalExecuteCli(String command, String[] args, String workingDir) {
         try {
-            var argLen = args != null ? args.length : 0;
-            String[] cmd = new String[argLen + 1];
-            cmd[0] = command;
-            if (args != null)
-                System.arraycopy(args, 0, cmd, 1, args.length);
+            StringBuilder builder = new StringBuilder();
+            builder.append(getPrefixIfNeeded()).append(command);
+            if (args != null) {
+                builder.append(" ");
+                builder.append(String.join(" ", args));
+            }
 
             var dir = new File(workingDir);
+            var strCmd = builder.toString();
 
             // log
             logger.info(String.format("Working directory: %s", dir.getAbsolutePath()));
-            logger.info(String.format("Execute: %s", String.join(" ", cmd)));
+            logger.info(String.format("Execute: %s", strCmd));
 
             // execute
-            var process = Runtime.getRuntime().exec(cmd, null, dir);
+            var process = Runtime.getRuntime().exec(strCmd, null, dir);
 
             String s;
             // monitor result
@@ -73,5 +75,11 @@ public class JavaCliRuntimeExecutor extends CliRuntimeExecutor {
         }
 
         return false;
+    }
+
+    private static String getPrefixIfNeeded() {
+        String osName = System.getProperty("os.name");
+        var isWindows = osName != null && osName.toLowerCase().startsWith("win");
+        return isWindows ? "cmd /c " : "";
     }
 }

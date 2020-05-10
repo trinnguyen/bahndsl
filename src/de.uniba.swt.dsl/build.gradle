@@ -4,6 +4,7 @@ plugins {
 }
 application {
 	mainClassName = "de.uniba.swt.dsl.generator.Main"
+	applicationDefaultJvmArgs = ["--add-opens","java.base/java.lang=ALL-UNNAMED"]
 }
 distributions {
 	main {
