@@ -29,8 +29,6 @@ import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
 
-import java.util.List;
-
 /**
  * Validate required functions used for SWTBahn platform
  */

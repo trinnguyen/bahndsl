@@ -27,6 +27,7 @@
  */
 package de.uniba.swt.dsl.generator;
 
+import de.uniba.swt.dsl.bahn.BahnModel;
 import de.uniba.swt.dsl.bahn.FuncDecl;
 import de.uniba.swt.dsl.common.generator.sccharts.SCChartsGenerator;
 import de.uniba.swt.dsl.common.generator.yaml.YamlConfigGenerator;
@@ -67,23 +68,16 @@ public class BahnGenerator extends AbstractGenerator {
 	private boolean shouldGenerateSCCharts;
 
 	@Override
-	public void beforeGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
-		var decls = BahnUtil.getDecls(input);
-		if (decls == null || decls.size() == 0)
-			return;
-
-		// check required function
-		shouldGenerateSCCharts = checkInterlockingFunctions(input);
-
-		// normalize
-		normalizationProvider.normalize(BahnUtil.getDecls(input.getResourceSet()));
-	}
-
-	@Override
 	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		var bahnModel = BahnUtil.getBahnModel(resource);
 		if (bahnModel == null)
 			return;
+
+		// check required function before normalization
+		shouldGenerateSCCharts = checkInterlockingFunctions(bahnModel, false);
+
+		// normalize
+		normalizationProvider.normalize(BahnUtil.getDecls(resource.getResourceSet()));
 
 		// layout generator must run first to generate network layout
 		layoutGenerator.generate(fsa, bahnModel);
@@ -100,12 +94,8 @@ public class BahnGenerator extends AbstractGenerator {
 		}
 	}
 
-	private static boolean checkInterlockingFunctions(Resource resource) {
-		var bahnModel = BahnUtil.getBahnModel(resource);
-		if (bahnModel == null)
-			return false;
-
-		var result = SwtBahnFuncValidator.hasRequestAndDriveRoute(bahnModel, false);
+	private static boolean checkInterlockingFunctions(BahnModel bahnModel, boolean normalized) {
+		var result = SwtBahnFuncValidator.hasRequestAndDriveRoute(bahnModel, normalized);
 		if (!result.getFirst()) {
 			logger.error("Missing function for requesting route");
 			return false;
@@ -113,7 +103,7 @@ public class BahnGenerator extends AbstractGenerator {
 
 		if (!result.getSecond() && bahnModel.getComponents() != null) {
 			logger.warn("Adding empty driving route function");
-			FuncDecl decl = SwtBahnFuncValidator.generateDriveRouteFuncDecl(false);
+			FuncDecl decl = SwtBahnFuncValidator.generateDriveRouteFuncDecl(normalized);
 			bahnModel.getComponents().add(decl);
 		}
 
