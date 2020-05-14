@@ -1,8 +1,8 @@
 # thesis-masters-bahndsl
 
-Respository for Masters thesis on BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
+Repository for Masters thesis on BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 
-## Download latest artifacts
+## Download latest artefacts
 
 ### Bahn IDE
 - [macOS: BahnIDE-macosx.cocoa.x86_64.tar.gz](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/develop/raw/src/build/BahnIDE-macosx.cocoa.x86_64.tar.gz?job=build-rcp-compiler)
@@ -26,65 +26,71 @@ Respository for Masters thesis on BahnDSL: A Domain-Specific Language for Config
 ### Requirements
 - Java SE 11 *([Download OpenJDK 11](https://adoptopenjdk.net/index.html?variant=openjdk11&jvmVariant=hotspot))*
 
-### New project
-- File -> New Project...
-- Choose: General -> Project
-- Input project name, example: SWTbahn
+### Bahn IDE
+- Create new project
+  - File -> New -> Bahn Project
+  - Input project name, for example: SWTbahn
+  - Finish
+  - A new project with default BahnDSL source file named: `untitled.bahn` is created
+- Create new BahnDSl file
+  - File -> New -> Bahn File
+  - Input name
+  - New BahnDSL model is created with given name, contains empty railway configuration model and interlocking functions
 
-### New model inside the project
-- File -> New File
-- Select a project
-- Input file name with `.bahn` as extension, example: `SWTbahnLite.bahn`
-- In the dialog: *Do you want to convert '[PROJECT_NAME]' to an Xtext project?* -> **Yes**
+- Output
+  - Generated YAML files, SCCharts models and layout diagram are in `src-gen` folder
 
-### Compile model with Bahn IDE
-- Generated YAML files are in `src-gen` folder
-
-### Compile model with bahnc (Bahn Compiler)
-- Compile to default output folder: `bahnc model.bahn`
-- Compile to custom output folder: `bahnc model.bahn custom/src-gen`
-
-## Development
-
-### Source code location
-- Folder **src**
-
-### Build systems
-- **maven**: Build Eclipse plugins and Bahn IDE standalone application (Eclipse RCP product)
-- **gradle**: Build command line compiler, language server application and run tests
-- **npm (Node JS)**:  Build Visual Studio Code extension
-
-### Build scripts (Bash)
-
-- Output folder: **build**
-
-- Build Eclipse-based IDE (Bahn IDE)
+### bahnc (command-line compiler)
+- Execute the command without argument to show help menu, for example: `bahnc`
 ```
-sh build-maven-rcp.sh
+OVERVIEW: Bahn compiler
+
+USAGE: bahnc file [-o <path>] [-m <mode>] [-v] [-d]
+  -o <path> output folder
+  -m <mode> code generation mode (default, c-code, library)
+  -v    verbose output
+  -d    debug output
+
+EXAMPLE: 
+  bahnc example.bahn
+  bahnc -m library -v example.bahn
+  bahnc -o output/src-gen example.bahn
 ```
 
-- Build command line compiler **bahnc**
-```
-sh build-gradle.sh
-```
+- Add `-v` to enable verbose output
+- Add `-o <path>` to change output folder. Default is `src-gen`
+- Add `-d` for detailed log level (recommended for development only) 
+- Compile BahnDSL source code for getting YAML files and SCCharts models
+  ```
+  bahnc example.bahn -v
+  ```
+- Compile BahnDSL source code with YAML files, SCCharts models and low-level C code
+  ```
+  bahnc example.bahn -m c-code -v
+  ```
+- Compile BahnDSL source code with YAML files, SCCharts models and interlocking shared library
+  ```
+  bahnc example.bahn -m library -v
+  ```
 
-- Build Visual Studio Code extension
-```
-sh build-gradle.sh
-sh build-node-vscode.sh
-```
+### Visual Studio Code extension
 
-- Publish Visual Studio Code extension (run in vscode-bahn)
-```
-vsce publish
-```
+- Install from Marketplace via the link: https://marketplace.visualstudio.com/items?itemName=trinnguyen.bahn-language
+- Install from local package, for example: `code --install-extension  bahn-language.vsix`
+- Open the BahnDSL source code in Visual Studio Code (with `.bahn` extension)
+- The compiler is triggered automatically and generates the output files on file changed.
+- The default output folder is `src-gen`
 
-- Run unit tests
-```
-sh build-test.sh
-```
+## Syntax
+Details in [docs/BahnDSLSyntax.md](docs/BahnDSLSyntax.md).
 
-- Run integration tests for command line compiler
-```
-build-test-cli.sh
-```
+## Maintenance
+
+Details in [docs/Maintenance.md](docs/Maintenance.md)
+
+## Examples
+Two examples for configuring the SWTbahn Standard, SWTbahn Lite are attached in addition to a default interlocking procedures:
+
+- SWTbahn Standard: [examples/standard/SWTbahnStandard.bahn](examples/standard/SWTbahnStandard.bahn)
+- SWTbahn Lite: [examples/lite/SWTbahnLite.bahn](examples/lite/SWTbahnLite.bahn)
+- Default interlocking procedure: [examples/interlocking/default.bahn](examples/interlocking/default.bahn)
