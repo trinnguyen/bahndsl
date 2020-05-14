@@ -10,7 +10,7 @@ def request_route(string src_signal_id, string dst_signal_id, string train_id): 
     string id = get_shortest_route(route_ids)
 
     # 3. Check route grantability
-    if !route_is_grantable(id)
+    if !route_is_grantable(id, train_id)
         return ""
     end
 
@@ -28,11 +28,11 @@ def request_route(string src_signal_id, string dst_signal_id, string train_id): 
     return id
 end
 
-def route_is_grantable(string route_id): bool
+def route_is_grantable(string route_id, string train_id): bool
     string conflict_routes[] = get config route.conflicts route_id
     for string id in conflict_routes
         string conflict_train_id = get config route.train id
-        if conflict_train_id != ""
+        if conflict_train_id == train_id
             return false
         end
     end
@@ -44,7 +44,7 @@ def route_is_clear(string route_id): bool
     # check entry signal
     string src_signal = get config route.source route_id
     string src_state = get state src_signal
-    if src_state != "red"
+    if src_state != "stop"
         return false
     end
 

@@ -12,7 +12,7 @@
     - **npm Node JS**: Visual Studio Code extension
 
 ## Project structure
-- Mix of gradle and maven build system: a project can be both gradle or maven project
+- A mix of gradle and maven build system: a project can be both gradle or maven project
 - Configuration files:
     - build.gradle (gradle)
     - pom.xml (maven)
@@ -29,13 +29,13 @@
 ```
 
 ### de.uniba.swt.dsl (Gradle/Maven)
-- Core projects implements the compiler
+- Core project implements the compiler
 - Xtext Grammar
 - Validators
 - Normalisers
 - Code generators
 - Formatter
-- Deployed as Eclipse plugin for RCP product or executable application (deployed as command line application)
+- Deployed as Eclipse plugin for RCP product or executable application (deployed as a command-line application)
 
 ### de.uniba.swt.dsl.ide (Gradle/Maven)
 - Language server application
@@ -60,14 +60,14 @@
 
 ### de.uniba.swt.dsl.cli.tests (Gradle/Maven)
 - JUnit 5 integration tests
-- End-to-end testing against built command line compiler (**bahnc**)
+- End-to-end testing against built command-line compiler (**bahnc**)
 - Require SCCharts compiler and C compiler installed in the host machine
 - Important use case groups
-    - Generate valid YAML files for configuration module
+    - Generate valid YAML files for the configuration module
     - Generate valid interlocking table and layout diagram
-    - Generate valid SCCharts for interlocking procedure
-    - Generate valid low level code with SCCharts compiler
-    - Generate valid shared dynamically C library with C compiler
+    - Generate valid SCCharts for the interlocking procedure
+    - Generate valid low-level code with SCCharts compiler
+    - Generate valid shared C library dynamically with C compiler
 
 ### Maven projects for building Eclipse-based IDE
 - **de.uniba.swt.dsl.product**
@@ -109,7 +109,7 @@ vsce publish
 sh build-test.sh
 ```
 
-- Run integration tests for command line compiler
+- Run integration tests for the command-line compiler
 ```
 build-test-cli.sh
 ```

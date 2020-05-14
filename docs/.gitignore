@@ -1,0 +1,11 @@
+# Latex
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# spefic PDF file 
+BahnDSL-SRS.pdf
