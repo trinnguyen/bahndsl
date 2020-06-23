@@ -114,17 +114,6 @@ seg1 0x00 length 10cm
 signal-type-name signal-name hex-number
 ```
 
-- Example 1
-```
-entry signal1 0x00
-distant signal2 0x01
-composite signal3
-    signals
-        signal2
-        signal3
-    end
-```
-
 - Composite signal (compound signal)
 ```
 composite signal-name 
