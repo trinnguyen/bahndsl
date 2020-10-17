@@ -26,6 +26,7 @@ package de.uniba.swt.dsl.generator.externals;
 
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.BahnUtil;
+import de.uniba.swt.dsl.common.util.StringUtil;
 import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.generator.StandardLibHelper;
 import org.apache.log4j.Logger;
@@ -73,7 +74,10 @@ public class LibraryExternalGenerator extends ExternalGenerator {
     @Override
     protected boolean execute(IFileSystemAccess2 fsa, CliRuntimeExecutor runtimeExec) {
 
-        var genModels = new String[]{BahnConstants.REQUEST_ROUTE_FUNC_NAME, BahnConstants.DRIVE_ROUTE_FUNC_NAME};
+        var genModels = new String[]{
+                StringUtil.capitalize(BahnConstants.REQUEST_ROUTE_FUNC_NAME),
+                StringUtil.capitalize(BahnConstants.DRIVE_ROUTE_FUNC_NAME)
+        };
 
         // process header
         preprocessHeaders(fsa, genModels);

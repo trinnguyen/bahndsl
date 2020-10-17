@@ -30,12 +30,12 @@ void drive_route_reset(drive_route_tick_data *tick_data) {
 
     // sync
     drive_route_sync_input(tick_data);
-    intern_drive_route_reset(&intern_drive);
+    intern_Drive_route_reset(&intern_drive);
     drive_route_sync_output(tick_data);
 }
 
 void drive_route_tick(drive_route_tick_data *tick_data) {
     drive_route_sync_input(tick_data);
-    intern_drive_route_tick(&intern_drive);
+    intern_Drive_route_tick(&intern_drive);
     drive_route_sync_output(tick_data);
 }

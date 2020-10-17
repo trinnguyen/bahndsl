@@ -25,12 +25,12 @@ void request_route_reset(request_route_tick_data *tick_data) {
 
     // sync
     request_route_sync_input(tick_data);
-    intern_request_route_reset(&intern_request);
+    intern_Request_route_reset(&intern_request);
     request_route_sync_output(tick_data);
 }
 
 void request_route_tick(request_route_tick_data *tick_data) {
     request_route_sync_input(tick_data);
-    intern_request_route_tick(&intern_request);
+    intern_Request_route_tick(&intern_request);
     request_route_sync_output(tick_data);
 }
