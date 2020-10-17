@@ -1,16 +1,3 @@
-# Bahn Language Support
-- Syntax highlight
-- Code generation during development
-- Code completion, refactoring, formatting using LSP
-- Language Server Protocol
-
-## Requirements
-- [Download Java 11](https://adoptopenjdk.net/?variant=openjdk11&jvmVariant=hotspot)
-
-## Samples
-
-### Configuration
-```ruby
 module Sample
     boards
         master 0xDA
@@ -61,11 +48,7 @@ module Sample
     end
 
     trains
-        cargo_db 0x0001 steps 126 
-            calibration 5 15 30 45 60 75 90 105 120 end 
-            weight 100g 
-            length 7cm 
-            type cargo
+        cargo_db 0x0001 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 7cm type cargo
             peripherals
                 head_light bit 4 initial 1
                 cabin_light bit 0 initial 1
@@ -73,17 +56,3 @@ module Sample
     end
 
 end
-```
-
-### Interlocking
-```ruby
-def request_route(string src_signal_id, string dst_signal_id, string train_id): string
-
-    string route_ids[] = get routes from src_signal_id to dst_signal_id
-    if route_ids.len == 0
-        return ""
-    end
-
-    return route_ids[0]
-end
-```
