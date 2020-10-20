@@ -9,7 +9,7 @@ test:
   script:
     - 'sh src/build-test.sh'
   reports:
-      junit: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
+    junit: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
   artifacts:
     paths:
       - src/build/
