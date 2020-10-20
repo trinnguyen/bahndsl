@@ -8,11 +8,11 @@ test:
   stage: test
   script:
     - 'sh src/build-test.sh'
-  reports:
-    junit: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
   artifacts:
     paths:
       - src/build/
+    reports:
+      junit: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
     expire_in: 1 week
 
 build-rcp-compiler:
