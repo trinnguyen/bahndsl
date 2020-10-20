@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 public class UniqueSegmentUsageValidator {
 
-    private Map<String,String> usedSegments = new HashMap<>();
+    private final Map<String,String> usedSegments = new HashMap<>();
 
     public void clear() {
         usedSegments.clear();
@@ -48,25 +48,40 @@ public class UniqueSegmentUsageValidator {
             try {
                 validateBlockSegments(block);
             } catch (ValidationException e) {
-                usedSegments.put(block.getMainSeg().getName(), block.getName());
+                for (SegmentElement mainSeg : block.getMainSegs()) {
+                    usedSegments.put(mainSeg.getName(), block.getName());
+                }
                 for (SegmentElement overlap : block.getOverlaps()) {
                     usedSegments.put(overlap.getName(), block.getName());
                 }
                 throw e;
             }
 
-            // check all overlap
+            // check all overlaps and main
+            for (SegmentElement mainSeg : block.getMainSegs()) {
+                ensureSingleUsage(section.getName(), mainSeg);
+            }
             for (SegmentElement overlap : block.getOverlaps()) {
                 ensureSingleUsage(section.getName(), overlap);
             }
         }
 
-        ensureSingleUsage(section.getName(), section.getMainSeg());
+        // check point
+        if (section instanceof PointElement) {
+            ensureSingleUsage(section.getName(), ((PointElement) section).getMainSeg());
+        }
+
+        // check crossing
+        if (section instanceof CrossingElement) {
+            ensureSingleUsage(section.getName(), ((CrossingElement) section).getMainSeg());
+        }
     }
 
     private void validateBlockSegments(BlockElement block) throws ValidationException {
-        if (block.getOverlaps().contains(block.getMainSeg())) {
-            throw new ValidationException(String.format(ValidationErrors.UsedSegmentInMainFormat, block.getMainSeg().getName()), BahnPackage.Literals.TRACK_SECTION__MAIN_SEG);
+        for (SegmentElement mainSeg : block.getMainSegs()) {
+            if (block.getOverlaps().contains(mainSeg)) {
+                throw new ValidationException(String.format(ValidationErrors.UsedSegmentInMainFormat, mainSeg.getName()), BahnPackage.Literals.BLOCK_ELEMENT__MAIN_SEGS);
+            }
         }
 
         int countOverlap = block.getOverlaps().size();
@@ -82,7 +97,7 @@ public class UniqueSegmentUsageValidator {
             var err = String.format(ValidationErrors.UsedSegmentFormat,
                     segment.getName(),
                     usedSegments.get(segment.getName()));
-            throw new ValidationException(err, BahnPackage.Literals.TRACK_SECTION__MAIN_SEG);
+            throw new ValidationException(err, BahnPackage.Literals.BLOCK_ELEMENT__MAIN_SEGS);
         } else {
             usedSegments.put(segment.getName(), elemName);
         }

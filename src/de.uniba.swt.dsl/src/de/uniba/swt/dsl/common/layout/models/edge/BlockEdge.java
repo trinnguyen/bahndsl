@@ -69,7 +69,7 @@ public class BlockEdge extends AbstractEdge {
         {
             segments.add(blockElement.getOverlaps().get(0));
         }
-        segments.add(blockElement.getMainSeg());
+        segments.addAll(blockElement.getMainSegs());
         for (int i = 1; i < blockElement.getOverlaps().size(); i++) {
             segments.add(blockElement.getOverlaps().get(i));
         }
