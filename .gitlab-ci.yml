@@ -3,6 +3,36 @@ cache:
   paths:
     - .m2/repository
 
+build-gradle:
+  image: gradle:jdk11
+  stage: build
+  script:
+    - 'sh src/build-gradle.sh'
+  artifacts:
+    paths:
+    - src/build/
+    expire_in: 1 week
+
+build-maven:
+  image: maven:3.6.3-jdk-11
+  stage: build
+  script:
+    - 'sh src/build-maven-rcp.sh'
+  artifacts:
+    paths:
+    - src/build/
+    expire_in: 1 week
+
+build-vscode:
+  image: node:latest
+  stage: build
+  script:
+    - 'sh src/build-node-vscode.sh'
+  artifacts:
+    paths:
+    - src/build/
+    expire_in: 1 week
+
 test:
   image: gradle:jdk11
   stage: test
@@ -13,25 +43,4 @@ test:
       - src/build/
     reports:
       junit: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
-    expire_in: 1 week
-
-build-rcp-compiler:
-  image: gradle:jdk11
-  stage: build
-  script:
-    - 'sh src/build-gradle.sh'
-    - 'sh src/build-maven-rcp.sh'
-  artifacts:
-    paths:
-    - src/build/
-    expire_in: 1 week
-
-deploy-vscode:
-  image: node:latest
-  stage: deploy
-  script:
-    - 'sh src/build-node-vscode.sh'
-  artifacts:
-    paths:
-    - src/build/
     expire_in: 1 week
