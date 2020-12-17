@@ -158,7 +158,7 @@ enum PointAspectType:
 BlockElement:
 	name=ID 
 		('overlap' overlaps+=[SegmentElement])?
-		'main' mainSeg=[SegmentElement] 
+		'main' (mainSegs+=[SegmentElement])+
 		('overlap' overlaps+=[SegmentElement])?
 		(limitKey=[ConfigKey] limitSpeed=Speed)?
 		('trains' (trainTypes+=TrainType)+ 'end')?

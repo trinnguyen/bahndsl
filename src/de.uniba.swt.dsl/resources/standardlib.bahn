@@ -94,9 +94,14 @@ signaltypes
             red 0x00
         end
         initial red
-    lightstop # Licht-Sperrsignal
+    shunting
         aspects
             white 0x01
+            red 0x00
+        end
+        initial red
+    halt
+        aspects
             red 0x00
         end
         initial red

@@ -13,4 +13,4 @@ unzip build/bahnc-*.zip -d $BUILD
 mv $BUILD/bahnc-* $BUILD/bahnc
 
 # run test
-./gradlew $MODULE:test
+gradle $MODULE:test

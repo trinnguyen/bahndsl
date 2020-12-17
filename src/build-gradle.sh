@@ -1,7 +1,7 @@
 #!/bin/bash
 cd "$(dirname "$0")" || exit
-./gradlew de.uniba.swt.dsl:build
-./gradlew de.uniba.swt.dsl.ide:build
+gradle de.uniba.swt.dsl:build
+gradle de.uniba.swt.dsl.ide:build
 
 # build folder
 mkdir build

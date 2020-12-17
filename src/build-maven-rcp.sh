@@ -1,7 +1,7 @@
 #!/bin/bash
 cd "$(dirname "$0")" || exit
 MAVEN_CLI_OPTS="--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
-./mvnw $MAVEN_CLI_OPTS clean install
+mvn $MAVEN_CLI_OPTS clean install
 
 # build folder
 mkdir build

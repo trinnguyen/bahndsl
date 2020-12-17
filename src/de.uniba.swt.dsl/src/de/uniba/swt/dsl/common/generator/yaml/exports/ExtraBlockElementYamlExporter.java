@@ -46,16 +46,22 @@ class ExtraBlockElementYamlExporter extends AbstractElementYamlExporter<ExtraBlo
     protected List<Tuple<String, Object>> getProps(ExtraBlockElement element) {
         List<Tuple<String, Object>> list = new ArrayList<>();
         List<String> overlaps = new ArrayList<>();
+        List<String> mainSegs = new ArrayList<>();
 
-        double length = element.getBlockElement().getMainSeg().getLength().getValue();
-        LengthUnit unit = element.getBlockElement().getMainSeg().getLength().getUnit();
+        double length = 0;
+        LengthUnit unit = LengthUnit.CENTIMETRE;
+        for (SegmentElement mainSeg : element.getBlockElement().getMainSegs()) {
+            mainSegs.add(mainSeg.getName());
+            length += mainSeg.getLength().getValue();
+            unit = mainSeg.getLength().getUnit();
+        }
         for (SegmentElement overlap : element.getBlockElement().getOverlaps()) {
             overlaps.add(overlap.getName());
             length += overlap.getLength().getValue();
         }
 
         list.add(Tuple.of("length", String.format("%.2f%s", length, unit.getLiteral().toLowerCase())));
-        list.add(Tuple.of("main", element.getBlockElement().getMainSeg().getName()));
+        list.add(Tuple.of("main", mainSegs));
         list.add(Tuple.of("overlaps", overlaps));
         if (element.getDirection() != null) {
             list.add(Tuple.of("direction", element.getDirection().toString().toLowerCase()));
