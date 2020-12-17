@@ -65,19 +65,11 @@ public class BahnGenerator extends AbstractGenerator {
 	@Inject
 	LayoutGenerator layoutGenerator;
 
-	private boolean shouldGenerateSCCharts;
-
 	@Override
 	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		var bahnModel = BahnUtil.getBahnModel(resource);
 		if (bahnModel == null)
 			return;
-
-		// check required function before normalization
-		shouldGenerateSCCharts = checkInterlockingFunctions(bahnModel, false);
-
-		// normalize
-		normalizationProvider.normalize(BahnUtil.getDecls(resource.getResourceSet()));
 
 		// layout generator must run first to generate network layout
 		layoutGenerator.generate(fsa, bahnModel);
@@ -87,10 +79,15 @@ public class BahnGenerator extends AbstractGenerator {
 		yamlConfigGenerator.generate(fsa, bahnModel);
 
 		// sccharts
+		boolean shouldGenerateSCCharts = checkInterlockingFunctions(bahnModel, false);
 		if (shouldGenerateSCCharts) {
+			// normalize
+			normalizationProvider.normalize(BahnUtil.getDecls(resource.getResourceSet()));
+
+			// generate
 			scChartsGenerator.generate(fsa, bahnModel);
 		} else {
-			logger.warn("Missing function for requesting route. SCCharts code generation is skipped.");
+			logger.info("Missing function for requesting route. SCCharts code generation is skipped.");
 		}
 	}
 

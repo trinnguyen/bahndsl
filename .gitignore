@@ -14,3 +14,4 @@ out/
 .DS_Store
 *.xml_gen
 test-gen/
+*.log
