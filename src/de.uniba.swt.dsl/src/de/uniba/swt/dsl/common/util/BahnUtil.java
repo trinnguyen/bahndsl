@@ -69,7 +69,7 @@ public class BahnUtil {
     }
 
     public static List<FuncDecl> getDecls(ResourceSet set) {
-        return set.getResources().stream().map(BahnUtil::getDecls).flatMap(Collection::stream).collect(Collectors.toList());
+        return set.getResources().stream().map(BahnUtil::getDecls).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toList());
     }
 
     public static List<FuncDecl> getDecls(Resource resource) {

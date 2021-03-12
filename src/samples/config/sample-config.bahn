@@ -18,7 +18,7 @@ module Sample
     signals lightcontrol
         exit signal1 0x07
         exit signal2 0x08
-        exit signal3 0x09
+        exit signal1 0x09
     end
 
     points onecontrol

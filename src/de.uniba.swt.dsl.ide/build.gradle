@@ -2,7 +2,7 @@ plugins {
 	id "application"
 }
 application {
-	mainClassName = "org.eclipse.xtext.ide.server.ServerLauncher"
+	mainClassName = "de.uniba.swt.dsl.ide.BahnServerLauncher"
 	applicationDefaultJvmArgs = ["--add-opens","java.base/java.lang=ALL-UNNAMED"]
 }
 distributions {

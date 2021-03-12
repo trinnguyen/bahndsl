@@ -8,7 +8,7 @@ buildscript {
 }
 
 subprojects {
-	ext.xtextVersion = '2.21.0'
+	ext.xtextVersion = '2.23.0'
 	ext.junitversion = '5.6.2'
 	repositories {
 		mavenCentral()
@@ -24,7 +24,7 @@ subprojects {
 	apply plugin: 'eclipse'
 	
 	group = 'de.uniba.swt.dsl'
-	version = '1.0.0'
+	version = '1.0.1'
 	
 	sourceCompatibility = '11'
 	targetCompatibility = '11'

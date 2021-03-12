@@ -27,6 +27,7 @@ package de.uniba.swt.dsl.normalization;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import de.uniba.swt.dsl.bahn.*;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.resource.SaveOptions;
@@ -86,7 +87,7 @@ public class BahnNormalizationProvider {
             normalizeFunc(decl);
         }
 
-        log(decls.get(0));
+        debug(decls.get(0));
     }
 
     private void prepare() {
@@ -129,10 +130,12 @@ public class BahnNormalizationProvider {
         }
     }
 
-    private void log(FuncDecl funcDecl) {
-        for (Resource resource : funcDecl.eResource().getResourceSet().getResources()) {
-            if (resource.getContents().size() > 0) {
-                logger.debug(serializer.serialize(resource.getContents().get(0), SaveOptions.newBuilder().format().getOptions()));
+    private void debug(FuncDecl funcDecl) {
+        if (logger.getLevel() == Level.DEBUG) {
+            for (Resource resource : funcDecl.eResource().getResourceSet().getResources()) {
+                if (resource.getContents().size() > 0) {
+                    logger.debug(serializer.serialize(resource.getContents().get(0), SaveOptions.newBuilder().format().getOptions()));
+                }
             }
         }
     }

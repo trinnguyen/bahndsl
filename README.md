@@ -10,7 +10,7 @@ Repository for Masters thesis on BahnDSL: A Domain-Specific Language for Configu
 - [Windows: BahnIDE-win32.win32.x86_64.zip](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/master/raw/src/build/BahnIDE-win32.win32.x86_64.zip?job=build-maven)
 
 ### bahnc (Bahn Compiler CLI)
-- [macOS/Linux/Windows: bahnc-1.0.0.zip](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/master/raw/src/build/bahnc-1.0.0.zip?job=build-gradle)
+- [macOS/Linux/Windows: bahnc-1.0.1.zip](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/master/raw/src/build/bahnc-1.0.1.zip?job=build-gradle)
 
 ### Test Reports
 - [test-reports.tar.gz](https://gitlab.rz.uni-bamberg.de/swt/teaching/2019-ws/thesis-masters-bahndsl/-/jobs/artifacts/master/raw/src/build/test-reports.tar.gz?job=test)

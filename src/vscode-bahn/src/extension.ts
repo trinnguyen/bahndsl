@@ -4,39 +4,57 @@ import * as path from 'path';
 import * as os from 'os';
 
 import {Trace} from 'vscode-jsonrpc';
-import { commands, window, workspace, ExtensionContext, Uri } from 'vscode';
-import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient';
+import { workspace, ExtensionContext } from 'vscode';
+import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo } from 'vscode-languageclient/node';
+import * as net from 'net';
 
 export function activate(context: ExtensionContext) {
-    let launcher = os.platform() === 'win32' ? 'bahn-ide-server.bat' : 'bahn-ide-server';
-    let script = context.asAbsolutePath(path.join('bahn-ide-server', 'bin', launcher));
-
-    let serverOptions: ServerOptions = {
-        run : { command: script },
-        debug: { command: script, args: [], options: { env: createDebugEnv() } }
-    };
     
-    let clientOptions: LanguageClientOptions = {
-        documentSelector: ['bahn'],
-        synchronize: {
-            fileEvents: workspace.createFileSystemWatcher('**/*.*')
-        }
-    };
-    
-    // Create the language client and start the client.
-    let lc = new LanguageClient('Bahn IDE server', serverOptions, clientOptions);
-    
-    // enable tracing (.Off, .Messages, Verbose)
+    // start LC
+    let lc = createEmbeddedClient(context);
     lc.trace = Trace.Verbose;
     let disposable = lc.start();
     
-    // Push the disposable to the context's subscriptions so that the 
-    // client can be deactivated on extension deactivation
+    // keep disposable for deactivating
     context.subscriptions.push(disposable);
 }
 
-function createDebugEnv() {
-    return Object.assign({
-        JAVA_OPTS:"-Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n,quiet=y"
-    }, process.env)
+// create LanguageClient that works with embedded BahnDSL language server binary
+function createEmbeddedClient(context: ExtensionContext): LanguageClient {
+    let launcher = os.platform() === 'win32' ? 'bahn-ide-server.bat' : 'bahn-ide-server';
+    let script = context.asAbsolutePath(path.join('bahn-ide-server', 'bin', launcher));
+    // let debugEnv = Object.assign({
+    //     JAVA_OPTS:"-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n,quiet=y"
+    // }, process.env)
+
+    let serverOptions: ServerOptions = {
+        run : { command: script },
+        debug: { command: script, args: ['-log', '-trace'] }
+    };
+
+    return new LanguageClient('Bahn Language Server', serverOptions, createClientOptions());
+}
+
+// create LanguageClient that works with remote LSP (used for debugging)
+function createRemoteClient(context: ExtensionContext): LanguageClient {
+    
+    let serverInfo = () => {
+        let socket = net.connect({port: 8081});
+        let result: StreamInfo = {
+            writer: socket,
+            reader: socket
+        };
+        return Promise.resolve(result);
+    };
+	
+	return new LanguageClient('Remote Bahn Xtext Server', serverInfo, createClientOptions());
+}
+
+function createClientOptions(): LanguageClientOptions {
+    return {
+        documentSelector: ['bahn'],
+        synchronize: {
+            fileEvents: workspace.createFileSystemWatcher('**/*.bahn')
+        }
+    };   
 }
