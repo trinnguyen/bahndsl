@@ -3,7 +3,7 @@ set -e
 cd "$(dirname "$0")"
 
 # ensure gradle is build
-sh build-gradle.sh
+sh build-gradle.sh || exit 1
 
 # unzip
 MODULE=de.uniba.swt.dsl.cli.tests
