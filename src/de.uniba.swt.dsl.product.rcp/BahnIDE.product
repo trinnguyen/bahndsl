@@ -203,6 +203,8 @@
       <plugin id="org.w3c.dom.svg"/>
       <plugin id="de.jcup.yamleditor" />
       <plugin id="org.eclipse.gef.dot.ui"/>
+      <plugin id="de.cau.cs.kieler.sccharts"/>
+      <plugin id="de.cau.cs.kieler.kicool" />
    </plugins>
 
    <configurations>

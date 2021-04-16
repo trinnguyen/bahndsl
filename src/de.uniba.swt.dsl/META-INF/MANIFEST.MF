@@ -13,6 +13,8 @@ Require-Bundle: org.eclipse.xtext,
  org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
  org.eclipse.xtext.util,
  org.eclipse.emf.common,
+ de.cau.cs.kieler.sccharts,
+ de.cau.cs.kieler.kicool,
  org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: de.uniba.swt.dsl.serializer,
