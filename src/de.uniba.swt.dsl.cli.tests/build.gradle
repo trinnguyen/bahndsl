@@ -1,10 +1,10 @@
 dependencies {
-	compile project(':de.uniba.swt.dsl')
-	testCompile "org.junit.jupiter:junit-jupiter-api:${junitversion}"
-	testCompile "org.junit.jupiter:junit-jupiter-params:${junitversion}"
-	testRuntime "org.junit.jupiter:junit-jupiter-engine:${junitversion}"
+	implementation project(':de.uniba.swt.dsl')
+	testImplementation "org.junit.jupiter:junit-jupiter-api:${junitversion}"
+	testImplementation "org.junit.jupiter:junit-jupiter-params:${junitversion}"
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitversion}"
 
-	compile group: 'org.yaml', name: 'snakeyaml', version: '1.26'
+	implementation 'org.yaml:snakeyaml:1.26'
 }
 
 test {

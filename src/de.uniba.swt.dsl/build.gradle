@@ -17,12 +17,17 @@ tasks.withType(CreateStartScripts) {
 // END
 
 dependencies {
+	implementation fileTree('libs') { include '*.jar' }
+	implementation 'org.freemarker:freemarker:2.3.31'
+	implementation 'com.google.code.gson:gson:2.8.6'
+
+
 	implementation "org.eclipse.xtext:org.eclipse.xtext:${xtextVersion}"
 	implementation "org.eclipse.xtext:org.eclipse.xtext.xbase:${xtextVersion}"
 }
 configurations {
 	mwe2 {
-		extendsFrom compile
+		extendsFrom implementation
 	}
 }
 

@@ -24,6 +24,7 @@
 
 package de.uniba.swt.dsl.generator.externals;
 
+import de.uniba.swt.dsl.common.fsa.FsaUtil;
 import org.eclipse.xtext.generator.AbstractFileSystemAccess;
 import org.eclipse.xtext.generator.AbstractFileSystemAccess2;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
@@ -36,23 +37,12 @@ public abstract class ExternalGenerator {
 
     protected boolean executeArgs(String[] args, IFileSystemAccess2 fsa, CliRuntimeExecutor runtimeExec) {
         for (String cli : supportedTools()) {
-            if (runtimeExec.internalExecuteCli(cli, args, getDefaultOutputPath(fsa)))
+            if (runtimeExec.internalExecuteCli(cli, args, FsaUtil.getFolderPath(fsa)))
                 return true;
         }
 
-        System.err.println(String.format("None of the command lines exist: %s", Arrays.toString(supportedTools())));
+        System.err.printf("None of the command lines exist: %s%n", Arrays.toString(supportedTools()));
         return false;
-    }
-
-    private String getDefaultOutputPath(IFileSystemAccess2 fsa) {
-        if (fsa instanceof AbstractFileSystemAccess) {
-            var concreteFsa = (AbstractFileSystemAccess2) fsa;
-            var map = concreteFsa.getOutputConfigurations();
-            var key = AbstractFileSystemAccess.DEFAULT_OUTPUT;
-            return (map != null && map.containsKey(key)) ? map.get(key).getOutputDirectory() : "";
-        }
-
-        return "";
     }
 
 

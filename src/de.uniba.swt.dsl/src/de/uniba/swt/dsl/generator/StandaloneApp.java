@@ -28,7 +28,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.generator.externals.LibraryExternalGenerator;
-import de.uniba.swt.dsl.generator.externals.LowLevelCodeExternalGenerator;
+import de.uniba.swt.dsl.generator.externals.EmbeddedSccLowLevelCodeExternalGenerator;
 import de.uniba.swt.dsl.generator.externals.CliRuntimeExecutor;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -67,7 +67,7 @@ public class StandaloneApp {
     private GeneratorDelegate generator;
 
     @Inject
-    private LowLevelCodeExternalGenerator lowLevelCodeExternalGenerator;
+    private EmbeddedSccLowLevelCodeExternalGenerator lowLevelCodeExternalGenerator;
 
     @Inject
     private LibraryExternalGenerator libraryGenerator;
@@ -112,7 +112,7 @@ public class StandaloneApp {
 
         if (genLowLevelCode) {
             logger.info("Start generating low-level code");
-            if (!lowLevelCodeExternalGenerator.generate(fsa, runtimeExec))
+            if (!lowLevelCodeExternalGenerator.generate(fsa))
                 return false;
         }
 

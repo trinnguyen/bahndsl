@@ -2,12 +2,12 @@ plugins {
 	id 'jacoco'
 }
 dependencies {
-	compile project(':de.uniba.swt.dsl')
-	testCompile "org.junit.jupiter:junit-jupiter-api:${junitversion}"
-	testCompile "org.junit.jupiter:junit-jupiter-params:${junitversion}"
-	testRuntime 'org.junit.jupiter:junit-jupiter-engine'
-	testCompile "org.eclipse.xtext:org.eclipse.xtext.testing:${xtextVersion}"
-	testCompile "org.eclipse.xtext:org.eclipse.xtext.xbase.testing:${xtextVersion}"
+	implementation project(':de.uniba.swt.dsl')
+	testImplementation "org.junit.jupiter:junit-jupiter-api:${junitversion}"
+	testImplementation "org.junit.jupiter:junit-jupiter-params:${junitversion}"
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+	testImplementation "org.eclipse.xtext:org.eclipse.xtext.testing:${xtextVersion}"
+	testRuntimeOnly "org.eclipse.xtext:org.eclipse.xtext.xbase.testing:${xtextVersion}"
 }
 
 test {

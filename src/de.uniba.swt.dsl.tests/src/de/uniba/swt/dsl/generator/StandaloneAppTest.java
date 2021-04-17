@@ -25,15 +25,15 @@
 package de.uniba.swt.dsl.generator;
 
 import com.google.inject.Inject;
+import de.uniba.swt.dsl.common.fsa.FsaUtil;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.Tuple;
-import de.uniba.swt.dsl.generator.externals.LibraryExternalGenerator;
-import de.uniba.swt.dsl.generator.externals.LowLevelCodeExternalGenerator;
 import de.uniba.swt.dsl.tests.BahnInjectorProvider;
 import de.uniba.swt.dsl.tests.helpers.TestConstants;
 import de.uniba.swt.dsl.tests.helpers.TestHelper;
 import de.uniba.swt.dsl.tests.helpers.TestCliRuntimeExecutor;
 import org.eclipse.xtext.generator.InMemoryFileSystemAccess;
+import org.eclipse.xtext.generator.JavaIoFileSystemAccess;
 import org.eclipse.xtext.testing.InjectWith;
 import org.eclipse.xtext.testing.extensions.InjectionExtension;
 import org.eclipse.xtext.testing.util.ResourceHelper;
@@ -43,6 +43,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,6 +69,9 @@ class StandaloneAppTest {
     InMemoryFileSystemAccess fsa;
 
     @Inject
+    JavaIoFileSystemAccess javaIoFileSystemAccess;
+
+    @Inject
     TestCliRuntimeExecutor runtimeExecutor;
 
     @BeforeEach
@@ -73,27 +79,38 @@ class StandaloneAppTest {
         runtimeExecutor.clear();
     }
 
-    @Test
-    void runLowLevelGeneratorSuccess() throws Exception {
-        var res = resourceHelper.resource(TestConstants.SampleRequestRouteForeach);
-        var result = standaloneApp.runGenerator(res, "test.bahn", fsa, "test-gen", "c-code", runtimeExecutor);
+    /*
+    @ParameterizedTest
+    @ValueSource(strings = {
+            TestConstants.SampleRequestRouteForeach,
+    })
+    void runLowLevelGeneratorSuccess(String src) throws Exception {
+        var res = resourceHelper.resource(src);
+        var result = standaloneApp.runGenerator(res, "test.bahn", javaIoFileSystemAccess, "test-gen", "c-code", runtimeExecutor);
         assertTrue( result, "generate sample request route in library mode");
 
-        // ensure 2 call for two file
-        assertEquals(2, runtimeExecutor.getCommands().size());
-
-        // ensure all cli works with statebased
-        ensureArgsExist(runtimeExecutor.getCommands().get(0), "kico", List.of(LowLevelCodeExternalGenerator.SCC_GEN_SYSTEM, BahnConstants.REQUEST_ROUTE_SCTX));
-        ensureArgsExist(runtimeExecutor.getCommands().get(1), "kico", List.of(LowLevelCodeExternalGenerator.SCC_GEN_SYSTEM, BahnConstants.DRIVE_ROUTE_SCTX));
+        // ensures C code
+        assertTrue(javaIoFileSystemAccess.isFile("Drive_route.h"));
+        assertTrue(javaIoFileSystemAccess.isFile("Request_route.h"));
+        assertTrue(javaIoFileSystemAccess.isFile("Drive_route.c"));
+        assertTrue(javaIoFileSystemAccess.isFile("Request_route.c"));
     }
+     */
 
     @Test
     void runLibraryGeneratorSuccess() throws Exception {
         var res = resourceHelper.resource(TestConstants.SampleRequestRouteForeach);
-        var result = standaloneApp.runGenerator(res, "test.bahn", fsa, "test-gen", "library", runtimeExecutor);
+        var result = standaloneApp.runGenerator(res, "test.bahn", javaIoFileSystemAccess, "test-gen", "library", runtimeExecutor);
 
         // check last one is cc
         assertTrue(result, "Generate library mode");
+
+        // ensures C code
+        assertTrue(javaIoFileSystemAccess.isFile("Drive_route.h"));
+        assertTrue(javaIoFileSystemAccess.isFile("Request_route.h"));
+        assertTrue(javaIoFileSystemAccess.isFile("Drive_route.c"));
+        assertTrue(javaIoFileSystemAccess.isFile("Request_route.c"));
+
         assertTrue(runtimeExecutor.getCommands().size() > 0, "3 commands must be called for sccharts and c-compiler");
 
         // check last one
