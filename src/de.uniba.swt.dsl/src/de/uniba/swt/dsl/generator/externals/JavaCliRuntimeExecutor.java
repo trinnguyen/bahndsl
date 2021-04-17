@@ -24,13 +24,20 @@
 
 package de.uniba.swt.dsl.generator.externals;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import de.uniba.swt.dsl.common.util.BahnUtil;
+import de.uniba.swt.dsl.common.util.StringUtil;
+import de.uniba.swt.dsl.common.util.Tuple;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class JavaCliRuntimeExecutor extends CliRuntimeExecutor {
 
@@ -39,46 +46,63 @@ public class JavaCliRuntimeExecutor extends CliRuntimeExecutor {
     @Override
     protected boolean internalExecuteCli(String command, String[] args, String workingDir) {
         try {
-            StringBuilder builder = new StringBuilder();
-            builder.append(getPrefixIfNeeded()).append(command);
-            if (args != null) {
-                builder.append(" ");
-                builder.append(String.join(" ", args));
-            }
+            var lst = new ArrayList<String>();
+            var path = getCommandPath(command);
+            if (StringUtil.isNullOrEmpty(path))
+                return false;
 
-            var dir = new File(workingDir);
-            var strCmd = builder.toString();
+            lst.add(path);
+            if (args != null) {
+                lst.addAll(Arrays.asList(args));
+            }
 
             // log
-            logger.info(String.format("Working directory: %s", dir.getAbsolutePath()));
-            logger.info(String.format("Execute: %s", strCmd));
+            var dir = new File(workingDir);
+            logger.info(String.format("Execute: '%s' in %s", String.join(" ", lst), dir.getAbsolutePath()));
 
-            // execute
-            var process = Runtime.getRuntime().exec(strCmd, null, dir);
-
-            String s;
-            // monitor result
-            try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                while ((s = stdInput.readLine()) != null) {
-                    logger.info(s);
-                }
-            }
-
-            try (BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
-                while ((s = stdError.readLine()) != null) {
-                    System.out.println(s);
-                }
-            }
-
-            return process.waitFor() == 0;
-        } catch (InterruptedException | IOException e) {
+            // return
+            return executeCommand(lst.toArray(String[]::new), dir).getFirst();
+        } catch (IOException | InterruptedException e) {
             logger.warn(e.getMessage(), e);
         }
 
         return false;
     }
 
-    private static String getPrefixIfNeeded() {
-        return BahnUtil.isWindows() ? "cmd /c " : "";
+    private static String getCommandPath(String command) throws IOException, InterruptedException {
+        if (BahnUtil.isWindows()) {
+            var filePair = executeCommand(new String[] {"where", command}, null);
+            return filePair.getFirst() ? filePair.getSecond() : null;
+        }
+
+        return command;
+    }
+
+
+    private static Tuple<Boolean, String> executeCommand(String[] args, File dir) throws IOException, InterruptedException {
+        String KeyStdOut = "stdout";
+        // execute
+        var process = Runtime.getRuntime().exec(args, null, dir);
+        var resultStr = Stream.of(Tuple.of("stdout", process.getInputStream()), Tuple.of("stderr", process.getErrorStream())).parallel().map(tuple -> {
+            try {
+                var text = CharStreams.toString(new InputStreamReader(tuple.getSecond(), Charsets.UTF_8));
+                return Tuple.of(tuple.getFirst(), text);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return Tuple.of(tuple.getFirst(), "");
+        }).collect(Collectors.toList());
+
+
+        String output = null;
+        for (Tuple<String, String> tuple : resultStr) {
+            var text = tuple.getSecond().trim();
+            if (tuple.getFirst().equals(KeyStdOut)) {
+                output = text;
+            }
+            logger.info(text);
+        }
+
+        return Tuple.of(process.waitFor() == 0, output);
     }
 }

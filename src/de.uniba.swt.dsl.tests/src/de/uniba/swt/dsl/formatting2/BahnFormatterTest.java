@@ -59,7 +59,7 @@ class BahnFormatterTest {
     @Test
     public void testFormatterExpr() throws Exception {
         var fmt = formatCode("def test() end");
-        var expected = "def test()\nend\n";
+        var expected = "def test()" + System.lineSeparator() + "end" + System.lineSeparator();
         assertEquals(expected, fmt);
     }
 

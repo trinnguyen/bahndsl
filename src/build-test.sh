@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 cd "$(dirname "$0")"
-gradle de.uniba.swt.dsl.test:test de.uniba.swt.dsl.test:jacocoTestReport || exit 1
+./gradlew de.uniba.swt.dsl.test:test de.uniba.swt.dsl.test:jacocoTestReport || exit 1
 
 # build folder
 mkdir -p build

@@ -50,16 +50,23 @@ public class LibraryExternalGenerator extends ExternalGenerator {
 
     private static final Logger logger = Logger.getLogger(LibraryExternalGenerator.class);
 
-    private final List<Tuple<String, String>> resources;
+    private final ArrayList<Tuple<String, String>> resources;
 
     private String sourceFileName;
 
     public LibraryExternalGenerator() {
-        resources = List.of(
+        resources = new ArrayList<>(List.of(
                 Tuple.of("tick_wrapper_header.code", "tick_wrapper.h"),
                 Tuple.of("drive_route_wrapper.code", "drive_route_wrapper.c"),
                 Tuple.of("request_route_wrapper.code", "request_route_wrapper.c"),
-                Tuple.of("bahn_data_util.code", "bahn_data_util.h"));
+                Tuple.of("bahn_data_util.code", "bahn_data_util.h"))
+        );
+
+        // add placeholder for windows to get the DLL file compiled
+        // the .bahn source must be recompiled directly on the swtbahn-server again (linux arm based machine)
+        if (BahnUtil.isWindows()) {
+            resources.add(Tuple.of("bahn_data_util_source.code", "bahn_data_util.c"));
+        }
     }
 
     public void setSourceFileName(String sourceFileName) {
@@ -68,6 +75,11 @@ public class LibraryExternalGenerator extends ExternalGenerator {
 
     @Override
     protected String[] supportedTools() {
+
+        if (BahnUtil.isWindows()) {
+            return new String[] {"clang", "gcc"};
+        }
+
         return new String[] {"cc", "clang", "gcc"};
     }
 
@@ -100,7 +112,10 @@ public class LibraryExternalGenerator extends ExternalGenerator {
         // start code generation
         List<String> args = new ArrayList<>();
         args.add("-shared");
-        args.add("-fPIC");
+
+        if (!BahnUtil.isWindows()) {
+            args.add("-fPIC");
+        }
 
         // custom depend on os
         if (BahnUtil.isMacOS()) {

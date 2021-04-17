@@ -27,6 +27,7 @@ package de.uniba.swt.dsl.generator;
 import com.google.inject.Inject;
 import de.uniba.swt.dsl.common.fsa.FsaUtil;
 import de.uniba.swt.dsl.common.util.BahnConstants;
+import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.tests.BahnInjectorProvider;
 import de.uniba.swt.dsl.tests.helpers.TestConstants;
@@ -116,7 +117,8 @@ class StandaloneAppTest {
         // check last one
         // fix lib name because the server would find the lib based on name
         var cmd = runtimeExecutor.getCommands().get(runtimeExecutor.getCommands().size() - 1);
-        ensureArgsExist(cmd, "cc", List.of("-shared", "-I", "-o", "libinterlocking"));
+        var expectedCmd = BahnUtil.isWindows() ? "clang" : "cc";
+        ensureArgsExist(cmd, expectedCmd, List.of("-shared", "-I", "-o", "libinterlocking"));
     }
 
     @Test
