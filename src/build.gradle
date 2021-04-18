@@ -24,7 +24,7 @@ subprojects {
 	apply plugin: 'eclipse'
 	
 	group = 'de.uniba.swt.dsl'
-	version = '1.0.1'
+	version = '1.0.2'
 	
 	sourceCompatibility = '11'
 	targetCompatibility = '11'

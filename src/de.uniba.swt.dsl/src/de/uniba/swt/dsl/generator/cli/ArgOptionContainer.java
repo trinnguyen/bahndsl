@@ -46,6 +46,7 @@ public class ArgOptionContainer {
         StringBuilder builder = new StringBuilder();
         builder.append("USAGE: ").append(prefix).append(" ");
         builder.append(options.stream().map(o -> "[" + o.getFormattedKeyValue() + "]").collect(Collectors.joining(" ")));
+        builder.append(" ").append("file");
         builder.append("\n");
         for (ArgOption option : options) {
             String tab = option.isHasValue() ? "\t" : "\t\t";

@@ -117,12 +117,16 @@ public class Main {
 
 	private static void showHelp(ArgOptionContainer container, boolean showAll) {
 		if (showAll) {
-			System.out.println("OVERVIEW: Bahn compiler\n");
+			System.out.printf("OVERVIEW: Bahn compiler %s%n%n", getVersion());
 		}
-		System.out.println(container.formatHelp("bahnc file"));
+		System.out.println(container.formatHelp("bahnc"));
 		System.out.println("EXAMPLE: \n" +
 				"  bahnc example.bahn\n" +
 				"  bahnc -m library -v example.bahn\n" +
 				"  bahnc -o output/src-gen example.bahn\n");
+	}
+
+	private static String getVersion() {
+		return "1.0.2";
 	}
 }
