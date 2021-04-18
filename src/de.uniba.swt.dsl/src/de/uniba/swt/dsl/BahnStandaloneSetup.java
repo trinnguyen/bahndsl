@@ -27,13 +27,14 @@
  */
 package de.uniba.swt.dsl;
 
+import com.google.inject.Injector;
 
 /**
  * Initialization support for running Xtext languages without Equinox extension registry.
  */
 public class BahnStandaloneSetup extends BahnStandaloneSetupGenerated {
 
-	public static void doSetup() {
-		new BahnStandaloneSetup().createInjectorAndDoEMFRegistration();
+	public static Injector doSetup() {
+		return new BahnStandaloneSetup().createInjectorAndDoEMFRegistration();
 	}
 }

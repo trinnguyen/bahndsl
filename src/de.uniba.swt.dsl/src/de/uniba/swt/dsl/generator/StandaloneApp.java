@@ -29,6 +29,7 @@ import com.google.inject.Provider;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.generator.externals.LibraryExternalGenerator;
 import de.uniba.swt.dsl.generator.externals.EmbeddedSccLowLevelCodeExternalGenerator;
+import de.uniba.swt.dsl.generator.externals.JavaCliRuntimeExecutor;
 import de.uniba.swt.dsl.generator.externals.CliRuntimeExecutor;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -65,6 +66,9 @@ public class StandaloneApp {
 
     @Inject
     private GeneratorDelegate generator;
+    
+    @Inject
+    private JavaCliRuntimeExecutor runtimeExec;
 
     @Inject
     private EmbeddedSccLowLevelCodeExternalGenerator lowLevelCodeExternalGenerator;
@@ -72,17 +76,17 @@ public class StandaloneApp {
     @Inject
     private LibraryExternalGenerator libraryGenerator;
 
-    public boolean runGenerator(String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String mode, CliRuntimeExecutor runtimeExec) {
+    public boolean runGenerator(String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String mode) {
         var resource = loadResource(filePath);
         if (resource == null) {
             System.err.println("Invalid input file: " + filePath);
             return false;
         }
 
-        return runGenerator(resource, filePath, fsa, outputPath, mode, runtimeExec);
+        return runGenerator(resource, filePath, fsa, outputPath, mode);
     }
 
-    public boolean runGenerator(Resource resource, String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String mode, CliRuntimeExecutor runtimeExec) {
+    public boolean runGenerator(Resource resource, String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String mode) {
         // load
         File file = new File(filePath);
         var out = outputPath;
