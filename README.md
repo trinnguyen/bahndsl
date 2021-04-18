@@ -531,7 +531,7 @@ grant "route1" to "cargo_green"
 ```
 
 ### Built-in functions in standard library
-```ruby
+```python
 def get_shortest_route(string route_ids[]): string
 def get_previous_block(string route_id, string block_id): string
 def get_block(string route_id, string segment_ids[]) : string
