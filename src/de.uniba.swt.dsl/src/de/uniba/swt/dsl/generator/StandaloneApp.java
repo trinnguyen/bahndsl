@@ -27,16 +27,18 @@ package de.uniba.swt.dsl.generator;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import de.uniba.swt.dsl.common.util.BahnUtil;
-import de.uniba.swt.dsl.generator.externals.LibraryExternalGenerator;
+import de.uniba.swt.dsl.generator.externals.CliRuntimeExecutor;
 import de.uniba.swt.dsl.generator.externals.EmbeddedSccLowLevelCodeExternalGenerator;
 import de.uniba.swt.dsl.generator.externals.JavaCliRuntimeExecutor;
-import de.uniba.swt.dsl.generator.externals.CliRuntimeExecutor;
+import de.uniba.swt.dsl.generator.externals.LibraryExternalGenerator;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.diagnostics.Severity;
-import org.eclipse.xtext.generator.*;
+import org.eclipse.xtext.generator.AbstractFileSystemAccess2;
+import org.eclipse.xtext.generator.GeneratorContext;
+import org.eclipse.xtext.generator.GeneratorDelegate;
 import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.IResourceValidator;
@@ -68,7 +70,7 @@ public class StandaloneApp {
     private GeneratorDelegate generator;
     
     @Inject
-    private JavaCliRuntimeExecutor runtimeExec;
+    private JavaCliRuntimeExecutor javaCliRuntimeExecutor;
 
     @Inject
     private EmbeddedSccLowLevelCodeExternalGenerator lowLevelCodeExternalGenerator;
@@ -83,10 +85,10 @@ public class StandaloneApp {
             return false;
         }
 
-        return runGenerator(resource, filePath, fsa, outputPath, mode);
+        return runGenerator(resource, filePath, fsa, outputPath, mode, javaCliRuntimeExecutor);
     }
 
-    public boolean runGenerator(Resource resource, String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String mode) {
+    public boolean runGenerator(Resource resource, String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String mode, CliRuntimeExecutor runtimeExec) {
         // load
         File file = new File(filePath);
         var out = outputPath;
@@ -127,7 +129,7 @@ public class StandaloneApp {
                 return false;
         }
 
-        System.out.println(String.format("Code generation finished: %s", out));
+        System.out.printf("Code generation finished: %s%n", out);
         return true;
     }
 
