@@ -2,14 +2,93 @@
 
 BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 
-## Syntax
+## Installation
+
+- Latest version: 1.0.2
+
+### Requirements
+- Java SE 11 *([Download OpenJDK 11](https://adoptopenjdk.net/index.html?variant=openjdk11&jvmVariant=hotspot))*
+
+### bahnc (Bahn Compiler CLI)
+- [macOS/Linux/Windows: bahnc-1.0.2.zip](https://github.com/trinnguyen/bahndsl/releases/download/v1.0.2/bahnc-1.0.2.zip)
+
+### Bahn IDE
+- [macOS Intel: BahnIDE-macosx.cocoa.x86_64.tar.gz](https://github.com/trinnguyen/bahndsl/releases/download/v1.0.2/BahnIDE-macosx.cocoa.x86_64.tar.gz)
+  + Fix damaged macOS application: `xattr -c "Bahn IDE.app"`
+- [Linux: BahnIDE-linux.gtk.x86_64.tar.gz](https://github.com/trinnguyen/bahndsl/releases/download/v1.0.2/BahnIDE-linux.gtk.x86_64.tar.gz)
+- [Windows: BahnIDE-win32.win32.x86_64.zip](https://github.com/trinnguyen/bahndsl/releases/download/v1.0.2/BahnIDE-win32.win32.x86_64.zip)
+
+### VSCode extension
+- [Bahn Language VS Code Extension](https://marketplace.visualstudio.com/items?itemName=trinnguyen.bahn-language)
+
+## Usage
+
+### bahnc (command-line compiler)
+
+```
+OVERVIEW: Bahn compiler 1.0.2
+
+USAGE: bahnc [-o <path>] [-m <mode>] [-v] [-d] file
+  -o <path>	output folder
+  -m <mode>	code generation mode (default, c-code, library)
+  -v		verbose output
+  -d		debug output
+
+EXAMPLE: 
+  bahnc example.bahn
+  bahnc -m library -v example.bahn
+  bahnc -o output/src-gen example.bahn
+```
+
+- Options and usage:
+  - Add `-v` to enable verbose output
+  - Add `-o <path>` to change output folder. Default is `src-gen`
+  - Add `-d` for detailed log level (recommended for development only) 
+  - Generate YAML files and SCCharts models
+  ```
+  bahnc example.bahn -v
+  ```
+  - Generate C code using embedded SCCharts compiler
+  ```
+  bahnc example.bahn -m c-code -v
+  ```
+  - Compile shared C library using C compiler (cc/clang/gcc)
+  ```
+  bahnc example.bahn -m library -v
+  ```
+### Bahn IDE
+- Create new project
+  - File -> New -> Bahn Project
+  - Input project name, for example: SWTbahn
+  - Finish
+  - A new project with default BahnDSL source file named: `untitled.bahn` is created
+- Create new BahnDSl file
+  - File -> New -> Bahn File
+  - Input name
+  - New BahnDSL model is created with given name, contains empty railway configuration model and interlocking functions
+
+- Output
+  - Generated YAML files, SCCharts models and layout diagram are in `src-gen` folder
+- Generate C code:
+  - Right click to Bahn file in the Project Explorer -> Generate C Code
+- Compile to shared C library:
+  - Right click to Bahn file in the Project Explorer -> Compile to shared C library
+
+### Visual Studio Code extension
+
+- Install from Marketplace or search in VSCode with keyword: bahn
+- Open the BahnDSL source code in Visual Studio Code (with `.bahn` extension)
+- The compiler is triggered automatically and generates the output files on file changed.
+- The default output folder is `src-gen`
+
+## Getting started
 
 - A BahnDSL model contains two parts: railway model configuration and interlocking functions. Empty source code with all necessary is shown below:
 
 ```ruby
 module standard
    boards
-       master 0x00
+     master 0x00
    end
 
    segments master
@@ -45,41 +124,41 @@ end
 
 - The formal syntax of all elements is presented in the next section with examples
 
-## Configuration
-### Module: 
+## Syntax
+### Configuration
 ```ruby
 module module-name
-    boards 
-        board
-    end
+  boards 
+    board
+  end
 
-    segments board-name 
-        segment 
-    end
+  segments board-name 
+    segment 
+  end
 
-    signals board-name 
-        signal 
-    end
+  signals board-name 
+    signal 
+  end
 
-    points board-name 
-        point 
-    end
+  points board-name 
+    point 
+  end
 
-    blocks 
-        block 
-    end
+  blocks 
+    block 
+  end
 
-    crossings 
-        crossing 
-    end
+  crossings 
+    crossing 
+  end
 
-    layout 
-        connector 
-    end
+  layout 
+    connector 
+  end
 
-    trains 
-        train 
-    end
+  trains 
+    train 
+  end
 end
 ```
 
@@ -87,17 +166,17 @@ end
 - Syntax
 ```
 board-name hex-value 
-    features 
-        feature-hex-key : feature-hex-value 
-    end
+  features 
+    feature-hex-key : feature-hex-value 
+  end
 ```
 
 - Example
 ```ruby
 master 0xDA000D680052EF
   features
-    0x03:0x14
-    0x6E:0x00
+  0x03:0x14
+  0x6E:0x00
   end
 ```
 
@@ -121,12 +200,12 @@ signal-type-name signal-name hex-number
 - Composite signal (compound signal)
 ```ruby
 composite signal-name 
-    signals
-        reference-signal-name-1
-        reference-signal-name-2
-        ...
-        reference-signal-name-n
-    end
+  signals
+    reference-signal-name-1
+    reference-signal-name-2
+    ...
+    reference-signal-name-n
+  end
 ```
 
 - Example
@@ -135,18 +214,18 @@ entry signal1 0x00
 distant signal2 0x01
 
 composite signal3
-    signals
-        signal1
-        signal2
-    end
+  signals
+    signal1
+    signal2
+  end
 ```
 ### Point
 - Syntax
 ```
 point-name hex-number segment segment-name 
-    normal hex-number 
-    reverse hex-number 
-    initial initial-aspect
+  normal hex-number 
+  reverse hex-number 
+  initial initial-aspect
 ```
 
 - Example
@@ -181,57 +260,57 @@ crossing1 segment seg35
 - Syntax
 ```
 train-name hex-number steps number 
-    calibration 
-        [number] 
-    end
-    weight number weight-unit
-    length number length-unit
-    type train-type
-    peripherals
-        peripheral-name bit number initial number
-    end
+  calibration 
+    [number] 
+  end
+  weight number weight-unit
+  length number length-unit
+  type train-type
+  peripherals
+    peripheral-name bit number initial number
+  end
 ```
 
 - Example
 ```ruby
 cargo_green 0x0006 steps 126 
-    calibration 
-        5 15 30 45 60 75 90 105 120 
-    end 
-    weight 100g 
-    length 13cm 
-    type cargo
-    peripherals
-        head_light bit 4 initial 1
-    end
+  calibration 
+    5 15 30 45 60 75 90 105 120 
+  end 
+  weight 100g 
+  length 13cm 
+  type cargo
+  peripherals
+    head_light bit 4 initial 1
+  end
 ```
 
 ### Block
 - Syntax
 ```
 block-name overlap segment-name main segment-name overlap segment-name 
-    limit number speed-unit
-    trains 
-        train-type
-    end
+  limit number speed-unit
+  trains 
+    train-type
+  end
 ```
 
 - Example
 ```ruby
 block1 overlap seg20 main seg19 overlap seg18
   trains
-    cargo 
-    passenger
+  cargo 
+  passenger
   end
 ```
 
 ### Platform (reuse syntax from block)
 ```
 platform-name overlap segment-name main segment-name overlap segment-name 
-    limit number speed-unit
-    trains 
-        train-type
-    end
+  limit number speed-unit
+  trains 
+    train-type
+  end
 ```
 
 - Example
@@ -345,14 +424,14 @@ ids[0] = "route3"
 - Syntax
 ```
 def function-name(parameter-declaration-list): return-type
-    statement-list
+  statement-list
 end
 ```
 
 - Example
 ```c
 def eval_str(string id1, string id2, string id3): string
-    return ""
+  return ""
 end
  
 def eval(string id1, string id2, string arr[])
@@ -388,7 +467,7 @@ int size = ids.len
 ### Arithmetic expressions
 - Operators
 ```
-*   /    %   +   -
+*   /  %   +   -
 ```
 
 - Example
@@ -402,8 +481,8 @@ int e = 3 + (4 * 5)
 
 ### Relational and equality expressions
 - Operators
-    - Relational operators: `>    >=    <    <=`
-    - Equality operators: `==    !=`
+  - Relational operators: `>  >=  <  <=`
+  - Equality operators: `==  !=`
 
 - Example:
 ```c
@@ -413,9 +492,9 @@ bool neq = "train1" != "train2"
 
 ### Logical expressions
 - Operators
-    - AND: `&&`
-    - OR: `||`
-    - NOT: `!`
+  - AND: `&&`
+  - OR: `||`
+  - NOT: `!`
 
 - Example
 ```c
@@ -429,9 +508,9 @@ bool b4 = false || (b1 == b2)
 - Syntax
 ```
 if condition-expression
-    statement-list-then
+  statement-list-then
 else
-    statement-list-else
+  statement-list-else
 end
 ```
 
@@ -441,9 +520,9 @@ int a = 1
 int b = 2
 
 if a > b
-    return a
+  return a
 else
-    return b
+  return b
 end
 ```
 
@@ -451,7 +530,7 @@ end
 - Syntax
 ```
 while condition-expression
-    statement-list
+  statement-list
 end
 ```
 
@@ -461,8 +540,8 @@ int i = 0
 int s = 0
 
 while i < 10
-    s = s + i
-    i = i + 1
+  s = s + i
+  i = i + 1
 end
 ```
 
@@ -470,7 +549,7 @@ end
 - Syntax
 ```
 for var-decl in var-reference
-    statement-list
+  statement-list
 end
 ```
 
@@ -479,7 +558,7 @@ end
 int nums[] = {1,1,2,3,5}
 int sum = 0
 for int n in nums
-    sum = sum + n
+  sum = sum + n
 end
 ```
 
