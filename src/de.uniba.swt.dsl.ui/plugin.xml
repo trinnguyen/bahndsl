@@ -495,7 +495,7 @@
 			id="de.uniba.swt.dsl.Bahn.generatec" >
 		</command>
 		<command
-			name="Compile to shared C library"
+			name="Compile to library"
 			description="Compile to shared library using CCharts and C compiler"
 			id="de.uniba.swt.dsl.Bahn.complelib">
 		</command>
