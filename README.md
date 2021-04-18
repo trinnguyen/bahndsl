@@ -6,7 +6,7 @@ BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 
 - A BahnDSL model contains two parts: railway model configuration and interlocking functions. Empty source code with all necessary is shown below:
 
-```
+```ruby
 module standard
    boards
        master 0x00
