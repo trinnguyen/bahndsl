@@ -47,7 +47,7 @@ end
 
 ## Configuration
 ### Module: 
-```
+```ruby
 module module-name
     boards 
         board
@@ -93,7 +93,7 @@ board-name hex-value
 ```
 
 - Example
-```
+```ruby
 master 0xDA000D680052EF
   features
     0x03:0x14
@@ -108,7 +108,7 @@ segment-name hex-number length number length-unit
 ```
 
 - Example
-```
+```ruby
 seg1 0x00 length 10cm
 ```
 
@@ -119,7 +119,7 @@ signal-type-name signal-name hex-number
 ```
 
 - Composite signal (compound signal)
-```
+```ruby
 composite signal-name 
     signals
         reference-signal-name-1
@@ -130,7 +130,7 @@ composite signal-name
 ```
 
 - Example
-```
+```ruby
 entry signal1 0x00
 distant signal2 0x01
 
@@ -150,7 +150,7 @@ point-name hex-number segment segment-name
 ```
 
 - Example
-```
+```ruby
 point1 0x00 segment seg4 normal 0x01 reverse 0x00 initial normal
 ```
 
@@ -161,7 +161,7 @@ signal-type-name signal-name hex-number
 ```
 
 - Example
-```
+```ruby
 platformlight platformlights 0x0A
 ```
 
@@ -172,7 +172,7 @@ crossing-name segment segment-name
 ```
 
 - Example
-```
+```ruby
 crossing1 segment seg35
 ```
 
@@ -193,7 +193,7 @@ train-name hex-number steps number
 ```
 
 - Example
-```
+```ruby
 cargo_green 0x0006 steps 126 
     calibration 
         5 15 30 45 60 75 90 105 120 
@@ -217,7 +217,7 @@ block-name overlap segment-name main segment-name overlap segment-name
 ```
 
 - Example
-```
+```ruby
 block1 overlap seg20 main seg19 overlap seg18
   trains
     cargo 
@@ -235,7 +235,7 @@ platform-name overlap segment-name main segment-name overlap segment-name
 ```
 
 - Example
-```
+```ruby
 platform1 overlap seg36 main seg37 overlap seg38
 ```
 
@@ -253,15 +253,15 @@ stem | straight | side | down | up | down1 | down2 | up1 | up2
 
 - Example
 
-```
+```ruby
 point6.stem -- block1.down
 ```
 
-```
+```ruby
 point6.stem -- block1.down -- block1.up
 ```
 
-```
+```ruby
 point6.stem -- block1.down -> block1.up
 ```
 
@@ -271,7 +271,7 @@ point6.stem -- block1.down -> block1.up
 - `request_route` is invoked by the SWTbahn-cli for selecting and grating route to train
 - `drive_route` is invoked by SWTbahn-cli for monitoring physical track elements on the railway model during train driving session
 - `request_route` is required to build the interlocking shared library. `drive_route` is optional.
-```
+```ruby
 def request_route(string src_signal_id, string dst_signal_id, string train_id): string
    return ""
 end
@@ -282,7 +282,7 @@ end
 
 ### Data Type: Scalar
 - Four primary types:
-```
+```c
 int
 float
 bool
@@ -293,7 +293,7 @@ string
 - Array is supported
 
 - Example
-```
+```c
 int index = 0
 float rate = 0.5
 bool valid = true
@@ -308,7 +308,7 @@ data-type name[]
 ```
 
 - Example
-```
+```c
 int index
 float rate
 string ids[]
@@ -321,7 +321,7 @@ variable-name = expression
 ```
 
 - Example
-```
+```c
 int index = 0
 float rate = 0.5
 bool valid = true
@@ -336,7 +336,7 @@ variable-name[index] = expression
 ```
 
 - Example
-```
+```c
 string ids[] = { "route1", "route2" }
 ids[0] = "route3"
 ```
@@ -350,7 +350,7 @@ end
 ```
 
 - Example
-```
+```c
 def eval_str(string id1, string id2, string id3): string
     return ""
 end
@@ -366,7 +366,7 @@ function-name(argument-list)
 ```
 
 - Example
-```
+```c
 string result = eval_str("a", "b", "c")
 ```
 
@@ -392,7 +392,7 @@ int size = ids.len
 ```
 
 - Example
-```
+```c
 int a = 3 + 4
 float b = 3 + 4.5
 int c = 4 % 5
@@ -406,7 +406,7 @@ int e = 3 + (4 * 5)
     - Equality operators: `==    !=`
 
 - Example:
-```
+```c
 bool greater = 3 > 4
 bool neq = "train1" != "train2"
 ```
@@ -418,7 +418,7 @@ bool neq = "train1" != "train2"
     - NOT: `!`
 
 - Example
-```
+```c
 bool b1 = true && true
 bool b2 = false || true
 bool b3 = !b1
@@ -436,7 +436,7 @@ end
 ```
 
 - Example
-```
+```c
 int a = 1
 int b = 2
 
@@ -456,7 +456,7 @@ end
 ```
 
 - Example
-```
+```c
 int i = 0
 int s = 0
 
@@ -475,7 +475,7 @@ end
 ```
 
 - Example
-```
+```c
 int nums[] = {1,1,2,3,5}
 int sum = 0
 for int n in nums
@@ -485,53 +485,53 @@ end
 
 ### Domain-specific expressions
 - Check segment occupation
-```
+```c
 bool is_occupied = is "seg1" occupied
 ```
 
 - Get signal state
-```
+```c
 string res = get state "signal1"
 ```
 
 - Get point state
-```
+```c
 string res = get state "point1"
 ```
 
 - Set signal state
-```
+```c
 bool success = set state "signal1" to clear
 ```
 
 - Set point state
-```
+```c
 bool success = set state "point1" to normal
 ```
 
 - Get config from YAML file
-```
+```c
 string src = get config route.source "route1"
 string[] segment_ids = get config route.path "route1"
 ```
 
 - Get routes from interlocking table
-```
+```c
 string route_ids[] = get routes from src_signal_id to dst_signal_id
 ```
 
 - Get expected point position in a route
-```
+```c
 string pos = get position "point1" in "route1"
 ```
 
 - Grant route
-```
+```c
 grant "route1" to "cargo_green"
 ```
 
 ### Built-in functions in standard library
-```
+```c
 def get_shortest_route(string route_ids[]): string
 def get_previous_block(string route_id, string block_id): string
 def get_block(string route_id, string segment_ids[]) : string
