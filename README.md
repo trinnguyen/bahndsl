@@ -25,7 +25,7 @@ BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 
 ### bahnc (command-line compiler)
 
-```
+```sh
 OVERVIEW: Bahn compiler 1.0.2
 
 USAGE: bahnc [-o <path>] [-m <mode>] [-v] [-d] file
