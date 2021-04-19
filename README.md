@@ -8,6 +8,12 @@ BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 
 ### Requirements
 - Java SE 11 *([Download OpenJDK 11](https://adoptopenjdk.net/index.html?variant=openjdk11&jvmVariant=hotspot))*
+- C Compiler (clang or gcc) for compiling shared library
+  + macOS: clang is delivered with Xcode
+  + Linux (Ubuntu): `apt install clang`
+  + Windows:
+    + clang (LLVM-[VERSION]-win64.exe): https://github.com/llvm/llvm-project/releases
+    + gcc (via MSYS2): https://packages.msys2.org/package/mingw-w64-x86_64-gcc
 
 ### bahnc (Bahn Compiler CLI)
 - [macOS/Linux/Windows: bahnc-1.0.2.zip](https://github.com/trinnguyen/bahndsl/releases/download/v1.0.2/bahnc-1.0.2.zip)
