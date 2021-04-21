@@ -2,6 +2,8 @@
 
 BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 
+[![BahnDSL on VSCode](https://vsmarketplacebadge.apphb.com/version/trinnguyen.bahn-language.svg)](https://marketplace.visualstudio.com/items?itemName=trinnguyen.bahn-language)
+
 ## Installation
 
 - Latest version: 1.0.2
