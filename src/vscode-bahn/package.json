@@ -2,7 +2,7 @@
     "name": "bahn-language",
     "displayName": "Bahn Language",
     "description": "Bahn support for VS Code",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "publisher": "trinnguyen",
     "repository": "https://github.com/trinnguyen/bahndsl",
     "license": "GPL-3.0",
@@ -46,7 +46,7 @@
         ]
     },
     "dependencies": {
-        "vscode-languageclient": "7.0.0"
+        "vscode-languageclient": "6.1.4"
     },
     "devDependencies": {
         "@types/node": "14.14.14",

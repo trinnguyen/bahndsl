@@ -4,19 +4,33 @@ import * as path from 'path';
 import * as os from 'os';
 
 import {Trace} from 'vscode-jsonrpc';
-import { workspace, ExtensionContext } from 'vscode';
-import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo } from 'vscode-languageclient/node';
+import { window, workspace, ExtensionContext, StatusBarAlignment } from 'vscode';
+import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo } from 'vscode-languageclient';
 import * as net from 'net';
+import { stat } from 'fs'
+
+const ServerName = 'Bahn IDE server'
+
+const statusBarItem = window.createStatusBarItem(StatusBarAlignment.Right, 0)
 
 export function activate(context: ExtensionContext) {
+    
     
     // start LC
     let lc = createEmbeddedClient(context);
     lc.trace = Trace.Verbose;
-    let disposable = lc.start();
-    
+    updateStatusBar(`$(loading) Starting ${ServerName}...`);
+    lc.onReady().then(() => {
+        updateStatusBar(`$(pass) ${ServerName}`);
+    });
     // keep disposable for deactivating
-    context.subscriptions.push(disposable);
+    context.subscriptions.push(lc.start());
+    context.subscriptions.push(statusBarItem);
+}
+
+function updateStatusBar(text: string) {
+    statusBarItem.text = text;
+    statusBarItem.show();
 }
 
 // create LanguageClient that works with embedded BahnDSL language server binary
@@ -32,7 +46,7 @@ function createEmbeddedClient(context: ExtensionContext): LanguageClient {
         debug: { command: script, args: ['-log', '-trace'] }
     };
 
-    return new LanguageClient('Bahn Language Server', serverOptions, createClientOptions());
+    return new LanguageClient(ServerName, serverOptions, createClientOptions());
 }
 
 // create LanguageClient that works with remote LSP (used for debugging)
@@ -47,14 +61,16 @@ function createRemoteClient(context: ExtensionContext): LanguageClient {
         return Promise.resolve(result);
     };
 	
-	return new LanguageClient('Remote Bahn Xtext Server', serverInfo, createClientOptions());
+	return new LanguageClient(`Remote ${ServerName}`, serverInfo, createClientOptions());
 }
 
 function createClientOptions(): LanguageClientOptions {
-    return {
-        documentSelector: ['bahn'],
-        synchronize: {
-            fileEvents: workspace.createFileSystemWatcher('**/*.bahn')
-        }
-    };   
+    // return {
+    //     documentSelector: ['bahn'],
+    //     synchronize: {
+    //         fileEvents: workspace.createFileSystemWatcher('**/*.bahn')
+    //     }
+    // };
+
+    return { documentSelector: [{ scheme: 'file', language: 'bahn' }] }
 }
