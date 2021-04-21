@@ -54,15 +54,15 @@ EXAMPLE:
   - Add `-d` for detailed log level (recommended for development only) 
   - Generate YAML files and SCCharts models
   ```
-  bahnc example.bahn -v
+  bahnc -v example.bahn
   ```
   - Generate C code using embedded SCCharts compiler
   ```
-  bahnc example.bahn -m c-code -v
+  bahnc -m c-code -v example.bahn
   ```
   - Compile shared C library using C compiler (cc/clang/gcc)
   ```
-  bahnc example.bahn -m library -v
+  bahnc -m library -v example.bahn
   ```
 ### Bahn IDE
 - Create new project
