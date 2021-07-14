@@ -618,10 +618,27 @@ grant "route1" to "cargo_green"
 ```
 
 ### Built-in functions in standard library
+- For a given array of routes, return the ID of the shortest route
 ```python
 def get_shortest_route(string route_ids[]): string
+```
+
+- For a given route, return the block that precedes `block_id`
+```python
 def get_previous_block(string route_id, string block_id): string
+```
+
+- For a given route, return the first block in the route with main segment equal to `segment_ids[0]`
+```python
 def get_block(string route_id, string segment_ids[]) : string
+```
+
+- For a given block, return whether it is occupied
+```python
 def is_block_occupied(string block_id): bool
+```
+
+- For a given signal, return whether it is a composition of other signals
+```python
 def is_composition_signal(string id): bool
 ```
