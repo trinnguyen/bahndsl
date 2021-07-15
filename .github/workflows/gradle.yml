@@ -18,8 +18,13 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
-    - name: Build Gradle projects
+    - name: Build bahnc with Gradle
       run: sh src/build-gradle.sh
+    - uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: src/build/*.zip
+          retention-days: 1
   
   build-maven:
 
@@ -32,8 +37,13 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
-    - name: Build Eclipse RCP with Maven
+    - name: Build Bahn IDE with Maven
       run: sh src/build-maven-rcp.sh
+    - uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: src/build/*.*
+          retention-days: 1
   
   test:
 
@@ -48,4 +58,9 @@ jobs:
         distribution: 'adopt'
     - name: Run tests with Gradle
       run: sh src/build-test.sh
+    - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
     
