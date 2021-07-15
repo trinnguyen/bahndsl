@@ -571,32 +571,32 @@ end
 ```
 
 ### Domain-specific expressions
-- Check segment occupation
+- Check segment occupation (returns true or false)
 ```c
 bool is_occupied = is "seg1" occupied
 ```
 
-- Get signal state
+- Get signal state (returns "stop", "caution", or "clear")
 ```c
 string res = get state "signal1"
 ```
 
-- Get point state
+- Get point state (returns "normal" or "reverse")
 ```c
 string res = get state "point1"
 ```
 
-- Set signal state
+- Set signal state (clear, caution, or clear)
 ```c
 bool success = set state "signal1" to clear
 ```
 
-- Set point state
+- Set point state (normal or reverse)
 ```c
 bool success = set state "point1" to normal
 ```
 
-- Get config from YAML file
+- Get config from YAML file (dot notation of schema in https://github.com/trinnguyen/bahndsl/blob/master/src/de.uniba.swt.dsl/resources/standardlib.bahn)
 ```c
 string src = get config route.source "route1"
 string[] segment_ids = get config route.path "route1"
@@ -607,7 +607,7 @@ string[] segment_ids = get config route.path "route1"
 string route_ids[] = get routes from src_signal_id to dst_signal_id
 ```
 
-- Get expected point position in a route
+- Get expected point position in a route (returns "normal" or "reverse")
 ```c
 string pos = get position "point1" in "route1"
 ```
@@ -618,10 +618,27 @@ grant "route1" to "cargo_green"
 ```
 
 ### Built-in functions in standard library
+- For a given array of routes, return the ID of the shortest route
 ```python
 def get_shortest_route(string route_ids[]): string
+```
+
+- For a given route, return the block that precedes `block_id`
+```python
 def get_previous_block(string route_id, string block_id): string
+```
+
+- For a given route, return the first block in the route with main segment equal to `segment_ids[0]`
+```python
 def get_block(string route_id, string segment_ids[]) : string
+```
+
+- For a given block, return whether it is occupied
+```python
 def is_block_occupied(string block_id): bool
+```
+
+- For a given signal, return whether it is a composition of other signals
+```python
 def is_composition_signal(string id): bool
 ```
