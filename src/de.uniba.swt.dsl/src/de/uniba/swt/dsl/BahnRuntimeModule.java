@@ -27,14 +27,28 @@
  */
 package de.uniba.swt.dsl;
 
+import de.uniba.swt.dsl.linker.BahnImportURIGlobalScopeProvider;
+import de.uniba.swt.dsl.linker.CustomLoadOnDemandResourceDescriptions;
 import org.eclipse.xtext.linking.ILinker;
+import org.eclipse.xtext.scoping.IGlobalScopeProvider;
+import org.eclipse.xtext.scoping.impl.LoadOnDemandResourceDescriptions;
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
  */
 public class BahnRuntimeModule extends AbstractBahnRuntimeModule {
+//    @Override
+//    public Class<? extends ILinker> bindILinker() {
+//        return StandardLibLazyLinker.class;
+//    }
+
+
     @Override
-    public Class<? extends ILinker> bindILinker() {
-        return StandardLibLazyLinker.class;
+    public Class<? extends IGlobalScopeProvider> bindIGlobalScopeProvider() {
+        return BahnImportURIGlobalScopeProvider.class;
+    }
+
+    public Class<? extends LoadOnDemandResourceDescriptions> bindLoadOnDemandResourceDescriptions() {
+        return CustomLoadOnDemandResourceDescriptions.class;
     }
 }

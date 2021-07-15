@@ -74,14 +74,13 @@ public class StandardLibHelper {
 	/**
      * Load stream from embedded resource of Java application
      * Used in cli compiler and ide server for visual studio code extension
-     * @return
-     */
-	private static Resource loadEmbeddedResource(ResourceSet resourceSet) {
+	 */
+	public static Resource loadEmbeddedResource(ResourceSet resourceSet) {
 		try (var stream = StandardLibHelper.class.getClassLoader().getResourceAsStream(FILE_NAME)) {
 			if (stream == null)
 				return null;
 			
-			URI uri = URI.createURI(FILE_NAME);
+			URI uri = getStandardLibPlatformUri();
 	        var resource = resourceSet.createResource(uri);
 			resource.load(stream, resourceSet.getLoadOptions());
 			return resource;
@@ -91,15 +90,18 @@ public class StandardLibHelper {
 		
 		return null;
 	}
-	
+
 	/**
 	 * Load resource from URI using Eclipse plugin
 	 * Run with Eclipse-based IDE only
-	 * @param resourceSet
-	 * @return
+	 * @param resourceSet set
+	 * @return resource
 	 */
-	private static Resource loadPluginResource(ResourceSet resourceSet)  {
-		URI uri = URI.createURI("platform:/plugin/de.uniba.swt.dsl/" + RESOURCES_FOLDER_NAME + "/" + FILE_NAME);
-    	return resourceSet.getResource(uri, false);
+	public static Resource loadPluginResource(ResourceSet resourceSet)  {
+		return resourceSet.getResource(getStandardLibPlatformUri(), false);
     }
+
+    public static URI getStandardLibPlatformUri() {
+		return URI.createURI("platform:/plugin/de.uniba.swt.dsl/" + RESOURCES_FOLDER_NAME + "/" + FILE_NAME);
+	}
 }
