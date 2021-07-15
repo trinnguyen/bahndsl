@@ -26,7 +26,6 @@ package de.uniba.swt.dsl.common.layout.models;
 
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
-import de.uniba.swt.dsl.common.layout.models.vertex.SignalVertexMember;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -87,6 +86,21 @@ public class Route {
 
     private String formatImmediateSignals() {
         return String.format("\t\timmediate signals: %s", getImmediateSignals());
+    }
+
+    public Orientation computeOrientation() {
+        var blocks = getBlocks();
+        // get last one
+        if (blocks.size() > 0) {
+            var last = blocks.get(blocks.size() - 1);
+            return last.getDirection() == BlockDirection.DownUp ? Orientation.AntiClockwise : Orientation.Clockwise;
+        }
+
+        return Orientation.AntiClockwise;
+    }
+
+    private List<BlockEdge> getBlocks() {
+        return this.edges.stream().filter(e -> e instanceof BlockEdge).map(e -> (BlockEdge)e).collect(Collectors.toList());
     }
 
     @Override
