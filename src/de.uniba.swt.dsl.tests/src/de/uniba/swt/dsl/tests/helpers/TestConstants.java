@@ -39,6 +39,9 @@ public class TestConstants {
             "   points master\n" +
             "   end\n" +
             "\n" +
+            "   peripherals master\n" +
+            "   end\n" +
+            "\n" +
             "   blocks\n" +
             "   end\n" +
             "\n" +
@@ -66,7 +69,7 @@ public class TestConstants {
             "signals lightcontrol2 end " +
             "points onecontrol1 point1 0x00 segment seg2 normal 0x01 reverse 0x00 initial normal end " +
             "points onecontrol2 end " +
-            "peripherals onecontrol1 entry sign2 0x02 end " +
+            "peripherals onecontrol1 onebit sign2 0x02 port 0x0018 end " +
             "peripherals onecontrol2 end " +
             "crossings end " +
             "blocks end " +
@@ -87,6 +90,8 @@ public class TestConstants {
             "segments master end " +
             "signals lightcontrol end " +
             "points onecontrol end " +
+            "peripherals onecontrol end " +
+            "peripherals lightcontrol end " +
             "blocks end " +
             "platforms end " +
             "layout end " +
