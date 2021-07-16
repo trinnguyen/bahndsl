@@ -3,7 +3,7 @@ plugins {
 	id "application"
 }
 application {
-	mainClassName = "de.uniba.swt.dsl.generator.Main"
+	mainClass.set("de.uniba.swt.dsl.generator.Main")
 	applicationDefaultJvmArgs = ["--add-opens","java.base/java.lang=ALL-UNNAMED"]
 }
 distributions {
@@ -59,6 +59,7 @@ task generateXtextLanguage(type: JavaExec) {
 
 generateXtext.dependsOn(generateXtextLanguage)
 clean.dependsOn(cleanGenerateXtextLanguage)
+processResources.dependsOn(generateXtextLanguage)
 eclipse.classpath.plusConfigurations += [configurations.mwe2]
 //this is an eclipse plugin project
 eclipseClasspath.enabled=false
