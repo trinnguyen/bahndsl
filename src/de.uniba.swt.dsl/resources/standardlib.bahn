@@ -3,6 +3,7 @@ schema
         id string
         source string
         destination string
+        orientation string
         path string[]
         sections string[]
         route_signals string[]
@@ -105,16 +106,20 @@ signaltypes
             red 0x00
         end
         initial red
-    peripheral 
-        aspects 
-            on 0x00
-        end
-        initial on
     platformlight 
         aspects
             on 0x00
             off 0x01
         end 
+        initial on
+end
+
+peripheraltypes
+    onebit
+        aspects
+            on 0x00
+            off 0x01
+        end
         initial on
 end
 

@@ -54,7 +54,7 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
 
         List<Object> pointItems = new ArrayList<>();
         List<RegularSignalElement> signalsItems = new ArrayList<>();
-        List<RegularSignalElement> peripherals = new ArrayList<>();
+        List<PeripheralElement> peripheralItems = new ArrayList<>();
         for (ModuleProperty property : properties) {
             if (property instanceof SegmentsProperty) {
                 exportSection("segments:", ((SegmentsProperty) property).getItems());
@@ -63,16 +63,7 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
             } else if (property instanceof PointsProperty) {
                 pointItems.addAll(((PointsProperty) property).getItems());
             } else if (property instanceof PeripheralsProperty) {
-                peripherals.addAll(regularSignalsFrom((PeripheralsProperty) property));
-            }
-        }
-
-        // add peripherals to signals or point depend on the current board, signals has higher priority
-        if (signalsItems.size() > 0) {
-            signalsItems.addAll(peripherals);
-        } else {
-            if (pointItems.size() > 0) {
-                pointItems.addAll(peripherals);
+                peripheralItems.addAll(((PeripheralsProperty) property).getItems());
             }
         }
 
@@ -85,14 +76,14 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
             exportSection("points-board:", pointItems);
         }
 
+        if (peripheralItems.size() > 0) {
+            exportSection("peripherals:", peripheralItems);
+        }
+
         decreaseLevel();
     }
 
     private Collection<? extends RegularSignalElement> regularSignalsFrom(SignalsProperty property) {
-        return property.getItems().stream().filter(s -> s instanceof RegularSignalElement).map(s -> (RegularSignalElement)s).collect(Collectors.toList());
-    }
-
-    private Collection<? extends RegularSignalElement> regularSignalsFrom(PeripheralsProperty property) {
         return property.getItems().stream().filter(s -> s instanceof RegularSignalElement).map(s -> (RegularSignalElement)s).collect(Collectors.toList());
     }
 

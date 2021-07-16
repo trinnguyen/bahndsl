@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 class RegularSignalElementYamlExporter extends AbstractElementYamlExporter<RegularSignalElement> {
-
     @Override
     protected String getId(RegularSignalElement element) {
         return element.getName();

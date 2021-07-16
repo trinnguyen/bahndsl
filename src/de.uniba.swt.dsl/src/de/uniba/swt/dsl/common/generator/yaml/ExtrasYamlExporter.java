@@ -66,8 +66,6 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
             List<SignalElement> elements = null;
             if (property instanceof SignalsProperty) {
                 elements = ((SignalsProperty) property).getItems();
-            } else if (property instanceof PeripheralsProperty) {
-                elements = ((PeripheralsProperty) property).getItems();
             }
 
             // export

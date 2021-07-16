@@ -24,28 +24,23 @@
 
 package de.uniba.swt.dsl.common.generator.yaml.exports;
 
-import de.uniba.swt.dsl.bahn.PointAspectType;
-import de.uniba.swt.dsl.bahn.PointElement;
-import de.uniba.swt.dsl.common.util.PointAspect;
+import de.uniba.swt.dsl.bahn.PeripheralElement;
 import de.uniba.swt.dsl.common.util.Tuple;
 
 import java.util.List;
-import java.util.Map;
 
-public class PointElementYamlExporter extends AbstractElementYamlExporter<PointElement> {
+public class PeripheralElementYamlExporter extends AbstractElementYamlExporter<PeripheralElement> {
     @Override
-    protected String getId(PointElement element) {
+    protected String getId(PeripheralElement element) {
         return element.getName();
     }
 
     @Override
-    protected List<Tuple<String, Object>> getProps(PointElement element) {
-        var aspects = List.of(
-                new PointAspect(PointAspectType.NORMAL, element.getNormalValue()),
-                new PointAspect(PointAspectType.REVERSE, element.getReverseValue()));
+    protected List<Tuple<String, Object>> getProps(PeripheralElement element) {
         return List.of(Tuple.of("number", element.getNumber()),
-                Tuple.of("aspects", aspects),
-                Tuple.of("initial", element.getInitial().getName().toLowerCase()),
-                Tuple.of("segment", element.getMainSeg().getName()));
+                Tuple.of("port", element.getPort()),
+                Tuple.of("aspects", element.getType().getItems()),
+                Tuple.of("initial", element.getType().getInitial().getName()),
+                Tuple.of("type", element.getType().getName()));
     }
 }

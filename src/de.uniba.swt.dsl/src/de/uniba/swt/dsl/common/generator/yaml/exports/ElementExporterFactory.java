@@ -46,6 +46,11 @@ public class ElementExporterFactory {
             return;
         }
 
+        if (obj instanceof PeripheralElement) {
+            new PeripheralElementYamlExporter().build(exporter, (PeripheralElement) obj);
+            return;
+        }
+
         if (obj instanceof AspectElement) {
             new AspectElementYamlExporter().build(exporter, (AspectElement) obj);
             return;
@@ -93,6 +98,11 @@ public class ElementExporterFactory {
 
         if (obj instanceof SignalType) {
             new SignalTypeYamlExporter().build(exporter, (SignalType) obj);
+            return;
+        }
+
+        if (obj instanceof PeripheralType) {
+            new PeripheralTypeYamlExporter().build(exporter, (PeripheralType) obj);
             return;
         }
     }
