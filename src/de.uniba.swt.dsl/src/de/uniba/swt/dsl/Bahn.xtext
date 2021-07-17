@@ -173,6 +173,7 @@ BlockElement:
 		('overlap' overlaps+=[SegmentElement])?
 		'main' (mainSegs+=[SegmentElement])+
 		('overlap' overlaps+=[SegmentElement])?
+		(reversed?='reversed')?
 		(limitKey=[ConfigKey] limitSpeed=Speed)?
 		('trains' (trainTypes+=TrainType)+ 'end')?
 ;

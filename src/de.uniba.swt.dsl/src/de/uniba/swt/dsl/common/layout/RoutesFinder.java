@@ -26,8 +26,11 @@ package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.common.layout.models.BlockDirection;
 import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
+import de.uniba.swt.dsl.common.layout.models.Orientation;
 import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.layout.models.edge.DoubleSlipSwitchEdge;
+import de.uniba.swt.dsl.common.layout.models.vertex.AbstractVertexMember;
+import de.uniba.swt.dsl.common.layout.models.vertex.BlockVertexMember;
 import de.uniba.swt.dsl.common.layout.models.vertex.SignalVertexMember;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
@@ -187,6 +190,24 @@ public class RoutesFinder {
             }
              */
         }
-        routes.add(new Route(srcMember.getName(), destMember.getName(), clonedEdges));
+
+        Orientation startingOrientation = Orientation.Clockwise;
+        for (AbstractVertexMember member : this.srcSignal.getMembers()) {
+            if (member instanceof BlockVertexMember) {
+                BlockVertexMember blockVertexMember = (BlockVertexMember) member;
+                startingOrientation = blockVertexMember.getEndpoint() == BlockVertexMember.BlockEndpoint.Down
+                        ? Orientation.Clockwise
+                        : Orientation.AntiClockwise;
+
+                if (blockVertexMember.getBlock().isReversed()) {
+                    startingOrientation = startingOrientation == Orientation.Clockwise
+                            ? Orientation.AntiClockwise
+                            : Orientation.Clockwise;
+                }
+                break;
+            }
+        }
+
+        routes.add(new Route(srcMember.getName(), destMember.getName(), clonedEdges, startingOrientation));
     }
 }
