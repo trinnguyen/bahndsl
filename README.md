@@ -227,6 +227,7 @@ composite signal3
     signal2
   end
 ```
+
 ### Point
 - Syntax
 ```
@@ -241,17 +242,6 @@ point-name hex-number segment segment-name
 point1 0x00 segment seg4 normal 0x01 reverse 0x00 initial normal
 ```
 
-### Peripheral (reuse signal syntax)
-- Syntax
-```
-signal-type-name signal-name hex-number
-```
-
-- Example
-```ruby
-platformlight platformlights 0x0A
-```
-
 ### Crossing
 - Syntax
 ```
@@ -263,6 +253,16 @@ crossing-name segment segment-name
 crossing1 segment seg35
 ```
 
+### Peripheral
+- Syntax
+```
+peripheral-type-name peripheral-name hex-number port hex-number
+```
+
+- Example
+```ruby
+onebit lantern 0x0A port 0x0027
+```
 
 ### Train
 - Syntax
@@ -307,8 +307,8 @@ block-name overlap segment-name main segment-name overlap segment-name
 ```ruby
 block1 overlap seg20 main seg19 overlap seg18
   trains
-  cargo 
-  passenger
+    cargo 
+    passenger
   end
 ```
 
