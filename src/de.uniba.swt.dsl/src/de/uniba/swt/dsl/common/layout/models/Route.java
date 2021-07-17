@@ -89,18 +89,22 @@ public class Route {
     }
 
     public Orientation computeOrientation() {
-        var blocks = getBlocks();
-        // get last one
-        if (blocks.size() > 0) {
-            var last = blocks.get(blocks.size() - 1);
-            return last.getDirection() == BlockDirection.DownUp ? Orientation.AntiClockwise : Orientation.Clockwise;
+        var last = this.getLastBlock();
+        if (last.isPresent() && last.get().getDirection() == BlockDirection.DownUp) {
+            return Orientation.AntiClockwise;
         }
 
-        return Orientation.AntiClockwise;
+        return Orientation.Clockwise;
     }
 
-    private List<BlockEdge> getBlocks() {
-        return this.edges.stream().filter(e -> e instanceof BlockEdge).map(e -> (BlockEdge)e).collect(Collectors.toList());
+    private Optional<BlockEdge> getLastBlock() {
+        for (int i = this.edges.size() - 1; i >= 0; i--) {
+            var edge = this.edges.elementAt(i);
+            if (edge instanceof BlockEdge)
+                return Optional.of((BlockEdge)edge);
+        }
+
+        return Optional.empty();
     }
 
     @Override
