@@ -62,5 +62,5 @@ jobs:
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
       with:
-        files: de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
+        files: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
     
