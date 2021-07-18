@@ -115,7 +115,9 @@ LayoutProperty :
 	'end';
 
 enum TrackState:
-	CLEAR = 'clear' | CAUTION = 'caution' | STOP = 'stop' | NORMAL = 'normal' | REVERSE = 'reverse'
+	CLEAR = 'clear' | CAUTION = 'caution' | STOP = 'stop'
+	| NORMAL = 'normal' | REVERSE = 'reverse'
+	| ON = 'on' | OFF = 'off'
 ;
 		
 enum TrainType :

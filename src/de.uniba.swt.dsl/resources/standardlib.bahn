@@ -28,6 +28,11 @@ schema
         segment string
     end
 
+    peripheral
+        id string
+        type string
+    end
+
     train
         id string
         type string
@@ -109,10 +114,10 @@ signaltypes
         initial red
     platformlight 
         aspects
-            on 0x00
-            off 0x01
+            high 0x00
+            low 0x01
         end 
-        initial on
+        initial high
 end
 
 # Board peripheral are set directly to the
@@ -120,10 +125,10 @@ end
 peripheraltypes
     onebit
         aspects
-            on 0x01
-            off 0x00
+            high 0x01
+            low 0x00
         end
-        initial on
+        initial high
 end
 
 def get_shortest_route(string route_ids[]): string
