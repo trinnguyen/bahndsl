@@ -38,7 +38,7 @@ schema
     block
         id string
         segment string
-        is_reversed string
+        is_reversed bool
         direction string
         length float
         limit int
