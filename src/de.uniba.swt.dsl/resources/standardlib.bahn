@@ -115,11 +115,13 @@ signaltypes
         initial on
 end
 
+# Board peripheral are set directly to the
+# ports, which are active high
 peripheraltypes
     onebit
         aspects
-            on 0x00
-            off 0x01
+            on 0x01
+            off 0x00
         end
         initial on
 end
