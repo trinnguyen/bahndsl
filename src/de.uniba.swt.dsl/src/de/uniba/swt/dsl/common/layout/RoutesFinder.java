@@ -191,21 +191,15 @@ public class RoutesFinder {
              */
         }
 
-        Orientation startingOrientation = Orientation.Clockwise;
-        for (AbstractVertexMember member : this.srcSignal.getMembers()) {
-            if (member instanceof BlockVertexMember) {
-                BlockVertexMember blockVertexMember = (BlockVertexMember) member;
-                startingOrientation = blockVertexMember.getEndpoint() == BlockVertexMember.BlockEndpoint.Down
-                        ? Orientation.Clockwise
-                        : Orientation.AntiClockwise;
-
-                if (blockVertexMember.getBlock().isReversed()) {
-                    startingOrientation = startingOrientation == Orientation.Clockwise
-                            ? Orientation.AntiClockwise
-                            : Orientation.Clockwise;
-                }
-                break;
-            }
+        String srcBlockKey = srcMember.getConnectedBlock().getName();
+        BlockVertexMember srcBlockMember = (BlockVertexMember) this.srcSignal.findMemberByName(srcBlockKey).get();
+        Orientation startingOrientation = srcBlockMember.getEndpoint() == BlockVertexMember.BlockEndpoint.Down
+                    ? Orientation.Clockwise
+                    : Orientation.AntiClockwise;
+        if (srcBlockMember.getBlock().isReversed()) {
+            startingOrientation = startingOrientation == Orientation.Clockwise
+                    ? Orientation.AntiClockwise
+                    : Orientation.Clockwise;
         }
 
         routes.add(new Route(srcMember.getName(), destMember.getName(), clonedEdges, startingOrientation));
