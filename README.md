@@ -297,7 +297,7 @@ cargo_green 0x0006 steps 126
 - Syntax
 ```
 block-name overlap segment-name main segment-name overlap segment-name 
-  reversing limit number speed-unit
+  reversed limit number speed-unit
   trains 
     train-type
   end
