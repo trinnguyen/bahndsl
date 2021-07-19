@@ -3,28 +3,37 @@
 import * as path from 'path';
 import * as os from 'os';
 
-import {Trace} from 'vscode-jsonrpc';
+import { Trace } from 'vscode-jsonrpc';
 import { window, workspace, ExtensionContext, StatusBarAlignment } from 'vscode';
 import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo } from 'vscode-languageclient';
 import * as net from 'net';
-import { stat } from 'fs'
+import { BahnConfigUtil } from './bahn-config'
+
 
 const ServerName = 'Bahn IDE server'
 
 const statusBarItem = window.createStatusBarItem(StatusBarAlignment.Right, 0)
 
 export function activate(context: ExtensionContext) {
-    
-    
     // start LC
-    let lc = createEmbeddedClient(context);
-    lc.trace = Trace.Verbose;
+    var languageClient = null;
+    const config = BahnConfigUtil.loadConfig()
+    if (config.remoteLspEnabled) {
+        console.log('connect to remote LSP server, port: ' + config.remoteLspPort)
+        languageClient = createRemoteClient(config.remoteLspPort)    
+    } else {
+        console.log('launch embedded LSP server')
+        languageClient = createEmbeddedClient(context)
+    }
+
+    languageClient.trace = Trace.Verbose;
     updateStatusBar(`$(loading) Starting ${ServerName}...`);
-    lc.onReady().then(() => {
+    languageClient.onReady().then(() => {
         updateStatusBar(`$(pass) ${ServerName}`);
     });
+
     // keep disposable for deactivating
-    context.subscriptions.push(lc.start());
+    context.subscriptions.push(languageClient.start());
     context.subscriptions.push(statusBarItem);
 }
 
@@ -33,13 +42,14 @@ function updateStatusBar(text: string) {
     statusBarItem.show();
 }
 
-// create LanguageClient that works with embedded BahnDSL language server binary
+/**
+ * create LanguageClient that works with embedded BahnDSL language server binary
+ * @param context context
+ * @returns lc
+ */
 function createEmbeddedClient(context: ExtensionContext): LanguageClient {
     let launcher = os.platform() === 'win32' ? 'bahn-ide-server.bat' : 'bahn-ide-server';
     let script = context.asAbsolutePath(path.join('bahn-ide-server', 'bin', launcher));
-    // let debugEnv = Object.assign({
-    //     JAVA_OPTS:"-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n,quiet=y"
-    // }, process.env)
 
     let serverOptions: ServerOptions = {
         run : { command: script },
@@ -49,28 +59,34 @@ function createEmbeddedClient(context: ExtensionContext): LanguageClient {
     return new LanguageClient(ServerName, serverOptions, createClientOptions());
 }
 
-// create LanguageClient that works with remote LSP (used for debugging)
-function createRemoteClient(context: ExtensionContext): LanguageClient {
-    
-    let serverInfo = () => {
-        let socket = net.connect({port: 8081});
-        let result: StreamInfo = {
+/**
+ * create LanguageClient that works with remote LSP (used for debugging)
+ * @param port port
+ * @returns lc
+ */
+function createRemoteClient(port: number): LanguageClient {
+
+    const serverInfo = () => {
+        const socket = net.connect({ port: port })
+        const result: StreamInfo = {
             writer: socket,
             reader: socket
-        };
-        return Promise.resolve(result);
-    };
-	
-	return new LanguageClient(`Remote ${ServerName}`, serverInfo, createClientOptions());
+        }
+        return Promise.resolve(result)
+    }
+
+    return new LanguageClient(ServerName, serverInfo, createClientOptions())
 }
 
+/**
+ * create client options
+ * @returns options
+ */
 function createClientOptions(): LanguageClientOptions {
-    // return {
-    //     documentSelector: ['bahn'],
-    //     synchronize: {
-    //         fileEvents: workspace.createFileSystemWatcher('**/*.bahn')
-    //     }
-    // };
-
-    return { documentSelector: [{ scheme: 'file', language: 'bahn' }] }
+    return {
+        documentSelector: [{
+            scheme: 'file',
+            language: 'bahn'
+        }]
+    }
 }

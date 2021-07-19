@@ -1,5 +1,6 @@
 package de.uniba.swt.dsl.ide;
 
+import com.google.common.base.Objects;
 import org.eclipse.xtext.ide.server.ServerLauncher;
 import org.eclipse.xtext.ide.server.SocketServerLauncher;
 
@@ -11,17 +12,16 @@ public class BahnServerLauncher {
 
     /**
      * arguments for default launcher: -log -trace
-     * arguments for localhost socket: -port=NUMBER
-     *  example: -port=8081
+     * arguments for localhost socket: -port NUMBER
+     *  example: -port 8686
      *
      * @param args arguments
      * @throws IOException IOException
      * @throws ExecutionException ExecutionException
      */
     public static void main(String[] args) throws IOException, ExecutionException {
-        var port = CustomSocketLauncher.tryParsingPort(args);
-        if (port.isPresent()) {
-            SocketServerLauncher.main(args);
+        if (CustomSocketLauncher.portExists(args)) {
+            new CustomSocketLauncher().launch(args);
         } else {
             ServerLauncher.main(args);
         }
@@ -32,23 +32,21 @@ class CustomSocketLauncher extends SocketServerLauncher {
 
     @Override
     protected int getPort(String... args) {
-        return tryParsingPort(args).orElse(DEFAULT_PORT);
+        String strPort = getValue(args, PORT);
+        try {
+            return Integer.parseInt(strPort);
+        } catch (NumberFormatException ex) {
+            return DEFAULT_PORT;
+        }
     }
 
-    public static Optional<Integer> tryParsingPort(String[] args) {
-        if (args != null && args.length > 0) {
-            for (String arg : args) {
-                if (arg.startsWith(SocketServerLauncher.PORT)) {
-                    var strPort = arg.substring(SocketServerLauncher.PORT.length());
-                    try {
-                        return Optional.of(Integer.parseInt(strPort));
-                    } catch (NumberFormatException ex) {
-                        System.err.println("Invalid arg for port: " + strPort);
-                    }
-                }
+    protected static boolean portExists(String... args) {
+        for (String arg : args) {
+            if (arg.startsWith(SocketServerLauncher.PORT)) {
+                return true;
             }
         }
 
-        return Optional.empty();
+        return false;
     }
 }
