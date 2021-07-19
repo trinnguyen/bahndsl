@@ -187,6 +187,25 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
+            "module test boards master 0x00 end segments master seg1 0x00 length 11cm seg2 0x00 length 12cm end end",
+            "module test boards master 0x00 end signals master entry sig1 0x00 end segments master seg1 0x00 length 12cm end end",
+            "module test boards master 0x00 end peripherals master onebit peri1 0x00 port 0x0027 end segments master seg1 0x00 length 12cm end end",
+    })
+    public void errorHexAlreadyDefinedInSegments(String src) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.SEGMENTS_PROPERTY, null, "Address", "is already used in the board");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "module test boards master 0x00 end peripherals master onebit peri1 0x01 port 0x0027 onebit peri2 0x01 port 0x0027 end end",
+            "module test boards master 0x00 end segments master seg1 0x00 length 12cm end peripherals master onebit peri1 0x00 port 0x0027 end end",
+    })
+    public void errorHexAlreadyDefinedInPeripherals(String src) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.PERIPHERALS_PROPERTY, null, "Address", "is already used in the board");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
             "module test boards master 0x00 end blocks end blocks end end",
             "module test boards master 0x00 end platforms end platforms end end",
             "module test boards master 0x00 end crossings end crossings end end",
@@ -222,7 +241,7 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
     }
 
     @Test
-    public void testErrorBlockConnector() throws Exception {
+    public void testErrorBlockConnector() {
         var src = "module test\n" +
                 "    boards master 0x01 end\n" +
                 "    segments master " +
@@ -268,7 +287,7 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
     }
 
     @Test
-    public void testErrorNetworkBuilderDuplicatedBlockDirection() throws Exception {
+    public void testErrorNetworkBuilderDuplicatedBlockDirection() {
         var src = "module test\n" +
                 "    boards master 0x01 end\n" +
                 "    segments master seg1 0x01 length 11cm end\n" +
@@ -284,7 +303,7 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
     }
 
     @Test
-    public void testErrorNetworkBuilderSignal2() throws Exception {
+    public void testErrorNetworkBuilderSignal2() {
         var src = "module test\n" +
                 "    boards master 0x01 end\n" +
                 "    segments master seg1 0x01 length 11cm end\n" +
@@ -302,7 +321,7 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
     }
 
     @Test
-    public void testErrorNetworkBuilderSignal1() throws Exception {
+    public void testErrorNetworkBuilderSignal1() {
         var src = "module test\n" +
                 "    boards master 0x01 end\n" +
                 "    segments master seg1 0x01 length 11cm end\n" +
