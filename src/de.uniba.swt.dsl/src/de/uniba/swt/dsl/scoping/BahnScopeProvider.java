@@ -141,6 +141,12 @@ public class BahnScopeProvider extends AbstractBahnScopeProvider {
             return candidates;
         }
 
+        // peripheral type
+        if (instanceClass.equals(PeripheralType.class)) {
+            candidates = getCandidates(context, PeripheralType.class);
+            return candidates;
+        }
+
         // fundecl
         if (instanceClass.equals(FuncDecl.class)) {
             candidates = getCandidates(context, FuncDecl.class);
