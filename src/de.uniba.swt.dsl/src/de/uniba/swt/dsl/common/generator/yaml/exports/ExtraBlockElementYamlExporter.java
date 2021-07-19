@@ -63,7 +63,7 @@ class ExtraBlockElementYamlExporter extends AbstractElementYamlExporter<ExtraBlo
         list.add(Tuple.of("length", String.format("%.2f%s", length, unit.getLiteral().toLowerCase())));
         list.add(Tuple.of("main", mainSegs));
         list.add(Tuple.of("overlaps", overlaps));
-        list.add(Tuple.of("reversed", element.getBlockElement().isReversed()));
+        list.add(Tuple.of("is_reversed", element.getBlockElement().isReversed()));
         if (element.getDirection() != null) {
             list.add(Tuple.of("direction", element.getDirection().toString().toLowerCase()));
         }
