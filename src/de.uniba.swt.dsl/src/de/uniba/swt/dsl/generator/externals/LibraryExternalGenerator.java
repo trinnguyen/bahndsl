@@ -46,7 +46,7 @@ public class LibraryExternalGenerator extends ExternalGenerator {
 
     private static final String TemporaryObjFolderName = "obj";
 
-    private static final String SharedLibNamePrefix = "libinterlocking";
+    private static final String SharedLibNamePrefix = "libinterlocker";
 
     private static final Logger logger = Logger.getLogger(LibraryExternalGenerator.class);
 

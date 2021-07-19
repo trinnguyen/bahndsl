@@ -38,7 +38,7 @@ import java.util.List;
 
 public class LibraryExternalTest extends ExternalTest {
 
-    private final static String LibNameFormat = "libinterlocking_%s.%s";
+    private final static String LibNameFormat = "libinterlocker_%s.%s";
 
     @ParameterizedTest
     @ValueSource(strings = {
