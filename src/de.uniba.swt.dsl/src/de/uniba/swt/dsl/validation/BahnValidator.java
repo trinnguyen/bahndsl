@@ -68,6 +68,9 @@ public class BahnValidator extends AbstractBahnValidator {
     UniqueHexValidator hexValidator;
 
     @Inject
+    UniquePortValidator portValidator;
+
+    @Inject
     UniqueConfigNameValidator uniqueConfigNameValidator;
 
     @Inject
@@ -94,6 +97,7 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void valdiateModel(BahnModel model) {
         hexValidator.clear();
+        portValidator.clear();
         uniqueConfigNameValidator.clear();
         segmentValidator.clear();
         typeCheckingTable.clear();
@@ -148,12 +152,19 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void validatePeripheralsProperty(PeripheralsProperty prop) {
         validateUniqueHexInBoard(prop.getBoard().getName(), prop.getItems(), p -> {
-            if (p instanceof RegularSignalElement) {
-                return ((RegularSignalElement) p).getNumber();
+            if (p instanceof PeripheralElement) {
+                return ((PeripheralElement) p).getNumber();
             }
 
             return null;
-        }, BahnPackage.Literals.SIGNALS_PROPERTY__ITEMS);
+        }, BahnPackage.Literals.PERIPHERALS_PROPERTY__ITEMS);
+        validateUniquePortInBoard(prop.getBoard().getName(), prop.getItems(), p -> {
+            if (p instanceof PeripheralElement) {
+                return ((PeripheralElement) p).getPort();
+            }
+
+            return null;
+        }, BahnPackage.Literals.PERIPHERALS_PROPERTY__ITEMS);
         validateUniqueName(prop.getItems(), PeripheralElement::getName, BahnPackage.Literals.PERIPHERALS_PROPERTY__ITEMS);
     }
 
@@ -185,6 +196,13 @@ public class BahnValidator extends AbstractBahnValidator {
 
     private <T> void validateUniqueHexInBoard(String boardName, List<T> items, Function<T, String> addrMapper, EStructuralFeature feature) {
         var errors = hexValidator.validateUniqueAddress(boardName, items, addrMapper);
+        for (Tuple<String, Integer> error : errors) {
+            error(error.getFirst(), feature, error.getSecond());
+        }
+    }
+
+    private <T> void validateUniquePortInBoard(String boardName, List<T> items, Function<T, String> addrMapper, EStructuralFeature feature) {
+        var errors = portValidator.validateUniqueAddress(boardName, items, addrMapper);
         for (Tuple<String, Integer> error : errors) {
             error(error.getFirst(), feature, error.getSecond());
         }

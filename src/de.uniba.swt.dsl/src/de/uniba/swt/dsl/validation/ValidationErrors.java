@@ -34,6 +34,8 @@ public class ValidationErrors {
 
     public final static String DefinedAddressFormat = "Address '%s' is already used in the board '%s'";
 
+    public final static String DefinedPortFormat = "Port '%s' is already used in the board '%s'";
+
     public final static String InvalidHexFormat = "Hex number '%s' is invalid";
 
     public final static String DefinedConfigNameFormat = "Name '%s' is already defined";

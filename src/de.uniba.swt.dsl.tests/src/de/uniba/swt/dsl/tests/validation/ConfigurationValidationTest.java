@@ -197,11 +197,19 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "module test boards master 0x00 end peripherals master onebit peri1 0x01 port 0x0027 onebit peri2 0x01 port 0x0027 end end",
-            "module test boards master 0x00 end segments master seg1 0x00 length 12cm end peripherals master onebit peri1 0x00 port 0x0027 end end",
+            "module test boards master 0x00 end peripherals master onebit peri1 0x01 port 0x0027 onebit peri2 0x01 port 0x0028 end end",
+            "module test boards master 0x00 end segments master seg1 0x00 length 12cm end peripherals master onebit peri1 0x00 port 0x0027 end end"
     })
     public void errorHexAlreadyDefinedInPeripherals(String src) {
         validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.PERIPHERALS_PROPERTY, null, "Address", "is already used in the board");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "module test boards master 0x00 end peripherals master onebit peri1 0x00 port 0x0027 onebit peri2 0x01 port 0x0027 end end"
+    })
+    public void errorPortAlreadyDefinedInPeripherals(String src) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.PERIPHERALS_PROPERTY, null, "Port", "is already used in the board");
     }
 
     @ParameterizedTest
