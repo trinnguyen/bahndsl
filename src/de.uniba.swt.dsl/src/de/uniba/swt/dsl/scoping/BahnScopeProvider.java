@@ -58,6 +58,9 @@ public class BahnScopeProvider extends AbstractBahnScopeProvider {
     @Override
     public IScope getScope(EObject context, EReference reference) {
 
+        // it is important to call this first, it loads the global scope (standardlib)
+        var defaultScope = super.getScope(context, reference);
+
         // limit properties for a type from schema
         if (context instanceof GetConfigFuncExpr && reference == BahnPackage.Literals.GET_CONFIG_FUNC_EXPR__PROP) {
             GetConfigFuncExpr expr = (GetConfigFuncExpr) context;
@@ -101,7 +104,7 @@ public class BahnScopeProvider extends AbstractBahnScopeProvider {
         }
 
         // default
-        return super.getScope(context, reference);
+        return defaultScope;
     }
 
     private IScope filterScopeForConfigKey(IScope scope, EReference reference) {
