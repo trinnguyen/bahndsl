@@ -118,7 +118,7 @@ class StandaloneAppTest {
         // fix lib name because the server would find the lib based on name
         var cmd = runtimeExecutor.getCommands().get(runtimeExecutor.getCommands().size() - 1);
         var expectedCmd = BahnUtil.isWindows() ? "clang" : "cc";
-        ensureArgsExist(cmd, expectedCmd, List.of("-shared", "-I", "-o", "libinterlocking"));
+        ensureArgsExist(cmd, expectedCmd, List.of("-shared", "-I", "-o", "libinterlocker"));
     }
 
     @Test

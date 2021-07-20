@@ -102,7 +102,7 @@ public class ConfigurationParsingTest {
 
 			"module test\n" +
 			"     peripherals lightcontrol\n" +
-			"             peripheral lanterns 0x13\n" +
+			"             onebit lanterns 0x13 port 0x0018\n" +
 			"         end\n" +
 			"end"
 			})

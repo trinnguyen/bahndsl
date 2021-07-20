@@ -26,7 +26,6 @@ package de.uniba.swt.dsl.common.layout.models;
 
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
-import de.uniba.swt.dsl.common.layout.models.vertex.SignalVertexMember;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,13 +35,15 @@ public class Route {
     private String srcSignal;
     private String destSignal;
     private Stack<AbstractEdge> edges;
+    private Orientation startingOrientation;    // Orientation that a train needs to be in at the start of the route
     private final Set<String> conflictRouteIds = new HashSet<>();
     private List<String> immediateSignals;
 
-    public Route(String srcSignal, String destSignal, Stack<AbstractEdge> edges) {
+    public Route(String srcSignal, String destSignal, Stack<AbstractEdge> edges, Orientation startingOrientation) {
         this.srcSignal = srcSignal;
         this.destSignal = destSignal;
         this.edges = edges;
+        this.startingOrientation = startingOrientation;
     }
 
     public String getId() {
@@ -76,6 +77,10 @@ public class Route {
     public void setEdges(Stack<AbstractEdge> edges) {
         this.edges = edges;
     }
+
+    public Orientation getStartingOrientation() { return startingOrientation; }
+
+    public void setStartingOrientation(Orientation startingOrientation) { this.startingOrientation = startingOrientation; }
 
     public Set<String> getConflictRouteIds() {
         return conflictRouteIds;

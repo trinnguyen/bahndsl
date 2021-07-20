@@ -5,7 +5,7 @@ import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 generate bahn "http://www.uniba.de/swt/dsl/Bahn"
 
 BahnModel:
-	(schema=Schema)? (configKeys=ConfigKeys)? (signalTypes=SignalTypes)? (components+=Component)*
+	(schema=Schema)? (configKeys=ConfigKeys)? (signalTypes=SignalTypes)? (peripheralTypes=PeripheralTypes)? (components+=Component)*
 ;
 
 Component:
@@ -49,6 +49,15 @@ SignalType:
 	{SignalType}
 	name=ID 'aspects' (items+=AspectElement)+ 'end' 'initial' initial=[AspectElement] 
 ;
+
+PeripheralTypes:
+	'peripheraltypes' (types+=PeripheralType)+ 'end'
+;
+
+PeripheralType:
+	{PeripheralType}
+	name=ID 'aspects' (items+=AspectElement)+ 'end' 'initial' initial=[AspectElement]
+;
 	
 ModuleProperty:
 	BoardsProperty 
@@ -81,7 +90,7 @@ PointsProperty :
 	'end';
 PeripheralsProperty:
 	'peripherals' board=[BoardElement]
-		(items+=SignalElement)*
+		(items+=PeripheralElement)*
 	'end';
 BlocksProperty :
 	{BlocksProperty} 'blocks'
@@ -106,10 +115,12 @@ LayoutProperty :
 	'end';
 
 enum TrackState:
-	CLEAR = 'clear' | CAUTION = 'caution' | STOP = 'stop' | NORMAL = 'normal' | REVERSE = 'reverse'
+	CLEAR = 'clear' | CAUTION = 'caution' | STOP = 'stop'
+	| NORMAL = 'normal' | REVERSE = 'reverse'
+	| ON = 'on' | OFF = 'off'
 ;
 		
-enum TrainType:
+enum TrainType :
 	CARGO='cargo' | PASSENGER='passenger'
 ;
 
@@ -121,7 +132,7 @@ BoardElement :
 	name=ID uniqueId=HEX ('features' (features+=BoardFeatureElement)+ 'end')?
 ;
 
-BoardFeatureElement:
+BoardFeatureElement :
 	number=HEX ':' value=HEX
 ;
 
@@ -155,11 +166,16 @@ enum PointAspectType:
 	NORMAL = 'normal' | REVERSE = 'reverse'
 ;
 
+PeripheralElement :
+	type=[PeripheralType] name=ID number=HEX 'port' port=HEX
+;
+
 BlockElement:
 	name=ID 
 		('overlap' overlaps+=[SegmentElement])?
 		'main' (mainSegs+=[SegmentElement])+
 		('overlap' overlaps+=[SegmentElement])?
+		(reversed?='reversed')?
 		(limitKey=[ConfigKey] limitSpeed=Speed)?
 		('trains' (trainTypes+=TrainType)+ 'end')?
 ;

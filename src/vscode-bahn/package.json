@@ -13,10 +13,15 @@
         "Programming Languages",
         "Snippets"
     ],
+    "keywords": [
+        "BahnDSL",
+        "SWTbahn",
+        "Model Railway"
+    ],
     "activationEvents": [
         "onLanguage:bahn"
     ],
-    "main": "out/extension",
+    "main": "./out/extension.js",
     "contributes": {
         "languages": [
             {
@@ -41,9 +46,36 @@
         "snippets": [
             {
                 "language": "bahn",
-                "path": "snippets/snippets.json"
+                "path": "./snippets/snippets.json"
+            }
+        ],
+        "configuration": [
+            {
+                "title": "Bahn IDE",
+                "properties": {
+                    "bahn-language.remoteLspEnabled": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Use remote LSP server"
+                    },
+                    "bahn-language.remoteLspPort": {
+                        "type": "number",
+                        "default": 8686,
+                        "description": "LSP server port number"
+                    }
+                }
             }
         ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "package": "tsc -p ./ && vsce package",
+        "publish": "tsc -p ./ && vsce publish",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src --ext ts",
+        "test": "node ./out/test/runTest.js"
     },
     "dependencies": {
         "vscode-languageclient": "6.1.4"
@@ -53,10 +85,5 @@
         "@types/vscode": "1.52.0",
         "typescript": "4.1.3",
         "vsce": "1.83.0"
-    },
-    "scripts": {
-        "compile": "tsc -p ./src",
-        "package": "tsc -p ./src && vsce package",
-        "publish": "tsc -p ./src && vsce publish"
     }
 }

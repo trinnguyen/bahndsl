@@ -64,7 +64,7 @@ public class LowlevelExternalTest extends ExternalTest {
     })
     void testNoSourceGenerated(String name) {
         var res = RuntimeExternalTestHelper.execute(List.of(getSourcePath(name), "-m", "c-code"));
-        Assertions.assertFalse(res, "Expected bahnc to be failed: " + name);
+        Assertions.assertFalse(res, "Expected bahnc to faile: " + name);
     }
 
     private void execute(String name, String out) {

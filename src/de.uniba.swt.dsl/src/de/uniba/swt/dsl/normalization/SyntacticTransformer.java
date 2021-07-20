@@ -199,6 +199,10 @@ public class SyntacticTransformer {
                 return "normal";
             case REVERSE:
                 return "reverse";
+            case ON:
+                return "on";
+            case OFF:
+                return "off";
         }
 
         return null;

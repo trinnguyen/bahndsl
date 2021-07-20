@@ -3,6 +3,7 @@ schema
         id string
         source string
         destination string
+        orientation string
         path string[]
         sections string[]
         route_signals string[]
@@ -27,6 +28,11 @@ schema
         segment string
     end
 
+    peripheral
+        id string
+        type string
+    end
+
     train
         id string
         type string
@@ -37,6 +43,7 @@ schema
     block
         id string
         segment string
+        is_reversed bool
         direction string
         length float
         limit int
@@ -105,17 +112,23 @@ signaltypes
             red 0x00
         end
         initial red
-    peripheral 
-        aspects 
-            on 0x00
-        end
-        initial on
     platformlight 
         aspects
-            on 0x00
-            off 0x01
+            high 0x00
+            low 0x01
         end 
-        initial on
+        initial high
+end
+
+# Board peripheral are set directly to the
+# ports, which are active high
+peripheraltypes
+    onebit
+        aspects
+            high 0x01
+            low 0x00
+        end
+        initial high
 end
 
 def get_shortest_route(string route_ids[]): string

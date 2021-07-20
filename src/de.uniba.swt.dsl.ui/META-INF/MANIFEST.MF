@@ -3,7 +3,7 @@ Automatic-Module-Name: de.uniba.swt.dsl.ui
 Bundle-ManifestVersion: 2
 Bundle-Name: de.uniba.swt.dsl.ui
 Bundle-Vendor: uniba-swt
-Bundle-Version: 1.0.2
+Bundle-Version: 1.0.3
 Bundle-SymbolicName: de.uniba.swt.dsl.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: de.uniba.swt.dsl,

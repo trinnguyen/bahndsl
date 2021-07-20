@@ -28,21 +28,22 @@
 package de.uniba.swt.dsl.scoping;
 
 
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import de.uniba.swt.dsl.bahn.*;
-
 import de.uniba.swt.dsl.common.util.BahnConstants;
+import de.uniba.swt.dsl.common.util.BahnUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.scoping.IScope;
 import org.eclipse.xtext.scoping.Scopes;
 import org.eclipse.xtext.scoping.impl.FilteringScope;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -127,36 +128,57 @@ public class BahnScopeProvider extends AbstractBahnScopeProvider {
 
     private List<? extends EObject> getGlobalCandidates(EObject context, Class<?> instanceClass) {
 
-        List<? extends EObject> candidates;
+        var models = context.eResource().getResourceSet().getResources().stream().map(BahnUtil::getBahnModel).filter(Objects::nonNull).collect(Collectors.toList());
 
         // config key
         if (instanceClass.equals(ConfigKey.class)) {
-            candidates = getCandidates(context, ConfigKey.class);
-            return candidates;
+            return getConfigKeyCandidates(models);
         }
 
         // signal type
         if (instanceClass.equals(SignalType.class)) {
-            candidates = getCandidates(context, SignalType.class);
-            return candidates;
+            return getSignalTypeCandidates(models);
+        }
+
+        // peripheral type
+        if (instanceClass.equals(PeripheralType.class)) {
+            return getPeripheralTypeCandidates(models);
         }
 
         // fundecl
         if (instanceClass.equals(FuncDecl.class)) {
-            candidates = getCandidates(context, FuncDecl.class);
-            return candidates;
+            return getFuncDeclCandidates(models);
         }
 
         // SchemaElement
         if (instanceClass.equals(SchemaElement.class)) {
-            candidates = getCandidates(context, SchemaElement.class);
-            return candidates;
+            return getSchemaElementCandidates(models);
         }
 
         return null;
     }
 
-    private <T extends EObject> List<T> getCandidates(EObject context, Class<T> type) {
-        return Lists.newArrayList(Iterators.filter(EcoreUtil2.getAllContents(context.eResource().getResourceSet(), false), type));
+    private List<ConfigKey> getConfigKeyCandidates(List<BahnModel> models) {
+        return getItems(models, m -> m.getConfigKeys() != null ? m.getConfigKeys().getKeys() : new ArrayList<>());
+    }
+
+    private List<SignalType> getSignalTypeCandidates(List<BahnModel> models) {
+        return getItems(models, m -> m.getSignalTypes() != null ? m.getSignalTypes().getTypes() : new ArrayList<>());
+    }
+
+    private List<PeripheralType> getPeripheralTypeCandidates(List<BahnModel> models) {
+        return getItems(models, m -> m.getPeripheralTypes() != null ? m.getPeripheralTypes().getTypes() : new ArrayList<>());
+    }
+
+    private List<FuncDecl> getFuncDeclCandidates(List<BahnModel> models) {
+        return getItems(models, BahnUtil::getDecls);
+    }
+
+    private List<SchemaElement> getSchemaElementCandidates(List<BahnModel> models) {
+        return getItems(models, m -> m.getSchema() != null ? m.getSchema().getElements() : new ArrayList<>());
+    }
+
+    private <T> List<T> getItems(List<BahnModel> models, Function<BahnModel, List<T>> provider) {
+        return models.stream().map(provider).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toList());
     }
 }

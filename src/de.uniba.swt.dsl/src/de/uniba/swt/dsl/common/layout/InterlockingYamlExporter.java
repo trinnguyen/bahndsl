@@ -60,6 +60,7 @@ public class InterlockingYamlExporter extends YamlExporter {
         increaseLevel();
         appendLine("source: %s", route.getSrcSignal());
         appendLine("destination: %s", route.getDestSignal());
+        appendLine("orientation: %s", route.getStartingOrientation().toString().toLowerCase());
 
         // segment (blocks and points)
         double length = 0;

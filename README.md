@@ -6,7 +6,7 @@ BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 
 ## Installation
 
-- Latest version: 1.0.2
+- Latest version: 1.0.3
 
 ### Requirements
 - Java SE 11 *([Download OpenJDK 11](https://adoptopenjdk.net/index.html?variant=openjdk11&jvmVariant=hotspot))*
@@ -227,6 +227,7 @@ composite signal3
     signal2
   end
 ```
+
 ### Point
 - Syntax
 ```
@@ -241,17 +242,6 @@ point-name hex-number segment segment-name
 point1 0x00 segment seg4 normal 0x01 reverse 0x00 initial normal
 ```
 
-### Peripheral (reuse signal syntax)
-- Syntax
-```
-signal-type-name signal-name hex-number
-```
-
-- Example
-```ruby
-platformlight platformlights 0x0A
-```
-
 ### Crossing
 - Syntax
 ```
@@ -263,6 +253,16 @@ crossing-name segment segment-name
 crossing1 segment seg35
 ```
 
+### Peripheral
+- Syntax
+```
+peripheral-type-name peripheral-name hex-number port hex-number
+```
+
+- Example
+```ruby
+onebit lantern 0x0A port 0x0027
+```
 
 ### Train
 - Syntax
@@ -297,7 +297,7 @@ cargo_green 0x0006 steps 126
 - Syntax
 ```
 block-name overlap segment-name main segment-name overlap segment-name 
-  limit number speed-unit
+  reversed limit number speed-unit
   trains 
     train-type
   end
@@ -307,8 +307,8 @@ block-name overlap segment-name main segment-name overlap segment-name
 ```ruby
 block1 overlap seg20 main seg19 overlap seg18
   trains
-  cargo 
-  passenger
+    cargo 
+    passenger
   end
 ```
 
@@ -571,32 +571,32 @@ end
 ```
 
 ### Domain-specific expressions
-- Check segment occupation
+- Check segment occupation (returns true or false)
 ```c
 bool is_occupied = is "seg1" occupied
 ```
 
-- Get signal state
+- Get signal state (returns "stop", "caution", or "clear")
 ```c
 string res = get state "signal1"
 ```
 
-- Get point state
+- Get point state (returns "normal" or "reverse")
 ```c
 string res = get state "point1"
 ```
 
-- Set signal state
+- Set signal state (clear, caution, or clear)
 ```c
 bool success = set state "signal1" to clear
 ```
 
-- Set point state
+- Set point state (normal or reverse)
 ```c
 bool success = set state "point1" to normal
 ```
 
-- Get config from YAML file
+- Get config from YAML file (dot notation of schema in https://github.com/trinnguyen/bahndsl/blob/master/src/de.uniba.swt.dsl/resources/standardlib.bahn)
 ```c
 string src = get config route.source "route1"
 string[] segment_ids = get config route.path "route1"
@@ -607,7 +607,7 @@ string[] segment_ids = get config route.path "route1"
 string route_ids[] = get routes from src_signal_id to dst_signal_id
 ```
 
-- Get expected point position in a route
+- Get expected point position in a route (returns "normal" or "reverse")
 ```c
 string pos = get position "point1" in "route1"
 ```
@@ -618,10 +618,27 @@ grant "route1" to "cargo_green"
 ```
 
 ### Built-in functions in standard library
+- For a given array of routes, return the ID of the shortest route
 ```python
 def get_shortest_route(string route_ids[]): string
+```
+
+- For a given route, return the block that precedes `block_id`
+```python
 def get_previous_block(string route_id, string block_id): string
+```
+
+- For a given route, return the first block in the route with main segment equal to `segment_ids[0]`
+```python
 def get_block(string route_id, string segment_ids[]) : string
+```
+
+- For a given block, return whether it is occupied
+```python
 def is_block_occupied(string block_id): bool
+```
+
+- For a given signal, return whether it is a composition of other signals
+```python
 def is_composition_signal(string id): bool
 ```
