@@ -40,7 +40,7 @@ public class SuperStateBuilder {
 
     private final StateTable stateTable;
     protected SuperState superState;
-    private final StatementList statementList;
+    protected final StatementList statementList;
     private final Stack<SuperState> stackSuperStates;
 
     public SuperStateBuilder(Stack<SuperState> stackSuperStates, String id, StatementList statementList) {
