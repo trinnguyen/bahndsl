@@ -35,13 +35,15 @@ public class Route {
     private String srcSignal;
     private String destSignal;
     private Stack<AbstractEdge> edges;
+    private Orientation startingOrientation;    // Orientation that a train needs to be in at the start of the route
     private final Set<String> conflictRouteIds = new HashSet<>();
     private List<String> immediateSignals;
 
-    public Route(String srcSignal, String destSignal, Stack<AbstractEdge> edges) {
+    public Route(String srcSignal, String destSignal, Stack<AbstractEdge> edges, Orientation startingOrientation) {
         this.srcSignal = srcSignal;
         this.destSignal = destSignal;
         this.edges = edges;
+        this.startingOrientation = startingOrientation;
     }
 
     public String getId() {
@@ -76,6 +78,10 @@ public class Route {
         this.edges = edges;
     }
 
+    public Orientation getStartingOrientation() { return startingOrientation; }
+
+    public void setStartingOrientation(Orientation startingOrientation) { this.startingOrientation = startingOrientation; }
+
     public Set<String> getConflictRouteIds() {
         return conflictRouteIds;
     }
@@ -86,25 +92,6 @@ public class Route {
 
     private String formatImmediateSignals() {
         return String.format("\t\timmediate signals: %s", getImmediateSignals());
-    }
-
-    public Orientation computeOrientation() {
-        var last = this.getLastBlock();
-        if (last.isPresent() && last.get().getDirection() == BlockDirection.DownUp) {
-            return Orientation.AntiClockwise;
-        }
-
-        return Orientation.Clockwise;
-    }
-
-    private Optional<BlockEdge> getLastBlock() {
-        for (int i = this.edges.size() - 1; i >= 0; i--) {
-            var edge = this.edges.elementAt(i);
-            if (edge instanceof BlockEdge)
-                return Optional.of((BlockEdge)edge);
-        }
-
-        return Optional.empty();
     }
 
     @Override

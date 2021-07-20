@@ -12,6 +12,9 @@ module config_empty
    points master
    end
 
+   peripherals master
+   end
+
    blocks
    end
 

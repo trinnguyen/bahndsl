@@ -2,12 +2,13 @@ module SWTbahnLite
   boards
     master 0xDA000D680052EF
       features
-        0x03:0x14
-        0x6E:0x00
+        0x03:0x14  # seckack on, 200ms
+        0x6E:0x00  # track output default off
       end
     lightcontrol 0x05000D6B0083EC
     onecontrol 0x05000D7500DBED
   end
+
   segments master
     seg1 0x00 length 10cm
     seg2 0x01 length 57.5cm
@@ -41,8 +42,8 @@ module SWTbahnLite
   end
 
   signals lightcontrol
-    entry signal2 0x01
     entry signal1 0x00
+    entry signal2 0x01
     entry signal3 0x02
     entry signal4 0x03
     entry signal5 0x04
@@ -52,9 +53,11 @@ module SWTbahnLite
     block signal9 0x08
     block signal10 0x09
     block signal11 0x0A
+    halt signal12 0xF0    # Physically part of signalends
+    halt signal13 0xF1    # Physically part of signalends
     block signal14 0x0B
-    platformlight signalends 0x12
-    platformlight lanterns 0x13
+    halt signal15 0xF2    # Physically part of signalends
+    halt signalends 0x12
   end
 
   points onecontrol
@@ -65,6 +68,10 @@ module SWTbahnLite
     point5 0x04 segment seg17 normal 0x01 reverse 0x00 initial normal
     point6 0x05 segment seg21 normal 0x01 reverse 0x00 initial normal
     point7 0x06 segment seg22 normal 0x01 reverse 0x00 initial normal
+  end
+
+  peripherals lightcontrol
+    onebit lanterns 0x13 port 0x00FF    # Exact port address is not essential
   end
 
   blocks
@@ -117,7 +124,6 @@ module SWTbahnLite
   end
 
   layout
-
     point6.stem -- block1.down
     block1.up -- point5.stem
 
@@ -149,7 +155,10 @@ module SWTbahnLite
     signal9 -- block1.up
     signal10 -- block1.down
     signal11 -- platform2.down
+    signal12 -- platform2.up
+    signal13 -- buffer3.down
     signal14 -- platform1.down
+    signal15 -- platform1.up
 
     # points
     point5.side -- point2.side

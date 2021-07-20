@@ -496,7 +496,7 @@
 		</command>
 		<command
 			name="Compile to library"
-			description="Compile to shared library using CCharts and C compiler"
+			description="Compile to shared library using SCCharts and C compiler"
 			id="de.uniba.swt.dsl.Bahn.complelib">
 		</command>
 	</extension>

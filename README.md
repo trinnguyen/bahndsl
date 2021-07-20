@@ -6,7 +6,7 @@ BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 
 ## Installation
 
-- Latest version: 1.0.2
+- Latest version: 1.0.3
 
 ### Requirements
 - Java SE 11 *([Download OpenJDK 11](https://adoptopenjdk.net/index.html?variant=openjdk11&jvmVariant=hotspot))*

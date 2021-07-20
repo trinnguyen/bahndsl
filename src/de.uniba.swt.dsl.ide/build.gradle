@@ -2,7 +2,7 @@ plugins {
 	id "application"
 }
 application {
-	mainClassName = "de.uniba.swt.dsl.ide.BahnServerLauncher"
+	mainClass.set("de.uniba.swt.dsl.ide.BahnServerLauncher")
 	applicationDefaultJvmArgs = ["--add-opens","java.base/java.lang=ALL-UNNAMED"]
 }
 distributions {

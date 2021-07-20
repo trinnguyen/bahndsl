@@ -59,6 +59,7 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         List<ExtraBlockElement> platforms = rootModule.getProperties().stream().filter(p -> p instanceof PlatformsProperty).map(p -> ((PlatformsProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraItem(b, mapSignals)).collect(Collectors.toList());
         List<CrossingElement> crossings = rootModule.getProperties().stream().filter(p -> p instanceof CrossingsProperty).map(p -> ((CrossingsProperty) p).getItems()).flatMap(Collection::stream).collect(Collectors.toList());
         List<SignalType> signaltypes = getSignalTypes(rootModule);
+        List<PeripheralType> peripheraltypes = getPeripheralTypes(rootModule);
         List<CompositionSignalElement> compositeSignals = new ArrayList<>();
 
         // load
@@ -66,8 +67,6 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
             List<SignalElement> elements = null;
             if (property instanceof SignalsProperty) {
                 elements = ((SignalsProperty) property).getItems();
-            } else if (property instanceof PeripheralsProperty) {
-                elements = ((PeripheralsProperty) property).getItems();
             }
 
             // export
@@ -85,6 +84,7 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         exportSection("crossings:", crossings);
         exportSection("signaltypes:", signaltypes);
         exportSection("compositions:", compositeSignals);
+        exportSection("peripheraltypes:", peripheraltypes);
     }
 
     private List<SignalType> getSignalTypes(RootModule rootModule) {
@@ -128,6 +128,20 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         }
 
         return map;
+    }
+
+    private List<PeripheralType> getPeripheralTypes(RootModule rootModule) {
+        var set = rootModule.eResource().getResourceSet();
+
+        List<PeripheralType> result = new ArrayList<>();
+        for (Resource resource : set.getResources()) {
+            var bahnModel = BahnUtil.getBahnModel(resource);
+            if (bahnModel != null && bahnModel.getPeripheralTypes() != null && bahnModel.getPeripheralTypes().getTypes() != null) {
+                result.addAll(bahnModel.getPeripheralTypes().getTypes());
+            }
+        }
+
+        return result;
     }
 
     private ExtraBlockElement createExtraItem(BlockElement blockElement, Map<String, List<String>> mapSignals) {
