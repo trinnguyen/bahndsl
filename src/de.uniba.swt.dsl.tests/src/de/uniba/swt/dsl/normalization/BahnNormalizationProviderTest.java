@@ -244,6 +244,14 @@ class BahnNormalizationProviderTest {
 
     @ParameterizedTest
     @ValueSource (strings = {
+            "def test(string id) bool is_reversed = get config block.is_reversed id end",
+    })
+    void testDomainGetIsReversed(String src) throws Exception {
+        ensureNormalize(src, List.of("bool is_reversed = extern config_get_scalar_bool_value ( \"block\" , id , \"is_reversed\" )"));
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
             "def test(string id) get state id end",
             "def test() string id = \"a\" string st = get state id end",
     })
