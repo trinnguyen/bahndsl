@@ -24,84 +24,13 @@
 
 package de.uniba.swt.dsl.generator;
 
-import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.xtext.util.CancelIndicator;
-import org.eclipse.xtext.validation.CheckMode;
-import org.eclipse.xtext.validation.IResourceValidator;
-import org.eclipse.xtext.validation.Issue;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
 
 public class StandardLibHelper {
-	private StandardLibHelper() {
 
-	}
-
-    private static final Logger logger = Logger.getLogger(StandardLibHelper.class);
-
-    private static final String RESOURCES_FOLDER_NAME = "resources";
-    
     public static final String FILE_NAME = "standardlib.bahn";
 
-	public static void loadStandardLibResource(IResourceValidator validator, ResourceSet resourceSet) {
-        logger.debug("Start loading standard resource");
-
-		var resource = loadPluginResource(resourceSet);
-		logger.debug("Failed to load resource from plugin. Attempt to load from embedded resource");
-        if (resource == null ) {
-			resource = loadEmbeddedResource(resourceSet);
-        }
-        
-        if (resource != null) {
-			List<Issue> issues = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
-	        if (issues != null && issues.size() > 0) {
-	            logger.error("Error on parsing built-in standard library");
-	            for (var error : issues) {
-	                logger.error(error);
-	            }
-	        } else {
-	        	logger.debug("Success loading standard library");
-	        }
-        }
-    }
-	
-	/**
-     * Load stream from embedded resource of Java application
-     * Used in cli compiler and ide server for visual studio code extension
-	 */
-	public static Resource loadEmbeddedResource(ResourceSet resourceSet) {
-		try (var stream = StandardLibHelper.class.getClassLoader().getResourceAsStream(FILE_NAME)) {
-			if (stream == null)
-				return null;
-			
-			URI uri = getStandardLibPlatformUri();
-	        var resource = resourceSet.createResource(uri);
-			resource.load(stream, resourceSet.getLoadOptions());
-			return resource;
-		} catch (IOException e) {
-			logger.error("Failed to load embedded stream: " + e.getMessage());
-		}
-		
-		return null;
-	}
-
-	/**
-	 * Load resource from URI using Eclipse plugin
-	 * Run with Eclipse-based IDE only
-	 * @param resourceSet set
-	 * @return resource
-	 */
-	public static Resource loadPluginResource(ResourceSet resourceSet)  {
-		return resourceSet.getResource(getStandardLibPlatformUri(), false);
-    }
-
     public static URI getStandardLibPlatformUri() {
-		return URI.createURI("platform:/plugin/de.uniba.swt.dsl/" + RESOURCES_FOLDER_NAME + "/" + FILE_NAME);
+		return URI.createURI("classpath:/" + FILE_NAME);
 	}
 }

@@ -113,29 +113,6 @@ class BahnFormatterTest {
         assertEquals("drive_route", BahnUtil.getDecls(resource).get(0).getName());
     }
 
-    @Test
-    public void testFormatStandardLib() throws Exception {
-        var input = testHelper.parseValid("");
-        StandardLibHelper.loadStandardLibResource(validator, input.getResourceSet());
-
-        // find the standard lib resource
-        Resource standardRes = null;
-        for (Resource resource : input.getResourceSet().getResources()) {
-            if (resource != input) {
-                standardRes = resource;
-                break;
-            }
-        }
-
-        // format
-        if (standardRes != null) {
-            var out = formatResource(standardRes);
-            assertTrue(out != null && !out.isEmpty(), "Formatted standard lib must not be empty");
-        } else {
-            fail("Failed to load the standard library");
-        }
-    }
-
     /**
      * BahnFormatter is called using Serializer
      * @param src
