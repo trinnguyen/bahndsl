@@ -5,7 +5,7 @@ import * as os from 'os';
 
 import { Trace } from 'vscode-jsonrpc';
 import { window, workspace, ExtensionContext, StatusBarAlignment } from 'vscode';
-import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo } from 'vscode-languageclient';
+import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo, State } from 'vscode-languageclient';
 import * as net from 'net';
 import { BahnConfigUtil } from './bahn-config'
 
@@ -27,10 +27,20 @@ export function activate(context: ExtensionContext) {
     }
 
     languageClient.trace = Trace.Verbose;
-    updateStatusBar(`$(loading) Starting ${ServerName}...`);
-    languageClient.onReady().then(() => {
-        updateStatusBar(`$(pass) ${ServerName}`);
-    });
+
+    languageClient.onDidChangeState(evt => {
+        switch (evt.newState) {
+            case State.Stopped:
+                updateStatusBar(`$(warning) ${ServerName} is disconnected`)
+                break
+            case State.Starting:
+                updateStatusBar(`$(sync~spin) Loading ${ServerName}...`)
+                break
+            case State.Running:
+                updateStatusBar(`$(pass) ${ServerName}`)
+                break
+        }
+    })
 
     // keep disposable for deactivating
     context.subscriptions.push(languageClient.start());

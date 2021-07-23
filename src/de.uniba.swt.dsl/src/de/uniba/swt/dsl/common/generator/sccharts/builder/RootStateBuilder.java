@@ -24,9 +24,7 @@
 
 package de.uniba.swt.dsl.common.generator.sccharts.builder;
 
-import de.uniba.swt.dsl.bahn.BahnFactory;
-import de.uniba.swt.dsl.bahn.FuncDecl;
-import de.uniba.swt.dsl.bahn.RefVarDecl;
+import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.generator.sccharts.StateTable;
 import de.uniba.swt.dsl.common.generator.sccharts.models.RootState;
 import de.uniba.swt.dsl.common.util.BahnUtil;
@@ -52,11 +50,19 @@ public class RootStateBuilder extends SuperStateBuilder {
 
             var hasReturnVar = createNewVarDecl(SCChartsUtil.VAR_HAS_RETURN_NAME, ExprDataType.ScalarBool);
             superState.getDeclarations().add(convertDeclaration(hasReturnVar, false, false));
+
+            // Create initialisation assignment
+            var initialAssignment = createBooleanAssignment(hasReturnVar, false);
+            statementList.getStmts().add(0, initialAssignment);
         }
 
         if (BahnUtil.hasBreakStmt(funcDecl.getStmtList())) {
             var hasBreakVar = createNewVarDecl(SCChartsUtil.VAR_HAS_BREAK, ExprDataType.ScalarBool);
             superState.getDeclarations().add(convertDeclaration(hasBreakVar, false, false));
+
+            // Create initialisation assignment
+            var initialAssignment = createBooleanAssignment(hasBreakVar, false);
+            statementList.getStmts().add(0, initialAssignment);
         }
     }
 
@@ -66,6 +72,12 @@ public class RootStateBuilder extends SuperStateBuilder {
         decl.setType(dataType.getDataType());
         decl.setArray(dataType.isArray());
         return decl;
+    }
+
+    private AssignmentStmt createBooleanAssignment(RefVarDecl decl, boolean value) {
+        var booleanLiteral = BahnUtil.createBooleanLiteral(value);
+        var assignmentStmt = BahnUtil.createAssignmentStmt(decl, booleanLiteral);
+        return assignmentStmt;
     }
 
     public RootState getRootState() {
