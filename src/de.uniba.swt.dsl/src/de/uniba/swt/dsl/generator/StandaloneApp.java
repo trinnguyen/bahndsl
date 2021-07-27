@@ -31,6 +31,8 @@ import de.uniba.swt.dsl.generator.externals.CliRuntimeExecutor;
 import de.uniba.swt.dsl.generator.externals.EmbeddedSccLowLevelCodeExternalGenerator;
 import de.uniba.swt.dsl.generator.externals.JavaCliRuntimeExecutor;
 import de.uniba.swt.dsl.generator.externals.LibraryExternalGenerator;
+import de.uniba.swt.dsl.linker.BahnImportURIGlobalScopeProvider;
+
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -49,6 +51,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+
+import static de.uniba.swt.dsl.generator.StandardLibHelper.getStandardLibPlatformUri;
 
 public class StandaloneApp {
 
@@ -96,6 +100,11 @@ public class StandaloneApp {
             out = Paths.get(file.getAbsoluteFile().getParent(), "src-gen").toAbsolutePath().toString();
         }
         fsa.setOutputPath(out);
+
+        // Validate the standardlib
+        Resource standardlibResource = resource.getResourceSet().getResource(getStandardLibPlatformUri(), true);
+        if (validateTheResource(standardlibResource))
+            return false;
 
         // Validate the resource
         if (validateTheResource(resource))
@@ -159,6 +168,9 @@ public class StandaloneApp {
             return null;
 
         // load resource
-        return resourceSetProvider.get().getResource(URI.createFileURI(filePath), true);
+        Resource resource = resourceSetProvider.get().getResource(URI.createFileURI(filePath), true);
+        BahnImportURIGlobalScopeProvider.setXtextResourceSetOptions(resource);
+        
+        return resource;
     }
 }

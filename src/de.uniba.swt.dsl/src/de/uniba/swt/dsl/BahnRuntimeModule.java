@@ -27,14 +27,16 @@
  */
 package de.uniba.swt.dsl;
 
-import org.eclipse.xtext.linking.ILinker;
+import de.uniba.swt.dsl.linker.BahnImportURIGlobalScopeProvider;
+import org.eclipse.xtext.scoping.IGlobalScopeProvider;
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
  */
 public class BahnRuntimeModule extends AbstractBahnRuntimeModule {
+
     @Override
-    public Class<? extends ILinker> bindILinker() {
-        return StandardLibLazyLinker.class;
+    public Class<? extends IGlobalScopeProvider> bindIGlobalScopeProvider() {
+        return BahnImportURIGlobalScopeProvider.class;
     }
 }

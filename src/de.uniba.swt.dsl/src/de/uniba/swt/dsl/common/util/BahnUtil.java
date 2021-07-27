@@ -75,16 +75,20 @@ public class BahnUtil {
     public static List<FuncDecl> getDecls(Resource resource) {
         var bahnModel = getBahnModel(resource);
         if (bahnModel != null) {
-            List<FuncDecl> decls = new ArrayList<>();
-            for (Component component : bahnModel.getComponents()) {
-                if (component instanceof FuncDecl) {
-                    decls.add((FuncDecl)component);
-                }
-            }
-            return decls;
+            return getDecls(bahnModel);
         }
 
         return null;
+    }
+
+    public static List<FuncDecl> getDecls(BahnModel bahnModel) {
+        List<FuncDecl> decls = new ArrayList<>();
+        for (Component component : bahnModel.getComponents()) {
+            if (component instanceof FuncDecl) {
+                decls.add((FuncDecl)component);
+            }
+        }
+        return decls;
     }
 
     public static BooleanLiteral createBooleanLiteral(boolean val) {
@@ -287,5 +291,13 @@ public class BahnUtil {
 
     public static boolean isWindows() {
         return getOsName().startsWith("win");
+    }
+
+    public static String getUri(BahnModel bahnModel) {
+        if (bahnModel.eResource() != null && bahnModel.eResource().getURI() != null) {
+            return bahnModel.eResource().getURI().toString();
+        }
+
+        return "";
     }
 }

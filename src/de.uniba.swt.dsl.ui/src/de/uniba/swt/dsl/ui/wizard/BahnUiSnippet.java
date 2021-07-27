@@ -17,6 +17,9 @@ public class BahnUiSnippet {
             "   points master\n" +
             "   end\n" +
             "\n" +
+            "   peripherals master\n" +
+            "   end\n" +
+            "\n" +
             "   blocks\n" +
             "   end\n" +
             "\n" +

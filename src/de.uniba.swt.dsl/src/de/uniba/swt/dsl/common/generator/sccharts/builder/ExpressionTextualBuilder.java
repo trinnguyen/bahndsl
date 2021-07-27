@@ -102,7 +102,7 @@ public class ExpressionTextualBuilder extends TextualBuilder {
         // ValuedReferenceExpr
         if (expression instanceof ValuedReferenceExpr) {
             ValuedReferenceExpr referenceExpr = (ValuedReferenceExpr) expression;
-            append(((ValuedReferenceExpr) expression).getDecl().getName());
+            append(referenceExpr.getDecl().getName());
 
             // index
             if (referenceExpr.getIndexExpr() != null) {
