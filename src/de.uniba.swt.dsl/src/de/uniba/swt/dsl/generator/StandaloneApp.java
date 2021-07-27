@@ -50,6 +50,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static de.uniba.swt.dsl.generator.StandardLibHelper.getStandardLibPlatformUri;
+
 public class StandaloneApp {
 
     public static final String MODE_DEFAULT = "default";
@@ -96,6 +98,11 @@ public class StandaloneApp {
             out = Paths.get(file.getAbsoluteFile().getParent(), "src-gen").toAbsolutePath().toString();
         }
         fsa.setOutputPath(out);
+
+        // Validate the standardlib
+        Resource standardlibResource = resource.getResourceSet().getResource(getStandardLibPlatformUri(), true);
+        if (validateTheResource(standardlibResource))
+            return false;
 
         // Validate the resource
         if (validateTheResource(resource))

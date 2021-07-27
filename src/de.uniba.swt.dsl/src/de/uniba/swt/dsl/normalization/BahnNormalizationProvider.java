@@ -103,7 +103,7 @@ public class BahnNormalizationProvider {
             // convert syntactic sugar foreach to while iteration
             normalizers.add(foreachNormalizer);
 
-            // convert string comparision expression using extern C function
+            // convert string comparison expression using extern C function
             normalizers.add(stringEqualNormalizer);
 
             // convert all getter/setter for configuration and track state
