@@ -13,16 +13,20 @@ public class BahnImportURIGlobalScopeProvider extends ImportUriGlobalScopeProvid
 
     @Override
     protected LinkedHashSet<URI> getImportedUris(Resource resource) {
-        if (resource.getResourceSet() instanceof XtextResourceSet) {
-            XtextResourceSet resourceSet = (XtextResourceSet) resource.getResourceSet();
-            resourceSet.addLoadOption(XtextResource.OPTION_RESOLVE_ALL, Boolean.TRUE);
-            resourceSet.setClasspathUriResolver(new CustomClassPathUriResolver());
-        }
+        BahnImportURIGlobalScopeProvider.setXtextResourceSetOptions(resource);
 
         LinkedHashSet<URI> set = super.getImportedUris(resource);
         var uri = StandardLibHelper.getStandardLibPlatformUri();
         set.add(uri);
 
         return set;
+    }
+
+    public static void setXtextResourceSetOptions(Resource resource) {
+        if (resource.getResourceSet() instanceof XtextResourceSet) {
+            XtextResourceSet resourceSet = (XtextResourceSet) resource.getResourceSet();
+            resourceSet.addLoadOption(XtextResource.OPTION_RESOLVE_ALL, Boolean.TRUE);
+            resourceSet.setClasspathUriResolver(new CustomClassPathUriResolver());
+        }
     }
 }

@@ -31,6 +31,8 @@ import de.uniba.swt.dsl.generator.externals.CliRuntimeExecutor;
 import de.uniba.swt.dsl.generator.externals.EmbeddedSccLowLevelCodeExternalGenerator;
 import de.uniba.swt.dsl.generator.externals.JavaCliRuntimeExecutor;
 import de.uniba.swt.dsl.generator.externals.LibraryExternalGenerator;
+import de.uniba.swt.dsl.linker.BahnImportURIGlobalScopeProvider;
+
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -166,6 +168,9 @@ public class StandaloneApp {
             return null;
 
         // load resource
-        return resourceSetProvider.get().getResource(URI.createFileURI(filePath), true);
+        Resource resource = resourceSetProvider.get().getResource(URI.createFileURI(filePath), true);
+        BahnImportURIGlobalScopeProvider.setXtextResourceSetOptions(resource);
+        
+        return resource;
     }
 }
