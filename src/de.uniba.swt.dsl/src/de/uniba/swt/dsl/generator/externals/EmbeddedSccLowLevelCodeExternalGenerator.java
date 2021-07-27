@@ -49,7 +49,7 @@ public class EmbeddedSccLowLevelCodeExternalGenerator {
         // ensure exist
         for (String input : inputs) {
             if (!fsa.isFile(input)) {
-                logger.debug("File is not exist: " + input);
+                logger.debug("File does not exist: " + input);
                 return false;
             }
         }
