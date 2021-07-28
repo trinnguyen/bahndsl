@@ -63,7 +63,6 @@ public abstract class GeneratorProvider {
                 } catch (Exception ex) {
                     logger.warn(String.format("Failed to delete file: %s, msg: %s", name, ex.getMessage()));
                 }
-
             }
         }
     }
