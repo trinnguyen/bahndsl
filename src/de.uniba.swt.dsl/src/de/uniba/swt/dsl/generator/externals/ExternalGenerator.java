@@ -25,13 +25,14 @@
 package de.uniba.swt.dsl.generator.externals;
 
 import de.uniba.swt.dsl.common.fsa.FsaUtil;
-import org.eclipse.xtext.generator.AbstractFileSystemAccess;
-import org.eclipse.xtext.generator.AbstractFileSystemAccess2;
+import org.apache.log4j.Logger;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
 import java.util.Arrays;
 
 public abstract class ExternalGenerator {
+
+    private static final Logger logger = Logger.getLogger(ExternalGenerator.class);
 
     protected abstract String[] supportedTools();
 
@@ -60,7 +61,11 @@ public abstract class ExternalGenerator {
         var names = generatedFileNames();
         if (names != null) {
             for (String name : names) {
-                fsa.deleteFile(name);
+                try {
+                    fsa.deleteFile(name);
+                } catch (Exception ex) {
+                    logger.warn(String.format("Failed to delete file: %s, msg: %s", name, ex.getMessage()));
+                }
             }
         }
     }
