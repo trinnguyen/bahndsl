@@ -39,7 +39,6 @@ public abstract class GeneratorProvider {
      */
     public void generate(IFileSystemAccess2 fsa, BahnModel bahnModel) {
         logger.debug(String.format("Start code generator: %s, cleaning up", getClass().getSimpleName()));
-        cleanUp(fsa);
         if (bahnModel != null)
             execute(fsa, bahnModel);
     }
@@ -50,22 +49,6 @@ public abstract class GeneratorProvider {
      * @param bahnModel model
      */
     protected abstract void execute(IFileSystemAccess2 fsa, BahnModel bahnModel);
-
-    /**
-     * Remove previous generated file
-     */
-    protected void cleanUp(IFileSystemAccess2 fsa) {
-        var names = generatedFileNames();
-        if (names != null) {
-            for (String name : names) {
-                try {
-                    fsa.deleteFile(name);
-                } catch (Exception ex) {
-                    logger.warn(String.format("Failed to delete file: %s, msg: %s", name, ex.getMessage()));
-                }
-            }
-        }
-    }
 
     /**
      * Generated file names used for cleaning up

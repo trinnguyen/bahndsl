@@ -51,7 +51,7 @@ public class SCChartsGenerator extends GeneratorProvider {
 
     @Override
     protected String[] generatedFileNames() {
-        return new String[]{ BahnConstants.REQUEST_ROUTE_SCTX, BahnConstants.DRIVE_ROUTE_SCTX};
+        return new String[]{ BahnConstants.REQUEST_ROUTE_SCTX, BahnConstants.DRIVE_ROUTE_SCTX };
     }
 
     @Override

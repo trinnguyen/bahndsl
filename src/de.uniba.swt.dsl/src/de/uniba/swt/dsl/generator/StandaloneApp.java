@@ -47,9 +47,11 @@ import org.eclipse.xtext.validation.IResourceValidator;
 import org.eclipse.xtext.validation.Issue;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.List;
 
 import static de.uniba.swt.dsl.generator.StandardLibHelper.getStandardLibPlatformUri;
@@ -100,6 +102,7 @@ public class StandaloneApp {
             out = Paths.get(file.getAbsoluteFile().getParent(), "src-gen").toAbsolutePath().toString();
         }
         fsa.setOutputPath(out);
+        deleteDirectoryStream(Paths.get(out));
 
         // Validate the standardlib
         Resource standardlibResource = resource.getResourceSet().getResource(getStandardLibPlatformUri(), true);
@@ -172,5 +175,17 @@ public class StandaloneApp {
         BahnImportURIGlobalScopeProvider.setXtextResourceSetOptions(resource);
         
         return resource;
+    }
+
+    void deleteDirectoryStream(Path path) {
+        try {
+            Files.walk(path)
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (IOException ex) {
+            logger.warn(String.format("Failed to delete path: %s, msg: %s", path.toString(), ex.getMessage()));
+        }
+
     }
 }

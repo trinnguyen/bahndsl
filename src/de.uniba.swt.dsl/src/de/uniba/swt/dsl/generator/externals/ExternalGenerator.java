@@ -48,27 +48,10 @@ public abstract class ExternalGenerator {
 
 
     public boolean generate(IFileSystemAccess2 fsa, CliRuntimeExecutor runtimeExec) {
-        cleanUp(fsa);
         return execute(fsa, runtimeExec);
     }
 
     protected abstract boolean execute(IFileSystemAccess2 fsa, CliRuntimeExecutor runtimeExec);
-
-    /**
-     * Remove previous generated file
-     */
-    protected void cleanUp(IFileSystemAccess2 fsa) {
-        var names = generatedFileNames();
-        if (names != null) {
-            for (String name : names) {
-                try {
-                    fsa.deleteFile(name);
-                } catch (Exception ex) {
-                    logger.warn(String.format("Failed to delete file: %s, msg: %s", name, ex.getMessage()));
-                }
-            }
-        }
-    }
 
     /**
      * Generated file names used for cleaning up
