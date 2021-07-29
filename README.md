@@ -585,6 +585,11 @@ end
 bool is_occupied = is "seg1" occupied
 ```
 
+- Check route availability (returns true or false)
+```c
+bool is_available = is "route1" available
+```
+
 - Get signal state (returns "stop", "caution", or "clear")
 ```c
 string res = get state "signal1"
