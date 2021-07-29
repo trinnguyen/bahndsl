@@ -615,6 +615,11 @@ bool success = set state "signal1" to clear
 bool success = set state "point1" to normal
 ```
 
+- Get train speed
+```c
+int train_speed = get speed "cargo_db"
+```
+
 - Get config from YAML file (dot notation of the `schema` in the [standard library](https://github.com/trinnguyen/bahndsl/blob/master/src/de.uniba.swt.dsl/resources/standardlib.bahn))
 ```c
 string src = get config route.source "route1"
