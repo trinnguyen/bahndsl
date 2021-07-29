@@ -466,6 +466,11 @@ function-name(argument-list)
 string result = eval_str("a", "b", "c")
 ```
 
+- Use `extern` to call externally defined C functions
+```c
+string result = extern printf("Hello\n")
+```
+
 ### Assignment and primary expressions
 - Example
 ```
