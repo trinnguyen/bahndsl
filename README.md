@@ -595,7 +595,7 @@ string res = get state "signal1"
 string res = get state "point1"
 ```
 
-- Set signal state (clear, caution, or clear)
+- Set signal state (stop, caution, or clear)
 ```c
 bool success = set state "signal1" to clear
 ```
