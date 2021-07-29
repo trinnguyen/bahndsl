@@ -10,23 +10,23 @@ BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 
 ### Requirements
 - Java SE 11 *([Download OpenJDK 11](https://adoptopenjdk.net/index.html?variant=openjdk11&jvmVariant=hotspot))*
-- C Compiler (clang or gcc) for compiling shared library
-  + macOS: clang is delivered with Xcode
+- C Compiler (clang or gcc) for compiling shared libraries
+  + macOS: clang is provided with Xcode
   + Linux (Ubuntu): `apt install clang`
   + Windows:
     + clang (LLVM-[VERSION]-win64.exe): https://github.com/llvm/llvm-project/releases
     + gcc (via MSYS2): https://packages.msys2.org/package/mingw-w64-x86_64-gcc
 
 ### bahnc (Bahn Compiler CLI)
-- [macOS/Linux/Windows: bahnc-1.0.2.zip](https://github.com/trinnguyen/bahndsl/releases/download/v1.0.2/bahnc-1.0.2.zip)
+- [macOS/Linux/Windows](https://github.com/trinnguyen/bahndsl/releases/download/v1.03/bahnc-1.0.3.zip)
 
 ### Bahn IDE
-- [macOS Intel: BahnIDE-macosx.cocoa.x86_64.tar.gz](https://github.com/trinnguyen/bahndsl/releases/download/v1.0.2/BahnIDE-macosx.cocoa.x86_64.tar.gz)
-  + Fix damaged macOS application: `xattr -c "Bahn IDE.app"`
-- [Linux: BahnIDE-linux.gtk.x86_64.tar.gz](https://github.com/trinnguyen/bahndsl/releases/download/v1.0.2/BahnIDE-linux.gtk.x86_64.tar.gz)
-- [Windows: BahnIDE-win32.win32.x86_64.zip](https://github.com/trinnguyen/bahndsl/releases/download/v1.0.2/BahnIDE-win32.win32.x86_64.zip)
+- [macOS Intel](https://github.com/trinnguyen/bahndsl/releases/download/v1.03/BahnIDE-macOS.x86_64.tar.gz)
+  + Remove the quarantine flag after downloading and unzipping: `xattr -c "Bahn IDE.app"`
+- [Linux](https://github.com/trinnguyen/bahndsl/releases/download/v1.03/BahnIDE-Linux.x86_64.tar.gz)
+- [Windows](https://github.com/trinnguyen/bahndsl/releases/download/v1.03/BahnIDE-Windows.x86_64.zip)
 
-### VSCode extension
+### Visual Studio Code extension (Experimental)
 - [Bahn Language VS Code Extension](https://marketplace.visualstudio.com/items?itemName=trinnguyen.bahn-language)
 
 ## Usage
@@ -34,7 +34,7 @@ BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 ### bahnc (command-line compiler)
 
 ```
-OVERVIEW: Bahn compiler 1.0.2
+OVERVIEW: Bahn compiler 1.0.3
 
 USAGE: bahnc [-o <path>] [-m <mode>] [-v] [-d] file
   -o <path>	output folder
@@ -64,34 +64,36 @@ EXAMPLE:
   ```
   bahnc -m library -v example.bahn
   ```
-### Bahn IDE
-- Create new project
-  - File -> New -> Bahn Project
-  - Input project name, for example: SWTbahn
-  - Finish
-  - A new project with default BahnDSL source file named: `untitled.bahn` is created
-- Create new BahnDSl file
-  - File -> New -> Bahn File
-  - Input name
-  - New BahnDSL model is created with given name, contains empty railway configuration model and interlocking functions
+
+### Bahn IDE (Eclipse-based)
+
+- Create a new project
+  - Click File -> New -> Bahn Project
+  - Specify a project name
+  - Click finish
+  - A new project is created, containing a default BahnDSL model, called `untitled.bahn`
+- Create new BahnDSL model
+  - Click File -> New -> Bahn File
+  - Specify a file name
+  - A new BahnDSL model is created, containing an empty railway configuration model and interlocking functions
 
 - Output
-  - Generated YAML files, SCCharts models and layout diagram are in `src-gen` folder
+  - Generates YAML configuration files, SCCharts models, and a railway layout diagram in a `src-gen` folder
 - Generate C code:
-  - Right click to Bahn file in the Project Explorer -> Generate C Code
-- Compile to shared C library:
-  - Right click to Bahn file in the Project Explorer -> Compile to shared C library
+  - Right-click on a Bahn model in the Project Explorer, and select "Generate C Code"
+- Compile into a shared C library:
+  - Right-click on a Bahn model in the Project Explorer, and select "Compile to shared C library"
 
 ### Visual Studio Code extension
 
-- Install from Marketplace or search in VSCode with keyword: bahn
-- Open the BahnDSL source code in Visual Studio Code (with `.bahn` extension)
-- The compiler is triggered automatically and generates the output files on file changed.
+- Install from the Marketplace or search in Visual Studio Code with the keyword "bahn"
+- Open a Bahn model in Visual Studio Code (`.bahn` extension)
+- The Bahn compiler is triggered automatically and generates output files whenever a Bahn model is modified
 - The default output folder is `src-gen`
 
 ## Getting started
 
-- A BahnDSL model contains two parts: railway model configuration and interlocking functions. Empty source code with all necessary is shown below:
+- A BahnDSL model contains two parts: railway resource configuration and interlocking functions. A minimal Bahn model with all the necessary sections is shown below:
 
 ```ruby
 module standard
@@ -107,6 +109,9 @@ module standard
 
    points master
    end
+   
+   peripherals master
+   end
 
    blocks
    end
@@ -119,7 +124,6 @@ module standard
 
    trains
    end
-
 end
 
 def request_route(string src_signal_id, string dst_signal_id, string train_id): string
@@ -133,7 +137,9 @@ end
 - The formal syntax of all elements is presented in the next section with examples
 
 ## Syntax
+
 ### Configuration
+
 ```ruby
 module module-name
   boards 
@@ -205,6 +211,8 @@ seg1 0x00 length 10cm
 signal-type-name signal-name hex-number
 ```
 
+- Signal type names are defined in the [standard library](https://github.com/trinnguyen/bahndsl/blob/master/src/de.uniba.swt.dsl/resources/standardlib.bahn)
+
 - Composite signal (compound signal)
 ```ruby
 composite signal-name 
@@ -258,6 +266,7 @@ crossing1 segment seg35
 ```
 peripheral-type-name peripheral-name hex-number port hex-number
 ```
+- Peripheral type names are defined in the [standard library](https://github.com/trinnguyen/bahndsl/blob/master/src/de.uniba.swt.dsl/resources/standardlib.bahn)
 
 - Example
 ```ruby
@@ -596,7 +605,7 @@ bool success = set state "signal1" to clear
 bool success = set state "point1" to normal
 ```
 
-- Get config from YAML file (dot notation of schema in https://github.com/trinnguyen/bahndsl/blob/master/src/de.uniba.swt.dsl/resources/standardlib.bahn)
+- Get config from YAML file (dot notation of the `schema` in the [standard library](https://github.com/trinnguyen/bahndsl/blob/master/src/de.uniba.swt.dsl/resources/standardlib.bahn))
 ```c
 string src = get config route.source "route1"
 string[] segment_ids = get config route.path "route1"
@@ -617,7 +626,7 @@ string pos = get position "point1" in "route1"
 grant "route1" to "cargo_green"
 ```
 
-### Built-in functions in standard library
+### Built-in functions in the [standard library](https://github.com/trinnguyen/bahndsl/blob/master/src/de.uniba.swt.dsl/resources/standardlib.bahn)
 - For a given array of routes, return the ID of the shortest route
 ```python
 def get_shortest_route(string route_ids[]): string
