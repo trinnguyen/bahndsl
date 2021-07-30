@@ -24,10 +24,12 @@ Require-Bundle: de.uniba.swt.dsl,
  org.eclipse.xtend.lib
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-11
-Export-Package: de.uniba.swt.dsl.ui.quickfix,
- de.uniba.swt.dsl.ui.commands,
+Export-Package: de.uniba.swt.dsl.ui.commands,
  de.uniba.swt.dsl.ui.contentassist,
- de.uniba.swt.dsl.ui.labeling,
+ de.uniba.swt.dsl.ui.editor.syntaxcoloring,
  de.uniba.swt.dsl.ui.internal,
+ de.uniba.swt.dsl.ui.labeling,
+ de.uniba.swt.dsl.ui.outline,
+ de.uniba.swt.dsl.ui.quickfix,
  de.uniba.swt.dsl.ui.wizard
 Bundle-Activator: de.uniba.swt.dsl.ui.internal.DslActivator

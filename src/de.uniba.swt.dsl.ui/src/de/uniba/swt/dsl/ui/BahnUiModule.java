@@ -4,8 +4,15 @@
 package de.uniba.swt.dsl.ui;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.xtext.ide.editor.syntaxcoloring.AbstractAntlrTokenToAttributeIdMapper;
+import org.eclipse.xtext.ide.editor.syntaxcoloring.ISemanticHighlightingCalculator;
+import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfiguration;
 import org.eclipse.xtext.ui.wizard.IProjectCreator;
 import org.eclipse.xtext.ui.wizard.template.DefaultTemplateProjectCreator;
+
+import de.uniba.swt.dsl.ui.editor.syntaxcoloring.BahnAntlrTokenToAttributeIdMapper;
+import de.uniba.swt.dsl.ui.editor.syntaxcoloring.BahnHighlightingConfiguration;
+import de.uniba.swt.dsl.ui.editor.syntaxcoloring.BahnSemanticHighlightingCalculator;
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -19,5 +26,17 @@ public class BahnUiModule extends AbstractBahnUiModule {
 	// contributed by org.eclipse.xtext.xtext.generator.ui.projectWizard.TemplateProjectWizardFragment
 	public Class<? extends IProjectCreator> bindIProjectCreator() {
 		return DefaultTemplateProjectCreator.class;
+	}
+	
+	public Class<? extends AbstractAntlrTokenToAttributeIdMapper> bindAbstractAntlrTokenToAttributeIdMapper() {
+		return BahnAntlrTokenToAttributeIdMapper.class;
+	}
+	
+	public Class<? extends ISemanticHighlightingCalculator> bindISemanticHighlightingCalculator() {
+		return BahnSemanticHighlightingCalculator.class;
+	}
+	
+	public Class<? extends IHighlightingConfiguration> bindIHighlightingConfiguration() {
+		return BahnHighlightingConfiguration.class;
 	}
 }
