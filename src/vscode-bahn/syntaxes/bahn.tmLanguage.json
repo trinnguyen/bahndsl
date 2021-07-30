@@ -31,7 +31,7 @@
 		"types": {
 			"patterns": [{
 				"name": "storage.type.bahn",
-				"match": "(\\b(bool|float|int|string))|(?<=[0-9])(m\\/s|km\\/h)\\b|(?<=[0-9])(cm|m|km|g|kg|t)\\b"
+				"match": "\\b(bool|float|int|string)\\b|(?<=[0-9])(m\\/s|km\\/h)\\b|(?<=[0-9])(cm|m|km|g|kg|t)\\b"
 			}]
 		},
 		"constants-numeric": {
