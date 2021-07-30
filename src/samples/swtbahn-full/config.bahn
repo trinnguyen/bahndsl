@@ -1,6 +1,4 @@
-
-
-module SWTbahnfull
+module SWTbahnFull
 
     boards
         # Long partition
@@ -27,14 +25,13 @@ module SWTbahnfull
 
         # 16T
         seg1   0x00 length 15cm
-        seg2b   0x9A length 187.1cm #TODO placeholder seg2b
         seg2   0x01 length 187.1cm
         seg3   0x02 length 18.1cm
         seg4   0x03 length 23.3cm
         seg5   0x04 length 23.3cm
         seg6   0x05 length 15cm
-        seg7a  0x06 length 207.8cm  # Update length
-        seg16b 0x07 length 50cm     #TODO placeholder length - must update the real length
+        seg7a  0x06 length 130.5cm
+        seg16b 0x07 length 47.8cm
         seg17  0x08 length 15cm
         seg18  0x09 length 11.3cm
         seg19  0x0a length 11.3cm
@@ -51,8 +48,8 @@ module SWTbahnfull
         seg28  0x13 length 10cm
         seg29  0x14 length 23.3cm
         seg30  0x15 length 15cm
-        seg31a 0x16 length 50cm     # TODO: placeholder length, must update
-        seg42b 0x17 length 23.3cm   # Update length
+        seg31a 0x16 length 31.7cm
+        seg42b 0x17 length 46.3cm
         seg43  0x18 length 23.3cm
         seg44  0x19 length 11.3cm
         seg45  0x1a length 15cm
@@ -73,27 +70,26 @@ module SWTbahnfull
         seg59  0x27 length 15cm
         seg60  0x28 length 23.3cm
         seg77  0x29 length 10.4cm
-        seg78   0x9B length 187.1cm #TODO placeholder seg78
-        seg78a 0x2a length 59.7cm   # Update length
+        seg78a 0x2a length 36.9cm
         seg80  0x2b length 23.3cm
         seg81  0x2c length 15cm
-        seg82a 0x2d length 146.5cm  # Update length
+        seg82a 0x2d length 100.2cm
         seg85  0x2e length 23.3cm
         seg86  0x2f length 15cm
 
         # 16T
-        seg87a 0x30 length 15cm     # Update length
+        seg87a 0x30 length 78.5cm
         seg90  0x31 length 19cm
-        seg91a 0x32 length 117.6cm  # Update length
+        seg91a 0x32 length 76cm
         seg93  0x33 length 15cm
-        seg94a 0x34 length 290.6cm  # Update length
+        seg94a 0x34 length 140.7cm
     end
 
     segments slave
         # Short partition
 
         # 16T
-        seg7b  0x00 length 50cm     # TODO: placeholder length, must update
+        seg7b  0x00 length 77.3cm
         seg8   0x01 length 15cm
         seg9   0x02 length 23.3cm
         seg10  0x03 length 23.3cm
@@ -102,8 +98,8 @@ module SWTbahnfull
         seg13  0x06 length 15cm
         seg14  0x07 length 23.3cm
         seg15  0x08 length 15cm
-        seg16a 0x09 length 90cm     # Update length
-        seg31b 0x0a length 96.5cm   # Update length
+        seg16a 0x09 length 42.2cm
+        seg31b 0x0a length 64.7cm
         seg32  0x0b length 15cm
         seg33  0x0c length 23.3cm
         seg34  0x0d length 23.3cm
@@ -116,7 +112,7 @@ module SWTbahnfull
         seg39  0x12 length 13cm
         seg40  0x13 length 23.3cm
         seg41  0x14 length 23.3cm
-        seg42a 0x15 length 50cm     # TODO: placeholder length, must update
+        seg42a 0x15 length 17.6cm
         seg51  0x16 length 23.3cm
         seg61  0x17 length 10.4cm    # Kehrschleifen
         seg62  0x18 length 10.4cm    # Kehrschleifen
@@ -136,19 +132,19 @@ module SWTbahnfull
         seg74  0x24 length 15cm
         seg75  0x25 length 80cm
         seg76  0x26 length 15cm
-        seg78b 0x27 length 50cm     # TODO: placeholder length, must update
+        seg78b 0x27 length 22.8cm
         seg79  0x28 length 23.3cm
-        seg82b 0x29 length 50cm     # TODO: placeholder length, must update
+        seg82b 0x29 length 46.3cm
         seg83  0x2a length 18.1cm
         seg84  0x2b length 23.3cm
-        seg87b 0x2c length 50cm     # TODO: placeholder length, must update
+        seg87b 0x2c length 39.5cm
         seg88  0x2d length 15cm
         seg89  0x2e length 23.3cm
-        seg91b 0x2f length 50cm     # TODO: placeholder length, must update
+        seg91b 0x2f length 41.6cm
 
         # 16T
         seg92  0x30 length 15cm
-        seg94b 0x31 length 50cm     # TODO: placeholder length, must update
+        seg94b 0x31 length 78.4cm
         seg95  0x32 length 15cm
     end
 
@@ -464,31 +460,32 @@ module SWTbahnfull
             initial normal
     end
 
-    trains
-        cargo_db 0x0001
-            steps 126
-            calibration
-                5 15 30 45 60 75 90  100 120
-                end
-            weight 100g
-            length 13cm
-            type cargo
-            peripherals
-                head_light bit 4 initial 1
-            end
-        passenger_brengdirect 0x0002
-            steps 126
-            calibration
-                5 15 30 45 60 75 90  100 120
-                end
-            weight 100g
-            length 13cm
-            type passenger
-            peripherals
-                head_light bit 4 initial 1
-                cabin_light bit 6 initial 1
-            end
-    end
+	trains
+		cargo_db 0x0001 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
+        peripherals
+            head_light bit 4 initial 1
+            cabin_light bit 0 initial 1
+        end
+    	regional_odeg 0x0002 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 25cm type passenger
+        peripherals
+            head_light bit 4 initial 1
+            cabin_light bit 0 initial 1
+        end
+    	regional_brengdirect 0x0004 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 23cm type passenger
+        peripherals
+            head_light bit 4 initial 1
+            cabin_light bit 0 initial 1
+        end
+    	cargo_bayern 0x0005 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
+        peripherals
+            head_light bit 4 initial 1
+            cabin_light bit 0 initial 1
+        end
+    	cargo_green 0x0006 steps 126 calibration 5 15 30 45 60 75 90 105 120 end weight 100g length 13cm type cargo
+        peripherals
+            head_light bit 4 initial 1
+        end
+	end
 
     blocks
         block1
@@ -497,7 +494,7 @@ module SWTbahnfull
             overlap seg3
         block2
             overlap seg6
-            main seg7a seg7b    # FIXME: 2 main segments
+            main seg7a seg7b
             overlap seg8
         block3
             overlap seg11
@@ -505,7 +502,7 @@ module SWTbahnfull
             overlap seg13
         block4
             overlap seg15
-            main seg16a seg16b  # FIXME: 2 main segments
+            main seg16a seg16b
             overlap seg17
         block5
             overlap seg21
@@ -517,7 +514,7 @@ module SWTbahnfull
             overlap seg28
         block7
             overlap seg30
-            main seg31a seg31b  # FIXME: 2 main segments
+            main seg31a seg31b
             overlap seg32
         block8
             overlap seg36
@@ -533,57 +530,51 @@ module SWTbahnfull
             overlap seg69
         block17
             overlap seg81
-            main seg82a seg2b   # FIXME: 2 main segments
+            main seg82a seg82b
             overlap seg83
         block18
             overlap seg86
-            main seg87a seg87b  # FIXME: 2 main segments
+            main seg87a seg87b
             overlap seg88
         block19
             overlap seg90
-            main seg91a seg91b  # FIXME: 2 main segments
+            main seg91a seg91b
             overlap seg92
         block20
             overlap seg93
-            main seg94a seg94b  # FIXME: 2 main segments
+            main seg94a seg94b
             overlap seg95
     end
 
     platforms
-        # platform1 overlap seg72 main seg73
-        block14 
-            overlap seg71 
-            main seg72 
+        block14
+            overlap seg71
+            main seg72
             overlap seg73
 
-        # platform2 overlap seg75 main seg76
-        block15 
-            overlap seg74 
-            main seg75 
+        block15
+            overlap seg74
+            main seg75
             overlap seg76
 
-        # platform3 overlap seg46 main seg47
         block9
             overlap seg45
             main seg46
             overlap seg47
 
-        # platform4 overlap seg55 main seg56
         block10
             overlap seg54
             main seg55
             overlap seg56
 
-        # platform5 overlap seg58 main seg59
         block11
             overlap seg57
             main seg58
             overlap seg59
 
-        # platform6 overlap seg78 main seg79
         block16
             overlap seg77
-            main seg78a seg78b  # FIXME: 2 main segments
+            main seg78a seg78b
             overlap seg79
     end
 
@@ -596,6 +587,7 @@ module SWTbahnfull
         # Blocks
         block1.down -- point7.straight
         block1.up -- point1.stem
+
         block2.down -- point2.straight
         block2.up -- point3.straight
 
@@ -605,21 +597,20 @@ module SWTbahnfull
         block4.down -- point5.straight
         block4.up -- point6.straight
 
-        block5.down -- crossing1.down2
         block5.up -- point8.down2
 
         block6.down -- point9.up1
         block6.up -- point10.stem
 
         block7.down -- point10.straight
-        block7.up -- point11.up2
+        block7.up -- point11.down1
 
         block8.down -- point13.straight
         block8.up -- point14.straight
 
         block9.down -- point18.stem
         block10.down -- point22.down2
-        block11.down -- point22.up2
+        block11.down -- point22.down1
 
         block12.up -- point24.side
         block12.down -- point23.stem
@@ -643,7 +634,7 @@ module SWTbahnfull
         block19.up -- point29.straight
 
         block20.down -- point24.straight
-        block20.up -- point8.down1
+        block20.up -- point8.up2
 
         # Points
         point1.straight -- point2.stem
@@ -654,17 +645,17 @@ module SWTbahnfull
         point6.side -- point17.side
 
         point8.up1 -- point9.down2
-        point8.up2 -- point1.side
+        point8.down1 -- point1.side
 
-        point9.up2 -- point2.side
-        point9.down1 -- point26.stem
+        point9.down1 -- point2.side
+        point9.up2 -- point26.stem
 
         point11.up1 -- point3.side
         point11.down2 -- point27.stem
-        point11.down1 -- point12.up2
+        point11.up2 -- point12.down1
 
         point24.stem -- point12.down2
-        point13.stem -- point12.down1
+        point13.stem -- point12.up2
         point14.stem -- point15.straight
         point15.stem -- point16.stem
         point16.straight -- point17.stem
@@ -679,15 +670,75 @@ module SWTbahnfull
 
 
         # Crossings
-        crossing1.down1 -- point7.side
+        crossing1.down1 -- point18.straight
         crossing1.down2 -- block5.down
         crossing1.up1 -- point17.straight
-        crossing1.up2 -- point18.straight
+        crossing1.up2 -- point7.side
 
-        crossing2.down1 -- point20.side
+        crossing2.up2 -- point20.side
         crossing2.down2 -- point19.side
         crossing2.up1 -- point23.side
-        crossing2.up2 -- point22.down1
-    end
+        crossing2.down1 -- point22.up2
 
+        # Signals
+        block1.down -- signal1
+        block1.up -- signal4
+
+        block2.down -- signal5
+        block2.up -- signal7
+
+        block3.down -- signal8
+        block3.up -- signal10
+
+        block4.down -- signal12
+        block4.up -- signal14
+
+        block5.down -- signal15
+        block5.up -- signal18
+
+        block6.down -- signal19
+        block6.up -- signal20
+
+        block7.down -- signal19
+        block7.up -- signal20
+
+        block8.down -- signal23
+        block8.up -- signal25
+
+        block9.down -- signal26
+        block9.up -- signal27
+
+        block10.down -- signal28
+        block10.up -- signal29
+
+        block11.down -- signal30
+        block11.up -- signal31
+
+        block12.down -- signal32
+        block12.up -- signal35
+
+        block13.down -- signal36
+        block13.up -- signal38
+
+        block14.down -- signal39
+        block14.up -- signal40
+
+        block15.down -- signal41
+        block15.up -- signal42
+
+        block16.down -- signal43
+        block16.up -- signal44
+
+        block17.down -- signal45
+        block17.up -- signal46
+
+        block18.down -- signal47
+        block18.up -- signal48
+
+        block19.down -- signal49
+        block19.up -- signal50
+
+        block20.down -- signal53
+        block20.up -- signal51
+    end
 end

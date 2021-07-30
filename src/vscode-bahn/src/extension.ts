@@ -28,8 +28,8 @@ export function activate(context: ExtensionContext) {
         createEmbeddedRemoteServer(context, port).then(result => { 
             languageClient = createRemoteClient(port)
             postClientCreation(languageClient, context)
+            console.log('Launched embedded remote LSP server')
         })
-        console.log('Launched embedded remote LSP server')
     }
 }
 
