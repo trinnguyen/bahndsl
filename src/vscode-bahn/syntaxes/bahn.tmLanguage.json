@@ -3,7 +3,22 @@
 	"name": "Bahn",
 	"patterns": [
 		{
-			"include": "#keywords"
+			"include": "#types"
+		},
+		{
+			"include": "#constants-numeric"
+		},
+		{
+			"include": "#constants-language"
+		},
+		{
+			"include": "#standardlib-schema"
+		},
+		{
+			"include": "#resources"
+		},
+		{
+			"include": "#behaviour"
 		},
 		{
 			"include": "#strings"
@@ -13,10 +28,40 @@
 		}
 	],
 	"repository": {
-		"keywords": {
+		"types": {
+			"patterns": [{
+				"name": "storage.type.bahn",
+				"match": "(\\b(bool|float|int|string))|(?<=[0-9])(m\\/s|km\\/h)\\b|(?<=[0-9])(cm|m|km|g|kg|t)\\b"
+			}]
+		},
+		"constants-numeric": {
+			"patterns": [{
+				"name": "constant.numeric.bahn",
+				"match": "\\b(0x[a-fA-F0-9]+\\b|[0-9]+(.[0-9]+)?)"
+			}]
+		},
+		"constants-language": {
+			"patterns": [{
+				"name": "constant.language.bahn",
+				"match": "\\b(true|false|len)\\b"
+			}]
+		},
+		"standardlib-schema": {
+			"patterns": [{
+				"name": "support.variable.bahn",
+				"match": "\\b(aspects|schema|signaltypes|peripheraltypes|route.(id|source|destination|orientation|path|sections|route_signals|conflicts|point_positions|length|train)|segment.(id|length)|signal.(id|type)|point.(id|segment)|peripheral.(id|type)|train.(id|type|weight|length)|block.(id|segment|is_reversed|direction|length|limit|train_types|overlaps|block_signals)|crossing.(id|segment)|composition.(id|entry|exit|block|distant))\\b"
+			}]
+		},
+		"resources": {
 			"patterns": [{
 				"name": "keyword.control.bahn",
-				"match": "\\b(aspects|available|bit|blocks|boards|bool|break|calibration|cargo|caution|clear|cm|composite|config|crossings|def|down|else|end|extern|false|features|float|for|from|get|grant|if|in|initial|int|is|kg|km|layout|len|main|module|normal|not|occupied|overlap|passenger|peripherals|platforms|points|position|return|reverse|routes|schema|segment|segments|set|side|signals|signaltypes|peripheraltypes|speed|state|stem|steps|stop|straight|string|to|trains|true|up|while)\\b"
+				"match": "\\b(bit|blocks|boards|calibration|cargo|composite|crossings|down|features|initial|layout|main|module|overlap|passenger|peripherals|platforms|points|segment|segments|side|signals|speed|stem|steps|straight|trains|up|length|weight|type|limit)\\b"
+			}]
+		},
+		"behaviour": {
+			"patterns": [{
+				"name": "keyword.control.bahn",
+				"match": "\\b(available|break|caution|clear|config|def|else|end|extern|for|from|get|grant|if|in|is|normal|not|occupied|position|return|reverse|routes|set|speed|state|stop|to|while)\\b"
 			}]
 		},
 		"strings": {
@@ -29,8 +74,7 @@
 					"match": "\\\\."
 				}
 			]
-		}
-		,
+		},
 		"comments": {
 			"name": "comment.line.double-dash.bahn",
 			"begin": "#",

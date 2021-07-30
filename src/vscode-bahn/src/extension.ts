@@ -8,6 +8,7 @@ import { window, workspace, ExtensionContext, StatusBarAlignment } from 'vscode'
 import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo, State } from 'vscode-languageclient';
 import * as net from 'net';
 import { BahnConfigUtil } from './bahn-config'
+import { spawn } from 'child_process';
 
 
 const ServerName = 'Bahn IDE server'
@@ -16,33 +17,40 @@ const statusBarItem = window.createStatusBarItem(StatusBarAlignment.Right, 0)
 
 export function activate(context: ExtensionContext) {
     // start LC
-    var languageClient = null;
+    var languageClient: LanguageClient;
     const config = BahnConfigUtil.loadConfig()
     if (config.remoteLspEnabled) {
-        console.log('connect to remote LSP server, port: ' + config.remoteLspPort)
-        languageClient = createRemoteClient(config.remoteLspPort)    
+        languageClient = createRemoteClient(config.remoteLspPort)
+        postClientCreation(languageClient, context);
+        console.log('Connected to remote LSP server, port: ' + config.remoteLspPort)
     } else {
-        console.log('launch embedded LSP server')
-        languageClient = createEmbeddedClient(context)
+        const port = 8989
+        createEmbeddedRemoteServer(context, port).then(result => { 
+            languageClient = createRemoteClient(port)
+            postClientCreation(languageClient, context)
+        })
+        console.log('Launched embedded remote LSP server')
     }
+}
 
+function postClientCreation(languageClient: LanguageClient, context: ExtensionContext) {
     languageClient.trace = Trace.Verbose;
 
     languageClient.onDidChangeState(evt => {
         switch (evt.newState) {
             case State.Stopped:
-                updateStatusBar(`$(warning) ${ServerName} is disconnected`)
-                break
+                updateStatusBar(`$(warning) ${ServerName} is disconnected`);
+                break;
             case State.Starting:
-                updateStatusBar(`$(sync~spin) Loading ${ServerName}...`)
-                break
+                updateStatusBar(`$(sync~spin) Loading ${ServerName}...`);
+                break;
             case State.Running:
-                updateStatusBar(`$(pass) ${ServerName}`)
-                break
+                updateStatusBar(`$(pass) ${ServerName}`);
+                break;
         }
-    })
+    });
 
-    // keep disposable for deactivating
+    // Keep disposable for deactivating
     context.subscriptions.push(languageClient.start());
     context.subscriptions.push(statusBarItem);
 }
@@ -53,7 +61,28 @@ function updateStatusBar(text: string) {
 }
 
 /**
- * create LanguageClient that works with embedded BahnDSL language server binary
+ * Hack to get the embedded Bahn Language Server to work reliably in VSCode:
+ * Create a "remote" LanguageServer as a promise that is resolved when the server responds
+ * @param context context
+ * @param port port
+ * @returns lc
+ */
+function createEmbeddedRemoteServer(context: ExtensionContext, port: number): Promise<boolean> {
+    let launcher = os.platform() === 'win32' ? 'bahn-ide-server.bat' : 'bahn-ide-server';
+    let script = context.asAbsolutePath(path.join('bahn-ide-server', 'bin', launcher));
+
+    let languageServerReady = new Promise<boolean>((resolve, reject) => {
+        const languageServer = spawn(script, ['-port', `${port}`])
+        languageServer.stdout.on('data', (data) => { console.log(`stdout: ${data}`); resolve(true) });
+        languageServer.stderr.on('data', (data) => { console.error(`stderr: ${data}`) });
+        languageServer.on('close', (code) => { console.log(`child process exited with code ${code}`) });
+    })
+
+    return languageServerReady
+}
+
+/**
+ * Create LanguageClient that works with embedded BahnDSL language server binary
  * @param context context
  * @returns lc
  */
@@ -64,18 +93,17 @@ function createEmbeddedClient(context: ExtensionContext): LanguageClient {
     let serverOptions: ServerOptions = {
         run : { command: script },
         debug: { command: script, args: ['-log', '-trace'] }
-    };
+    }
 
     return new LanguageClient(ServerName, serverOptions, createClientOptions());
 }
 
 /**
- * create LanguageClient that works with remote LSP (used for debugging)
+ * Create LanguageClient that works with remote LSP (used for debugging)
  * @param port port
  * @returns lc
  */
 function createRemoteClient(port: number): LanguageClient {
-
     const serverInfo = () => {
         const socket = net.connect({ port: port })
         const result: StreamInfo = {
@@ -89,7 +117,7 @@ function createRemoteClient(port: number): LanguageClient {
 }
 
 /**
- * create client options
+ * Create client options
  * @returns options
  */
 function createClientOptions(): LanguageClientOptions {

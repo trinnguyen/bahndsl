@@ -2,7 +2,7 @@
     "Module": {
         "prefix": "module",
         "body": [
-            "module $TM_FILENAME_BASE",
+            "module SWTbahn_$TM_FILENAME_BASE",
             "   boards",
             "       $1 $2",
             "   end",
@@ -14,6 +14,9 @@
             "   end",
             "",
             "   points $1",
+            "   end",
+            "",
+            "   peripherals $1",
             "   end",
             "",
             "   blocks",
