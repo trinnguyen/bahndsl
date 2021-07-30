@@ -466,6 +466,11 @@ function-name(argument-list)
 string result = eval_str("a", "b", "c")
 ```
 
+- Use `extern` to call externally defined C functions
+```c
+string result = extern printf("Hello\n")
+```
+
 ### Assignment and primary expressions
 - Example
 ```
@@ -585,6 +590,11 @@ end
 bool is_occupied = is "seg1" occupied
 ```
 
+- Check route availability (returns true or false)
+```c
+bool is_available = is "route1" available
+```
+
 - Get signal state (returns "stop", "caution", or "clear")
 ```c
 string res = get state "signal1"
@@ -595,7 +605,7 @@ string res = get state "signal1"
 string res = get state "point1"
 ```
 
-- Set signal state (clear, caution, or clear)
+- Set signal state (stop, caution, or clear)
 ```c
 bool success = set state "signal1" to clear
 ```
@@ -603,6 +613,11 @@ bool success = set state "signal1" to clear
 - Set point state (normal or reverse)
 ```c
 bool success = set state "point1" to normal
+```
+
+- Get train speed
+```c
+int train_speed = get speed "cargo_db"
 ```
 
 - Get config from YAML file (dot notation of the `schema` in the [standard library](https://github.com/trinnguyen/bahndsl/blob/master/src/de.uniba.swt.dsl/resources/standardlib.bahn))
