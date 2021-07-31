@@ -47,6 +47,9 @@ import java.util.List;
 class BahnNormalizationProviderTest {
 
     @Inject
+    EvaluationExprNormalizer evaluationExprNormalizer;
+
+    @Inject
     SyntacticExprNormalizer syntacticExprNormalizer;
 
     @Inject
@@ -75,7 +78,14 @@ class BahnNormalizationProviderTest {
 
     @BeforeEach
     void prepare() {
-        provider.setNormalizers(List.of(basicStatementNormalizer, arrayNormalizer, foreachNormalizer, stringEqualNormalizer, syntacticExprNormalizer));
+        provider.setNormalizers(List.of(
+                evaluationExprNormalizer,
+                basicStatementNormalizer,
+                arrayNormalizer,
+                foreachNormalizer,
+                stringEqualNormalizer,
+                syntacticExprNormalizer
+        ));
     }
 
     @ParameterizedTest
