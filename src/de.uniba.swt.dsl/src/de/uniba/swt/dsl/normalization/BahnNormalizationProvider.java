@@ -48,6 +48,9 @@ public class BahnNormalizationProvider {
     TemporaryVarGenerator varGenerator;
 
     @Inject
+    EvaluationExprNormalizer evaluationExprNormalizer;
+
+    @Inject
     SyntacticExprNormalizer syntacticExprNormalizer;
 
     @Inject
@@ -94,6 +97,9 @@ public class BahnNormalizationProvider {
         if (normalizers == null) {
             normalizers = new ArrayList<>();
 
+            // convert evaluation expression to external C function
+            normalizers.add(evaluationExprNormalizer);
+
             // break multiple operator expression into small (basic) statement
             normalizers.add(basicStatementNormalizer);
 
@@ -106,10 +112,10 @@ public class BahnNormalizationProvider {
             // convert string comparison expression using extern C function
             normalizers.add(stringEqualNormalizer);
 
-            // convert all getter/setter for configuration and track state
+            // convert getter/setter for configuration and track state to external C function
             normalizers.add(syntacticExprNormalizer);
 
-            // rename before sending to sccharts model
+            // rename before sending to SCCharts model
             normalizers.add(variableNameNormalizer);
         }
     }

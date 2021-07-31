@@ -144,46 +144,6 @@ public class SyntacticTransformer {
             return normalizeSetConfigFuncExpr(setExpr);
         }
 
-        // is route/segment (not) available/occupied
-        if (expr instanceof EvaluateFuncExpr) {
-            var evalExpr = (EvaluateFuncExpr) expr;
-
-            // get route train config and check if not null
-            if (evalExpr.isRouteAvailable()) {
-
-                // output:
-                //  get route.train train_id == ""
-
-                // prepare custom schema
-                Tuple<SchemaElement, ElementProp> routeTrainSchema = createRouteTrainSchema();
-                var getter = BahnFactory.eINSTANCE.createGetConfigFuncExpr();
-                getter.setType(routeTrainSchema.getFirst());
-                getter.setProp(routeTrainSchema.getSecond());
-                getter.setConfigExpr(evalExpr.getObjectExpr());
-
-                BehaviourGetExpr getExpr = BahnFactory.eINSTANCE.createBehaviourGetExpr();
-                getExpr.setGetExpr(getter);
-
-                // create equality op
-                var opExpr = BahnFactory.eINSTANCE.createOpExpression();
-                opExpr.setLeftExpr(normalizeBehaviourExpr(getExpr));
-                opExpr.setOp(evalExpr.isNot() ? OperatorType.NOT_EQUAL : OperatorType.EQUAL);
-                opExpr.setRightExpr(createString(""));
-                return opExpr;
-            } else if (evalExpr.isSegmentOccupied()) {
-                // output:
-                //  extern is_segment_occupied(segment_id)
-                var rawExpr = createExternalFunctionCallExpr("is_segment_occupied", List.of(evalExpr.getObjectExpr()));
-                if (!evalExpr.isNot()) {
-                    return rawExpr;
-                }
-
-                var unaryExpr = BahnFactory.eINSTANCE.createUnaryExpr();
-                unaryExpr.setExpr(rawExpr);
-                return unaryExpr;
-            }
-        }
-
         return null;
     }
 
