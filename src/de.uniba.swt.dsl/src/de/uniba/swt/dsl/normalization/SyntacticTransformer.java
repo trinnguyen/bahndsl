@@ -265,13 +265,13 @@ public class SyntacticTransformer {
         return expr;
     }
 
-    private static StringLiteral createString(String value) {
+    public static StringLiteral createString(String value) {
         var literal = BahnFactory.eINSTANCE.createStringLiteral();
         literal.setValue(value);
         return literal;
     }
 
-    private static Tuple<SchemaElement, ElementProp> createRouteTrainSchema() {
+    public static Tuple<SchemaElement, ElementProp> createRouteTrainSchema() {
         var routeElement = BahnFactory.eINSTANCE.createSchemaElement();
         routeElement.setName(BahnConstants.SET_CONFIG_ROUTE_TYPE);
 

@@ -49,7 +49,7 @@ public class EvaluationExprNormalizer extends AbstractNormalizer {
                 // get config route.train train_id == ""
 
                 // prepare custom schema
-                Tuple<SchemaElement, ElementProp> routeTrainSchema = createRouteTrainSchema();
+                Tuple<SchemaElement, ElementProp> routeTrainSchema = SyntacticTransformer.createRouteTrainSchema();
                 var getter = BahnFactory.eINSTANCE.createGetConfigFuncExpr();
                 getter.setType(routeTrainSchema.getFirst());
                 getter.setProp(routeTrainSchema.getSecond());
@@ -62,14 +62,14 @@ public class EvaluationExprNormalizer extends AbstractNormalizer {
                 var opExpr = BahnFactory.eINSTANCE.createOpExpression();
                 opExpr.setLeftExpr(getExpr);
                 opExpr.setOp(evalExpr.isNot() ? OperatorType.NOT_EQUAL : OperatorType.EQUAL);
-                opExpr.setRightExpr(createString(""));
+                opExpr.setRightExpr(SyntacticTransformer.createString(""));
 
                 BahnUtil.replaceEObject(expr, opExpr);
                 return List.of();
             } else if (evalExpr.isSegmentOccupied()) {
                 // output:
                 //  extern is_segment_occupied(segment_id)
-                var rawExpr = createExternalFunctionCallExpr(EXTERN_IS_SEGMENT_OCCUPIED, List.of(evalExpr.getObjectExpr()));
+                var rawExpr = SyntacticTransformer.createExternalFunctionCallExpr(EXTERN_IS_SEGMENT_OCCUPIED, List.of(evalExpr.getObjectExpr()));
                 if (!evalExpr.isNot()) {
                     BahnUtil.replaceEObject(expr, rawExpr);
                     return List.of();
@@ -86,29 +86,4 @@ public class EvaluationExprNormalizer extends AbstractNormalizer {
         return null;
     }
 
-    public static ExternalFunctionCallExpr createExternalFunctionCallExpr(String name, Collection<Expression> paramExprs) {
-        var expr = BahnFactory.eINSTANCE.createExternalFunctionCallExpr();
-        expr.setName(name);
-        expr.getParams().addAll(paramExprs);
-        return expr;
-    }
-
-    private static StringLiteral createString(String value) {
-        var literal = BahnFactory.eINSTANCE.createStringLiteral();
-        literal.setValue(value);
-        return literal;
-    }
-
-    private static Tuple<SchemaElement, ElementProp> createRouteTrainSchema() {
-        var routeElement = BahnFactory.eINSTANCE.createSchemaElement();
-        routeElement.setName(BahnConstants.SET_CONFIG_ROUTE_TYPE);
-
-        var trainProp = BahnFactory.eINSTANCE.createElementProp();
-        trainProp.setType(DataType.STRING_TYPE);
-        trainProp.setArray(false);
-        trainProp.setName(BahnConstants.SET_CONFIG_TRAIN_NAME);
-        routeElement.getProperties().add(trainProp);
-
-        return Tuple.of(routeElement, trainProp);
-    }
 }
