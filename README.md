@@ -6,7 +6,7 @@ BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 
 ## Installation
 
-- Latest version: 1.0.3
+- Latest version: 1.0.3a
 
 ### Requirements
 - Java SE 11 *([Download OpenJDK 11](https://adoptopenjdk.net/index.html?variant=openjdk11&jvmVariant=hotspot))*
@@ -18,13 +18,13 @@ BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
     + gcc (via MSYS2): https://packages.msys2.org/package/mingw-w64-x86_64-gcc
 
 ### bahnc (Bahn Compiler CLI)
-- [macOS/Linux/Windows](https://github.com/trinnguyen/bahndsl/releases/download/v1.03/bahnc-1.0.3.zip)
+- [macOS/Linux/Windows](https://github.com/trinnguyen/bahndsl/releases/download/v1.03a/bahnc-1.0.3.zip)
 
 ### Bahn IDE
-- [macOS Intel](https://github.com/trinnguyen/bahndsl/releases/download/v1.03/BahnIDE-macOS.x86_64.tar.gz)
+- [macOS Intel](https://github.com/trinnguyen/bahndsl/releases/download/v1.03a/BahnIDE-macOS.x86_64.tar.gz)
   + Remove the quarantine flag after downloading and unzipping: `xattr -c "Bahn IDE.app"`
-- [Linux](https://github.com/trinnguyen/bahndsl/releases/download/v1.03/BahnIDE-Linux.x86_64.tar.gz)
-- [Windows](https://github.com/trinnguyen/bahndsl/releases/download/v1.03/BahnIDE-Windows.x86_64.zip)
+- [Linux](https://github.com/trinnguyen/bahndsl/releases/download/v1.03a/BahnIDE-Linux.x86_64.tar.gz)
+- [Windows](https://github.com/trinnguyen/bahndsl/releases/download/v1.03a/BahnIDE-Windows.x86_64.zip)
 
 ### Visual Studio Code extension (Experimental)
 - [Bahn Language VS Code Extension](https://marketplace.visualstudio.com/items?itemName=trinnguyen.bahn-language)
