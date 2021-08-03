@@ -9,12 +9,28 @@
             application="org.eclipse.ui.ide.workbench"
             name="Bahn IDE">
          <property
-               name="applicationCSS"
-               value="platform:/plugin/de.uniba.swt.dsl.product/css/default.css">
-         </property>
-         <property
                name="appName"
                value="Bahn IDE">
+         </property>
+         <property
+               name="aboutText"
+               value="BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways&#x0A;&#x0A;Copyright (C) 2020 University of Bamberg, Software Technologies Research Group&#x0A;https://www.uni-bamberg.de, http://www.swt-bamberg.de&#x0A;&#x0A;BahnDSL is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or&#x0A;(at your option) any later version.&#x0A;&#x0A;BahnDSL is a RESEARCH PROTOTYPE and distributed WITHOUT ANY WARRANTY, without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&#x0A;&#x0A;The following people contributed to the conception and realization of the present BahnDSL (in alphabetic order by surname):&#x0A;- Tri Nguyen &lt;https://github.com/trinnguyen&gt;&#x0A;- Eugene Yip &lt;https://github.com/eyip002&gt;">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="000000">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="7,252,445,20">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="5,275,445,15">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
          </property>
       </product>
    </extension>
