@@ -33,6 +33,14 @@
                         <linux>tar.gz</linux>
                         <macosx>tar.gz</macosx>
                     </formats>
+                    <products>
+                        <product>
+                            <id>BahnIDE</id>
+                            <rootFolders>
+                                <macosx>Bahn IDE.app</macosx>
+                            </rootFolders>
+                        </product>
+                    </products>
                 </configuration>
                 <executions>
                     <execution>

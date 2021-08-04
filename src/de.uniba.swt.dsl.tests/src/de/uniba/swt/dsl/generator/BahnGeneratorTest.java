@@ -57,9 +57,9 @@ class BahnGeneratorTest {
     @Inject
     BahnGenerator generator;
 
-    private final static String RequestRouteFilename = "request_route_sccharts.sctx";
+    private final static String RequestRouteFilename = "request_route.sctx";
 
-    private final static String DriveRouteFilename = "drive_route_sccharts.sctx";
+    private final static String DriveRouteFilename = "drive_route.sctx";
 
     @ParameterizedTest
     @ValueSource(strings = {

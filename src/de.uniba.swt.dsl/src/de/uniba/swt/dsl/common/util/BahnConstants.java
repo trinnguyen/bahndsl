@@ -60,9 +60,9 @@ public class BahnConstants {
 
     public static final Set<String> CROSSING_PROPS;
 
-    public static final String REQUEST_ROUTE_SCTX = "request_route_sccharts.sctx";
+    public static final String REQUEST_ROUTE_SCTX = "request_route.sctx";
 
-    public static final String DRIVE_ROUTE_SCTX = "drive_route_sccharts.sctx";
+    public static final String DRIVE_ROUTE_SCTX = "drive_route.sctx";
 
     public static final String REQUEST_ROUTE_FUNC_NAME = "request_route";
 

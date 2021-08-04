@@ -38,8 +38,8 @@ import java.util.List;
 public class SCChartsExternalTest extends ExternalTest {
 
     private final static List<String> SCChartsFiles = List.of(
-            "request_route_sccharts.sctx",
-            "drive_route_sccharts.sctx");
+            "request_route.sctx",
+            "drive_route.sctx");
 
     @ParameterizedTest
     @ValueSource(strings = {
