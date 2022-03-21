@@ -29,9 +29,7 @@ import de.uniba.swt.dsl.bahn.RegularSignalElement;
 import de.uniba.swt.dsl.common.util.Tuple;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 class CompositionSignalElementYamlExporter extends AbstractElementYamlExporter<CompositionSignalElement> {
 

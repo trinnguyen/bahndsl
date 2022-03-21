@@ -27,10 +27,11 @@ package de.uniba.swt.dsl.validation;
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.Tuple;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 public class BoardValidator {

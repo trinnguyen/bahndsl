@@ -32,10 +32,10 @@ jacocoTestReport {
 	additionalClassDirs.setFrom(mainClasses)
 
 	reports {
-		html.enabled true
+		html.required = true
 	}
 }
 
 //this is an eclipse plugin project
-eclipseClasspath.enabled=false
-cleanEclipseClasspath.enabled=false
+eclipseClasspath.enabled = false
+cleanEclipseClasspath.enabled = false

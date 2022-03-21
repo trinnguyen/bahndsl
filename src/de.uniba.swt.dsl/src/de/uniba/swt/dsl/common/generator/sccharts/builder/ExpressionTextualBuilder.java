@@ -25,13 +25,7 @@
 package de.uniba.swt.dsl.common.generator.sccharts.builder;
 
 import de.uniba.swt.dsl.bahn.*;
-import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 import de.uniba.swt.dsl.validation.util.ExprUtil;
-
-import javax.inject.Inject;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
 
 public class ExpressionTextualBuilder extends TextualBuilder {
 

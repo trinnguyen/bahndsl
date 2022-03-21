@@ -26,12 +26,9 @@ package de.uniba.swt.dsl.validation;
 
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.validation.util.ValidationException;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UniqueSegmentUsageValidator {
 

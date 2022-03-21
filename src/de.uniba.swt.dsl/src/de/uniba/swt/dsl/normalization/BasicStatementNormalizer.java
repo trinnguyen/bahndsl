@@ -26,11 +26,9 @@ package de.uniba.swt.dsl.normalization;
 
 import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.*;
-import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class BasicStatementNormalizer extends AbstractNormalizer {

@@ -28,8 +28,6 @@ import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.layout.models.vertex.AbstractVertexMember;
 import de.uniba.swt.dsl.common.layout.models.vertex.BlockVertexMember;
-import de.uniba.swt.dsl.common.layout.models.vertex.CrossingVertexMember;
-import de.uniba.swt.dsl.validation.ValidationErrors;
 
 import java.util.Objects;
 import java.util.Set;

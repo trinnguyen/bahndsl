@@ -32,9 +32,10 @@ import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.CrossingEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.DoubleSlipSwitchEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
-import de.uniba.swt.dsl.common.layout.models.vertex.DoubleSlipSwitchVertexMember;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class NetworkRoutesExplorer {
     private final RoutesFinder routesFinder = new RoutesFinder();

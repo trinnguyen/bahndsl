@@ -25,7 +25,6 @@
 package de.uniba.swt.dsl.normalization;
 
 import de.uniba.swt.dsl.bahn.*;
-import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.Tuple;
 

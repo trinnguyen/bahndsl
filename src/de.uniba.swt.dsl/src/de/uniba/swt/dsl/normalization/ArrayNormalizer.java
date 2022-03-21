@@ -25,14 +25,10 @@
 package de.uniba.swt.dsl.normalization;
 
 import com.google.inject.Inject;
-import com.google.inject.internal.util.$StackTraceElements;
 import de.uniba.swt.dsl.bahn.*;
-import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.BahnUtil;
-import de.uniba.swt.dsl.validation.typing.ExprDataType;
 import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -91,7 +87,7 @@ public class ArrayNormalizer extends AbstractNormalizer {
             }
         }
 
-        // ensure foreach using temporary array instead of vecotr
+        // ensure foreach using temporary array instead of vector
         if (stmt instanceof ForeachStmt) {
             return generateArrayVarIfNeeded(((ForeachStmt) stmt).getArrayExpr());
         }

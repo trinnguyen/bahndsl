@@ -25,9 +25,11 @@
 package de.uniba.swt.dsl.common.layout.models;
 
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
-import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class Route {

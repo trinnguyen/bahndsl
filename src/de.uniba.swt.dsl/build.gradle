@@ -21,7 +21,7 @@ dependencies {
 	implementation 'org.freemarker:freemarker:2.3.31'
 	implementation 'com.google.code.gson:gson:2.8.6'
 
-	implementation 'commons-io:commons-io:2.8.0'
+	implementation 'commons-io:commons-io:2.11.0'
 	implementation "org.eclipse.xtext:org.eclipse.xtext:${xtextVersion}"
 	implementation "org.eclipse.xtext:org.eclipse.xtext.xbase:${xtextVersion}"
 }
@@ -47,7 +47,7 @@ dependencies {
 }
 
 task generateXtextLanguage(type: JavaExec) {
-	main = "org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher"
+	mainClass.set("org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher")
 	classpath = configurations.mwe2
 	inputs.file "src/de/uniba/swt/dsl/GenerateBahn.mwe2"
 	inputs.file "src/de/uniba/swt/dsl/Bahn.xtext"
@@ -61,6 +61,7 @@ generateXtext.dependsOn(generateXtextLanguage)
 clean.dependsOn(cleanGenerateXtextLanguage)
 processResources.dependsOn(generateXtextLanguage)
 eclipse.classpath.plusConfigurations += [configurations.mwe2]
+
 //this is an eclipse plugin project
 eclipseClasspath.enabled=false
 cleanEclipseClasspath.enabled=false

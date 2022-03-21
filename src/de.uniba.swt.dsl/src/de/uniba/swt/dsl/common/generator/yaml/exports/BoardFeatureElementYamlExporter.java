@@ -28,7 +28,6 @@ import de.uniba.swt.dsl.bahn.BoardFeatureElement;
 import de.uniba.swt.dsl.common.util.Tuple;
 
 import java.util.List;
-import java.util.Map;
 
 class BoardFeatureElementYamlExporter extends AbstractElementYamlExporter<BoardFeatureElement> {
 

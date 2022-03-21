@@ -26,11 +26,9 @@ package de.uniba.swt.dsl.common.generator.yaml.exports;
 
 import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.common.util.YamlExporter;
-import org.eclipse.emf.ecore.EObject;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 abstract class AbstractElementYamlExporter<T> {
 

@@ -28,17 +28,18 @@ import de.uniba.swt.dsl.common.layout.models.BlockDirection;
 import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.layout.models.Orientation;
 import de.uniba.swt.dsl.common.layout.models.Route;
-import de.uniba.swt.dsl.common.layout.models.edge.DoubleSlipSwitchEdge;
-import de.uniba.swt.dsl.common.layout.models.vertex.AbstractVertexMember;
-import de.uniba.swt.dsl.common.layout.models.vertex.BlockVertexMember;
-import de.uniba.swt.dsl.common.layout.models.vertex.SignalVertexMember;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
-import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
+import de.uniba.swt.dsl.common.layout.models.edge.DoubleSlipSwitchEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
+import de.uniba.swt.dsl.common.layout.models.vertex.BlockVertexMember;
+import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
+import de.uniba.swt.dsl.common.layout.models.vertex.SignalVertexMember;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Stack;
 
 public class RoutesFinder {
 

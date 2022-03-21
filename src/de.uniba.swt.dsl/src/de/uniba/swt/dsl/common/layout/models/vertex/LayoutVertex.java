@@ -25,7 +25,6 @@
 package de.uniba.swt.dsl.common.layout.models.vertex;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class LayoutVertex {
     private final String id = UUID.randomUUID().toString();

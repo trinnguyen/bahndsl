@@ -26,7 +26,6 @@ package de.uniba.swt.dsl.validation.util;
 
 import de.uniba.swt.dsl.validation.ValidationErrors;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 public class ValidationException extends Exception

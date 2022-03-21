@@ -24,12 +24,10 @@
 
 package de.uniba.swt.dsl.common.generator.yaml.exports;
 
-import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.bahn.RegularSignalElement;
 import de.uniba.swt.dsl.common.util.Tuple;
-import org.eclipse.emf.common.util.EList;
 
 import java.util.List;
-import java.util.Map;
 
 class RegularSignalElementYamlExporter extends AbstractElementYamlExporter<RegularSignalElement> {
     @Override

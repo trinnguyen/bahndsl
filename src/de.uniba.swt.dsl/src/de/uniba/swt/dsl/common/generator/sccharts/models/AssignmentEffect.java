@@ -25,9 +25,6 @@
 package de.uniba.swt.dsl.common.generator.sccharts.models;
 
 import de.uniba.swt.dsl.bahn.Expression;
-import de.uniba.swt.dsl.bahn.LiteralExpr;
-
-import java.util.List;
 
 public class AssignmentEffect extends Effect {
     private SVarDeclaration varDeclaration;

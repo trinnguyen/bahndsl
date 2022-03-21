@@ -24,7 +24,6 @@
 
 package de.uniba.swt.dsl.validation;
 
-
 import java.util.HashSet;
 import java.util.Set;
 

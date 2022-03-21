@@ -24,16 +24,13 @@
 
 package de.uniba.swt.dsl.common.generator.yaml.exports;
 
-import de.uniba.swt.dsl.bahn.BlockElement;
 import de.uniba.swt.dsl.bahn.LengthUnit;
 import de.uniba.swt.dsl.bahn.SegmentElement;
 import de.uniba.swt.dsl.common.util.ExtraBlockElement;
 import de.uniba.swt.dsl.common.util.Tuple;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 class ExtraBlockElementYamlExporter extends AbstractElementYamlExporter<ExtraBlockElement> {

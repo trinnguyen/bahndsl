@@ -25,9 +25,6 @@
 package de.uniba.swt.dsl.normalization;
 
 import com.google.inject.Singleton;
-import de.uniba.swt.dsl.bahn.BahnFactory;
-import de.uniba.swt.dsl.bahn.Expression;
-import de.uniba.swt.dsl.bahn.VarDecl;
 import de.uniba.swt.dsl.bahn.VarDeclStmt;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;

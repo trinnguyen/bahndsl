@@ -24,7 +24,6 @@
 
 package de.uniba.swt.dsl.common.generator.sccharts.builder;
 
-import de.uniba.swt.dsl.bahn.AssignmentStmt;
 import de.uniba.swt.dsl.bahn.Expression;
 import de.uniba.swt.dsl.common.generator.sccharts.models.*;
 import de.uniba.swt.dsl.common.util.StringUtil;

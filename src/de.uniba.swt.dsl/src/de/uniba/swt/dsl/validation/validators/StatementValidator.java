@@ -25,7 +25,6 @@
 package de.uniba.swt.dsl.validation.validators;
 
 import de.uniba.swt.dsl.bahn.*;
-import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
 import de.uniba.swt.dsl.validation.typing.HintDataType;
 import de.uniba.swt.dsl.validation.typing.HintDataTypeUtl;

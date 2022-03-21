@@ -30,7 +30,6 @@ import de.uniba.swt.dsl.common.util.PointAspect;
 import de.uniba.swt.dsl.common.util.Tuple;
 
 import java.util.List;
-import java.util.Map;
 
 public class PointElementYamlExporter extends AbstractElementYamlExporter<PointElement> {
     @Override
