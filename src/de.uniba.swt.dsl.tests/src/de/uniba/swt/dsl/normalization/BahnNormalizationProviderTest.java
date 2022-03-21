@@ -345,7 +345,8 @@ class BahnNormalizationProviderTest {
     @CsvSource( value = {
             "def test(string sig) set state sig to stop end, stop",
             "def test(string sig) set state sig to caution end, caution",
-            "def test(string sig) set state sig to clear end, clear",
+            "def test(string sig) set state sig to go end, go",
+            "def test(string sig) set state sig to shunt end, shunt"
     })
     void testDomainSetSignal(String src, String param) throws Exception {
         ensureNormalize(src, List.of("extern track_state_set_value ( sig , \"" + param + "\""));

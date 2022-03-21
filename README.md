@@ -596,7 +596,7 @@ bool is_occupied = is "seg1" occupied
 bool is_available = is "route1" available
 ```
 
-- Get signal state (returns "stop", "caution", or "clear")
+- Get signal state (returns "stop", "go", "caution", or "shunt")
 ```c
 string res = get state "signal1"
 ```
@@ -606,9 +606,9 @@ string res = get state "signal1"
 string res = get state "point1"
 ```
 
-- Set signal state (stop, caution, or clear)
+- Set signal state (stop, go, caution, or shunt)
 ```c
-bool success = set state "signal1" to clear
+bool success = set state "signal1" to go
 ```
 
 - Set point state (normal or reverse)

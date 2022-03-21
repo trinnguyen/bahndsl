@@ -76,42 +76,44 @@ end
 
 signaltypes
     entry # Einfahrsignal
-        aspects 
-            yellow 0x02 
-            green 0x01
-            red 0x00
+        aspects
+            aspect_caution 0x02
+            aspect_go 0x01
+            aspect_stop 0x00
         end 
-        initial red
+        initial aspect_stop
     exit # Ausfahrsignal
         aspects
-            yellow 0x02
-            green 0x01
-            red 0x00
+            aspect_shunt 0x03
+            aspect_caution 0x02
+            aspect_go 0x01
+            aspect_stop 0x00
         end
-        initial red
+        initial aspect_stop
     distant # Vorsignal
         aspects
-            yellow 0x02
-            green 0x01
+            aspect_caution 0x02
+            aspect_go 0x01
+            aspect_stop 0x00
         end
-        initial yellow
+        initial aspect_stop
     block # Blocksignal
         aspects
-            green 0x01
-            red 0x00
+            aspect_go 0x01
+            aspect_stop 0x00
         end
-        initial red
+        initial aspect_stop
     shunting
         aspects
-            white 0x01
-            red 0x00
+            aspect_shunt 0x01
+            aspect_stop 0x00
         end
-        initial red
+        initial aspect_stop
     halt
         aspects
-            red 0x00
+            aspect_stop 0x00
         end
-        initial red
+        initial aspect_stop
     platformlight 
         aspects
             high 0x00

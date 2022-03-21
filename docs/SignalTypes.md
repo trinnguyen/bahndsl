@@ -1,17 +1,17 @@
 # Signal Types
 
-| German name                 | BahnDSL Type  | Aspects                | Initial | stop   | clear | caution         |
-|-----------------------------|---------------|------------------------|---------|--------|-------|-----------------|
-| Einfahrsignal               | entry         | red<br>green<br>yellow | red     | red    | green | green<br>yellow |
-| Ausfahrsignal               | exit          | red<br>green<br>yellow | red     | red    | green | green<br>yellow |
-| Blocksignal                 | block         | red<br>green           | red     | red    | green | -               |
-| Vorsignal                   | distant       | yellow<br>green        | yellow  | yellow | green | yellow<br>green |
-| Sperrsignal                 | shunting      | red<br>white           | red     | red    | white | -               |
-| Sperrsignal                 | halt          | red                    | red     | red    | -     | -               |
-|                             | peripheral    | on                     | on      |        |       |                 |
-|                             | platformlight | on<br>off              | on      |        |       |                 |
-| Ausfahrsignal mit Vorsignal |               |                        |         |        |       |                 |
-| Einfahrsignal mit Vorsignal |               |                        |         |        |       |                 |
-| Blocksignal mit Vorsignal   |               |                        |         |        |       |                 |
+| German name                 | BahnDSL Type  | Aspects                        | Initial | stop   | go    | caution         | shunt        | 
+|-----------------------------|---------------|--------------------------------|---------|--------|-------|-----------------|--------------|
+| Einfahrsignal               | entry         | stop<br>go<br>caution          | stop    | red    | green | green<br>yellow | -            |
+| Ausfahrsignal               | exit          | stop<br>go<br>caution<br>shunt | stop    | red    | green | green<br>yellow | red<br>white |
+| Blocksignal                 | block         | stop<br>go                     | stop    | red    | green | -               | -            |
+| Vorsignal                   | distant       | stop<br>go<br>caution          | stop    | yellow | green | yellow<br>green | -            |
+| Sperrsignal                 | shunting      | stop<br>shunt                  | stop    | red    | -     | -               | white        |
+| Sperrsignal                 | halt          | stop                           | red     | red    | -     | -               | -            |
+
+| BahnDSL Type  | Aspects     | Initial |
+|---------------|-------------|---------|
+| platformlight | high<br>low | high    |
+| peripheral    | high<br>low | high    |
 
 
