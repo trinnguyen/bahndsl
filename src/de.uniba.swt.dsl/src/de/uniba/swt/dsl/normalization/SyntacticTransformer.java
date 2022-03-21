@@ -153,8 +153,10 @@ public class SyntacticTransformer {
                 return "stop";
             case CAUTION:
                 return "caution";
-            case CLEAR:
-                return "clear";
+            case GO:
+                return "go";
+            case SHUNT:
+                return "shunt";
             case NORMAL:
                 return "normal";
             case REVERSE:

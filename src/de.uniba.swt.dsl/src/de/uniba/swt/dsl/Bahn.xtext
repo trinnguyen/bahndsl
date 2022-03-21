@@ -115,7 +115,7 @@ LayoutProperty :
 	'end';
 
 enum TrackState:
-	CLEAR = 'clear' | CAUTION = 'caution' | STOP = 'stop'
+	GO = 'go' | CAUTION = 'caution' | STOP = 'stop' | SHUNT = 'shunt'
 	| NORMAL = 'normal' | REVERSE = 'reverse'
 	| ON = 'on' | OFF = 'off'
 ;

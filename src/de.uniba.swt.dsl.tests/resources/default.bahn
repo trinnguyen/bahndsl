@@ -44,7 +44,7 @@ def route_is_clear(string route_id): bool
     # check entry signal
     string src_signal = get config route.source route_id
     string src_state = get state src_signal
-    if src_state != "red"
+    if src_state != "stop"
         return false
     end
 
@@ -71,9 +71,9 @@ def set_points_signals(string route_id)
         end
     end
 
-    # set entry signal to green
+    # set entry signal to aspect go
     string entry_id = get config route.source route_id
-    set state entry_id to clear
+    set state entry_id to go
 end
 
 def drive_route(string route_id, string train_id, string segment_ids[])
