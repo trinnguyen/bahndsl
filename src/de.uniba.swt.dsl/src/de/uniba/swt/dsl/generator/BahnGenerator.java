@@ -71,6 +71,10 @@ public class BahnGenerator extends AbstractGenerator {
 		if (bahnModel == null)
 			return;
 
+		String genRouteType = BahnUtil.getRouteType(resource);
+		if (genRouteType == null)
+			return;
+
 		// layout generator must run first to generate network layout
 		layoutGenerator.generate(fsa, bahnModel);
 
@@ -94,7 +98,7 @@ public class BahnGenerator extends AbstractGenerator {
 	private static boolean checkInterlockingFunctions(BahnModel bahnModel, boolean normalized) {
 		var result = SwtBahnFuncValidator.hasRequestAndDriveRoute(bahnModel, normalized);
 		if (!result.getFirst()) {
-			logger.error("Missing function for requesting route");
+			logger.warn("Missing function for requesting route");
 			return false;
 		}
 

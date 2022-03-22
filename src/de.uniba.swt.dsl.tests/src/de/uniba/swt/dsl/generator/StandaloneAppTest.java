@@ -101,7 +101,7 @@ class StandaloneAppTest {
     @Test
     void runLibraryGeneratorSuccess() throws Exception {
         var res = resourceHelper.resource(TestConstants.SampleRequestRouteForeach);
-        var result = standaloneApp.runGenerator(res, "test.bahn", javaIoFileSystemAccess, "test-gen", "library", runtimeExecutor);
+        var result = standaloneApp.runGenerator(res, "test.bahn", javaIoFileSystemAccess, "test-gen", "simple", "library", runtimeExecutor);
 
         // check last one is cc
         assertTrue(result, "Generate library mode");
@@ -124,7 +124,7 @@ class StandaloneAppTest {
     @Test
     void runLibraryGeneratorFailedNoRequestRoute() throws Exception {
         var res = resourceHelper.resource(TestConstants.SampleDriveRoute);
-        var result = standaloneApp.runGenerator(res, "test.bahn", fsa, "test-gen", "library", runtimeExecutor);
+        var result = standaloneApp.runGenerator(res, "test.bahn", fsa, "test-gen", "simple", "library", runtimeExecutor);
         assertFalse(result, "No request_route found");
     }
 
@@ -141,7 +141,7 @@ class StandaloneAppTest {
     })
     void successRunResourceFiles(String filename) throws Exception {
         var res = testHelper.readFromResourcePath(filename);
-        var result = standaloneApp.runGenerator(res, filename, fsa, "test-gen", null, runtimeExecutor);
+        var result = standaloneApp.runGenerator(res, filename, fsa, "test-gen", null, null, runtimeExecutor);
         assertTrue(result, "Expected run standalone again resource to be success: " + filename);
     }
 
