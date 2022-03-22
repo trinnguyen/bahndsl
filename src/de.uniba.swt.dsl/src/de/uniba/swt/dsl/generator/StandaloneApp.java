@@ -118,7 +118,7 @@ public class StandaloneApp {
         // Configure and start the generator
         logger.info("Start generating network layout and SCCharts models");
         // prepare
-        GeneratorContext context = new GeneratorContext();
+        GeneratorContext context = new BahnGeneratorContext();
         context.setCancelIndicator(CancelIndicator.NullImpl);
 
         // step 1: generate default artifacts
