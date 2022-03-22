@@ -71,8 +71,8 @@ public class BahnGenerator extends AbstractGenerator {
 		if (bahnModel == null)
 			return;
 
-		String genRouteType = BahnUtil.getRouteType(resource);
-		if (genRouteType == null)
+		String routeType = ((BahnGeneratorContext) context).getRouteType();
+		if (routeType == null)
 			return;
 
 		// layout generator must run first to generate network layout
