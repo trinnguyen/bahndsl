@@ -51,7 +51,7 @@ public class Main {
 		var modeDesc = String.format("code generation mode (%s, %s, %s)", StandaloneApp.MODE_DEFAULT, StandaloneApp.MODE_C_CODE, StandaloneApp.MODE_LIBRARY);
 		var container = new ArgOptionContainer(List.of(
 				new ArgOption("o", "output folder", true, "path"),
-				new ArgOption("m", routeDesc, true, "route"),
+				new ArgOption("r", routeDesc, true, "route"),
 				new ArgOption("m", modeDesc, true, "mode"),
 				new ArgOption("v", "verbose output"),
 				new ArgOption("d", "debug output"))

@@ -27,7 +27,7 @@ public class BahnCompileUtil {
 	
 	private static String ext = "bahn";
 	
-	public static void processCommand(ExecutionEvent event, String mode) {
+	public static void processCommand(ExecutionEvent event, String route, String mode) {
 		var files = getFiles(event);
 
 		
@@ -40,7 +40,7 @@ public class BahnCompileUtil {
 					
 					@Override
 					public void run(IProgressMonitor monitor) {
-						process(files, mode, monitor);
+						process(files, route, mode, monitor);
 					}
 				});
 			} catch (InvocationTargetException | InterruptedException e) {
@@ -51,7 +51,7 @@ public class BahnCompileUtil {
     	}
 	}
 	
-	private static void process(List<IFile> files, String mode, IProgressMonitor pm) {
+	private static void process(List<IFile> files, String route, String mode, IProgressMonitor pm) {
 		pm.beginTask("Run Bahn compiler with mode: " + mode, files.size());
 		
 		// init
@@ -63,7 +63,7 @@ public class BahnCompileUtil {
 		for (IFile file : files) {
 			var path = file.getLocation().toOSString();
 			pm.subTask("Process file " + path);
-			app.runGenerator(path, fsa, null, mode);
+			app.runGenerator(path, fsa, null, route, mode);
 			
 			// refresh
 			try {
