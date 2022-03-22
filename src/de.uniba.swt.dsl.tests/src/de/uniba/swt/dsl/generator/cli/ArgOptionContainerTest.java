@@ -58,9 +58,11 @@ class ArgOptionContainerTest {
     }
 
     private static ArgOptionContainer createContainer() {
+        var routeDesc = String.format("route generation mode (%s, %s)", StandaloneApp.ROUTE_SIMPLE, StandaloneApp.ROUTE_EXTENDED);
         var modeDesc = String.format("code generation mode (%s, %s, %s)", StandaloneApp.MODE_DEFAULT, StandaloneApp.MODE_C_CODE, StandaloneApp.MODE_LIBRARY);
         return new ArgOptionContainer(List.of(
                 new ArgOption("o", "output folder", true, "path"),
+                new ArgOption("m", routeDesc, true, "route"),
                 new ArgOption("m", modeDesc, true, "mode"),
                 new ArgOption("v", "verbose output"),
                 new ArgOption("d", "debug output")));

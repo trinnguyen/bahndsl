@@ -25,9 +25,11 @@
 package de.uniba.swt.dsl.generator;
 
 import com.google.inject.Inject;
+import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.tests.BahnInjectorProvider;
 import de.uniba.swt.dsl.tests.helpers.TestConstants;
 import de.uniba.swt.dsl.tests.helpers.TestHelper;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.generator.GeneratorContext;
 import org.eclipse.xtext.generator.InMemoryFileSystemAccess;
@@ -76,7 +78,8 @@ class BahnGeneratorTest {
         invokeGenerate(src);
 
         // verify
-        var expectedNames = List.of("bidib_board_config.yml",
+        var expectedNames = List.of(
+                "bidib_board_config.yml",
                 "bidib_track_config.yml",
                 "bidib_train_config.yml",
                 "extras_config.yml");
@@ -229,6 +232,8 @@ class BahnGeneratorTest {
 
     private void invokeGenerate(String src) throws Exception {
         Resource input = testHelper.parseValid(src);
+        EObject genRouteType = BahnUtil.createEObject("RouteType", "strategy", StandaloneApp.ROUTE_SIMPLE);
+        input.getContents().add(genRouteType);
 
         GeneratorContext context = new GeneratorContext();
         try {

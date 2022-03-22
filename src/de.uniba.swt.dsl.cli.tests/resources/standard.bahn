@@ -252,7 +252,7 @@ def test()
     # -> switch entry signal to stop
     # -> switch distant signal to stop
 
-    # set state "signal100" to clear
+    # set state "signal100" to go
     # set state "signal100" to caution
 end
 

@@ -71,9 +71,9 @@ def set_points_signals(string route_id)
         end
     end
 
-    # set entry signal to green
+    # set entry signal to the go aspect
     string entry_id = get config route.source route_id
-    set state entry_id to clear
+    set state entry_id to go
 end
 
 def drive_route(string route_id, string train_id, string segment_ids[])

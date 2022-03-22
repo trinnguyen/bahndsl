@@ -47,12 +47,15 @@ public class Main {
 
 	public static void main(String[] args) {
 		// define
+		var routeDesc = String.format("route generation mode (%s, %s)", StandaloneApp.ROUTE_SIMPLE, StandaloneApp.ROUTE_EXTENDED);
 		var modeDesc = String.format("code generation mode (%s, %s, %s)", StandaloneApp.MODE_DEFAULT, StandaloneApp.MODE_C_CODE, StandaloneApp.MODE_LIBRARY);
 		var container = new ArgOptionContainer(List.of(
 				new ArgOption("o", "output folder", true, "path"),
+				new ArgOption("r", routeDesc, true, "route"),
 				new ArgOption("m", modeDesc, true, "mode"),
 				new ArgOption("v", "verbose output"),
-				new ArgOption("d", "debug output")));
+				new ArgOption("d", "debug output"))
+		);
 
 		// parse arg
 		if (args.length == 0) {
@@ -89,6 +92,7 @@ public class Main {
 
 		// prepare for code generation
 		String outputPath = result.getValue("o", null);
+		String route = result.getValue("r", StandaloneApp.ROUTE_SIMPLE);
 		String mode = result.getValue("m", StandaloneApp.MODE_DEFAULT);
 
 		// process
@@ -96,7 +100,7 @@ public class Main {
 		StandaloneApp app = injector.getInstance(StandaloneApp.class);
 		JavaIoFileSystemAccess fsa = injector.getInstance(JavaIoFileSystemAccess.class);
 
-		boolean success = app.runGenerator(inputFile, fsa, outputPath, mode);
+		boolean success = app.runGenerator(inputFile, fsa, outputPath, route, mode);
 		if (!success) {
 			System.exit(1);
 		}
@@ -122,7 +126,7 @@ public class Main {
 		System.out.println(container.formatHelp("bahnc"));
 		System.out.println("EXAMPLE: \n" +
 				"  bahnc example.bahn\n" +
-				"  bahnc -m library -v example.bahn\n" +
+				"  bahnc -r simple -m library -v example.bahn\n" +
 				"  bahnc -o output/src-gen example.bahn\n");
 	}
 

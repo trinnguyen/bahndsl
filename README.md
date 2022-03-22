@@ -37,11 +37,12 @@
 ```
 OVERVIEW: Bahn compiler 1.0.3
 
-USAGE: bahnc [-o <path>] [-m <mode>] [-v] [-d] file
-  -o <path>	output folder
-  -m <mode>	code generation mode (default, c-code, library)
-  -v		verbose output
-  -d		debug output
+USAGE: bahnc [-o <path>][-r <route>] [-m <mode>] [-v] [-d] file
+  -o <path>     output folder
+  -r <route>    route generation mode (simple, extended)
+  -m <mode>     code generation mode (default, c-code, library)
+  -v            verbose output
+  -d            debug output
 
 EXAMPLE: 
   bahnc example.bahn

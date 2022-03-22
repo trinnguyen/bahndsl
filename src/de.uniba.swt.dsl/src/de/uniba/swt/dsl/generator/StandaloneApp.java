@@ -35,6 +35,7 @@ import de.uniba.swt.dsl.linker.BahnImportURIGlobalScopeProvider;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.diagnostics.Severity;
@@ -59,10 +60,11 @@ import static de.uniba.swt.dsl.generator.StandardLibHelper.getStandardLibPlatfor
 public class StandaloneApp {
 
     public static final String MODE_DEFAULT = "default";
-
     public static final String MODE_C_CODE = "c-code";
-
     public static final String MODE_LIBRARY = "library";
+
+    public static final String ROUTE_SIMPLE = "simple";
+    public static final String ROUTE_EXTENDED = "extended";
 
     private static final Logger logger = Logger.getLogger(StandaloneApp.class);
 
@@ -84,17 +86,17 @@ public class StandaloneApp {
     @Inject
     private LibraryExternalGenerator libraryGenerator;
 
-    public boolean runGenerator(String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String mode) {
+    public boolean runGenerator(String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String route, String mode) {
         var resource = loadResource(filePath);
         if (resource == null) {
             System.err.println("Invalid input file: " + filePath);
             return false;
         }
 
-        return runGenerator(resource, filePath, fsa, outputPath, mode, javaCliRuntimeExecutor);
+        return runGenerator(resource, filePath, fsa, outputPath, route, mode, javaCliRuntimeExecutor);
     }
 
-    public boolean runGenerator(Resource resource, String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String mode, CliRuntimeExecutor runtimeExec) {
+    public boolean runGenerator(Resource resource, String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String route, String mode, CliRuntimeExecutor runtimeExec) {
         // load
         File file = new File(filePath);
         var out = outputPath;
@@ -113,8 +115,6 @@ public class StandaloneApp {
         if (validateTheResource(resource))
             return false;
 
-        logger.info(String.format("Code generation mode: %s", mode));
-
         // Configure and start the generator
         logger.info("Start generating network layout and SCCharts models");
         // prepare
@@ -122,9 +122,13 @@ public class StandaloneApp {
         context.setCancelIndicator(CancelIndicator.NullImpl);
 
         // step 1: generate default artifacts
+        logger.info(String.format("Route generation mode: %s", route));
+        EObject genRouteType = BahnUtil.createEObject("RouteType", "strategy", route);
+        resource.getContents().add(genRouteType);
         generator.generate(resource, fsa, context);
 
         // step 2: generate low-level C-Code and dynamic library
+        logger.info(String.format("Code generation mode: %s", mode));
         boolean genLibrary = MODE_LIBRARY.equalsIgnoreCase(mode);
         boolean genLowLevelCode = genLibrary || MODE_C_CODE.equalsIgnoreCase(mode);
 
@@ -158,7 +162,6 @@ public class StandaloneApp {
             } else {
                 System.out.println(issue);
             }
-
         }
 
         // stop

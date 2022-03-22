@@ -26,7 +26,8 @@ package de.uniba.swt.dsl.common.util;
 
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
-import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.EcoreUtil2;
@@ -35,6 +36,25 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class BahnUtil {
+    public static EObject createEObject(String eClassName, String eAttributeName, String eAttributeValue) {
+        EAttribute eAttribute = EcoreFactory.eINSTANCE.createEAttribute();
+        eAttribute.setName(eAttributeName);
+        eAttribute.setEType(EcorePackage.eINSTANCE.getEString());
+
+        EClass eClass = EcoreFactory.eINSTANCE.createEClass();
+        eClass.setName(eClassName);
+        eClass.getEStructuralFeatures().add(eAttribute);
+
+        EPackage ePackage = EcoreFactory.eINSTANCE.createEPackage();
+        ePackage.setName("ePackage");
+        ePackage.getEClassifiers().add(eClass);
+
+        EFactory eFactory = ePackage.getEFactoryInstance();
+        EObject eObject = eFactory.create(eClass);
+        eObject.eSet(eAttribute, eAttributeValue);
+        return eObject;
+    }
+
     public static void replaceEObject(EObject oldObj, EObject newObj) {
         if (newObj != null) {
             EcoreUtil2.replace(oldObj, newObj);
@@ -43,9 +63,20 @@ public class BahnUtil {
 
     public static BahnModel getBahnModel(Resource resource) {
         if (resource.getContents().size() > 0) {
-            EObject e = resource.getContents().get(0);
-            if (e instanceof BahnModel)
-                return (BahnModel) e;
+            EObject content = resource.getContents().get(0);
+            if (content instanceof BahnModel)
+                return (BahnModel) content;
+        }
+
+        return null;
+    }
+
+    public static String getRouteType(Resource resource) {
+        for (EObject content : resource.getContents()) {
+            if (content.eClass().getName() == "RouteType") {
+                EStructuralFeature attribute = content.eClass().getEStructuralFeature("strategy");
+                return (String) content.eGet(attribute);
+            }
         }
 
         return null;
