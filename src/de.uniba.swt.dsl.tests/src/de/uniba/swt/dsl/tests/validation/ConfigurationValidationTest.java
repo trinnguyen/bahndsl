@@ -188,8 +188,7 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "module test boards master 0x00 end segments master seg1 0x00 length 11cm seg2 0x00 length 12cm end end",
-            "module test boards master 0x00 end signals master entry sig1 0x00 end segments master seg1 0x00 length 12cm end end",
-            "module test boards master 0x00 end peripherals master onebit peri1 0x00 port 0x0027 end segments master seg1 0x00 length 12cm end end",
+            "module test boards master 0x00 end signals master entry sig1 0x00 end segments master seg1 0x00 length 11cm seg2 0x00 length 12cm end end"
     })
     public void errorHexAlreadyDefinedInSegments(String src) {
         validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.SEGMENTS_PROPERTY, null, "Address", "is already used in the board");
@@ -197,8 +196,23 @@ public class ConfigurationValidationTest extends AbstractValidationTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "module test boards master 0x00 end peripherals master onebit peri1 0x01 port 0x0027 onebit peri2 0x01 port 0x0028 end end",
-            "module test boards master 0x00 end segments master seg1 0x00 length 12cm end peripherals master onebit peri1 0x00 port 0x0027 end end"
+            "module test boards master 0x00 end signals master entry sig1 0x00 entry sig2 0x00 end end"
+    })
+    public void errorHexAlreadyDefinedInSignals(String src) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.SIGNALS_PROPERTY, null, "Address", "is already used in the board");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "module test boards master 0x00 end segments master seg1 0x00 seg2 0x01 end points master point1 0x00 segment seg1 normal 0x01 reverse 0x00 initial normal point2 0x00 segment seg2 normal 0x01 reverse 0x00 initial normal end end"
+    })
+    public void errorHexAlreadyDefinedInPoints(String src) {
+        validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.POINTS_PROPERTY, null, "Address", "is already used in the board");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "module test boards master 0x00 end peripherals master onebit peri1 0x01 port 0x0027 onebit peri2 0x01 port 0x0028 end end"
     })
     public void errorHexAlreadyDefinedInPeripherals(String src) {
         validationTestHelper.assertError(internalParse(src), BahnPackage.Literals.PERIPHERALS_PROPERTY, null, "Address", "is already used in the board");

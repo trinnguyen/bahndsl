@@ -122,9 +122,9 @@ public class RoutesFinder {
             // the destination signal is not the first valid one that can be reached.
         } else {
             for (var e : networkLayout.incidentEdges(vertex)) {
-                var w = e.getDestVertex();
-                if (!flagsOnPath.contains(w)) {
-                    dfs(w, e);
+                var v = e.getDestVertex();
+                if (!flagsOnPath.contains(v)) {
+                    dfs(v, e);
                 }
             }
         }

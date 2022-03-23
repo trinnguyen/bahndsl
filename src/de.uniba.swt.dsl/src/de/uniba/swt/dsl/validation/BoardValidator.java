@@ -35,7 +35,8 @@ import java.util.Set;
 import java.util.function.Function;
 
 public class BoardValidator {
-    private final List<Class> supportedSingleSectionClasses = List.of(
+    // The following module property sections can only be defined once in a configuration file.
+    private final List<Class<? extends ModuleProperty>> supportedSingleSectionClasses = List.of(
             BoardsProperty.class,
             BlocksProperty.class,
             PlatformsProperty.class,
@@ -43,6 +44,7 @@ public class BoardValidator {
             LayoutProperty.class,
             TrainsProperty.class);
 
+    // Find module property sections that have been redefined.
     public List<Tuple<String, Integer>> findSingleSectionError(RootModule module) {
         List<Tuple<String, Integer>> items = new ArrayList<>();
 
@@ -65,7 +67,8 @@ public class BoardValidator {
         return items;
     }
 
-    public List<Tuple<String, Integer>> findSingleTrackByBoardErrors(RootModule module) {
+    // Find board-specific property sections that have been redefined.
+    public List<Tuple<String, Integer>> findSingleSectionByBoardErrors(RootModule module) {
         List<Tuple<String, Integer>> errors = new ArrayList<>();
 
         Set<Tuple<String, String>> flags = new HashSet<>();

@@ -31,10 +31,22 @@ import java.util.*;
 import java.util.function.Function;
 
 public class UniqueHexValidator {
-    private final Map<String, Set<Long>> mapBoardHex = new HashMap<>();
+    // Track output addresses and Accessory addresses have separate address spaces.
+    private final Map<String, Set<Long>> mapBoardTrackHex = new HashMap<>();
+    private final Map<String, Set<Long>> mapBoardAccessoryHex = new HashMap<>();
 
-    public <T> List<Tuple<String, Integer>> validateUniqueAddress(String boardName, List<T> items, Function<T, String> addrMapper) {
+    public <T> List<Tuple<String, Integer>> validateUniqueTrackAddress(String boardName, List<T> items, Function<T, String> addrMapper) {
+        return validateUniqueAddress(boardName, items, addrMapper, mapBoardTrackHex, ValidationErrors.DefinedTrackAddressFormat);
+    }
+
+    public <T> List<Tuple<String, Integer>> validateUniqueAccessoryAddress(String boardName, List<T> items, Function<T, String> addrMapper) {
+        return validateUniqueAddress(boardName, items, addrMapper, mapBoardAccessoryHex, ValidationErrors.DefineAccessorydAddressFormat);
+    }
+
+    public <T> List<Tuple<String, Integer>> validateUniqueAddress(String boardName, List<T> items, Function<T, String> addrMapper,
+                                                                  Map<String, Set<Long>> mapBoardHex, String validationErrorFormat) {
         List<Tuple<String, Integer>> errors = new ArrayList<>();
+
         if (!mapBoardHex.containsKey(boardName)) {
             mapBoardHex.put(boardName, new HashSet<>());
         }
@@ -61,7 +73,7 @@ public class UniqueHexValidator {
 
             // verify duplication
             if (set.contains(val)) {
-                errors.add(Tuple.of(String.format(ValidationErrors.DefinedAddressFormat, strVal, boardName), i));
+                errors.add(Tuple.of(String.format(validationErrorFormat, strVal, boardName), i));
             } else {
                 set.add(val);
             }
@@ -71,6 +83,7 @@ public class UniqueHexValidator {
     }
 
     public void clear() {
-        mapBoardHex.clear();
+        mapBoardTrackHex.clear();
+        mapBoardAccessoryHex.clear();
     }
 }
