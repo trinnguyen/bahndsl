@@ -125,7 +125,8 @@ public class InterlockingYamlExporter extends YamlExporter {
         // Conflicting routes
         appendLine("conflicts:");
         increaseLevel();
-        route.getConflictRouteIds().forEach(conflict -> appendLine("- id: %s", conflict));
+        route.getConflictRouteIds().stream().sorted(Comparator.comparingInt(id -> Integer.parseInt(id)))
+                .forEach(conflict -> appendLine("- id: %s", conflict));
         decreaseLevel();
 
         // decrease obj level
