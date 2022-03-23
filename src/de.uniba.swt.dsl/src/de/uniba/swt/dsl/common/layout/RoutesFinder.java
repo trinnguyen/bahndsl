@@ -189,34 +189,16 @@ public class RoutesFinder {
 
     private void terminateCurrentPath() {
         Stack<AbstractEdge> clonedEdges = new Stack<>();
-        // List<String> immediateSignals = new ArrayList<>();
-        for (AbstractEdge edge : currentEdges) {
-            clonedEdges.push(edge);
-
-            /*
-            if (edge instanceof BlockEdge) {
-                var blockEdge = (BlockEdge) edge;
-
-                // Add signal at the end of the block to immediateSignals
-                blockEdge.getDestVertex()
-                        .getMembers()
-                        .stream()
-                        .filter(m -> m instanceof SignalVertexMember && !((SignalVertexMember) m).getSignal().equals(destMember.getSignal()))
-                        .findFirst().ifPresent(signal -> immediateSignals.add(signal.getName()));
-            }
-             */
-        }
+        clonedEdges.addAll(currentEdges);
 
         String srcBlockKey = srcMember.getConnectedBlock().getName();
         BlockVertexMember srcBlockMember = (BlockVertexMember) this.srcSignal.findMemberByName(srcBlockKey).get();
-        Orientation startingOrientation = srcBlockMember.getEndpoint() == BlockVertexMember.BlockEndpoint.Down
+
+        Orientation startingOrientation =
+                (srcBlockMember.getEndpoint() == BlockVertexMember.BlockEndpoint.Down && !srcBlockMember.getBlock().isReversed()
+                || srcBlockMember.getEndpoint() == BlockVertexMember.BlockEndpoint.Up && srcBlockMember.getBlock().isReversed())
                     ? Orientation.Clockwise
                     : Orientation.AntiClockwise;
-        if (srcBlockMember.getBlock().isReversed()) {
-            startingOrientation = startingOrientation == Orientation.Clockwise
-                    ? Orientation.AntiClockwise
-                    : Orientation.Clockwise;
-        }
 
         routes.add(new Route(srcMember.getName(), destMember.getName(), clonedEdges, startingOrientation));
     }

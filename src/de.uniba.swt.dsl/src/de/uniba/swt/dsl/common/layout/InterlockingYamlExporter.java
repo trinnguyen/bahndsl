@@ -26,10 +26,12 @@ package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.bahn.LengthUnit;
 import de.uniba.swt.dsl.bahn.SegmentElement;
+import de.uniba.swt.dsl.bahn.SignalElement;
 import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractPointEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
+import de.uniba.swt.dsl.common.layout.models.vertex.SignalVertexMember;
 import de.uniba.swt.dsl.common.util.YamlExporter;
 
 import java.util.*;
@@ -54,57 +56,64 @@ public class InterlockingYamlExporter extends YamlExporter {
     }
 
     private void generateRoute(Route route) {
-        // generate signals
+        // Route ID
         appendLine("- id: %s #route%s", route.getId(), route.getId());
 
+        // Source and destination signals, and route orientation
         increaseLevel();
         appendLine("source: %s", route.getSrcSignal());
         appendLine("destination: %s", route.getDestSignal());
         appendLine("orientation: %s", route.getStartingOrientation().toString().toLowerCase());
 
-        // segment (blocks and points)
-        double length = 0;
-        LengthUnit unit = LengthUnit.METRE;
+        // Route path (segments and signals)
         appendLine("path:");
         increaseLevel();
-        List<AbstractPointEdge> points = new ArrayList<>();
-        List<String> blockIds = new ArrayList<>();
-        String cmtPath = route.getEdges().stream().map(AbstractEdge::getKey).collect(Collectors.joining(" -> "));
-        appendLine("# %s", cmtPath);
-        for (AbstractEdge edge : route.getEdges()) {
-            // cache points
-            if (edge instanceof AbstractPointEdge) {
-                points.add((AbstractPointEdge)edge);
-            }
+        String pathDescription = route.getEdges().stream().map(AbstractEdge::getKey).collect(Collectors.joining(" -> "));
+        appendLine("# %s", pathDescription);
 
-            // cache block
-            if (edge instanceof BlockEdge) {
-                blockIds.add(edge.getKey());
-            }
-
-            // render
-            for (SegmentElement segment : edge.getSegments()) {
+        double length = 0;
+        LengthUnit unit = LengthUnit.METRE;
+        List<Object> segmentsAndSignals = route.getOrderedSegmentsAndSignals();
+        for (Object item : segmentsAndSignals) {
+            if (item instanceof SegmentElement) {
+                SegmentElement segment = (SegmentElement) item;
                 appendLine("- id: %s", segment.getName());
+                increaseLevel();
+                appendLine("type: segment");
+                decreaseLevel();
+
                 length += segment.getLength().getValue();
                 unit = segment.getLength().getUnit();
+            } else if (item instanceof SignalVertexMember) {
+                SignalVertexMember signal = (SignalVertexMember) item;
+                appendLine("- id: %s", signal.getName());
+                increaseLevel();
+                appendLine("type: signal");
+                decreaseLevel();
             }
         }
+
         decreaseLevel();
 
-        // sections
+        // Block sections
         appendLine("sections:");
         increaseLevel();
-        for (String blockId : blockIds) {
-            appendLine("- id: %s", blockId);
-        }
+        route.getBlocks().stream().map(BlockEdge::getKey).forEach(blockId -> appendLine("- id: %s", blockId));
         decreaseLevel();
 
-        // length
+        // Route length
         appendLine("length: %.2f%s", length, unit.getLiteral().toLowerCase());
 
-        // points
+        // Signals
+        appendLine("signals:");
+        increaseLevel();
+        route.getSignals().stream().forEach(signal -> appendLine("- id: %s", signal));
+        decreaseLevel();
+
+        // Point aspects
         appendLine("points:");
         increaseLevel();
+        List<AbstractPointEdge> points = route.getPoints();
         for (AbstractPointEdge point : points) {
             appendLine("- id: %s", point.getPointElement().getName());
             increaseLevel();
@@ -113,12 +122,10 @@ public class InterlockingYamlExporter extends YamlExporter {
         }
         decreaseLevel();
 
-        // conflicts
+        // Conflicting routes
         appendLine("conflicts:");
         increaseLevel();
-        for (String conflictRouteId : route.getConflictRouteIds()) {
-            appendLine("- id: %s", conflictRouteId);
-        }
+        route.getConflictRouteIds().forEach(conflict -> appendLine("- id: %s", conflict));
         decreaseLevel();
 
         // decrease obj level
