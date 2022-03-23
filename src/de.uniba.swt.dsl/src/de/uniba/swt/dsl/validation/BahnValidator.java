@@ -106,14 +106,14 @@ public class BahnValidator extends AbstractBahnValidator {
 
     @Check
     public void validateRootModule(RootModule module) {
-        // ensure single board
+        // Find module property sections that have been redefined.
         var errors = boardValidator.findSingleSectionError(module);
         for (Tuple<String, Integer> error : errors) {
             error(error.getFirst(), BahnPackage.Literals.ROOT_MODULE__PROPERTIES, error.getSecond());
         }
 
-        // single track by board
-        var boardErrors = boardValidator.findSingleTrackByBoardErrors(module);
+        // Find board-specific property sections that have been redefined.
+        var boardErrors = boardValidator.findSingleSectionByBoardErrors(module);
         for (Tuple<String, Integer> error : boardErrors) {
             error(error.getFirst(), BahnPackage.Literals.ROOT_MODULE__PROPERTIES, error.getSecond());
         }
@@ -121,25 +121,25 @@ public class BahnValidator extends AbstractBahnValidator {
 
     @Check
     public void validateBoards(BoardsProperty boardsProperty) {
-        // ensure no duplicated address in board
+        // Find boards that have the same node addresses.
         var errors = boardValidator.validateUniqueHex(boardsProperty.getItems(), BoardElement::getUniqueId);
         for (Tuple<String, Integer> error : errors) {
             error(error.getFirst(), BahnPackage.Literals.BOARDS_PROPERTY__ITEMS, error.getSecond());
         }
 
-        // ensure no duplicated id
+        // Find boards with the same name.
         validateUniqueName(boardsProperty.getItems(), BoardElement::getName, BahnPackage.Literals.BOARDS_PROPERTY__ITEMS);
     }
 
     @Check
     public void validateSegmentsProperty(SegmentsProperty prop) {
-        validateUniqueHexInBoard(prop.getBoard().getName(), prop.getItems(), SegmentElement::getAddress, BahnPackage.Literals.SEGMENTS_PROPERTY__ITEMS);
+        validateUniqueTracksInBoard(prop.getBoard().getName(), prop.getItems(), SegmentElement::getAddress, BahnPackage.Literals.SEGMENTS_PROPERTY__ITEMS);
         validateUniqueName(prop.getItems(), SegmentElement::getName, BahnPackage.Literals.SEGMENTS_PROPERTY__ITEMS);
     }
 
     @Check
     public void validateSignalsProperty(SignalsProperty prop) {
-        validateUniqueHexInBoard(prop.getBoard().getName(), prop.getItems(), p -> {
+        validateUniqueAccessoriesInBoard(prop.getBoard().getName(), prop.getItems(), p -> {
             if (p instanceof RegularSignalElement) {
                 return ((RegularSignalElement) p).getNumber();
             }
@@ -151,7 +151,7 @@ public class BahnValidator extends AbstractBahnValidator {
 
     @Check
     public void validatePeripheralsProperty(PeripheralsProperty prop) {
-        validateUniqueHexInBoard(prop.getBoard().getName(), prop.getItems(), p -> {
+        validateUniqueAccessoriesInBoard(prop.getBoard().getName(), prop.getItems(), p -> {
             if (p instanceof PeripheralElement) {
                 return ((PeripheralElement) p).getNumber();
             }
@@ -170,7 +170,7 @@ public class BahnValidator extends AbstractBahnValidator {
 
     @Check
     public void validatePointsProperty(PointsProperty prop) {
-        validateUniqueHexInBoard(prop.getBoard().getName(), prop.getItems(), PointElement::getNumber, BahnPackage.Literals.POINTS_PROPERTY__ITEMS);
+        validateUniqueAccessoriesInBoard(prop.getBoard().getName(), prop.getItems(), PointElement::getNumber, BahnPackage.Literals.POINTS_PROPERTY__ITEMS);
         validateUniqueName(prop.getItems(), PointElement::getName, BahnPackage.Literals.POINTS_PROPERTY__ITEMS);
     }
 
@@ -194,8 +194,15 @@ public class BahnValidator extends AbstractBahnValidator {
         validateUniqueName(prop.getItems(), TrainElement::getName, BahnPackage.Literals.TRAINS_PROPERTY__ITEMS);
     }
 
-    private <T> void validateUniqueHexInBoard(String boardName, List<T> items, Function<T, String> addrMapper, EStructuralFeature feature) {
-        var errors = hexValidator.validateUniqueAddress(boardName, items, addrMapper);
+    private <T> void validateUniqueTracksInBoard(String boardName, List<T> items, Function<T, String> addrMapper, EStructuralFeature feature) {
+        var errors = hexValidator.validateUniqueTrackAddress(boardName, items, addrMapper);
+        for (Tuple<String, Integer> error : errors) {
+            error(error.getFirst(), feature, error.getSecond());
+        }
+    }
+
+    private <T> void validateUniqueAccessoriesInBoard(String boardName, List<T> items, Function<T, String> addrMapper, EStructuralFeature feature) {
+        var errors = hexValidator.validateUniqueAccessoryAddress(boardName, items, addrMapper);
         for (Tuple<String, Integer> error : errors) {
             error(error.getFirst(), feature, error.getSecond());
         }

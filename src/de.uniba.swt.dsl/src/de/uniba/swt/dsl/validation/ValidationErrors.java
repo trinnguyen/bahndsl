@@ -32,7 +32,9 @@ public class ValidationErrors {
      * Errors for configuration
      */
 
-    public final static String DefinedAddressFormat = "Address '%s' is already used in the board '%s'";
+    public final static String DefinedTrackAddressFormat = "Track output address '%s' is already used in the board '%s'";
+
+    public final static String DefineAccessorydAddressFormat = "Accessory address '%s' is already used in the board '%s'";
 
     public final static String DefinedPortFormat = "Port '%s' is already used in the board '%s'";
 
