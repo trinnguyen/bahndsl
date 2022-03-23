@@ -50,5 +50,10 @@ public abstract class AbstractVertexMember {
         var type = getType();
         return type == VertexMemberType.Block;
     }
+
+    public boolean isSignal(){
+        var type = getType();
+        return type == VertexMemberType.Signal;
+    }
 }
 

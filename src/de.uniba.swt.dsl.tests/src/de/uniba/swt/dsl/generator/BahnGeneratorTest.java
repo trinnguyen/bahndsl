@@ -25,13 +25,10 @@
 package de.uniba.swt.dsl.generator;
 
 import com.google.inject.Inject;
-import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.tests.BahnInjectorProvider;
 import de.uniba.swt.dsl.tests.helpers.TestConstants;
 import de.uniba.swt.dsl.tests.helpers.TestHelper;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.xtext.generator.GeneratorContext;
 import org.eclipse.xtext.generator.InMemoryFileSystemAccess;
 import org.eclipse.xtext.testing.InjectWith;
 import org.eclipse.xtext.testing.extensions.InjectionExtension;
@@ -41,7 +38,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -232,10 +228,9 @@ class BahnGeneratorTest {
 
     private void invokeGenerate(String src) throws Exception {
         Resource input = testHelper.parseValid(src);
-        EObject genRouteType = BahnUtil.createEObject("RouteType", "strategy", StandaloneApp.ROUTE_SIMPLE);
-        input.getContents().add(genRouteType);
 
-        GeneratorContext context = new GeneratorContext();
+        BahnGeneratorContext context = new BahnGeneratorContext();
+        context.setRouteType(StandaloneApp.ROUTE_SIMPLE);
         try {
             generator.beforeGenerate(input, fsa, context);
             generator.doGenerate(input, fsa, context);

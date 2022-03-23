@@ -32,15 +32,12 @@ import de.uniba.swt.dsl.generator.externals.EmbeddedSccLowLevelCodeExternalGener
 import de.uniba.swt.dsl.generator.externals.JavaCliRuntimeExecutor;
 import de.uniba.swt.dsl.generator.externals.LibraryExternalGenerator;
 import de.uniba.swt.dsl.linker.BahnImportURIGlobalScopeProvider;
-
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.diagnostics.Severity;
 import org.eclipse.xtext.generator.AbstractFileSystemAccess2;
-import org.eclipse.xtext.generator.GeneratorContext;
 import org.eclipse.xtext.generator.GeneratorDelegate;
 import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.validation.CheckMode;
@@ -118,13 +115,13 @@ public class StandaloneApp {
         // Configure and start the generator
         logger.info("Start generating network layout and SCCharts models");
         // prepare
-        GeneratorContext context = new GeneratorContext();
+        BahnGeneratorContext context = new BahnGeneratorContext();
         context.setCancelIndicator(CancelIndicator.NullImpl);
 
-        // step 1: generate default artifacts
         logger.info(String.format("Route generation mode: %s", route));
-        EObject genRouteType = BahnUtil.createEObject("RouteType", "strategy", route);
-        resource.getContents().add(genRouteType);
+        context.setRouteType(route);
+
+        // step 1: generate default artifacts
         generator.generate(resource, fsa, context);
 
         // step 2: generate low-level C-Code and dynamic library

@@ -36,19 +36,21 @@ public abstract class GeneratorProvider {
      * Generate code
      * @param fsa fsa
      * @param bahnModel model
+     * @param routeType route generation strategy
      */
-    public void generate(IFileSystemAccess2 fsa, BahnModel bahnModel) {
+    public void generate(IFileSystemAccess2 fsa, BahnModel bahnModel, String routeType) {
         logger.debug(String.format("Start code generator: %s, cleaning up", getClass().getSimpleName()));
         if (bahnModel != null)
-            execute(fsa, bahnModel);
+            execute(fsa, bahnModel, routeType);
     }
 
     /**
      * Internal execution of code generation
      * @param fsa fsa
      * @param bahnModel model
+     * @param routeType route generation strategy
      */
-    protected abstract void execute(IFileSystemAccess2 fsa, BahnModel bahnModel);
+    protected abstract void execute(IFileSystemAccess2 fsa, BahnModel bahnModel, String routeType);
 
     /**
      * Generated file names used for cleaning up

@@ -71,16 +71,25 @@ public class BahnGenerator extends AbstractGenerator {
 		if (bahnModel == null)
 			return;
 
-		String genRouteType = BahnUtil.getRouteType(resource);
-		if (genRouteType == null)
-			return;
+		// context is only instantiated from BahnGeneratorContext when run from command line (StandaloneApp).
+		// When run as an Eclipse RCP, context is instantiated from GeneratorContext.
+		String routeType = null;
+		if (context instanceof  BahnGeneratorContext) {
+			routeType = ((BahnGeneratorContext) context).getRouteType();
+			if (routeType == null) {
+				routeType = StandaloneApp.ROUTE_SIMPLE;
+			}
+		} else {
+			routeType = StandaloneApp.ROUTE_SIMPLE;
+		}
+
 
 		// layout generator must run first to generate network layout
-		layoutGenerator.generate(fsa, bahnModel);
+		layoutGenerator.generate(fsa, bahnModel, routeType);
 
 		// use network layout for block generation (direction, signals)
 		yamlConfigGenerator.setNetworkLayout(layoutGenerator.getNetworkLayout());
-		yamlConfigGenerator.generate(fsa, bahnModel);
+		yamlConfigGenerator.generate(fsa, bahnModel, routeType);
 
 		// sccharts
 		boolean shouldGenerateSCCharts = checkInterlockingFunctions(bahnModel, false);
@@ -89,7 +98,7 @@ public class BahnGenerator extends AbstractGenerator {
 			normalizationProvider.normalize(BahnUtil.getDecls(resource.getResourceSet()));
 
 			// generate
-			scChartsGenerator.generate(fsa, bahnModel);
+			scChartsGenerator.generate(fsa, bahnModel, routeType);
 		} else {
 			logger.info("Missing function for requesting route. SCCharts code generation is skipped.");
 		}
