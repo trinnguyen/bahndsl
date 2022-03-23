@@ -35,6 +35,7 @@ import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
 import de.uniba.swt.dsl.common.layout.models.vertex.BlockVertexMember;
 import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
 import de.uniba.swt.dsl.common.layout.models.vertex.SignalVertexMember;
+import de.uniba.swt.dsl.generator.StandaloneApp;
 import org.apache.log4j.Logger;
 
 import java.util.HashSet;
@@ -50,48 +51,56 @@ public class RoutesFinder {
     private SignalVertexMember destMember;
     private LayoutVertex srcSignal;
     private LayoutVertex destSignal;
+    private String routeType;
 
     private final Stack<AbstractEdge> currentEdges = new Stack<>();
     private final Stack<LayoutVertex> currentVertices = new Stack<>();
     private final Set<Route> routes = new HashSet<>();
     private final Set<LayoutVertex> flagsOnPath = new HashSet<>();
 
-    public Set<Route> findRoutes(NetworkLayout networkLayout, String srcSignalKey, String destSignalKey) {
+    // Finds all routes from a source signal to a destination signal.
+    public Set<Route> findRoutes(NetworkLayout networkLayout, String srcSignalKey, String destSignalKey, String routeType) {
         this.networkLayout = networkLayout;
         this.srcSignal = networkLayout.findVertex(srcSignalKey);
         this.destSignal = networkLayout.findVertex(destSignalKey);
+        this.routeType = routeType;
 
-        // check if having layout
+        // check if the signals are in the layout
         if (srcSignal == null || destSignal == null) {
             logger.warn("Source or destination signal is not modelled in the layout: " + srcSignalKey + " -> " + destSignalKey);
             return null;
         }
 
+        // check if the signals are on the same vertex
+        if (srcSignal.equals(destSignal)) {
+            return null;
+        }
+
         // find member
-        this.srcMember = (SignalVertexMember)this.srcSignal.findMember(srcSignalKey).get();
-        this.destMember = (SignalVertexMember)this.destSignal.findMember(destSignalKey).get();
+        this.srcMember = (SignalVertexMember) this.srcSignal.findMember(srcSignalKey).get();
+        this.destMember = (SignalVertexMember) this.destSignal.findMember(destSignalKey).get();
 
         // clear
         currentEdges.clear();
         currentVertices.clear();
         routes.clear();
 
-        // start finding
+        // start finding a route if a train can drive past srcSignal
         if (NetworkLayoutUtil.validateSignalDirection(networkLayout, srcSignal, srcMember)) {
             dfs(srcSignal, null);
         } else {
-            logger.debug(String.format("No route from signal %s due to direction constraint (%s)",
+            logger.debug(String.format("No route from signal %s because train cannot drive into next block (%s)",
                     srcMember.getName(),
                     srcMember.getConnectedBlock().getName()));
         }
+
         return routes;
     }
 
     private void dfs(LayoutVertex vertex, AbstractEdge edge) {
-        // ensure doesn't travel in the same point or back to current block
+        // ensure train does not travel along the same point or back to current block
         if (edge != null) {
-
-            if (!validateEdge(vertex, edge))
+            if (!isValidEdge(vertex, edge))
                 return;
 
             // add edge
@@ -102,9 +111,15 @@ public class RoutesFinder {
         currentVertices.push(vertex);
         flagsOnPath.add(vertex);
 
-        // terminate when same
+        // Terminate when we reach a signal that matches destSignal
         if (vertex.equals(destSignal)) {
             terminateCurrentPath();
+        } else if (routeType.equals(StandaloneApp.ROUTE_SIMPLE)
+                && !vertex.equals(srcSignal)
+                && vertex.hasSignalMembers()
+                && isValidEdge(vertex, edge)) {
+            // When finding a simple route, do not go further with the search if
+            // the destination signal is not the first valid one that can be reached.
         } else {
             for (var e : networkLayout.incidentEdges(vertex)) {
                 var w = e.getDestVertex();
@@ -122,7 +137,7 @@ public class RoutesFinder {
         flagsOnPath.remove(vertex);
     }
 
-    private boolean validateEdge(LayoutVertex vertex, AbstractEdge edge) {
+    private boolean isValidEdge(LayoutVertex vertex, AbstractEdge edge) {
         // check attached signal: out
         if (currentVertices.peek().equals(srcSignal)) {
             // prevent going back to the attached block
@@ -142,7 +157,7 @@ public class RoutesFinder {
             }
         }
 
-        // check same switch
+        // check same switch point
         if (!currentEdges.isEmpty()) {
             var prevEdge = currentEdges.peek();
             if (isSamePoint(prevEdge, edge)) {
@@ -150,7 +165,7 @@ public class RoutesFinder {
             }
         }
 
-        // skip if incoming edge is not the block edge in which the signal attach to
+        // skip if incoming edge is not the block edge to which the signal is attached
         if (vertex.equals(destSignal)) {
             // skip if reaching signal via point
             return edge instanceof BlockEdge &&
@@ -182,7 +197,7 @@ public class RoutesFinder {
             if (edge instanceof BlockEdge) {
                 var blockEdge = (BlockEdge) edge;
 
-                // find signal on destination
+                // Add signal at the end of the block to immediateSignals
                 blockEdge.getDestVertex()
                         .getMembers()
                         .stream()

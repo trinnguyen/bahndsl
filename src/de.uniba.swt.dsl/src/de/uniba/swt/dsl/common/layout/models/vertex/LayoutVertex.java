@@ -25,6 +25,7 @@
 package de.uniba.swt.dsl.common.layout.models.vertex;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class LayoutVertex {
     private final String id = UUID.randomUUID().toString();
@@ -83,6 +84,23 @@ public class LayoutVertex {
         return getMembers().stream()
                 .filter(m -> m.getName().equalsIgnoreCase(name))
                 .findFirst();
+    }
+
+    public boolean hasSignalMembers() {
+        return getMembers().stream()
+                .anyMatch(AbstractVertexMember::isSignal);
+    }
+
+    public String getSignalKey() {
+        Optional<AbstractVertexMember> signal = getMembers().stream()
+                .filter(AbstractVertexMember::isSignal)
+                .findFirst();
+
+        if (signal.isPresent()) {
+            return signal.get().getKey();
+        }
+
+        return null;
     }
 
 }

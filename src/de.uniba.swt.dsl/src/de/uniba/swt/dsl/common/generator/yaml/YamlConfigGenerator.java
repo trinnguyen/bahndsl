@@ -55,7 +55,7 @@ public class YamlConfigGenerator extends GeneratorProvider {
     private NetworkLayout networkLayout;
 
     @Override
-    protected void execute(IFileSystemAccess2 fsa, BahnModel bahnModel) {
+    protected void execute(IFileSystemAccess2 fsa, BahnModel bahnModel, String routeType) {
         var rootModule = BahnUtil.getRootModule(bahnModel);
         if (rootModule == null)
             return;

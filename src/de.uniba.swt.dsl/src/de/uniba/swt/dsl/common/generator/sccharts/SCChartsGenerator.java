@@ -55,7 +55,7 @@ public class SCChartsGenerator extends GeneratorProvider {
     }
 
     @Override
-    protected void execute(IFileSystemAccess2 fsa, BahnModel bahnModel) {
+    protected void execute(IFileSystemAccess2 fsa, BahnModel bahnModel, String routeType) {
         // get decls
         FuncDecl declRequest = null;
         FuncDecl declDrive = null;

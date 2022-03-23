@@ -40,16 +40,15 @@ import java.util.Set;
 public class NetworkRoutesExplorer {
     private final RoutesFinder routesFinder = new RoutesFinder();
 
-    public List<Route> findAllRoutes(NetworkLayout networkLayout, Set<String> signals) {
+    // When routeType is simple: Finds all possible routes a pair of signals that follow each other.
+    // When routeType is extended: Finds all possible routes between all possible source and destination signals.
+    public List<Route> findAllRoutes(NetworkLayout networkLayout, Set<String> signals, String routeType) {
         int id = 0;
         List<Route> routes = new ArrayList<>();
 
-        // find all
         for (var src : signals) {
             if (networkLayout.findVertex(src) == null)
                 continue;
-
-            //TODO check signal direction
 
             for (var dest : signals) {
                 if (src.equalsIgnoreCase(dest))
@@ -58,7 +57,7 @@ public class NetworkRoutesExplorer {
                 if (networkLayout.findVertex(dest) == null)
                     continue;
 
-                var paths = routesFinder.findRoutes(networkLayout, src, dest);
+                var paths = routesFinder.findRoutes(networkLayout, src, dest, routeType);
                 if (paths != null && !paths.isEmpty()) {
                     for (Route path : paths) {
                         path.setId(String.valueOf(id++));
