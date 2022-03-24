@@ -9,7 +9,7 @@ import de.uniba.swt.dsl.generator.StandaloneApp;
 public class CompileCLibCommand extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		BahnCompileUtil.processCommand(event, StandaloneApp.MODE_LIBRARY, StandaloneApp.ROUTE_SIMPLE);
+		BahnCompileUtil.processCommand(event, StandaloneApp.ROUTE_SIMPLE, StandaloneApp.MODE_LIBRARY);
 		return null;
 	}
 }

@@ -64,6 +64,7 @@ public class RoutesFinder {
         this.srcSignal = networkLayout.findVertex(srcSignalKey);
         this.destSignal = networkLayout.findVertex(destSignalKey);
         this.routeType = routeType;
+        System.out.println(this.routeType);
 
         // check if the signals are in the layout
         if (srcSignal == null || destSignal == null) {

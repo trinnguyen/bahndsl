@@ -319,7 +319,15 @@ BreakStmt returns Statement:
 ;
 
 VariableAssignment:
-	'=' expr=Expression
+	op=AssignmentType expr=Expression
+;
+
+enum AssignmentType:
+    ABSOLUTE = '='
+    | RELATIVE_PLUS = '+=' | RELATIVE_MINUS = '-=' | RELATIVE_MULTIPLY = '*=' | RELATIVE_DIVISION = '/=' | RELATIVE_MOD = '%='
+    | RELATIVE_BITWISE_AND = '&=' | RELATIVE_BITWISE_OR = '|=' | RELATIVE_BITWISE_XOR= '^='
+    | RELATIVE_SHIFT_LEFT = '<<=' | RELATIVE_SHIFT_RIGHT = '>>=' | RELATIVE_SHIFT_RIGHT_UNSIGNED = '>>>='
+    | RELATIVE_MAX = 'max=' | RELATIVE_MIN = 'min='
 ;
 
 Expression:

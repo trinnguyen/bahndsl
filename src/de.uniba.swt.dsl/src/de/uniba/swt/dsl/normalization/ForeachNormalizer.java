@@ -57,7 +57,7 @@ public class ForeachNormalizer extends AbstractNormalizer {
 
                 // index
                 VarDeclStmt indexVarStmt = temporaryVarGenerator.createTempVarStmt(ExprDataType.ScalarInt);
-                BahnUtil.assignExpression(indexVarStmt, createNumLiteral(0));
+                BahnUtil.assignExpression(indexVarStmt, createNumLiteral(0), AssignmentType.ABSOLUTE);
 
                 // condition and current element
                 Expression condition = createConditionExpr(indexVarStmt, arrRef.getDecl().getName());
@@ -88,14 +88,9 @@ public class ForeachNormalizer extends AbstractNormalizer {
     }
 
     private Statement createIndexIncrementStmt(VarDeclStmt declStmt) {
-        // op
-        var opExpr = BahnFactory.eINSTANCE.createOpExpression();
-        opExpr.setLeftExpr(BahnUtil.createVarRef(declStmt));
-        opExpr.setOp(OperatorType.PLUS);
-        opExpr.setRightExpr(createNumLiteral(1));
-
         var assignmentVariable = BahnFactory.eINSTANCE.createVariableAssignment();
-        assignmentVariable.setExpr(opExpr);
+        assignmentVariable.setExpr(createNumLiteral(1));
+        assignmentVariable.setOp(AssignmentType.RELATIVE_PLUS);
 
         var assignmentStmt = BahnFactory.eINSTANCE.createAssignmentStmt();
         assignmentStmt.setReferenceExpr(BahnUtil.createVarRef(declStmt));

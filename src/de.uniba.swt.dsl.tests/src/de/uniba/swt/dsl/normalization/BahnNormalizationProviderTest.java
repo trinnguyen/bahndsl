@@ -198,7 +198,7 @@ class BahnNormalizationProviderTest {
                 "int _test_t1 = 0",
                 "while _test_t1 < _items_cnt",
                 "id = items [ _test_t1 ]",
-                "_test_t1 = _test_t1 + 1"));
+                "_test_t1 += 1"));
     }
 
     @ParameterizedTest

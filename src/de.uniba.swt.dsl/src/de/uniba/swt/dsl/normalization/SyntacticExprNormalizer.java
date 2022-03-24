@@ -59,7 +59,7 @@ public class SyntacticExprNormalizer extends AbstractNormalizer {
                 if (replacementExpr.eContainer() instanceof FunctionCallStmt && isSetter) {
                     var callStmt = (FunctionCallStmt) replacementExpr.eContainer();
                     var stmt = varGenerator.createTempVarStmt(ExprDataType.ScalarBool);
-                    BahnUtil.assignExpression(stmt, replacementExpr);
+                    BahnUtil.assignExpression(stmt, replacementExpr, AssignmentType.ABSOLUTE);
 
                     BahnUtil.replaceEObject(callStmt, stmt);
                 }
