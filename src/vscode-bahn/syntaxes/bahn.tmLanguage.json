@@ -61,7 +61,7 @@
 		"behaviour": {
 			"patterns": [{
 				"name": "keyword.control.bahn",
-				"match": "\\b(available|break|caution|go|shunt|config|def|else|end|extern|for|from|get|grant|if|in|is|normal|not|occupied|position|return|reverse|reversed|routes|set|speed|state|stop|to|while)\\b"
+				"match": "\\b(available|break|caution|go|shunt|config|def|else|end|extern|for|from|get|grant|if|in|is|normal|not|occupied|a_segment|a_signal|position|return|reverse|reversed|routes|set|speed|state|stop|to|while)\\b"
 			}]
 		},
 		"strings": {
