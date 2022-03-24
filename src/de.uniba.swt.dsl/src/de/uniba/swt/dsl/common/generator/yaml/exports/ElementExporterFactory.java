@@ -105,5 +105,10 @@ public class ElementExporterFactory {
             new PeripheralTypeYamlExporter().build(exporter, (PeripheralType) obj);
             return;
         }
+
+        if (obj instanceof String) {
+            exporter.appendLine("- %s", (String)obj);
+            return;
+        }
     }
 }
