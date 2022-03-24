@@ -3,7 +3,7 @@ Automatic-Module-Name: de.uniba.swt.dsl
 Bundle-ManifestVersion: 2
 Bundle-Name: de.uniba.swt.dsl
 Bundle-Vendor: University of Bamberg, Software Technologies Research Group
-Bundle-Version: 1.0.3
+Bundle-Version: 1.0.4
 Bundle-SymbolicName: de.uniba.swt.dsl; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.xtext,
