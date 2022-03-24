@@ -198,7 +198,7 @@ class BahnNormalizationProviderTest {
                 "int _test_t1 = 0",
                 "while _test_t1 < _items_cnt",
                 "id = items [ _test_t1 ]",
-                "_test_t1 = _test_t1 + 1"));
+                "_test_t1 += 1"));
     }
 
     @ParameterizedTest
@@ -339,6 +339,24 @@ class BahnNormalizationProviderTest {
     })
     void testDomainRouteAvailable(String src) throws Exception {
         ensureNormalize(src, List.of("extern config_get_scalar_string_value", "route", "train"));
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
+            "def test(string id) bool b = is id a_segment end",
+            "def test(string id) bool b = is id not a_segment end",
+    })
+    void testDomainTypeSegment(String src) throws Exception {
+        ensureNormalize(src, List.of("extern is_type_segment"));
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
+            "def test(string id) bool b = is id a_signal end",
+            "def test(string id) bool b = is id not a_signal end",
+    })
+    void testDomainTypeSignal(String src) throws Exception {
+        ensureNormalize(src, List.of("extern is_type_signal"));
     }
 
     @ParameterizedTest

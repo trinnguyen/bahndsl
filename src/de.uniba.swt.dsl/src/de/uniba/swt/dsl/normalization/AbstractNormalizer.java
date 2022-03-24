@@ -176,7 +176,7 @@ public abstract class AbstractNormalizer {
         BahnUtil.replaceEObject(expression, ref);
 
         // set assignment to temp
-        BahnUtil.assignExpression(temp, expression);
+        BahnUtil.assignExpression(temp, expression, AssignmentType.ABSOLUTE);
 
         return temp;
     }

@@ -94,6 +94,8 @@ public class ValidationErrors {
 
     public final static String WrongArgumentsSizeFormat = "Expected %d arguments but found %d";
 
+    public final static String AbsoluteAssignmentExpected = "Assignment operator for variable declarations can only be '='";
+
     public final static String MissingReturn = "Missing return statement";
 
     public final static String UnexpectedReturn = "Unexpected return statement";

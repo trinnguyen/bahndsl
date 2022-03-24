@@ -65,8 +65,8 @@ public class SuperStateBuilder {
         if (statementList != null && statementList.getStmts() != null && !statementList.getStmts().isEmpty()) {
             addChildStates(statementList);
         } else {
-            // add 2 states, one for initial and the other for final, must be regular transition for being compatible
-            // with statebased compilation strategy
+            // add 2 states, one for initial and the other for final, must be regular transition to be compatible
+            // with state-based compilation strategy
             var initialState = new State(stateTable.nextStateId());
             var finalState = new State(stateTable.finalStateId());
             initialState.addTransition(finalState.getId(), TransitionType.Regular, null);
@@ -370,6 +370,7 @@ public class SuperStateBuilder {
             AssignmentEffect effect = new AssignmentEffect();
             effect.setExpression(((ReturnStmt) stmt).getExpr());
             effect.setVarDeclaration(findVarDecl(SCChartsUtil.VAR_OUTPUT_NAME));
+            effect.setOp(AssignmentType.ABSOLUTE);
             return effect;
         }
 
@@ -377,6 +378,7 @@ public class SuperStateBuilder {
             AssignmentEffect effect = new AssignmentEffect();
             effect.setExpression(BahnUtil.createBooleanLiteral(true));
             effect.setVarDeclaration(findVarDecl(SCChartsUtil.VAR_HAS_BREAK));
+            effect.setOp(AssignmentType.ABSOLUTE);
             return effect;
         }
 
@@ -385,6 +387,7 @@ public class SuperStateBuilder {
 
     private void updateEffect(AssignmentEffect effect, VariableAssignment assignment) {
         effect.setExpression(assignment.getExpr());
+        effect.setOp(assignment.getOp());
     }
 
     private SVarDeclaration findVarDecl(String name) {

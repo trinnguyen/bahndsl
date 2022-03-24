@@ -249,7 +249,8 @@ public class StateTextualBuilder extends TextualBuilder {
                 strBuilder.append("]");
             }
 
-            strBuilder.append(" = ");
+            // Generate the required (absolute or relative) assignment operator
+            strBuilder.append(String.format(" %s ", assignmentEffect.getOp()));
         }
 
         if (effect.getExpression() != null) {

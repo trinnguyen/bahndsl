@@ -224,7 +224,7 @@ public class BahnUtil {
         stmt.setDecl(decl);
 
         if (initialValue != null)
-            assignExpression(stmt, initialValue);
+            assignExpression(stmt, initialValue, AssignmentType.ABSOLUTE);
 
         return stmt;
     }
@@ -241,10 +241,11 @@ public class BahnUtil {
         return ref;
     }
 
-    public static void assignExpression(VarDeclStmt declStmt, Expression expr) {
+    public static void assignExpression(VarDeclStmt declStmt, Expression expr, AssignmentType op) {
         if (expr != null) {
             var assignment = BahnFactory.eINSTANCE.createVariableAssignment();
             assignment.setExpr(expr);
+            assignment.setOp(op);
 
             declStmt.setAssignment(assignment);
         }

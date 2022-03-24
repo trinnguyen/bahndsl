@@ -65,10 +65,11 @@ public class BlockEdge extends AbstractEdge {
     @Override
     public List<SegmentElement> getSegments() {
         List<SegmentElement> segments = new ArrayList<>(blockElement.getOverlaps().size() + 1);
-        if (blockElement.getOverlaps().size() > 0)
-        {
+
+        if (blockElement.getOverlaps().size() > 0) {
             segments.add(blockElement.getOverlaps().get(0));
         }
+
         segments.addAll(blockElement.getMainSegs());
         for (int i = 1; i < blockElement.getOverlaps().size(); i++) {
             segments.add(blockElement.getOverlaps().get(i));

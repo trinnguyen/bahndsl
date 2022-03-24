@@ -24,12 +24,13 @@
 
 package de.uniba.swt.dsl.common.layout.models;
 
+import de.uniba.swt.dsl.bahn.SegmentElement;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.AbstractPointEdge;
+import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
+import de.uniba.swt.dsl.common.layout.models.vertex.SignalVertexMember;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Route {
@@ -39,7 +40,6 @@ public class Route {
     private Stack<AbstractEdge> edges;
     private Orientation startingOrientation;    // Orientation that a train needs to be in at the start of the route
     private final Set<String> conflictRouteIds = new HashSet<>();
-    private List<String> immediateSignals;
 
     public Route(String srcSignal, String destSignal, Stack<AbstractEdge> edges, Orientation startingOrientation) {
         this.srcSignal = srcSignal;
@@ -80,20 +80,81 @@ public class Route {
         this.edges = edges;
     }
 
+    public List<SegmentElement> getSegments() {
+        return getEdges().stream()
+                .map(AbstractEdge::getSegments)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+    }
+
+    public List<AbstractPointEdge> getPoints() {
+        return getEdges().stream()
+                .filter(AbstractPointEdge.class::isInstance)
+                .map(AbstractPointEdge.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    public List<BlockEdge> getBlocks() {
+        return getEdges().stream()
+                .filter(BlockEdge.class::isInstance)
+                .map(BlockEdge.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the key names of all signals along the route,
+     * including the source and destination signals.
+     */
+    public List<String> getSignals() {
+        List<String> signals = new ArrayList<>();
+        signals.add(getSrcSignal());
+
+        List<BlockEdge> blockEdges = getEdges().stream().filter(BlockEdge.class::isInstance)
+                .map(BlockEdge.class::cast).collect(Collectors.toList());
+
+        for (BlockEdge blockEdge : blockEdges) {
+            blockEdge.getDestVertex().getMembers().stream()
+                    .filter(SignalVertexMember.class::isInstance)
+                    .findFirst().ifPresent(signal -> signals.add(signal.getKey()));
+        }
+
+        return signals;
+    }
+
+    /**
+     * Returns the segments and signals along the route.
+     * Source and destination signals are excluded.
+     * Objects are of type AbstractEdge or SignalVertexMember
+     */
+    public List<Object> getOrderedSegmentsAndSignals() {
+        List<Object> segmentsAndSignals = new ArrayList<>();
+
+        for (AbstractEdge edge : getEdges()) {
+            segmentsAndSignals.addAll(edge.getSegments());
+
+            if (edge instanceof BlockEdge) {
+                // Get the signal that is at the end of the block
+                var blockEdge = (BlockEdge) edge;
+                blockEdge.getDestVertex().getMembers().stream()
+                        .filter(SignalVertexMember.class::isInstance)
+                        .findFirst().ifPresent(segmentsAndSignals::add);
+            }
+        }
+
+        // Remove destination signal
+        if (segmentsAndSignals.get(segmentsAndSignals.size() - 1) instanceof SignalVertexMember) {
+            segmentsAndSignals.remove(segmentsAndSignals.size() - 1);
+        }
+
+        return segmentsAndSignals;
+    }
+
     public Orientation getStartingOrientation() { return startingOrientation; }
 
     public void setStartingOrientation(Orientation startingOrientation) { this.startingOrientation = startingOrientation; }
 
     public Set<String> getConflictRouteIds() {
         return conflictRouteIds;
-    }
-
-    public List<String> getImmediateSignals() {
-        return immediateSignals;
-    }
-
-    private String formatImmediateSignals() {
-        return String.format("\t\timmediate signals: %s", getImmediateSignals());
     }
 
     @Override

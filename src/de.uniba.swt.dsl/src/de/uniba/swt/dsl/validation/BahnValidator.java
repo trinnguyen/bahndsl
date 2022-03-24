@@ -322,7 +322,7 @@ public class BahnValidator extends AbstractBahnValidator {
                 uniqueVarIdValidator.insertFunc(funcDecl.getName());
             }
 
-            // valid
+            // valid return
             declValidator.validateReturn(funcDecl);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
@@ -335,6 +335,13 @@ public class BahnValidator extends AbstractBahnValidator {
             ensureValidRefVar(varDecl, BahnPackage.Literals.REF_VAR_DECL__NAME);
         } catch (ValidationException e) {
             error(e.getMessage(), e.getFeature());
+        }
+    }
+
+    @Check
+    public void checkVarDeclStmt(VarDeclStmt decl) throws ValidationException {
+        if (decl.getAssignment().getOp() != AssignmentType.ABSOLUTE) {
+            error(ValidationErrors.AbsoluteAssignmentExpected, BahnPackage.Literals.VAR_DECL_STMT__ASSIGNMENT);
         }
     }
 

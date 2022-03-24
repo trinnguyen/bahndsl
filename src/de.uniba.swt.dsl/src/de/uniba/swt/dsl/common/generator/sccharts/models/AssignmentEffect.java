@@ -24,11 +24,13 @@
 
 package de.uniba.swt.dsl.common.generator.sccharts.models;
 
+import de.uniba.swt.dsl.bahn.AssignmentType;
 import de.uniba.swt.dsl.bahn.Expression;
 
 public class AssignmentEffect extends Effect {
     private SVarDeclaration varDeclaration;
     private Expression indexExpr;
+    private AssignmentType op;
 
     public SVarDeclaration getVarDeclaration() {
         return varDeclaration;
@@ -44,5 +46,13 @@ public class AssignmentEffect extends Effect {
 
     public Expression getIndexExpr() {
         return indexExpr;
+    }
+
+    public void setOp(AssignmentType op) {
+        this.op = op;
+    }
+
+    public AssignmentType getOp() {
+        return this.op;
     }
 }

@@ -88,7 +88,7 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
     }
 
     private Map<String, List<ModuleProperty>> buildMap(RootModule rootModule) {
-        Map<String, List<ModuleProperty>> map = new HashMap<>();
+        Map<String, List<ModuleProperty>> map = new LinkedHashMap<>();
         for (ModuleProperty property : rootModule.getProperties()) {
             String boardName = null;
             if (property instanceof SegmentsProperty) {

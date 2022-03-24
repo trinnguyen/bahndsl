@@ -10,7 +10,7 @@ public class GenerateCCommand extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		BahnCompileUtil.processCommand(event, StandaloneApp.MODE_C_CODE, StandaloneApp.ROUTE_SIMPLE);
+		BahnCompileUtil.processCommand(event, StandaloneApp.ROUTE_SIMPLE, StandaloneApp.MODE_C_CODE);
 		return null;
 	}
 	

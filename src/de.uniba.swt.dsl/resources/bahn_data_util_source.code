@@ -62,6 +62,14 @@ bool is_segment_occupied(const char *id) {
     return false;
 }
 
+bool is_type_segment(const char *id) {
+    return false;
+}
+
+bool is_type_signal(const char *id) {
+    return false;
+}
+
 int train_state_get_speed(const char *train_id) {
     return 0;
 }

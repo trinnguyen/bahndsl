@@ -60,6 +60,7 @@ public class SCChartsUtil {
         AssignmentEffect effect = new AssignmentEffect();
         effect.setExpression(BahnUtil.createBooleanLiteral(val));
         effect.setVarDeclaration(varDecl);
+        effect.setOp(AssignmentType.ABSOLUTE);
         return effect;
     }
 }
