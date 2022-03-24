@@ -34,6 +34,8 @@ import java.util.List;
 public class EvaluationExprNormalizer extends AbstractNormalizer {
 
     public static final String EXTERN_IS_SEGMENT_OCCUPIED = "is_segment_occupied";
+    public static final String EXTERN_IS_TYPE_SEGMENT = "is_type_segment";
+    public static final String EXTERN_IS_TYPE_SIGNAL = "is_type_signal";
 
     @Override
     protected Collection<Statement> processExpr(Expression expr) {
@@ -43,7 +45,6 @@ public class EvaluationExprNormalizer extends AbstractNormalizer {
 
             // get route train config and check if not null
             if (evalExpr.isRouteAvailable()) {
-
                 // output:
                 // get config route.train train_id == ""
 
@@ -65,10 +66,22 @@ public class EvaluationExprNormalizer extends AbstractNormalizer {
 
                 BahnUtil.replaceEObject(expr, opExpr);
                 return List.of();
-            } else if (evalExpr.isSegmentOccupied()) {
+            } else if (evalExpr.isSegmentOccupied() || evalExpr.isTypeSegment() || evalExpr.isTypeSignal()) {
                 // output:
-                //  extern is_segment_occupied(segment_id)
-                var rawExpr = SyntacticTransformer.createExternalFunctionCallExpr(EXTERN_IS_SEGMENT_OCCUPIED, List.of(evalExpr.getObjectExpr()));
+                // extern is_segment_occupied(segment_id)
+                // extern is_type_segment(item_id)
+                // extern is_type_signal(item_id)
+
+                String externFunctionCall = null;
+                if (evalExpr.isSegmentOccupied()) {
+                    externFunctionCall = EXTERN_IS_SEGMENT_OCCUPIED;
+                } else if (evalExpr.isTypeSegment()) {
+                    externFunctionCall = EXTERN_IS_TYPE_SEGMENT;
+                } else if (evalExpr.isTypeSignal()) {
+                    externFunctionCall = EXTERN_IS_TYPE_SIGNAL;
+                }
+
+                ExternalFunctionCallExpr rawExpr = SyntacticTransformer.createExternalFunctionCallExpr(externFunctionCall, List.of(evalExpr.getObjectExpr()));
                 if (!evalExpr.isNot()) {
                     BahnUtil.replaceEObject(expr, rawExpr);
                     return List.of();

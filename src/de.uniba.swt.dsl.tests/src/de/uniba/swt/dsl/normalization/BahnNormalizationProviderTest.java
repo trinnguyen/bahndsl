@@ -342,6 +342,24 @@ class BahnNormalizationProviderTest {
     }
 
     @ParameterizedTest
+    @ValueSource (strings = {
+            "def test(string id) bool b = is id a_segment end",
+            "def test(string id) bool b = is id not a_segment end",
+    })
+    void testDomainTypeSegment(String src) throws Exception {
+        ensureNormalize(src, List.of("extern is_type_segment"));
+    }
+
+    @ParameterizedTest
+    @ValueSource (strings = {
+            "def test(string id) bool b = is id a_signal end",
+            "def test(string id) bool b = is id not a_signal end",
+    })
+    void testDomainTypeSignal(String src) throws Exception {
+        ensureNormalize(src, List.of("extern is_type_signal"));
+    }
+
+    @ParameterizedTest
     @CsvSource( value = {
             "def test(string sig) set state sig to stop end, stop",
             "def test(string sig) set state sig to caution end, caution",

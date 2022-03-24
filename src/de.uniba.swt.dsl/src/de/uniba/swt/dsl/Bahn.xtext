@@ -468,7 +468,7 @@ GrantRouteFuncExpr returns BehaviourExpr:
 
 EvaluateFuncExpr returns BehaviourExpr:
 	{EvaluateFuncExpr}
-	'is' objectExpr=PrimaryExpr not?='not'? (routeAvailable?='available'|segmentOccupied?='occupied')
+	'is' objectExpr=PrimaryExpr not?='not'? (routeAvailable?='available'|segmentOccupied?='occupied'|typeSegment?='a_segment'|typeSignal?='a_signal')
 ;
 
 BooleanLiteral returns LiteralExpr:
