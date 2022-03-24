@@ -84,8 +84,6 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         exportSection("blocks:", blocks);
         exportSection("platforms:", platforms);
         exportSection("crossings:", crossings);
-        exportSection("segments:", segments);
-        exportSection("signals:", signals);
         exportSection("signaltypes:", signaltypes);
         exportSection("compositions:", compositeSignals);
         exportSection("peripheraltypes:", peripheraltypes);
