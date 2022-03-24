@@ -58,6 +58,8 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         List<ExtraBlockElement> blocks = rootModule.getProperties().stream().filter(p -> p instanceof BlocksProperty).map(p -> ((BlocksProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraItem(b, mapSignals)).collect(Collectors.toList());
         List<ExtraBlockElement> platforms = rootModule.getProperties().stream().filter(p -> p instanceof PlatformsProperty).map(p -> ((PlatformsProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraItem(b, mapSignals)).collect(Collectors.toList());
         List<CrossingElement> crossings = rootModule.getProperties().stream().filter(p -> p instanceof CrossingsProperty).map(p -> ((CrossingsProperty) p).getItems()).flatMap(Collection::stream).collect(Collectors.toList());
+        List<String> segments = getSegmentNames(rootModule);
+        List<String> signals = getSignalNames(rootModule);
         List<SignalType> signaltypes = getSignalTypes(rootModule);
         List<PeripheralType> peripheraltypes = getPeripheralTypes(rootModule);
         List<CompositionSignalElement> compositeSignals = new ArrayList<>();
@@ -82,9 +84,21 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         exportSection("blocks:", blocks);
         exportSection("platforms:", platforms);
         exportSection("crossings:", crossings);
+        exportSection("segments:", segments);
+        exportSection("signals:", signals);
         exportSection("signaltypes:", signaltypes);
         exportSection("compositions:", compositeSignals);
         exportSection("peripheraltypes:", peripheraltypes);
+    }
+
+    private List<String> getSegmentNames(RootModule rootModule) {
+        List<SegmentElement> segments = rootModule.getProperties().stream().filter(p -> p instanceof SegmentsProperty).map(p -> ((SegmentsProperty) p).getItems()).flatMap(Collection::stream).collect(Collectors.toList());
+        return segments.stream().map(SegmentElement::getName).collect(Collectors.toList());
+    }
+
+    private List<String> getSignalNames(RootModule rootModule) {
+        List<SignalElement> signals = rootModule.getProperties().stream().filter(p -> p instanceof SignalsProperty).map(p -> ((SignalsProperty) p).getItems()).flatMap(Collection::stream).collect(Collectors.toList());
+        return signals.stream().map(SignalElement::getName).collect(Collectors.toList());
     }
 
     private List<SignalType> getSignalTypes(RootModule rootModule) {

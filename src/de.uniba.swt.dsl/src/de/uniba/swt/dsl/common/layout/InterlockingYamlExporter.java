@@ -78,18 +78,12 @@ public class InterlockingYamlExporter extends YamlExporter {
             if (item instanceof SegmentElement) {
                 SegmentElement segment = (SegmentElement) item;
                 appendLine("- id: %s", segment.getName());
-                increaseLevel();
-                appendLine("type: segment");
-                decreaseLevel();
 
                 length += segment.getLength().getValue();
                 unit = segment.getLength().getUnit();
             } else if (item instanceof SignalVertexMember) {
                 SignalVertexMember signal = (SignalVertexMember) item;
                 appendLine("- id: %s", signal.getName());
-                increaseLevel();
-                appendLine("type: signal");
-                decreaseLevel();
             }
         }
 
