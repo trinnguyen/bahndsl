@@ -55,7 +55,7 @@ schema
         is_reversed bool
         direction string
         length float
-        limit int
+        limit float
         train_types string[]
         overlaps string[]
         block_signals string[]
