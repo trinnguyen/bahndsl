@@ -143,8 +143,8 @@ signaltypes
         initial high
 end
 
-# Board peripheral are set directly to the
-# ports, which are active high
+# Board peripheral are sent directly to the ports,
+# which are active high
 peripheraltypes
     onebit
         aspects
