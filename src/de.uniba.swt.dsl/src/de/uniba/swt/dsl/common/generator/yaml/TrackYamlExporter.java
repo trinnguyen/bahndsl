@@ -55,6 +55,7 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
         List<Object> pointItems = new ArrayList<>();
         List<RegularSignalElement> signalsItems = new ArrayList<>();
         List<PeripheralElement> peripheralItems = new ArrayList<>();
+        List<SegmentElement> segmentItems = new ArrayList<>();
         for (ModuleProperty property : properties) {
             if (property instanceof PointsProperty) {
                 pointItems.addAll(((PointsProperty) property).getItems());
@@ -63,7 +64,7 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
             } else if (property instanceof PeripheralsProperty) {
                 peripheralItems.addAll(((PeripheralsProperty) property).getItems());
             } if (property instanceof SegmentsProperty) {
-                exportSection("segments:", ((SegmentsProperty) property).getItems());
+                segmentItems.addAll(((SegmentsProperty) property).getItems());
             }
         }
 
@@ -78,6 +79,10 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
 
         if (peripheralItems.size() > 0) {
             exportSection("peripherals:", peripheralItems);
+        }
+
+        if (segmentItems.size() > 0) {
+            exportSection("segments:", segmentItems);
         }
 
         decreaseLevel();
