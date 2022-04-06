@@ -49,7 +49,7 @@
 		"standardlib-schema": {
 			"patterns": [{
 				"name": "support.variable.bahn",
-				"match": "\\b(aspects|schema|signaltypes|peripheraltypes|route.(id|source|destination|orientation|path|sections|route_signals|conflicts|point_positions|length|train)|segment.(id|length)|signal.(id|type)|point.(id|segment)|peripheral.(id|type)|train.(id|type|weight|length)|block.(id|segment|is_reversed|direction|length|limit|train_types|overlaps|block_signals)|crossing.(id|segment)|composition.(id|entry|exit|block|distant))\\b"
+				"match": "\\b(aspects|schema|signaltypes|peripheraltypes|route.(id|source|destination|orientation|path|sections|route_signals|route_segments|conflicts|route_points|length|train)|segment.(id|length)|signal.(id|type)|point.(id|segment)|peripheral.(id|type)|train.(id|type|weight|length)|block.(id|segment|is_reversed|direction|length|limit|train_types|overlaps|block_signals)|crossing.(id|segment)|composition.(id|entry|exit|block|distant))\\b"
 			}]
 		},
 		"resources": {

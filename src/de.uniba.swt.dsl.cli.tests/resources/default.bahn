@@ -61,7 +61,7 @@ end
 
 def set_points_signals(string route_id)
     # switch all points
-    string point_ids[] = get config route.point_positions route_id
+    string point_ids[] = get config route.route_points route_id
     for string point_id in point_ids
         string pos = get position point_id in route_id
         if pos == "normal"

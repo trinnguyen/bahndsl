@@ -1,3 +1,6 @@
+# Names of the commented out schema items conflict with
+# the keywords defined in the BahnDSL grammar (Bahn.text)
+
 schema
     route
         id string
@@ -7,8 +10,8 @@ schema
         path string[]
         sections string[]
         route_signals string[]
+        route_points string[]
         conflicts string[]
-        point_positions string[]
         length float
         train string
     end
@@ -20,17 +23,21 @@ schema
 
     signal
         id string
+    #   initial string
         type string
+    #   aspects string[]
     end
 
     point
         id string
+    #   initial string
         segment string
     end
 
     peripheral
         id string
         type string
+    #   aspects string[]
     end
 
     train
@@ -38,6 +45,8 @@ schema
         type string
         weight float
         length float
+    #   peripherals string[]
+    #   calibration int[]
     end
 
     block
@@ -46,7 +55,7 @@ schema
         is_reversed bool
         direction string
         length float
-        limit int
+        limit float
         train_types string[]
         overlaps string[]
         block_signals string[]
@@ -63,6 +72,18 @@ schema
         exit string
         block string
         distant string
+    end
+
+     signaltype
+         id string
+#        initial string
+#        aspects string[]
+     end
+
+    peripherialtype
+         id string
+#        initial string
+#        aspects string[]
     end
 end
 
@@ -122,8 +143,8 @@ signaltypes
         initial high
 end
 
-# Board peripheral are set directly to the
-# ports, which are active high
+# Board peripheral are sent directly to the ports,
+# which are active high
 peripheraltypes
     onebit
         aspects

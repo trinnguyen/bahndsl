@@ -274,8 +274,8 @@ class BahnNormalizationProviderTest {
             "def test(string id) get config block.limit id end",
             "def test() get config block.limit \"block1\" end",
     })
-    void testDomainGetConfigInt(String src) throws Exception {
-        ensureNormalize(src, List.of("extern config_get_scalar_int_value"));
+    void testDomainGetConfigFloat(String src) throws Exception {
+        ensureNormalize(src, List.of("extern config_get_scalar_float_value"));
     }
 
     @ParameterizedTest

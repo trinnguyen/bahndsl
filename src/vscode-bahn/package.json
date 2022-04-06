@@ -2,7 +2,7 @@
     "name": "bahn-language",
     "displayName": "Bahn Language",
     "description": "Bahn support for VS Code",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "publisher": "trinnguyen",
     "repository": "https://github.com/trinnguyen/bahndsl",
     "license": "GPL-3.0",
