@@ -497,9 +497,10 @@ int size = ids.len
 ```
 
 ### Arithmetic expressions
-- Operators
+- Operators (absolute and relative)
 ```
-*   /  %   +   -
+*    /   %    +    -
+*=   /=  %=   +=   -=
 ```
 
 - Example
@@ -513,8 +514,8 @@ int e = 3 + (4 * 5)
 
 ### Relational and equality expressions
 - Operators
-  - Relational operators: `>  >=  <  <=`
-  - Equality operators: `==  !=`
+  - Relational: `>  >=  <  <=`
+  - Equality: `==  !=`
 
 - Example:
 ```c
@@ -535,6 +536,47 @@ bool b2 = false || true
 bool b3 = !b1
 bool b4 = false || (b1 == b2)
 ```
+
+### Relative bitwise assignments
+- Relative operators
+  - Bitwise AND: `&=`
+  - Bitwise OR: `|=`
+  - Bitwise XOR: `^=`
+
+- Example
+ ```c
+ int b1 = 3 // b1 = 0b0011
+ b1 &= 1    // b1 = 0b0001
+ b1 |= 4    // b1 = 0b0101
+ b1 ^= 1    // b1 = 0b0100
+ ```
+
+### Relative shift assignments
+- Relative operators
+  - Shift left: `<<=`
+  - Shift right: `>>=`
+  - Shift right unsigned: `>>>=`
+
+- Example
+ ```c
+ int s1 = -3  // s1 = -3
+ s1 <<= 1     // s1 = -6
+ s1 >>= 1     // s1 = -3
+ ```
+
+### Relative max and min assignments
+- Relative operators
+  - Max: `max=`
+  - Min: `min=`
+
+- Example
+ ```c
+ int m1 = 5   // m1 = 5
+ m1 max= 1    // m1 = 5
+ m1 min= 10   // m1 = 5
+ m1 max= 20   // m1 = 20
+ m1 min= 0    // m1 = 0
+ ```
 
 ### if-else statement
 - Syntax
