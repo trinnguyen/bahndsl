@@ -124,7 +124,7 @@ public class Main {
 			System.out.printf("OVERVIEW: Bahn compiler %s%n%n", getVersion());
 		}
 		System.out.println(container.formatHelp("bahnc"));
-		System.out.println("EXAMPLE: \n" +
+		System.out.println("EXAMPLE:\n" +
 				"  bahnc example.bahn\n" +
 				"  bahnc -r simple -m library -v example.bahn\n" +
 				"  bahnc -o output/src-gen example.bahn\n");

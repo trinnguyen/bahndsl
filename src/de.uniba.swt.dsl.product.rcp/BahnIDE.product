@@ -7,7 +7,7 @@
       <text>
          BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 
-Copyright (C) 2020 University of Bamberg, Software Technologies Research Group
+Copyright (C) 2022 University of Bamberg, Software Technologies Research Group
 https://www.uni-bamberg.de, http://www.swt-bamberg.de
 
 BahnDSL is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or
@@ -686,7 +686,7 @@ state the exclusion of warranty; and each file should have at least
 the &quot;copyright&quot; line and a pointer to where the full notice is found.
 
     thesis-masters-bahndsl
-    Copyright (C) 2020  swt / Teaching / 2019-WS
+    Copyright (C) 2022  swt / Teaching / 2019-WS
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -706,7 +706,7 @@ Also add information on how to contact you by electronic and paper mail.
   If the program does terminal interaction, make it output a short
 notice like this when it starts in an interactive mode:
 
-    thesis-masters-bahndsl  Copyright (C) 2020  swt / Teaching / 2019-WS
+    thesis-masters-bahndsl  Copyright (C) 2022  swt / Teaching / 2019-WS
     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w&apos;.
     This is free software, and you are welcome to redistribute it
     under certain conditions; type `show c&apos; for details.
