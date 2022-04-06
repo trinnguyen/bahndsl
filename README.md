@@ -510,6 +510,7 @@ float b = 3 + 4.5
 int c = 4 % 5
 float d = 65 / 100
 int e = 3 + (4 * 5)
+int e *= 3 + 4
 ```
 
 ### Relational and equality expressions
@@ -545,10 +546,10 @@ bool b4 = false || (b1 == b2)
 
 - Example
  ```c
- int b1 = 3 // b1 = 0b0011
- b1 &= 1    // b1 = 0b0001
- b1 |= 4    // b1 = 0b0101
- b1 ^= 1    // b1 = 0b0100
+ int b1 = 3 // b1 = 3 (0b0011)
+ b1 &= 1    // b1 = 1 (0b0001)
+ b1 |= 4    // b1 = 5 (0b0101)
+ b1 ^= 1    // b1 = 4 (0b0100)
  ```
 
 ### Relative shift assignments
