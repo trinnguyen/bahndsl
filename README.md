@@ -46,23 +46,31 @@ USAGE: bahnc [-o <path>][-r <route>] [-m <mode>] [-v] [-d] file
 
 EXAMPLE: 
   bahnc example.bahn
-  bahnc -m library -v example.bahn
+  bahnc -r simple -m library -v example.bahn
   bahnc -o output/src-gen example.bahn
 ```
 
 - Options and usage:
-  - Add `-v` to enable verbose output
   - Add `-o <path>` to change output folder. Default is `src-gen`
+  - Add `-r <route>` to change the type of routes to generate. `simple` only generates routes between any two signals with no intermediate signals. `extended` generates routes between any two signals with zero or more intermediate signals
+  - Add `-m <mode>` to specify the type of outputs to generate
+  - Add `-v` to enable verbose output
   - Add `-d` for detailed log level (recommended for development only) 
-  - Generate YAML files and SCCharts models
+
+- Examples:
+  - Generate YAML files (with simple routes) and SCCharts models with verbose output
   ```
   bahnc -v example.bahn
   ```
-  - Generate C code using embedded SCCharts compiler
+  - Generate YAML files (with extended routes) and SCCharts models
+  ```
+  bahnc -r extended example.bahn
+  ```
+  - Generate YAML files (with simple routes) and C code using embedded SCCharts compiler
   ```
   bahnc -m c-code -v example.bahn
   ```
-  - Compile shared C library using C compiler (cc/clang/gcc)
+  - Compile YAML files (with simple routes) and a shared C library using C compiler (cc/clang/gcc)
   ```
   bahnc -m library -v example.bahn
   ```
@@ -595,6 +603,16 @@ bool is_occupied = is "seg1" occupied
 - Check route availability (returns true or false)
 ```c
 bool is_available = is "route1" available
+```
+
+- Check whether an item is a segment (returns true or false)
+```c
+bool is_segment = is "seg1" a_segment
+```
+
+- Check whether an item is a signal (returns true or false)
+```c
+bool is_signal = is "seg1" a_signal
 ```
 
 - Get signal state (returns "stop", "go", "caution", or "shunt")
