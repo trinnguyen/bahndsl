@@ -194,6 +194,8 @@ public class RoutesFinder {
         String srcBlockKey = srcMember.getConnectedBlock().getName();
         BlockVertexMember srcBlockMember = (BlockVertexMember) this.srcSignal.findMemberByName(srcBlockKey).get();
 
+        // Orientation of the route is determined by the orientation of the source signal.
+        // Down orientation = clockwise, up orientation = anticlockwise.
         Orientation startingOrientation =
                 (srcBlockMember.getEndpoint() == BlockVertexMember.BlockEndpoint.Down && !srcBlockMember.getBlock().isReversed()
                 || srcBlockMember.getEndpoint() == BlockVertexMember.BlockEndpoint.Up && srcBlockMember.getBlock().isReversed())
