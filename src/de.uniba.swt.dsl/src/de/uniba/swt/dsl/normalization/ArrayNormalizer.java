@@ -89,6 +89,7 @@ public class ArrayNormalizer extends AbstractNormalizer {
 
         // ensure foreach using temporary array instead of vector
         if (stmt instanceof ForeachStmt) {
+            normalizeStmtList(((ForeachStmt) stmt).getStmts());
             return generateArrayVarIfNeeded(((ForeachStmt) stmt).getArrayExpr());
         }
 

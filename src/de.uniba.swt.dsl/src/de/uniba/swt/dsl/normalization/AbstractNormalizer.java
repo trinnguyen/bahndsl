@@ -44,7 +44,7 @@ public abstract class AbstractNormalizer {
         normalizeStmtList(funcDecl.getStmtList());
     }
 
-    private void normalizeStmtList(StatementList list) {
+    protected void normalizeStmtList(StatementList list) {
         if (list == null)
             return;
 
