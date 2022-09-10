@@ -26,6 +26,7 @@ package de.uniba.swt.dsl.common.generator.yaml.exports;
 
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.util.ExtraBlockElement;
+import de.uniba.swt.dsl.common.util.ExtraReverserElement;
 import de.uniba.swt.dsl.common.util.PointAspect;
 import de.uniba.swt.dsl.common.util.YamlExporter;
 
@@ -98,6 +99,11 @@ public class ElementExporterFactory {
 
         if (obj instanceof CrossingElement) {
             new CrossingElementYamlExporter().build(exporter, (CrossingElement) obj);
+            return;
+        }
+
+        if (obj instanceof ExtraReverserElement) {
+            new ExtraReverserElementYamlExporter().build(exporter, (ExtraReverserElement) obj);
             return;
         }
 

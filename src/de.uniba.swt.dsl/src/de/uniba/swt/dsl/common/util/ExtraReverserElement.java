@@ -22,22 +22,27 @@
  *
  */
 
-package de.uniba.swt.dsl.common.generator.yaml.exports;
+package de.uniba.swt.dsl.common.util;
 
+import de.uniba.swt.dsl.bahn.BoardElement;
 import de.uniba.swt.dsl.bahn.ReverserElement;
-import de.uniba.swt.dsl.common.util.Tuple;
 
 import java.util.List;
 
-class ReverserElementYamlExporter extends AbstractElementYamlExporter<ReverserElement> {
+public class ExtraReverserElement {
+    private final ReverserElement reverserElement;
+    private final BoardElement boardElement;
 
-    @Override
-    protected String getId(ReverserElement element) {
-        return element.getName();
+    public ExtraReverserElement(ReverserElement reverserElement, BoardElement boardElement) {
+        this.reverserElement = reverserElement;
+        this.boardElement = boardElement;
     }
 
-    @Override
-    protected List<Tuple<String, Object>> getProps(ReverserElement element) {
-        return List.of(Tuple.of("cv", element.getCv()));
+    public ReverserElement getReverserElement() {
+        return reverserElement;
+    }
+
+    public BoardElement getBoardElement() {
+        return boardElement;
     }
 }
