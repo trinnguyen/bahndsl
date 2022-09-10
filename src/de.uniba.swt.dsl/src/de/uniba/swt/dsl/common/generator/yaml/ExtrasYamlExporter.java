@@ -31,6 +31,7 @@ import de.uniba.swt.dsl.common.layout.models.vertex.LayoutVertex;
 import de.uniba.swt.dsl.common.layout.models.vertex.VertexMemberType;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.ExtraBlockElement;
+import de.uniba.swt.dsl.common.util.ExtraReverserElement;
 import de.uniba.swt.dsl.common.util.StringUtil;
 import org.eclipse.emf.ecore.resource.Resource;
 
@@ -55,8 +56,9 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
 
         Map<String, List<String>> mapSignals = getMapSignals();
 
-        List<ExtraBlockElement> blocks = rootModule.getProperties().stream().filter(p -> p instanceof BlocksProperty).map(p -> ((BlocksProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraItem(b, mapSignals)).collect(Collectors.toList());
-        List<ExtraBlockElement> platforms = rootModule.getProperties().stream().filter(p -> p instanceof PlatformsProperty).map(p -> ((PlatformsProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraItem(b, mapSignals)).collect(Collectors.toList());
+        List<ExtraBlockElement> blocks = rootModule.getProperties().stream().filter(p -> p instanceof BlocksProperty).map(p -> ((BlocksProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraBlockItem(b, mapSignals)).collect(Collectors.toList());
+        List<ExtraBlockElement> platforms = rootModule.getProperties().stream().filter(p -> p instanceof PlatformsProperty).map(p -> ((PlatformsProperty) p).getItems()).flatMap(Collection::stream).map(b -> createExtraBlockItem(b, mapSignals)).collect(Collectors.toList());
+        List<ExtraReverserElement> reversers = createExtraReverserItems(rootModule.getProperties().stream().filter(p -> p instanceof ReversersProperty).map(p -> ((ReversersProperty) p)).collect(Collectors.toList()));
         List<CrossingElement> crossings = rootModule.getProperties().stream().filter(p -> p instanceof CrossingsProperty).map(p -> ((CrossingsProperty) p).getItems()).flatMap(Collection::stream).collect(Collectors.toList());
         List<String> segments = getSegmentNames(rootModule);
         List<String> signals = getSignalNames(rootModule);
@@ -83,6 +85,7 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         // blocks
         exportSection("blocks:", blocks);
         exportSection("platforms:", platforms);
+        exportSection("reversers:", reversers);
         exportSection("crossings:", crossings);
         exportSection("signaltypes:", signaltypes);
         exportSection("compositions:", compositeSignals);
@@ -156,9 +159,22 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         return result;
     }
 
-    private ExtraBlockElement createExtraItem(BlockElement blockElement, Map<String, List<String>> mapSignals) {
+    private ExtraBlockElement createExtraBlockItem(BlockElement blockElement, Map<String, List<String>> mapSignals) {
         var direction = networkLayout != null ? networkLayout.getBlockDirection(blockElement.getName()) : null;
         var signals = mapSignals != null ? mapSignals.get(blockElement.getName()) : null;
         return new ExtraBlockElement(blockElement, direction, signals);
     }
+
+    private List<ExtraReverserElement> createExtraReverserItems(List<ReversersProperty> reversersProperties) {
+        List<ExtraReverserElement> extraReverserElements = new ArrayList<>();
+
+        for (ReversersProperty prop : reversersProperties) {
+            for (ReverserElement element : prop.getItems()) {
+                extraReverserElements.add(new ExtraReverserElement(element, prop.getBoard()));
+            }
+        }
+
+        return extraReverserElements;
+    }
+
 }
