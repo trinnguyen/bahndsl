@@ -21,6 +21,12 @@ schema
         length float
     end
 
+    reverser
+        id string
+        cv int
+        block string
+    end
+
     signal
         id string
     #   initial string

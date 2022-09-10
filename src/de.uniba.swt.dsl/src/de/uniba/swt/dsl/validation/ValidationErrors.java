@@ -24,8 +24,6 @@
 
 package de.uniba.swt.dsl.validation;
 
-import java.util.Locale;
-
 public class ValidationErrors {
 
     /**
@@ -43,6 +41,10 @@ public class ValidationErrors {
     public final static String DefinedConfigNameFormat = "Name '%s' is already defined";
 
     public final static String DefinedBoardAddressFormat = "Address '%s' is already used by another board";
+
+    public final static String DefinedReverserCvFormat = "Address '%d' is already used by another reverser";
+
+    public final static String DefinedReverserBlockFormat = "Block '%s' is already used by another reverser";
 
     public final static String SingleSectionFormat = "'%s' section is already defined";
 

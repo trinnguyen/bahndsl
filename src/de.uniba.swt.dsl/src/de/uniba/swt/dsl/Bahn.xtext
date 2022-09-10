@@ -62,7 +62,8 @@ PeripheralType:
 ModuleProperty:
 	BoardsProperty 
 	| SegmentsProperty 
-	| SignalsProperty 
+	| ReversersProperty
+	| SignalsProperty
 	| PointsProperty 
 	| PeripheralsProperty
 	| BlocksProperty
@@ -79,6 +80,10 @@ BoardsProperty :
 SegmentsProperty :
 	'segments' board=[BoardElement]
 		(items+=SegmentElement)*
+	'end';
+ReversersProperty :
+	'reversers' board=[BoardElement]
+		(items+=ReverserElement)*
 	'end';
 SignalsProperty :
 	'signals' board=[BoardElement]
@@ -138,6 +143,10 @@ BoardFeatureElement :
 
 SegmentElement :
 	name=ID address=HEX keyLength=[ConfigKey] length=Length
+;
+
+ReverserElement :
+	name=ID cv=INT block=[BlockElement]
 ;
 
 SignalElement :

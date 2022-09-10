@@ -18,6 +18,7 @@ import de.uniba.swt.dsl.bahn.PeripheralsProperty;
 import de.uniba.swt.dsl.bahn.PlatformsProperty;
 import de.uniba.swt.dsl.bahn.PointsProperty;
 import de.uniba.swt.dsl.bahn.SegmentsProperty;
+import de.uniba.swt.dsl.bahn.ReversersProperty;
 import de.uniba.swt.dsl.bahn.SignalElement;
 import de.uniba.swt.dsl.bahn.SignalsProperty;
 import de.uniba.swt.dsl.bahn.TrackSection;
@@ -50,6 +51,10 @@ public class BahnLabelProvider extends DefaultEObjectLabelProvider {
 	
 	String text(SegmentsProperty element) {
 		return "Segments for " + element.getBoard().getName();
+	}
+
+	String text(ReversersProperty element) {
+		return "Reversers for " + element.getBoard().getName();
 	}
 
 	String text(SignalsProperty element) {

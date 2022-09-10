@@ -68,6 +68,9 @@ public class BahnValidator extends AbstractBahnValidator {
     UniqueHexValidator hexValidator;
 
     @Inject
+    UniqueReverserValidator reverserValidator;
+
+    @Inject
     UniquePortValidator portValidator;
 
     @Inject
@@ -97,6 +100,7 @@ public class BahnValidator extends AbstractBahnValidator {
     @Check
     public void valdiateModel(BahnModel model) {
         hexValidator.clear();
+        reverserValidator.clear();
         portValidator.clear();
         uniqueConfigNameValidator.clear();
         segmentValidator.clear();
@@ -135,6 +139,12 @@ public class BahnValidator extends AbstractBahnValidator {
     public void validateSegmentsProperty(SegmentsProperty prop) {
         validateUniqueTracksInBoard(prop.getBoard().getName(), prop.getItems(), SegmentElement::getAddress, BahnPackage.Literals.SEGMENTS_PROPERTY__ITEMS);
         validateUniqueName(prop.getItems(), SegmentElement::getName, BahnPackage.Literals.SEGMENTS_PROPERTY__ITEMS);
+    }
+
+    @Check
+    public void validateReversersProperty(ReversersProperty prop) {
+        validateUniqueReversersInBoard(prop.getBoard().getName(), prop.getItems(), ReverserElement::getCv, ReverserElement::getBlock, BahnPackage.Literals.REVERSERS_PROPERTY__ITEMS);
+        validateUniqueName(prop.getItems(), ReverserElement::getName, BahnPackage.Literals.REVERSERS_PROPERTY__ITEMS);
     }
 
     @Check
@@ -196,6 +206,13 @@ public class BahnValidator extends AbstractBahnValidator {
 
     private <T> void validateUniqueTracksInBoard(String boardName, List<T> items, Function<T, String> addrMapper, EStructuralFeature feature) {
         var errors = hexValidator.validateUniqueTrackAddress(boardName, items, addrMapper);
+        for (Tuple<String, Integer> error : errors) {
+            error(error.getFirst(), feature, error.getSecond());
+        }
+    }
+
+    private <T> void validateUniqueReversersInBoard(String boardName, List<T> items, Function<T, Integer> cvMapper, Function<T, BlockElement> blockMapper, EStructuralFeature feature) {
+        var errors = reverserValidator.validateUniqueReverser(boardName, items, cvMapper, blockMapper);
         for (Tuple<String, Integer> error : errors) {
             error(error.getFirst(), feature, error.getSecond());
         }
