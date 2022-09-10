@@ -57,6 +57,10 @@ module SWTbahnStandard
 		seg41 0x2A length 10cm
 	end
 
+    reversers master
+        reverser 10051 block7     # reverser state is in CV 10051 of the master board and controls block7
+    end
+
 	signals lightcontrol1
 		entry signal3 0x00
 		entry signal4 0x01

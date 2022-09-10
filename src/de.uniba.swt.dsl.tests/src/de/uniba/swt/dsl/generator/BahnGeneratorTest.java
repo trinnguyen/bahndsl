@@ -118,6 +118,21 @@ class BahnGeneratorTest {
     }
 
     @Test
+    void testGenerateReverser() throws Exception {
+
+        // perform
+        invokeGenerate("module test " +
+                "boards master 0x00 end " +
+                "segments master seg1 0x00 length 11cm end " +
+                "blocks block1 main seg1 end " +
+                "reversers master reverser 1234 block1 end " +
+                "end");
+
+        // check file exist
+        ensureFileContent("bidib_track_config.yml", List.of("boards:", "- id: master", "segments:", "- id: seg1", "address: 0x00"));
+    }
+
+    @Test
     void testGenerateTrackPoints() throws Exception {
 
         // perform

@@ -6,6 +6,9 @@ module empty_config_request_drive
    segments master
    end
 
+   reversers master
+   end
+
    signals master
    end
 
