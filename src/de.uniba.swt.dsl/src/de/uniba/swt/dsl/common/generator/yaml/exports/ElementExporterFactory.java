@@ -31,6 +31,11 @@ import de.uniba.swt.dsl.common.util.YamlExporter;
 
 public class ElementExporterFactory {
     public static <T> void build(YamlExporter exporter, T obj) {
+        if (obj instanceof ReverserElement) {
+            new ReverserElementYamlExporter().build(exporter, (ReverserElement) obj);
+            return;
+        }
+
         if (obj instanceof SegmentElement) {
             new SegmentElementYamlExporter().build(exporter, (SegmentElement) obj);
             return;

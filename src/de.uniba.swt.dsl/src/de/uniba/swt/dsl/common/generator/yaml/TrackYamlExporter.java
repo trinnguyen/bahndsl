@@ -56,6 +56,7 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
         List<RegularSignalElement> signalsItems = new ArrayList<>();
         List<PeripheralElement> peripheralItems = new ArrayList<>();
         List<SegmentElement> segmentItems = new ArrayList<>();
+        List<ReverserElement> reverserItems = new ArrayList<>();
         for (ModuleProperty property : properties) {
             if (property instanceof PointsProperty) {
                 pointItems.addAll(((PointsProperty) property).getItems());
@@ -63,8 +64,10 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
                 signalsItems.addAll(regularSignalsFrom((SignalsProperty) property));
             } else if (property instanceof PeripheralsProperty) {
                 peripheralItems.addAll(((PeripheralsProperty) property).getItems());
-            } if (property instanceof SegmentsProperty) {
+            } else if (property instanceof SegmentsProperty) {
                 segmentItems.addAll(((SegmentsProperty) property).getItems());
+            } else if (property instanceof ReversersProperty) {
+                reverserItems.addAll(((ReversersProperty) property).getItems());
             }
         }
 
@@ -85,6 +88,10 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
             exportSection("segments:", segmentItems);
         }
 
+        if (reverserItems.size() > 0) {
+            exportSection("reversers:", reverserItems);
+        }
+
         decreaseLevel();
     }
 
@@ -96,7 +103,9 @@ class TrackYamlExporter extends AbstractBidibYamlExporter {
         Map<String, List<ModuleProperty>> map = new LinkedHashMap<>();
         for (ModuleProperty property : rootModule.getProperties()) {
             String boardName = null;
-            if (property instanceof SegmentsProperty) {
+            if (property instanceof ReversersProperty) {
+                boardName = ((ReversersProperty) property).getBoard().getName();
+            } else if (property instanceof SegmentsProperty) {
                 boardName = ((SegmentsProperty) property).getBoard().getName();
             } else if (property instanceof SignalsProperty) {
                 boardName = ((SignalsProperty) property).getBoard().getName();

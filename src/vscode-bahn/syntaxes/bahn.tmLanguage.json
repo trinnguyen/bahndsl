@@ -55,7 +55,7 @@
 		"resources": {
 			"patterns": [{
 				"name": "keyword.control.bahn",
-				"match": "\\b(bit|blocks|boards|calibration|cargo|composite|crossings|down|features|initial|layout|main|module|overlap|passenger|peripherals|platforms|points|segment|segments|side|signals|speed|stem|steps|straight|trains|up|length|weight|type|limit)\\b"
+				"match": "\\b(bit|blocks|boards|calibration|cargo|composite|crossings|down|features|initial|layout|main|module|overlap|passenger|peripherals|platforms|points|segment|segments|reversers|side|signals|speed|stem|steps|straight|trains|up|length|weight|type|limit)\\b"
 			}]
 		},
 		"behaviour": {

@@ -34,7 +34,7 @@ public class UniqueReverserValidator {
     // Track output addresses and Accessory addresses have separate address spaces.
     private final Map<String, Set<Integer>> mapBoardReverserCv = new HashMap<>();
 
-    private final Map<String, Set<BlockElement>> mapBoardReverserBlock = new HashMap<>();
+    private final Set<BlockElement> mapBoardReverserBlock = new HashSet<>();
 
     public <T> List<Tuple<String, Integer>> validateUniqueReverser(String boardName, List<T> items, Function<T, Integer> cvMapper, Function<T, BlockElement> blockMapper) {
         List<Tuple<String, Integer>> errors = new ArrayList<>();
@@ -43,12 +43,7 @@ public class UniqueReverserValidator {
             mapBoardReverserCv.put(boardName, new HashSet<>());
         }
 
-        if (!mapBoardReverserBlock.containsKey(boardName)) {
-            mapBoardReverserBlock.put(boardName, new HashSet<>());
-        }
-
         var setCv = mapBoardReverserCv.get(boardName);
-        var setBlock = mapBoardReverserBlock.get(boardName);
 
         for (int i = 0; i < items.size(); i++) {
             T item = items.get(i);
@@ -63,10 +58,10 @@ public class UniqueReverserValidator {
                 setCv.add(cv);
             }
 
-            if (setBlock.contains(block)) {
+            if (mapBoardReverserBlock.contains(block)) {
                 errors.add(Tuple.of(String.format(ValidationErrors.DefinedReverserBlockFormat, block.getName(), boardName), i));
             } else {
-                setBlock.add(block);
+                mapBoardReverserBlock.add(block);
             }
         }
 

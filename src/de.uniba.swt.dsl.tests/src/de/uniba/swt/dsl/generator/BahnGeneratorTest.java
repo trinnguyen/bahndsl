@@ -129,7 +129,7 @@ class BahnGeneratorTest {
                 "end");
 
         // check file exist
-        ensureFileContent("bidib_track_config.yml", List.of("boards:", "- id: master", "segments:", "- id: seg1", "address: 0x00"));
+        ensureFileContent("bidib_track_config.yml", List.of("boards:", "- id: master", "reversers:", "- id: reverser", "cv: 1234", "block: block1"));
     }
 
     @Test
