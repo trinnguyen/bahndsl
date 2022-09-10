@@ -51,7 +51,7 @@ schema
 
     block
         id string
-        segment string
+        main_segments string[]
         is_reversed bool
         direction string
         length float
@@ -186,12 +186,13 @@ def get_previous_block(string route_id, string block_id): string
         end
 
         pre_block = block_ids[i]
+        i += 1
     end
 
     return pre_block
 end
 
-def get_block(string route_id, string segment_ids[]) : string
+def get_block(string route_id, string segment_ids[]): string
     if segment_ids.len == 0
         return ""
     end
@@ -200,13 +201,18 @@ def get_block(string route_id, string segment_ids[]) : string
     string seg = segment_ids[0]
 
     # get all blocks and check
+    string main_segs[] = { "" }
     string block_ids[] = get config route.sections route_id
     for string id in block_ids
 
-        # check main segment
-        string main_seg = get config block.segment id
-        if main_seg == seg
-            return id
+        # check main segments
+        main_segs = get config block.main_segments id
+        int i = 0
+        while i < main_segs.len
+            if main_segs[i] == seg
+                return id
+            end
+            i += 1
         end
     end
 
@@ -214,9 +220,11 @@ def get_block(string route_id, string segment_ids[]) : string
 end
 
 def is_block_occupied(string block_id): bool
-    string main_seg = get config block.segment block_id
-    if is main_seg occupied
-        return true
+    string main_segs[] = get config block.main_segments block_id
+    for string main_seg in main_segs
+        if is main_seg occupied
+            return true
+        end
     end
 
     string overlaps[] = get config block.overlaps block_id
