@@ -74,6 +74,7 @@ public class ForeachNormalizer extends AbstractNormalizer {
                 // form while stmt
                 var whileStmt = BahnFactory.eINSTANCE.createIterationStmt();
                 whileStmt.setExpr(condition);
+                normalizeStmtList(foreachStmt.getStmts());
                 whileStmt.setStmts(foreachStmt.getStmts());
 
                 // replace

@@ -191,7 +191,12 @@ class BahnNormalizationProviderTest {
             "def test(int items[]) for int id in items end end",
             "def test(bool items[]) for bool id in items end end",
             "def test(float items[]) for float id in items end end",
-            //"def test() for int id in run() end end def run(): int[] int i[] return i end",
+            "def test(string items[]) for string id in items " +
+                    "string overlaps[] = get config block.overlaps id " +
+                    "end end",
+            "def test(string items[]) for string id in items " +
+                    "for string id1 in items end " +
+                    "end end"
     })
     void testForeachParam(String src) throws Exception {
         ensureNormalize(src, List.of("items[] , int _items_cnt )",

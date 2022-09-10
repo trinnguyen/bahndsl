@@ -207,18 +207,15 @@ def get_block(string route_id, string segment_ids[]): string
     string seg = segment_ids[0]
 
     # get all blocks and check
-    string main_segs[] = { "" }
     string block_ids[] = get config route.sections route_id
     for string id in block_ids
 
         # check main segments
-        main_segs = get config block.main_segments id
-        int i = 0
-        while i < main_segs.len
-            if main_segs[i] == seg
+        string main_segs[] = get config block.main_segments id
+        for string main_seg in main_segs
+            if main_seg == seg
                 return id
             end
-            i += 1
         end
     end
 
