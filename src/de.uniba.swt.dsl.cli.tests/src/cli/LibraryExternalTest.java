@@ -47,13 +47,24 @@ public class LibraryExternalTest extends ExternalTest {
             "empty_request_route.bahn",
             "empty_config_request_drive.bahn"
     })
-    void testLibraryGenerated(String name) {
+    void testLibraryGenerated(String name) throws Exception {
         var out = TestOutputName;
         execute(name, out);
 
         // ensure file
         var path = GetLibPath(name, out);
         Assertions.assertTrue(Files.isRegularFile(path), "Expected file exists " + path);
+
+        // Execute file command to ensure the shared library is valid (ELF for linux and Mach-O for macOS)
+        var absolutePath = path.toAbsolutePath().toString();
+        if (absolutePath.endsWith(linuxSharedExt) || absolutePath.endsWith(macSharedExt)) {
+            RuntimeExternalTestHelper.executeCommand(Paths.get("/usr/bin/file"), List.of(absolutePath));
+            // Example of file info:
+            // macOS: libinterlocker_default.dylib: Mach-O 64-bit dynamically linked shared library arm64
+            // Linux: libinterlocker_default.so: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked
+            var expectedSuffix = absolutePath.endsWith(linuxSharedExt) ? ": ELF" : ": Mach-O";
+            ensureTextContent(RuntimeExternalTestHelper.lastOutput, List.of(absolutePath + expectedSuffix, "dynamically linked"));
+        }
     }
 
     @ParameterizedTest
@@ -78,14 +89,18 @@ public class LibraryExternalTest extends ExternalTest {
         return Paths.get(ExternalTestConfig.ResourcesFolder, out, String.format(LibNameFormat, name.replace(".bahn", ""), getOsLibExt()));
     }
 
+    private static String macSharedExt = "dylib";
+
+    private static String linuxSharedExt = "so";
+
     private static String getOsLibExt() {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("mac"))
-            return "dylib";
+            return macSharedExt;
 
         if (os.contains("win"))
             return "dll";
 
-        return "so";
+        return linuxSharedExt;
     }
 }

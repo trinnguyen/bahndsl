@@ -53,7 +53,13 @@ public class LowlevelExternalTest extends ExternalTest {
         execute(name, out);
 
         // ensure file
-        ensureOutput(out, SourceFiles, this::validateCSourceFile);
+        ensureOutput(out, SourceFiles, tuple -> {
+            try {
+                validateCSourceFile(tuple);
+            } catch (Exception e) {
+                Assertions.fail(e.getMessage());
+            }
+        });
     }
 
     @ParameterizedTest
@@ -71,6 +77,18 @@ public class LowlevelExternalTest extends ExternalTest {
         execute(List.of(getSourcePath(name), "-o", out, "-m", "c-code"));
     }
 
-    private void validateCSourceFile(Tuple<String, String> stringStringTuple) {
+    private void validateCSourceFile(Tuple<String, String> tuple) throws Exception {
+        var name = tuple.getFirst();
+        var content = tuple.getSecond();
+        switch (name) {
+            case "request_route.h":
+            case "drive_route.h":
+                ensureTextContent(content, List.of("void reset(", "void tick("));
+                break;
+            case "request_route.c":
+            case "drive_route.c":
+                ensureTextContent(content, List.of("#include \"bahn_data_util.h\""));
+                break;
+        }
     }
 }

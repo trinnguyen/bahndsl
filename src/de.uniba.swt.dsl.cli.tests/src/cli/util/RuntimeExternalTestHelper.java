@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,11 +42,14 @@ public class RuntimeExternalTestHelper {
     public static String lastOutput = null;
 
     public static Boolean execute(List<String> args) {
-        lastOutput = null;
-
         var cmdPath = ExternalTestConfig.PathToBahnC.toAbsolutePath();
+        return executeCommand(cmdPath, args);
+    }
+
+    public static Boolean executeCommand(Path cmdPath, List<String> args) {
+        lastOutput = null;
         if (!Files.exists(cmdPath)) {
-            fail("bahnc does not exist in path: " + cmdPath.toString());
+            fail("Command does not exist in path: " + cmdPath.toString());
         }
 
         // build args
