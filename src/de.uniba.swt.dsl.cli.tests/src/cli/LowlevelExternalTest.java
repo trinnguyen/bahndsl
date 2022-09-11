@@ -36,10 +36,10 @@ import java.util.List;
 public class LowlevelExternalTest extends ExternalTest {
 
     private final static List<String> SourceFiles = List.of(
-            "request_route.h",
-            "request_route.c",
-            "drive_route.h",
-            "drive_route.c");
+            "Request_route.h",
+            "Request_route.c",
+            "Drive_route.h",
+            "Drive_route.c");
 
     @ParameterizedTest
     @ValueSource(strings = {
