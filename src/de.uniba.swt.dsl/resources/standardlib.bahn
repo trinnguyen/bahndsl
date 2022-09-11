@@ -23,7 +23,7 @@ schema
 
     reverser
         id string
-        cv int
+        board string
         block string
     end
 
