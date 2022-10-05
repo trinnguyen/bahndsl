@@ -1,5 +1,5 @@
 #!/bin/bash
-export JAVA_HOME=$(/usr/libexec/java_home -v 11)
+export JAVA_HOME=$(/usr/libexec/java_home -v 17)
 
 cd "$(dirname "$0")" || exit 1
 ./gradlew de.uniba.swt.dsl:clean de.uniba.swt.dsl:build || exit 1

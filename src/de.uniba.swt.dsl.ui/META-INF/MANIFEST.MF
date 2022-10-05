@@ -23,7 +23,7 @@ Require-Bundle: de.uniba.swt.dsl,
  org.eclipse.ui.forms,
  org.eclipse.xtend.lib
 Import-Package: org.apache.log4j
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: de.uniba.swt.dsl.ui.commands,
  de.uniba.swt.dsl.ui.contentassist,
  de.uniba.swt.dsl.ui.editor.syntaxcoloring,
