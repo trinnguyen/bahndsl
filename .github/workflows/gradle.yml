@@ -56,12 +56,13 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-    - name: Run tests with Gradle
+    - name: Run unit tests with Gradle
       run: sh src/build-test.sh
-    - name: Publish Test Results
+    - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
+        check_name: "Unit Test Results"
         junit_files: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
     
   test-cli:
@@ -81,5 +82,6 @@ jobs:
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
+        check_name: "Integration Test Results"
         junit_files: src/de.uniba.swt.dsl.cli.tests/build/test-results/test/**/TEST-*.xml
     
