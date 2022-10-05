@@ -1,5 +1,5 @@
 #!/bin/bash
-export JAVA_HOME=$(/usr/libexec/java_home -v 11)
+export JAVA_HOME=$(/usr/libexec/java_home -v 17)
 
 cd "$(dirname "$0")" || exit 1
 ./mvnw clean install || exit 1

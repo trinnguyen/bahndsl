@@ -5,7 +5,7 @@ import * as os from 'os';
 
 import { Trace } from 'vscode-jsonrpc';
 import { window, workspace, ExtensionContext, StatusBarAlignment } from 'vscode';
-import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo, State } from 'vscode-languageclient';
+import { LanguageClient, LanguageClientOptions, ServerOptions, StreamInfo, State } from 'vscode-languageclient/node';
 import * as net from 'net';
 import { BahnConfigUtil } from './bahn-config'
 import { spawn } from 'child_process';
@@ -13,6 +13,7 @@ import { spawn } from 'child_process';
 
 const ServerName = 'Bahn IDE server'
 
+let languageClient: LanguageClient;
 const statusBarItem = window.createStatusBarItem(StatusBarAlignment.Right, 0)
 
 export function activate(context: ExtensionContext) {
@@ -21,20 +22,20 @@ export function activate(context: ExtensionContext) {
     const config = BahnConfigUtil.loadConfig()
     if (config.remoteLspEnabled) {
         languageClient = createRemoteClient(config.remoteLspPort)
-        postClientCreation(languageClient, context);
+        postClientCreation(languageClient);
         console.log('Connected to remote LSP server, port: ' + config.remoteLspPort)
     } else {
         const port = 8989
         createEmbeddedRemoteServer(context, port).then(result => { 
             languageClient = createRemoteClient(port)
-            postClientCreation(languageClient, context)
+            postClientCreation(languageClient)
             console.log('Launched embedded remote LSP server')
         })
     }
 }
 
-function postClientCreation(languageClient: LanguageClient, context: ExtensionContext) {
-    languageClient.trace = Trace.Verbose;
+function postClientCreation(languageClient: LanguageClient) {
+//    languageClient.trace = Trace.Verbose;
 
     languageClient.onDidChangeState(evt => {
         switch (evt.newState) {
@@ -50,9 +51,16 @@ function postClientCreation(languageClient: LanguageClient, context: ExtensionCo
         }
     });
 
-    // Keep disposable for deactivating
-    context.subscriptions.push(languageClient.start());
-    context.subscriptions.push(statusBarItem);
+    languageClient.start();
+}
+
+export function deactivate(): Thenable<void> | undefined {
+    statusBarItem.dispose();
+
+    if (!languageClient) {
+        return undefined;
+    }
+    return languageClient.stop();
 }
 
 function updateStatusBar(text: string) {
