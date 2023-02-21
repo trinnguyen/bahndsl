@@ -33,9 +33,7 @@ import de.uniba.swt.dsl.common.layout.models.edge.CrossingEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.DoubleSlipSwitchEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class NetworkRoutesExplorer {
     private final RoutesFinder routesFinder = new RoutesFinder();
@@ -69,6 +67,7 @@ public class NetworkRoutesExplorer {
 
         // update conflicts
         for (var route : routes) {
+            System.out.println(route.getId());
             updateConflicts(route, routes);
         }
 
@@ -77,71 +76,42 @@ public class NetworkRoutesExplorer {
 
     private void updateConflicts(Route route, List<Route> routes) {
         for (var tmpRoute : routes) {
-            if (route.equals(tmpRoute))
-                continue;
+            // Conflict: Routes have the same source signal or destination signal.
+            if (route.getSrcSignal().equals(tmpRoute.getSrcSignal())) {
+                route.getConflictRouteIds().add(tmpRoute.getId());
+                tmpRoute.getConflictRouteIds().add(route.getId());
+            }
 
             if (route.getConflictRouteIds().contains(tmpRoute.getId()))
                 continue;
 
-            if (isConflict(route, tmpRoute)) {
+            // Conflict: Routes have at least one edge in common.
+            Set<Object> routeEdgeReferences = getEdgeReferences(route);
+            Set<Object> tmpouteEdgeReferences = getEdgeReferences(tmpRoute);
+            if (!Collections.disjoint(routeEdgeReferences, tmpouteEdgeReferences)) {
                 route.getConflictRouteIds().add(tmpRoute.getId());
                 tmpRoute.getConflictRouteIds().add(route.getId());
             }
         }
     }
 
-    private boolean isConflict(Route route1, Route route2) {
-        for (AbstractEdge edge : route1.getEdges()) {
-            // same edge
-            if (route2.getEdges().contains(edge)) {
-                return true;
-            }
-
-            // same standard switch
-            if (edge instanceof StandardSwitchEdge) {
-                if (hasPoint(route2, ((StandardSwitchEdge) edge).getPointElement()))
-                    return true;
-            }
-
-            // same double slip switch
-            if (edge instanceof DoubleSlipSwitchEdge) {
-                if (hasPoint(route2, ((DoubleSlipSwitchEdge) edge).getPointElement()))
-                    return true;
-            }
-
-            // same crossing
-            if (edge instanceof CrossingEdge) {
-                if (hasCrossing(route2, ((CrossingEdge) edge).getCrossing()))
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean hasCrossing(Route route, CrossingElement crossing) {
-        for (AbstractEdge edge : route.getEdges()) {
-            if (edge instanceof CrossingEdge) {
-                if (((CrossingEdge) edge).getCrossing().equals(crossing))
-                    return true;
-            }
-        }
-
-        return false;
-    }
-
-    private boolean hasPoint(Route route, PointElement point) {
+    private Set<Object> getEdgeReferences(Route route) {
+        Set<Object> references = new HashSet<>();
         for (AbstractEdge edge : route.getEdges()) {
             if (edge instanceof StandardSwitchEdge) {
-                if (((StandardSwitchEdge) edge).getPointElement().equals(point))
-                    return true;
-            }
-
-            if (edge instanceof DoubleSlipSwitchEdge) {
-                if (((DoubleSlipSwitchEdge) edge).getPointElement().equals(point))
-                    return true;
+                PointElement point = ((StandardSwitchEdge) edge).getPointElement();
+                references.add(point);
+            } else if (edge instanceof DoubleSlipSwitchEdge) {
+                PointElement point = ((DoubleSlipSwitchEdge) edge).getPointElement();
+                references.add(point);
+            } else if (edge instanceof CrossingEdge) {
+                CrossingElement crossing = ((CrossingEdge) edge).getCrossing();
+                references.add(crossing);
+            } else {
+                references.add(edge);
             }
         }
 
-        return false;
+        return references;
     }
 }
