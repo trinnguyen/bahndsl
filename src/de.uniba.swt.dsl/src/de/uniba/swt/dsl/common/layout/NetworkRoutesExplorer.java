@@ -102,7 +102,7 @@ public class NetworkRoutesExplorer {
     }
 
     private void updateConflicts(List<Route> routes) {
-        Map<Route, List<Set<Object>>> routeConflictData = new HashMap<>();
+        Map<Route, List<Set<Object>>> routeConflictData = new LinkedHashMap<>();
         for (var route : routes) {
             // Array of sets of edges references: { 0:point, 1:double-slip switch, 2:crossing, 3:block, 4:conflicts }
             List<Set<Object>> routeData = getEdgeReferences(route);
@@ -112,6 +112,7 @@ public class NetworkRoutesExplorer {
         }
 
         for (Map.Entry<Route, List<Set<Object>>> route1 : routeConflictData.entrySet()) {
+            System.out.println(route1.getKey().getId());
             for (Map.Entry<Route, List<Set<Object>>> route2 : routeConflictData.entrySet()) {
                 // Ignore the route itself.
                 if (route1.getKey() == route2.getKey()) {
