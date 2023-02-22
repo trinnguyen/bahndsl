@@ -127,8 +127,7 @@ public class NetworkRoutesExplorer {
                 // Conflict: Routes have the same source signal or same destination signal.
                 if (route1.getKey().getSrcSignal() == route2.getKey().getSrcSignal()
                         || route1.getKey().getDestSignal() == route2.getKey().getDestSignal()) {
-                    route1.getValue().get(4).add(route2.getKey());
-                    route2.getValue().get(4).add(route1.getKey());
+                    addConflict(route1.getKey(), route1.getValue().get(4), route2.getKey(), route2.getValue().get(4));
                     continue;
                 }
 
