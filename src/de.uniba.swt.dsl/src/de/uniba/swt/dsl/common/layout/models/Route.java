@@ -34,12 +34,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Route {
-    private String id;
+    private int id;
     private String srcSignal;
     private String destSignal;
     private Stack<AbstractEdge> edges;
     private Orientation startingOrientation;    // Orientation that a train needs to be in at the start of the route
-    private final Set<String> conflictRouteIds = new HashSet<>();
+    private List<Boolean> hasConflicts = new ArrayList<>();
 
     public Route(String srcSignal, String destSignal, Stack<AbstractEdge> edges, Orientation startingOrientation) {
         this.srcSignal = srcSignal;
@@ -48,11 +48,11 @@ public class Route {
         this.startingOrientation = startingOrientation;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -153,14 +153,25 @@ public class Route {
 
     public void setStartingOrientation(Orientation startingOrientation) { this.startingOrientation = startingOrientation; }
 
-    public Set<String> getConflictRouteIds() {
+    public void setHasConflicts(List<Boolean> newHasConflictWithRoutes) {
+        hasConflicts = newHasConflictWithRoutes;
+    }
+
+    public List<Integer> getConflictRouteIds() {
+        List<Integer> conflictRouteIds = new ArrayList<>();
+        for (var i = 0; i < hasConflicts.size(); ++i) {
+            if (hasConflicts.get(i)) {
+                // List index is the id of the conflicting route.
+                conflictRouteIds.add(i);
+            }
+        }
         return conflictRouteIds;
     }
 
     @Override
     public String toString() {
         var strEdge = edges.stream().map(Object::toString).collect(Collectors.joining(" -> "));
-        return String.format("%s (%s - %s): %s\n" +
-                "\t\tconflicts: %s\n", id, srcSignal, destSignal, strEdge, getConflictRouteIds());
+        return String.format("%d (%s - %s): %s\n" +
+                "\t\t%d conflicts\n", id, srcSignal, destSignal, strEdge, hasConflicts.size());
     }
 }

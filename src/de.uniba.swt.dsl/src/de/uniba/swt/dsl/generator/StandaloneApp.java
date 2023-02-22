@@ -93,7 +93,7 @@ public class StandaloneApp {
         return runGenerator(resource, filePath, fsa, outputPath, route, mode, javaCliRuntimeExecutor);
     }
 
-    public boolean runGenerator(Resource resource, String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String route, String mode, CliRuntimeExecutor runtimeExec) {
+    public boolean runGenerator(Resource resource, String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String routeType, String mode, CliRuntimeExecutor runtimeExec) {
         // load
         File file = new File(filePath);
         var out = outputPath;
@@ -118,8 +118,8 @@ public class StandaloneApp {
         BahnGeneratorContext context = new BahnGeneratorContext();
         context.setCancelIndicator(CancelIndicator.NullImpl);
 
-        logger.info(String.format("Route generation mode: %s", route));
-        context.setRouteType(route);
+        logger.info(String.format("Route generation mode: %s", routeType));
+        context.setRouteType(routeType);
 
         // step 1: generate default artifacts
         generator.generate(resource, fsa, context);

@@ -59,7 +59,7 @@ public class NetworkRoutesExplorer {
                 var paths = routesFinder.findRoutes(networkLayout, src, dest, routeType);
                 if (paths != null && !paths.isEmpty()) {
                     for (Route path : paths) {
-                        path.setId(String.valueOf(id++));
+                        path.setId(id++);
                         routes.add(path);
                     }
                 }
@@ -70,11 +70,6 @@ public class NetworkRoutesExplorer {
         updateConflicts(routes);
 
         return routes;
-    }
-
-    private void addConflict(Route route1, Set<Object> conflicts1, Route route2, Set<Object> conflicts2) {
-        conflicts1.add(route2);
-        conflicts2.add(route1);
     }
 
     // Returns an array of sets of edges references: {point, double-slip switch, crossing, block}
@@ -102,47 +97,47 @@ public class NetworkRoutesExplorer {
     }
 
     private void updateConflicts(List<Route> routes) {
-        Map<Route, List<Set<Object>>> routeConflictData = new LinkedHashMap<>();
-        for (var route : routes) {
-            // Array of sets of edges references: { 0:point, 1:double-slip switch, 2:crossing, 3:block, 4:conflicts }
-            List<Set<Object>> routeData = getEdgeReferences(route);
-            routeData.add(new HashSet<>());
+        // Sort the list of routes based on their id.
+        routes.sort(Comparator.comparingInt(route -> route.getId()));
 
-            routeConflictData.put(route, routeData);
-        }
+        // 2D matrix indexed by the route ids to mark the routes that conflict with each other.
+        boolean hasConflictMatrix[][] = new boolean[routes.size()][routes.size()];
 
-        for (Map.Entry<Route, List<Set<Object>>> route1 : routeConflictData.entrySet()) {
-            System.out.println(route1.getKey().getId());
-            for (Map.Entry<Route, List<Set<Object>>> route2 : routeConflictData.entrySet()) {
-                // Ignore the route itself.
-                if (route1.getKey() == route2.getKey()) {
-                    continue;
-                }
+        // For each route, store each edge type as a set of references: { 0:point, 1:double-slip switch, 2:crossing, 3:block }
+        List<List<Set<Object>>> routesToEdges = routes.stream().map(route -> getEdgeReferences(route)).collect(Collectors.toList());
 
-                // Check whether both routes have already been identified as being conflicts.
-                if (route1.getValue().get(4).contains(route2.getKey())) {
-                    continue;
-                }
-
+        // For each route in routes.
+        for (var route1 = 0; route1 < routes.size(); ++route1) {
+            System.out.println(route1);
+            // Compare current route with the remaining routes.
+            for (var route2 = route1 + 1; route2 < routes.size(); ++route2) {
                 // Conflict: Routes have the same source signal or same destination signal.
-                if (route1.getKey().getSrcSignal() == route2.getKey().getSrcSignal()
-                        || route1.getKey().getDestSignal() == route2.getKey().getDestSignal()) {
-                    addConflict(route1.getKey(), route1.getValue().get(4), route2.getKey(), route2.getValue().get(4));
+                if (routes.get(route1).getSrcSignal() == routes.get(route2).getSrcSignal()
+                        || routes.get(route1).getDestSignal() == routes.get(route2).getDestSignal()) {
+                    hasConflictMatrix[route1][route2] = true;
+                    hasConflictMatrix[route2][route1] = true;
                     continue;
                 }
 
                 // Conflict: Routes have at least one edge in common.
-                for (var i : Arrays.asList(0, 1, 2, 3)) {
-                    if (!Collections.disjoint(route1.getValue().get(i), route2.getValue().get(i))) {
-                        addConflict(route1.getKey(), route1.getValue().get(4), route2.getKey(), route2.getValue().get(4));
+                for (var i = 0; i <  routesToEdges.get(route1).size(); ++i) {
+                    if (!Collections.disjoint(routesToEdges.get(route1).get(i), routesToEdges.get(route2).get(i))) {
+                        hasConflictMatrix[route1][route2] = true;
+                        hasConflictMatrix[route2][route1] = true;
                         break;
                     }
                 }
             }
         }
 
-        for (Map.Entry<Route, List<Set<Object>>> route : routeConflictData.entrySet()) {
-            route.getKey().getConflictRouteIds().addAll(route.getValue().get(4).stream().map(conflict -> ((Route)conflict).getId()).collect(Collectors.toList()));
+        // Transfer the conflicts into each route object.
+        for (var routeId = 0; routeId < routes.size(); ++routeId) {
+            System.out.println(routeId);
+            List<Boolean> hasConflicts = new ArrayList<>();
+            for (var conflict : hasConflictMatrix[routeId]) {
+                hasConflicts.add(conflict);
+            }
+            routes.get(routeId).setHasConflicts(hasConflicts);
         }
     }
 }
