@@ -33,26 +33,32 @@ import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
 import de.uniba.swt.dsl.common.layout.models.vertex.SignalVertexMember;
 import de.uniba.swt.dsl.common.util.YamlExporter;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class InterlockingYamlExporter extends YamlExporter {
 
-    public String generate(Collection<Route> routes) {
-        // prepare
-        reset();
+    public void generate(String path, String filename, Collection<Route> routes) {
+        try {
+            // prepare
+            reset(path, filename);
 
-        // start
-        appendLine("# Interlocking table");
-        appendLine("interlocking-table:");
-        for (var route : routes) {
-            System.out.println(route.getId());
-            increaseLevel();
-            generateRoute(route);
-            decreaseLevel();
+            // start
+            appendLine("# Interlocking table");
+            appendLine("interlocking-table:");
+            for (var route : routes) {
+                System.out.println(route.getId());
+                increaseLevel();
+                generateRoute(route);
+                flush();
+                decreaseLevel();
+            }
+
+            close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        return build();
     }
 
     private void generateRoute(Route route) {
@@ -119,7 +125,7 @@ public class InterlockingYamlExporter extends YamlExporter {
         // Conflicting routes
         appendLine("conflicts:");
         increaseLevel();
-        // route.getConflictRouteIds().forEach(conflict -> appendLine("- id: %d", conflict));
+        route.getConflictRouteIds().forEach(conflict -> appendLine("- id: %d", conflict));
         decreaseLevel();
 
         // decrease obj level

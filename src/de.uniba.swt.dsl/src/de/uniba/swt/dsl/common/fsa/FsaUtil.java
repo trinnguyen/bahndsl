@@ -13,7 +13,7 @@ public class FsaUtil {
 
     public static String getFolderPath(IFileSystemAccess2 fsa) {
         if (fsa instanceof AbstractFileSystemAccess) {
-            return getPathes((AbstractFileSystemAccess)fsa).get(IFileSystemAccess2.DEFAULT_OUTPUT);
+            return getPaths((AbstractFileSystemAccess)fsa).get(IFileSystemAccess2.DEFAULT_OUTPUT);
         }
 
         return null;
@@ -26,7 +26,7 @@ public class FsaUtil {
     public static File getFile(IFileSystemAccess2 fsa, String fileName, String outputConfigName) {
         if (fsa instanceof AbstractFileSystemAccess) {
             var instanceFsa = (AbstractFileSystemAccess) fsa;
-            String outlet = getPathes(instanceFsa).get(outputConfigName);
+            String outlet = getPaths(instanceFsa).get(outputConfigName);
             if (outlet == null) {
                 throw new IllegalArgumentException("A slot with name '" + outputConfigName + "' has not been configured.");
             } else {
@@ -38,7 +38,7 @@ public class FsaUtil {
         return null;
     }
 
-    private static Map<String, String> getPathes(AbstractFileSystemAccess fsa) {
+    private static Map<String, String> getPaths(AbstractFileSystemAccess fsa) {
         return transformValues(fsa.getOutputConfigurations(), OutputConfiguration::getOutputDirectory);
     }
 

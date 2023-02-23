@@ -24,22 +24,43 @@
 
 package de.uniba.swt.dsl.common.util;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class YamlExporter {
 
     private static final String SPACE = "  ";
-    protected List<String> items = new LinkedList<>();
     protected int indentLevel;
 
-    protected void reset() {
-        items.clear();
+    private FileWriter writer;
+    private BufferedWriter bufferedWriter;
+
+    protected List<String> itemsToWrite = new LinkedList<>();
+
+    protected void reset(String path, String filename) throws IOException {
         indentLevel = 0;
+        writer = new FileWriter(path + "/" + filename);
+        bufferedWriter = new BufferedWriter(writer);
+        itemsToWrite.clear();
+    }
+
+    protected void close() throws IOException {
+        bufferedWriter.close();
+        writer.close();
     }
 
     public void appendLine(String text, Object... args) {
-        items.add(SPACE.repeat(Math.max(0, indentLevel)) + String.format(text, args));
+        itemsToWrite.add(SPACE.repeat(Math.max(0, indentLevel)) + String.format(text, args));
+    }
+
+    public void flush() throws IOException {
+        bufferedWriter.write(itemsToWrite.stream().collect(Collectors.joining(System.lineSeparator())));
+        bufferedWriter.newLine();
+        itemsToWrite.clear();
     }
 
     public void increaseLevel()
@@ -52,13 +73,4 @@ public class YamlExporter {
         indentLevel--;
     }
 
-    protected String build()
-    {
-        return String.join("\n", items);
-    }
-
-    @Override
-    public String toString() {
-        return build();
-    }
 }

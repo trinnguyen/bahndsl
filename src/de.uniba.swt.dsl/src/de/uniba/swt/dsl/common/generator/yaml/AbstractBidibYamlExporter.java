@@ -28,19 +28,25 @@ import de.uniba.swt.dsl.bahn.RootModule;
 import de.uniba.swt.dsl.common.generator.yaml.exports.ElementExporterFactory;
 import de.uniba.swt.dsl.common.util.YamlExporter;
 
+import java.io.IOException;
 import java.util.Collection;
 
 abstract class AbstractBidibYamlExporter extends YamlExporter {
 
-    public String export(RootModule rootModule) {
-        reset();
+    public void export(String path, String filename, RootModule rootModule) {
+        try {
+            reset(path, filename);
 
-        // comment
-        appendLine("# %s: %s", getHeaderComment(), rootModule.getName());
+            // comment
+            appendLine("# %s: %s", getHeaderComment(), rootModule.getName());
 
-        // build content
-        exportContent(rootModule);
-        return build();
+            // build content
+            exportContent(rootModule);
+            flush();
+            close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected void exportSection(String section, Collection<?> items) {

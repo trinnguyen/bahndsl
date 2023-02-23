@@ -41,9 +41,9 @@ import java.util.stream.Collectors;
 class ExtrasYamlExporter extends AbstractBidibYamlExporter {
     private NetworkLayout networkLayout;
 
-    public String export(RootModule rootModule, NetworkLayout networkLayout) {
+    public void export(String path, String filename, RootModule rootModule, NetworkLayout networkLayout) {
         this.networkLayout = networkLayout;
-        return export(rootModule);
+        export(path, filename, rootModule);
     }
 
     @Override

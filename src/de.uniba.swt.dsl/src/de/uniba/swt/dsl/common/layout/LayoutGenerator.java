@@ -25,6 +25,7 @@
 package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.common.fsa.FsaUtil;
 import de.uniba.swt.dsl.common.generator.GeneratorProvider;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
@@ -34,6 +35,7 @@ import de.uniba.swt.dsl.common.util.LogHelper;
 import org.apache.log4j.Logger;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -94,7 +96,8 @@ public class LayoutGenerator extends GeneratorProvider {
 			logger.debug(LogHelper.printObject(routes));
 
 			// generate yaml
-			fsa.generateFile(InterlockingFileName, yamlExporter.generate(routes));
+			final String path = FsaUtil.getFolderPath(fsa);
+			yamlExporter.generate(path, InterlockingFileName, routes);
 
 		} catch (LayoutException e) {
 			throw new RuntimeException(e);
