@@ -26,7 +26,6 @@ package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.bahn.LengthUnit;
 import de.uniba.swt.dsl.bahn.SegmentElement;
-import de.uniba.swt.dsl.bahn.SignalElement;
 import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractPointEdge;
@@ -47,6 +46,7 @@ public class InterlockingYamlExporter extends YamlExporter {
         appendLine("# Interlocking table");
         appendLine("interlocking-table:");
         for (var route : routes) {
+            System.out.println(route.getId());
             increaseLevel();
             generateRoute(route);
             decreaseLevel();

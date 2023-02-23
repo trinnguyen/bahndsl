@@ -108,7 +108,6 @@ public class NetworkRoutesExplorer {
 
         // For each route in routes.
         for (var route1 = 0; route1 < routes.size(); ++route1) {
-            System.out.println(route1);
             // Compare current route with the remaining routes.
             for (var route2 = route1 + 1; route2 < routes.size(); ++route2) {
                 // Conflict: Routes have the same source signal or same destination signal.
@@ -132,7 +131,6 @@ public class NetworkRoutesExplorer {
 
         // Transfer the conflicts into each route object.
         for (var routeId = 0; routeId < routes.size(); ++routeId) {
-            System.out.println(routeId);
             List<Boolean> hasConflicts = new ArrayList<>();
             for (var conflict : hasConflictMatrix[routeId]) {
                 hasConflicts.add(conflict);
