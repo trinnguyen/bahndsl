@@ -48,7 +48,6 @@ public class InterlockingYamlExporter extends YamlExporter {
             appendLine("# Interlocking table");
             appendLine("interlocking-table:");
             for (var route : routes) {
-                System.out.println(route.getId());
                 increaseLevel();
                 generateRoute(route);
                 flush();

@@ -25,18 +25,23 @@
 package de.uniba.swt.dsl.generator;
 
 import com.google.inject.Inject;
+import de.uniba.swt.dsl.common.fsa.FsaUtil;
 import de.uniba.swt.dsl.tests.BahnInjectorProvider;
 import de.uniba.swt.dsl.tests.helpers.TestConstants;
 import de.uniba.swt.dsl.tests.helpers.TestHelper;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.xtext.generator.InMemoryFileSystemAccess;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
+import org.eclipse.xtext.generator.JavaIoFileSystemAccess;
 import org.eclipse.xtext.testing.InjectWith;
 import org.eclipse.xtext.testing.extensions.InjectionExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -47,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class BahnGeneratorTest {
 
     @Inject
-    InMemoryFileSystemAccess fsa;
+    JavaIoFileSystemAccess fsa;
 
     @Inject
     TestHelper testHelper;
@@ -58,6 +63,32 @@ class BahnGeneratorTest {
     private final static String RequestRouteFilename = "request_route.sctx";
 
     private final static String DriveRouteFilename = "drive_route.sctx";
+
+    protected final static String TestOutputName = "test-gen";
+
+    @BeforeEach
+    void setup() {
+        fsa.setOutputPath(TestOutputName);
+        try {
+            deleteFolder(TestOutputName);
+        } catch (Exception e) {
+            System.out.println("Warning: " + e.getMessage());
+        }
+    }
+
+    private void deleteFolder(String name) {
+        var file = Path.of(name).toFile();
+        if (file.isDirectory()) {
+            var files = file.listFiles();
+            if (files != null) {
+                for (File item : files) {
+                    item.delete();
+                }
+            }
+
+            file.delete();
+        }
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {
@@ -80,7 +111,9 @@ class BahnGeneratorTest {
                 "bidib_train_config.yml",
                 "extras_config.yml");
 
-        var files = fsa.getTextFiles();
+        var files = TestHelper.getTextFiles(fsa, TestOutputName);
+        System.out.println(files);
+
         var msgNames = String.join(",", files.keySet());
         for (String expectedName : expectedNames) {
             var inList = files.entrySet().stream().filter(entry -> entry.getKey().endsWith(expectedName)).findFirst();
@@ -178,7 +211,7 @@ class BahnGeneratorTest {
         invokeGenerate(TestConstants.SampleConfigSignals);
 
         // check content
-        var files = fsa.getTextFiles();
+        var files = TestHelper.getTextFiles(fsa, TestOutputName);
         ensureFileContent("bidib_track_config.yml", List.of("signals-board:", "- id: signal1", "number: 0x03", "type: entry", "- id: signal2", "number: 0x04", "type: distant"));
 
         // check composite
@@ -234,12 +267,12 @@ class BahnGeneratorTest {
         invokeGenerate(src);
 
         // ensure no
-        assertNull(TestHelper.getFileContent(fsa, RequestRouteFilename), "Expected request route sccharts not generated because missing required func");
-        assertNull(TestHelper.getFileContent(fsa, DriveRouteFilename), "Expected drive route sccharts not generated because missing required func");
+        assertNull(TestHelper.getFileContent(fsa, TestOutputName, RequestRouteFilename), "Expected request route sccharts not generated because missing required func");
+        assertNull(TestHelper.getFileContent(fsa, TestOutputName, DriveRouteFilename), "Expected drive route sccharts not generated because missing required func");
     }
 
     private void ensureFileContent(String name, List<String> items) throws Exception {
-        TestHelper.ensureFileContent(fsa, name, items);
+        TestHelper.ensureFileContent(fsa, TestOutputName, name, items);
     }
 
     private void invokeGenerate(String src) throws Exception {
@@ -250,6 +283,9 @@ class BahnGeneratorTest {
         try {
             generator.beforeGenerate(input, fsa, context);
             generator.doGenerate(input, fsa, context);
+            var files = TestHelper.getTextFiles(fsa, TestOutputName);
+            Thread.sleep(1000);
+            System.out.println(files);
         } finally {
             generator.afterGenerate(input, fsa, context);
         }

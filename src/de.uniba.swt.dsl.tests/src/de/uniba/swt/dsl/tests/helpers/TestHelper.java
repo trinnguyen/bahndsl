@@ -25,15 +25,23 @@
 package de.uniba.swt.dsl.tests.helpers;
 
 import com.google.inject.Inject;
+import de.uniba.swt.dsl.common.fsa.FsaUtil;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
 import org.eclipse.xtext.generator.InMemoryFileSystemAccess;
 import org.eclipse.xtext.testing.util.ResourceHelper;
 import org.eclipse.xtext.testing.validation.ValidationTestHelper;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TestHelper {
 
@@ -53,6 +61,18 @@ public class TestHelper {
         Resource input = resourceHelper.resource(src);
         validationTestHelper.assertNoErrors(input);
         return input;
+    }
+
+    /**
+     * Ensure file contains all string items in the list
+     * @param fsa
+     * @param fileName
+     * @param list
+     * @throws Exception
+     */
+    public static void ensureFileContent(IFileSystemAccess2 fsa, String folder, String fileName, List<String> list) throws Exception {
+        var content = getFileContent(fsa, folder, fileName);
+        ensureTextContent(content, list);
     }
 
     /**
@@ -98,10 +118,44 @@ public class TestHelper {
     }
 
     /**
+     * Get files in a directory
+     * @param fsa
+     * @param folder
+     * @return map of filenames to file content
+     */
+    public static Map<String, String> getTextFiles(IFileSystemAccess2 fsa, String folder) {
+        Map<String, String> textFiles = new HashMap<>();
+
+        final String path = FsaUtil.getFolderPath(fsa) + "/" + folder;
+        var file = Path.of(path).toFile();
+        if (file.isDirectory()) {
+            Arrays.stream(file.listFiles()).filter(item -> item.isFile()).forEach(item -> {
+                try {
+                    textFiles.put(item.getName(), Files.readString(item.toPath()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+
+        return textFiles;
+    }
+
+    public static String getFileContent(IFileSystemAccess2 fsa, String folder, String filename) {
+        Map<String, String> textFiles = getTextFiles(fsa, folder);
+        for (String s : textFiles.keySet()) {
+            if (s.endsWith(filename))
+                return textFiles.get(s);
+        }
+
+        return null;
+    }
+
+    /**
      * Read file content by name
      * @param fsa
      * @param name
-     * @return
+     * @return filecontent as string or null if not found
      */
     public static String getFileContent(InMemoryFileSystemAccess fsa, String name) {
         for (String s : fsa.getTextFiles().keySet()) {
