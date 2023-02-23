@@ -125,8 +125,7 @@ public class NetworkRoutesExplorer {
                     if (!Collections.disjoint(edgesRoute1.get(i), routesToEdges.get(route2).get(i))) {
                         hasConflictMatrix[route1][route2] = true;
                         hasConflictMatrix[route2][route1] = true;
-                        // break;
-                        return;
+                        break;
                     }
                 }
             }
