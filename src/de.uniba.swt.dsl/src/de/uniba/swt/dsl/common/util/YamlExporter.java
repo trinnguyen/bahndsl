@@ -25,7 +25,6 @@
 package de.uniba.swt.dsl.common.util;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -47,8 +46,6 @@ public class YamlExporter {
         writer = new FileWriter(path + "/" + filename);
         bufferedWriter = new BufferedWriter(writer);
         itemsToWrite.clear();
-
-        System.out.println(new File(path + "/" + filename).getAbsolutePath());
     }
 
     protected void close() throws IOException {

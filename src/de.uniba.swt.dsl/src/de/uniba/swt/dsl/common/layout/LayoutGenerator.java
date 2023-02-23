@@ -43,6 +43,8 @@ import java.util.stream.Collectors;
 
 public class LayoutGenerator extends GeneratorProvider {
 
+	private static final String LayoutDiagramFileName = "layout_diagram.dot";
+
 	private static final String InterlockingFileName = "interlocking_table.yml";
 
 	private final static Logger logger = Logger.getLogger(LayoutGenerator.class);
@@ -83,7 +85,8 @@ public class LayoutGenerator extends GeneratorProvider {
 
 			// generate graph
 			var graph = networkLayout.generateGraph();
-			fsa.generateFile("layout_diagram.dot", dotExporter.render(networkLayout, graph));
+			final String path = FsaUtil.getFolderPath(fsa);
+			dotExporter.export(path, LayoutDiagramFileName, networkLayout, graph);
 
 			// find all routes
 			var signals = getAllSignals(rootModule);
@@ -96,7 +99,6 @@ public class LayoutGenerator extends GeneratorProvider {
 			logger.debug(LogHelper.printObject(routes));
 
 			// generate yaml
-			final String path = FsaUtil.getFolderPath(fsa);
 			yamlExporter.generate(path, InterlockingFileName, routes);
 
 		} catch (LayoutException e) {

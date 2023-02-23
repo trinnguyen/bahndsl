@@ -25,6 +25,8 @@
 package de.uniba.swt.dsl.generator;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import de.uniba.swt.dsl.BahnStandaloneSetup;
 import de.uniba.swt.dsl.common.fsa.FsaUtil;
 import de.uniba.swt.dsl.tests.BahnInjectorProvider;
 import de.uniba.swt.dsl.tests.helpers.TestConstants;
@@ -34,8 +36,10 @@ import org.eclipse.xtext.generator.IFileSystemAccess2;
 import org.eclipse.xtext.generator.JavaIoFileSystemAccess;
 import org.eclipse.xtext.testing.InjectWith;
 import org.eclipse.xtext.testing.extensions.InjectionExtension;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -49,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(InjectionExtension.class)
 @InjectWith(BahnInjectorProvider.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BahnGeneratorTest {
 
     @Inject
@@ -66,9 +71,14 @@ class BahnGeneratorTest {
 
     protected final static String TestOutputName = "test-gen";
 
+    @BeforeAll
+    void initialise() {
+        fsa = new JavaIoFileSystemAccess();
+        fsa.setOutputPath(TestOutputName);
+    }
+
     @BeforeEach
     void setup() {
-        fsa.setOutputPath(TestOutputName);
         try {
             deleteFolder(TestOutputName);
         } catch (Exception e) {
@@ -112,8 +122,6 @@ class BahnGeneratorTest {
                 "extras_config.yml");
 
         var files = TestHelper.getTextFiles(fsa, TestOutputName);
-        System.out.println(files);
-
         var msgNames = String.join(",", files.keySet());
         for (String expectedName : expectedNames) {
             var inList = files.entrySet().stream().filter(entry -> entry.getKey().endsWith(expectedName)).findFirst();
@@ -283,9 +291,7 @@ class BahnGeneratorTest {
         try {
             generator.beforeGenerate(input, fsa, context);
             generator.doGenerate(input, fsa, context);
-            var files = TestHelper.getTextFiles(fsa, TestOutputName);
-            Thread.sleep(1000);
-            System.out.println(files);
+//            Thread.sleep(1000);
         } finally {
             generator.afterGenerate(input, fsa, context);
         }

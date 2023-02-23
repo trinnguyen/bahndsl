@@ -76,18 +76,6 @@ public class TestHelper {
     }
 
     /**
-     * Ensure file contains all string items in the list
-     * @param fsa
-     * @param fileName
-     * @param list
-     * @throws Exception
-     */
-    public static void ensureFileContent(InMemoryFileSystemAccess fsa, String fileName, List<String> list) throws Exception {
-        var content = getFileContent(fsa, fileName);
-        ensureTextContent(content, list);
-    }
-
-    /**
      * Ensure text contains all string items in the list
      * @param content
      * @param list
@@ -126,7 +114,7 @@ public class TestHelper {
     public static Map<String, String> getTextFiles(IFileSystemAccess2 fsa, String folder) {
         Map<String, String> textFiles = new HashMap<>();
 
-        final String path = FsaUtil.getFolderPath(fsa) + "/" + folder;
+        final String path = FsaUtil.getFolderPath(fsa);
         var file = Path.of(path).toFile();
         if (file.isDirectory()) {
             Arrays.stream(file.listFiles()).filter(item -> item.isFile()).forEach(item -> {

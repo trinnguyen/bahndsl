@@ -102,6 +102,7 @@ public class StandaloneApp {
         }
         fsa.setOutputPath(out);
         deleteDirectoryStream(Paths.get(out));
+        createDirectory(Paths.get(out));
 
         // Validate the standardlib
         Resource standardlibResource = resource.getResourceSet().getResource(getStandardLibPlatformUri(), true);
@@ -184,8 +185,15 @@ public class StandaloneApp {
                     .map(Path::toFile)
                     .forEach(File::delete);
         } catch (IOException ex) {
-            logger.warn(String.format("Failed to delete path: %s, msg: %s", path.toString(), ex.getMessage()));
+            logger.warn(String.format("Failed to delete path: %s, msg: %s", path, ex.getMessage()));
         }
+    }
 
+    void createDirectory(Path path) {
+        try {
+            Files.createDirectories(path);
+        } catch (IOException ex) {
+            logger.error(String.format("Failed to create path: %s, msg: %s", path, ex.getMessage()));
+        }
     }
 }
