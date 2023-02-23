@@ -31,7 +31,6 @@ import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.LogHelper;
-import de.uniba.swt.dsl.generator.StandaloneApp;
 import org.apache.log4j.Logger;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 

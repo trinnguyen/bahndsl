@@ -83,14 +83,14 @@ public class StandaloneApp {
     @Inject
     private LibraryExternalGenerator libraryGenerator;
 
-    public boolean runGenerator(String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String route, String mode) {
+    public boolean runGenerator(String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String routeType, String mode) {
         var resource = loadResource(filePath);
         if (resource == null) {
             System.err.println("Invalid input file: " + filePath);
             return false;
         }
 
-        return runGenerator(resource, filePath, fsa, outputPath, route, mode, javaCliRuntimeExecutor);
+        return runGenerator(resource, filePath, fsa, outputPath, routeType, mode, javaCliRuntimeExecutor);
     }
 
     public boolean runGenerator(Resource resource, String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String routeType, String mode, CliRuntimeExecutor runtimeExec) {

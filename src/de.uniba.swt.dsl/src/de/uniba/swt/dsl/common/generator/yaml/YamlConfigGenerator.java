@@ -69,7 +69,7 @@ public class YamlConfigGenerator extends GeneratorProvider {
         // bidib_train_config
         fsa.generateFile(TrainFileName, trainYamlExporter.export(rootModule));
 
-        // block
+        // extras_config
         fsa.generateFile(ExtrasConfigFileName, extrasYamlExporter.export(rootModule, networkLayout));
     }
 
