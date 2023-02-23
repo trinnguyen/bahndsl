@@ -35,6 +35,7 @@ import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class NetworkRoutesExplorer {
     private final RoutesFinder routesFinder = new RoutesFinder();
@@ -98,16 +99,17 @@ public class NetworkRoutesExplorer {
 
     private void updateConflicts(List<Route> routes) {
         // Sort the list of routes based on their id.
-        routes.sort(Comparator.comparingInt(route -> route.getId()));
+        routes.sort(Comparator.comparingInt(Route::getId));
 
         // 2D matrix indexed by the route ids to mark the routes that conflict with each other.
-        boolean hasConflictMatrix[][] = new boolean[routes.size()][routes.size()];
+        boolean[][] hasConflictMatrix = new boolean[routes.size()][routes.size()];
 
         // For each route, store each edge type as a set of references: { 0:point, 1:double-slip switch, 2:crossing, 3:block }
-        List<List<Set<Object>>> routesToEdges = routes.stream().map(route -> getEdgeReferences(route)).collect(Collectors.toList());
+        List<List<Set<Object>>> routesToEdges = routes.stream().map(this::getEdgeReferences).collect(Collectors.toList());
 
         // For each route in routes.
-        for (var route1 = 0; route1 < routes.size(); ++route1) {
+        IntStream.range(0, routes.size()-1).parallel().forEach(route1 -> {
+            var edgesRoute1 = routesToEdges.get(route1);
             // Compare current route with the remaining routes.
             for (var route2 = route1 + 1; route2 < routes.size(); ++route2) {
                 // Conflict: Routes have the same source signal or same destination signal.
@@ -119,23 +121,24 @@ public class NetworkRoutesExplorer {
                 }
 
                 // Conflict: Routes have at least one edge in common.
-                for (var i = 0; i <  routesToEdges.get(route1).size(); ++i) {
-                    if (!Collections.disjoint(routesToEdges.get(route1).get(i), routesToEdges.get(route2).get(i))) {
+                for (var i = 0; i <  edgesRoute1.size(); ++i) {
+                    if (!Collections.disjoint(edgesRoute1.get(i), routesToEdges.get(route2).get(i))) {
                         hasConflictMatrix[route1][route2] = true;
                         hasConflictMatrix[route2][route1] = true;
-                        break;
+                        // break;
+                        return;
                     }
                 }
             }
-        }
+        });
 
         // Transfer the conflicts into each route object.
-        for (var routeId = 0; routeId < routes.size(); ++routeId) {
-            List<Boolean> hasConflicts = new ArrayList<>();
+        IntStream.range(0, routes.size()-1).parallel().forEach(routeId -> {
+            List<Boolean> hasConflicts = new ArrayList<>(hasConflictMatrix[routeId].length);
             for (var conflict : hasConflictMatrix[routeId]) {
                 hasConflicts.add(conflict);
             }
             routes.get(routeId).setHasConflicts(hasConflicts);
-        }
+        });
     }
 }
