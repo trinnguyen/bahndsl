@@ -108,7 +108,7 @@ public class NetworkRoutesExplorer {
         List<List<Set<Object>>> routesToEdges = routes.stream().map(this::getEdgeReferences).collect(Collectors.toList());
 
         // For each route in routes.
-        IntStream.range(0, routes.size()-1).parallel().forEach(route1 -> {
+        IntStream.range(0, routes.size()).parallel().forEach(route1 -> {
             var edgesRoute1 = routesToEdges.get(route1);
             // Compare current route with the remaining routes.
             for (var route2 = route1 + 1; route2 < routes.size(); ++route2) {
@@ -132,12 +132,8 @@ public class NetworkRoutesExplorer {
         });
 
         // Transfer the conflicts into each route object.
-        IntStream.range(0, routes.size()-1).parallel().forEach(routeId -> {
-            List<Boolean> hasConflicts = new ArrayList<>(hasConflictMatrix[routeId].length);
-            for (var conflict : hasConflictMatrix[routeId]) {
-                hasConflicts.add(conflict);
-            }
-            routes.get(routeId).setHasConflicts(hasConflicts);
+        IntStream.range(0, routes.size()).parallel().forEach(routeId -> {
+            routes.get(routeId).setHasConflicts(hasConflictMatrix[routeId]);
         });
     }
 }

@@ -39,7 +39,7 @@ public class Route {
     private String destSignal;
     private Stack<AbstractEdge> edges;
     private Orientation startingOrientation;    // Orientation that a train needs to be in at the start of the route
-    private List<Boolean> hasConflicts = new ArrayList<>();
+    private boolean[] hasConflicts;
 
     public Route(String srcSignal, String destSignal, Stack<AbstractEdge> edges, Orientation startingOrientation) {
         this.srcSignal = srcSignal;
@@ -153,14 +153,15 @@ public class Route {
 
     public void setStartingOrientation(Orientation startingOrientation) { this.startingOrientation = startingOrientation; }
 
-    public void setHasConflicts(List<Boolean> newHasConflictWithRoutes) {
-        hasConflicts = newHasConflictWithRoutes;
+    public void setHasConflicts(boolean[] newHasConflictWithRoutes) {
+        hasConflicts = new boolean[newHasConflictWithRoutes.length];
+        System.arraycopy(newHasConflictWithRoutes, 0, hasConflicts, 0, newHasConflictWithRoutes.length);
     }
 
     public List<Integer> getConflictRouteIds() {
         List<Integer> conflictRouteIds = new ArrayList<>();
-        for (var i = 0; i < hasConflicts.size(); ++i) {
-            if (hasConflicts.get(i)) {
+        for (var i = 0; i < hasConflicts.length; ++i) {
+            if (hasConflicts[i]) {
                 // List index is the id of the conflicting route.
                 conflictRouteIds.add(i);
             }
@@ -172,6 +173,6 @@ public class Route {
     public String toString() {
         var strEdge = edges.stream().map(Object::toString).collect(Collectors.joining(" -> "));
         return String.format("%d (%s - %s): %s\n" +
-                "\t\t%d conflicts\n", id, srcSignal, destSignal, strEdge, hasConflicts.size());
+                "\t\t%d conflicts\n", id, srcSignal, destSignal, strEdge, hasConflicts.length);
     }
 }
