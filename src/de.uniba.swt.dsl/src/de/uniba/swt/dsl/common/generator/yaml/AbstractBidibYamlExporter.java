@@ -27,15 +27,16 @@ package de.uniba.swt.dsl.common.generator.yaml;
 import de.uniba.swt.dsl.bahn.RootModule;
 import de.uniba.swt.dsl.common.generator.yaml.exports.ElementExporterFactory;
 import de.uniba.swt.dsl.common.util.YamlExporter;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
 
 import java.io.IOException;
 import java.util.Collection;
 
 abstract class AbstractBidibYamlExporter extends YamlExporter {
 
-    public void export(String path, String filename, RootModule rootModule) {
+    public void export(IFileSystemAccess2 fsa, String filename, RootModule rootModule) {
         try {
-            reset(path, filename);
+            reset(fsa, filename);
 
             // comment
             appendLine("# %s: %s", getHeaderComment(), rootModule.getName());

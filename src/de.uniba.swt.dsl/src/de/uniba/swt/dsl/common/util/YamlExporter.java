@@ -24,9 +24,12 @@
 
 package de.uniba.swt.dsl.common.util;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
+
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,21 +39,19 @@ public class YamlExporter {
     private static final String SPACE = "  ";
     protected int indentLevel;
 
-    private FileWriter writer;
-    private BufferedWriter bufferedWriter;
+    private OutputStream stream;
 
     protected List<String> itemsToWrite = new LinkedList<>();
 
-    protected void reset(String path, String filename) throws IOException {
+    protected void reset(IFileSystemAccess2 fsa, String filename) throws IOException {
+        URI fileUri = fsa.getURI(filename);
+        stream = new ExtensibleURIConverterImpl().createOutputStream(fileUri);
         indentLevel = 0;
-        writer = new FileWriter(path + "/" + filename);
-        bufferedWriter = new BufferedWriter(writer);
         itemsToWrite.clear();
     }
 
     protected void close() throws IOException {
-        bufferedWriter.close();
-        writer.close();
+        stream.close();
     }
 
     public void appendLine(String text, Object... args) {
@@ -58,8 +59,8 @@ public class YamlExporter {
     }
 
     public void flush() throws IOException {
-        bufferedWriter.write(itemsToWrite.stream().collect(Collectors.joining(System.lineSeparator())));
-        bufferedWriter.newLine();
+        stream.write(itemsToWrite.stream().collect(Collectors.joining(System.lineSeparator())).getBytes());
+        stream.write(System.lineSeparator().getBytes());
         itemsToWrite.clear();
     }
 

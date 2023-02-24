@@ -31,8 +31,8 @@ import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractPointEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
 import de.uniba.swt.dsl.common.layout.models.vertex.SignalVertexMember;
-import de.uniba.swt.dsl.common.util.Tuple;
 import de.uniba.swt.dsl.common.util.YamlExporter;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
 import org.eclipse.xtext.xbase.lib.Pair;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 
 public class InterlockingYamlExporter extends YamlExporter {
 
-    public void generate(String path, String filename, Collection<Route> routes) {
+    public void generate(IFileSystemAccess2 fsa, String filename, Collection<Route> routes) {
         // Prepare progress feedback
         System.out.print("Generating interlocking table ...0%");
         Stack<Pair<Integer, String>> progress = new Stack<>();
@@ -51,7 +51,7 @@ public class InterlockingYamlExporter extends YamlExporter {
 
         try {
             // prepare
-            reset(path, filename);
+            reset(fsa, filename);
 
             // start
             appendLine("# Interlocking table");

@@ -35,7 +35,6 @@ import de.uniba.swt.dsl.common.util.LogHelper;
 import org.apache.log4j.Logger;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -99,7 +98,7 @@ public class LayoutGenerator extends GeneratorProvider {
 			logger.debug(LogHelper.printObject(routes));
 
 			// generate yaml
-			yamlExporter.generate(path, InterlockingFileName, routes);
+			yamlExporter.generate(fsa, InterlockingFileName, routes);
 
 		} catch (LayoutException e) {
 			throw new RuntimeException(e);

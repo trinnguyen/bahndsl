@@ -26,7 +26,6 @@ package de.uniba.swt.dsl.common.generator.yaml;
 
 import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.BahnModel;
-import de.uniba.swt.dsl.common.fsa.FsaUtil;
 import de.uniba.swt.dsl.common.generator.GeneratorProvider;
 import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.util.BahnUtil;
@@ -61,19 +60,17 @@ public class YamlConfigGenerator extends GeneratorProvider {
         if (rootModule == null)
             return;
 
-        final String path = FsaUtil.getFolderPath(fsa);
-
         // bidib_board_config
-        boardYamlExporter.export(path, BoardFileName, rootModule);
+        boardYamlExporter.export(fsa, BoardFileName, rootModule);
 
         // bidib_track_config
-        trackYamlExporter.export(path, TrackFileName, rootModule);
+        trackYamlExporter.export(fsa, TrackFileName, rootModule);
 
         // bidib_train_config
-        trainYamlExporter.export(path, TrainFileName, rootModule);
+        trainYamlExporter.export(fsa, TrainFileName, rootModule);
 
         // extras_config
-        extrasYamlExporter.export(path, ExtrasConfigFileName, rootModule, networkLayout);
+        extrasYamlExporter.export(fsa, ExtrasConfigFileName, rootModule, networkLayout);
     }
 
     public void setNetworkLayout(NetworkLayout networkLayout) {
