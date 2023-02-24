@@ -1,6 +1,8 @@
 # BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 
-[![BahnDSL on VSCode](https://vsmarketplacebadge.apphb.com/version/trinnguyen.bahn-language.svg)](https://marketplace.visualstudio.com/items?itemName=trinnguyen.bahn-language) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/trinnguyen/bahndsl?style=social)](https://github.com/trinnguyen/bahndsl/releases)
+[![CI/CD](https://github.com/trinnguyen/bahndsl/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/trinnguyen/bahndsl/actions)
+[![BahnDSL on VSCode](https://vsmarketplacebadges.dev/version/trinnguyen.bahn-language.svg)](https://marketplace.visualstudio.com/items?itemName=trinnguyen.bahn-language) 
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/trinnguyen/bahndsl?style=social)](https://github.com/trinnguyen/bahndsl/releases)
 
 ![Screen Shot 2021-08-03 at 22 57 28](https://user-images.githubusercontent.com/7035180/128086359-643f8a4b-61f2-4f93-8780-ffdb69c96e40.png)
 
