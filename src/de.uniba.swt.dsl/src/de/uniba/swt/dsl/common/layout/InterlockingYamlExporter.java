@@ -45,8 +45,9 @@ public class InterlockingYamlExporter extends YamlExporter {
         // Prepare progress feedback
         System.out.print("Generating interlocking table ...0%");
         Stack<Pair<Integer, String>> progress = new Stack<>();
-        progress.push(new Pair<>(routes.size()/4, "...75%"));
-        progress.push(new Pair<>(routes.size() * 3 / 4, "...25%"));
+        progress.push(new Pair<>(routes.size() * 3 / 4, "...75%"));
+        progress.push(new Pair<>(routes.size() / 2, "...50%"));
+        progress.push(new Pair<>(routes.size() / 4, "...25%"));
 
         try {
             // prepare
