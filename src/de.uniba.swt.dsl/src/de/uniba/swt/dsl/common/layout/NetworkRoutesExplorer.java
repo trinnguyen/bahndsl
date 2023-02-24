@@ -98,6 +98,9 @@ public class NetworkRoutesExplorer {
     }
 
     private void updateConflicts(List<Route> routes) {
+        // Prepare progress feedback
+        System.out.print("Computing route conflicts ...0%");
+
         // Sort the list of routes based on their id.
         routes.sort(Comparator.comparingInt(Route::getId));
 
@@ -110,6 +113,7 @@ public class NetworkRoutesExplorer {
         // For each route in routes.
         IntStream.range(0, routes.size()).parallel().forEach(route1 -> {
             var edgesRoute1 = routesToEdges.get(route1);
+
             // Compare current route with the remaining routes.
             for (var route2 = route1 + 1; route2 < routes.size(); ++route2) {
                 // Conflict: Routes have the same source signal or same destination signal.
@@ -130,10 +134,13 @@ public class NetworkRoutesExplorer {
                 }
             }
         });
+        System.out.print("...90%");
 
         // Transfer the conflicts into each route object.
         IntStream.range(0, routes.size()).parallel().forEach(routeId -> {
             routes.get(routeId).setHasConflicts(hasConflictMatrix[routeId]);
         });
+
+        System.out.println("...100%");
     }
 }
