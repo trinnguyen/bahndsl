@@ -90,8 +90,7 @@ public class SCChartsGenerator extends GeneratorProvider {
         logger.debug("Generate SCCharts for " + scchart.getId());
 
         // Write out to file
-        final String path = FsaUtil.getFolderPath(fsa);
-        BahnUtil.writeToFile(path, fileName, builder.buildString(scchart, refStates));
+        BahnUtil.writeToFile(fsa, fileName, builder.buildString(scchart, refStates));
     }
 
     private List<RootState> generateReferencedStates(FuncDecl decl) {

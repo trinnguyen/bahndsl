@@ -33,6 +33,7 @@ import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
 import de.uniba.swt.dsl.common.layout.models.vertex.AbstractVertexMember;
 import de.uniba.swt.dsl.common.layout.models.vertex.VertexMemberType;
 import de.uniba.swt.dsl.common.util.BahnUtil;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +41,7 @@ import java.util.stream.Collectors;
 
 public class DotExporter {
 
-    public void export(String path, String filename, NetworkLayout networkLayout, ValueGraph<LayoutVertex, AbstractEdge> graph) {
+    public void export(IFileSystemAccess2 fsa, String filename, NetworkLayout networkLayout, ValueGraph<LayoutVertex, AbstractEdge> graph) {
         StringBuilder builder = new StringBuilder();
         builder.append("digraph G {").append("\n").append("rankdir=LR").append("\n");
 
@@ -121,7 +122,7 @@ public class DotExporter {
         builder.append("}");
 
         // Write out to file
-        BahnUtil.writeToFile(path, filename, builder.toString());
+        BahnUtil.writeToFile(fsa, filename, builder.toString());
     }
 
     private String getColor(AbstractEdge edgeValue) {

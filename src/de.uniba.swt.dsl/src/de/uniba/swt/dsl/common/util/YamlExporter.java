@@ -28,8 +28,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,37 +39,46 @@ public class YamlExporter {
     protected int indentLevel;
 
     private OutputStream stream;
+    private Writer writer;
+    private BufferedWriter buffer;
 
-    protected List<String> itemsToWrite = new LinkedList<>();
-
-    protected void reset(IFileSystemAccess2 fsa, String filename) throws IOException {
+    protected void reset(IFileSystemAccess2 fsa, String filename) {
         URI fileUri = fsa.getURI(filename);
-        stream = new ExtensibleURIConverterImpl().createOutputStream(fileUri);
+        try {
+            stream = new ExtensibleURIConverterImpl().createOutputStream(fileUri);
+            writer = new OutputStreamWriter(stream);
+            buffer = new BufferedWriter(writer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         indentLevel = 0;
-        itemsToWrite.clear();
     }
 
-    protected void close() throws IOException {
-        stream.close();
+    protected void close() {
+        try {
+            buffer.close();
+            writer.close();
+            stream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void appendLine(String text, Object... args) {
-        itemsToWrite.add(SPACE.repeat(Math.max(0, indentLevel)) + String.format(text, args));
+        try {
+            buffer.write(SPACE.repeat(Math.max(0, indentLevel)) + String.format(text, args));
+            buffer.write(System.lineSeparator());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void flush() throws IOException {
-        stream.write(itemsToWrite.stream().collect(Collectors.joining(System.lineSeparator())).getBytes());
-        stream.write(System.lineSeparator().getBytes());
-        itemsToWrite.clear();
-    }
-
-    public void increaseLevel()
-    {
+    public void increaseLevel() {
         indentLevel++;
     }
 
-    public void decreaseLevel()
-    {
+    public void decreaseLevel() {
         indentLevel--;
     }
 

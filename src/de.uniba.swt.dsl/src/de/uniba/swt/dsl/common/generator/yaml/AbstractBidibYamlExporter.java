@@ -35,19 +35,14 @@ import java.util.Collection;
 abstract class AbstractBidibYamlExporter extends YamlExporter {
 
     public void export(IFileSystemAccess2 fsa, String filename, RootModule rootModule) {
-        try {
-            reset(fsa, filename);
+        reset(fsa, filename);
 
-            // comment
-            appendLine("# %s: %s", getHeaderComment(), rootModule.getName());
+        // comment
+        appendLine("# %s: %s", getHeaderComment(), rootModule.getName());
 
-            // build content
-            exportContent(rootModule);
-            flush();
-            close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        // build content
+        exportContent(rootModule);
+        close();
     }
 
     protected void exportSection(String section, Collection<?> items) {

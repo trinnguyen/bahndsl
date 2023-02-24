@@ -84,8 +84,7 @@ public class LayoutGenerator extends GeneratorProvider {
 
 			// generate graph
 			var graph = networkLayout.generateGraph();
-			final String path = FsaUtil.getFolderPath(fsa);
-			dotExporter.export(path, LayoutDiagramFileName, networkLayout, graph);
+			dotExporter.export(fsa, LayoutDiagramFileName, networkLayout, graph);
 
 			// find all routes
 			var signals = getAllSignals(rootModule);

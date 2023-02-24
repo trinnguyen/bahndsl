@@ -49,31 +49,26 @@ public class InterlockingYamlExporter extends YamlExporter {
         progress.push(new Pair<>(routes.size() / 2, "...50%"));
         progress.push(new Pair<>(routes.size() / 4, "...25%"));
 
-        try {
-            // prepare
-            reset(fsa, filename);
+        // prepare
+        reset(fsa, filename);
 
-            // start
-            appendLine("# Interlocking table");
-            appendLine("interlocking-table:");
-            for (var route : routes) {
-                // Print out progress
-                if (!progress.empty() && progress.peek().getKey() < route.getId()) {
-                    System.out.print(progress.pop().getValue());
-                }
-
-                increaseLevel();
-                generateRoute(route);
-                flush();
-                decreaseLevel();
+        // start
+        appendLine("# Interlocking table");
+        appendLine("interlocking-table:");
+        for (var route : routes) {
+            // Print out progress
+            if (!progress.empty() && progress.peek().getKey() < route.getId()) {
+                System.out.print(progress.pop().getValue());
             }
 
-            close();
-
-            System.out.println("...100%");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            increaseLevel();
+            generateRoute(route);
+            decreaseLevel();
         }
+
+        close();
+
+        System.out.println("...100%");
     }
 
     private void generateRoute(Route route) {
