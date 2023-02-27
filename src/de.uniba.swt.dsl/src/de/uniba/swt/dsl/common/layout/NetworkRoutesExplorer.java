@@ -32,8 +32,10 @@ import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.CrossingEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.DoubleSlipSwitchEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
+import org.eclipse.xtext.xbase.lib.Pair;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -46,6 +48,7 @@ public class NetworkRoutesExplorer {
         int id = 0;
         List<Route> routes = new ArrayList<>();
 
+        System.out.println("Finding routes for " + signals.size() + " source signals");
         for (var src : signals) {
             if (networkLayout.findVertex(src) == null)
                 continue;
@@ -99,7 +102,11 @@ public class NetworkRoutesExplorer {
 
     private void updateConflicts(List<Route> routes) {
         // Prepare progress feedback
-        System.out.print("Computing route conflicts ...0%");
+        System.out.print("Computing conflicts for " + routes.size() + " routes ...0%");
+        Stack<Pair<Integer, String>> progress = new Stack<>();
+        progress.push(new Pair<>(routes.size() * 3 / 4, "...75%"));
+        progress.push(new Pair<>(routes.size() / 2, "...50%"));
+        progress.push(new Pair<>(routes.size() / 4, "...25%"));
 
         // Sort the list of routes based on their id.
         routes.sort(Comparator.comparingInt(Route::getId));
@@ -111,6 +118,7 @@ public class NetworkRoutesExplorer {
         List<List<Set<Object>>> routesToEdges = routes.stream().map(this::getEdgeReferences).collect(Collectors.toList());
 
         // For each route in routes.
+        AtomicInteger numberOfRoutesProcessed = new AtomicInteger();
         IntStream.range(0, routes.size()).parallel().forEach(route1 -> {
             var edgesRoute1 = routesToEdges.get(route1);
 
@@ -132,6 +140,10 @@ public class NetworkRoutesExplorer {
                         break;
                     }
                 }
+            }
+
+            if (!progress.empty() && progress.peek().getKey() == numberOfRoutesProcessed.incrementAndGet()) {
+                System.out.print(progress.pop().getValue());
             }
         });
         System.out.print("...90%");

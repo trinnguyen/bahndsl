@@ -57,12 +57,13 @@ public class InterlockingYamlExporter extends YamlExporter {
         appendLine("interlocking-table:");
         for (var route : routes) {
             // Print out progress
-            if (!progress.empty() && progress.peek().getKey() < route.getId()) {
+            if (!progress.empty() && progress.peek().getKey() == route.getId()) {
                 System.out.print(progress.pop().getValue());
             }
 
             increaseLevel();
             generateRoute(route);
+            flush();
             decreaseLevel();
         }
 
@@ -117,7 +118,7 @@ public class InterlockingYamlExporter extends YamlExporter {
         // Signals
         appendLine("signals:");
         increaseLevel();
-        route.getSignals().stream().forEach(signal -> appendLine("- id: %s", signal));
+        route.getSignals().forEach(signal -> appendLine("- id: %s", signal));
         decreaseLevel();
 
         // Point aspects

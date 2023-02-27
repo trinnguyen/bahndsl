@@ -29,35 +29,34 @@ import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
 import java.io.*;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class YamlExporter {
 
     private static final String SPACE = "  ";
     protected int indentLevel;
+    private String indent = "";
 
+    private StringBuilder builder = new StringBuilder();
     private OutputStream stream;
     private Writer writer;
-    private BufferedWriter buffer;
 
     protected void reset(IFileSystemAccess2 fsa, String filename) {
         URI fileUri = fsa.getURI(filename);
         try {
             stream = new ExtensibleURIConverterImpl().createOutputStream(fileUri);
             writer = new OutputStreamWriter(stream);
-            buffer = new BufferedWriter(writer);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+        builder = new StringBuilder();
         indentLevel = 0;
+        updateIndent();
     }
 
     protected void close() {
         try {
-            buffer.close();
+            flush();
             writer.close();
             stream.close();
         } catch (IOException e) {
@@ -65,21 +64,32 @@ public class YamlExporter {
         }
     }
 
-    public void appendLine(String text, Object... args) {
+    public void flush() {
         try {
-            buffer.write(SPACE.repeat(Math.max(0, indentLevel)) + String.format(text, args));
-            buffer.write(System.lineSeparator());
+            writer.write(builder.toString());
+            builder.setLength(0);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public void appendLine(String text, Object... args) {
+        builder.append(indent)
+               .append(String.format(text, args))
+               .append(System.lineSeparator());
+    }
+
     public void increaseLevel() {
         indentLevel++;
+        updateIndent();
     }
 
     public void decreaseLevel() {
         indentLevel--;
+        updateIndent();
     }
 
+    private void updateIndent() {
+        indent = SPACE.repeat(Math.max(0, indentLevel));
+    }
 }
