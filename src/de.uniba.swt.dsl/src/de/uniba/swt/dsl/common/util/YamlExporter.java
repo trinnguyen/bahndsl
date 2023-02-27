@@ -39,12 +39,14 @@ public class YamlExporter {
     private StringBuilder builder = new StringBuilder();
     private OutputStream stream;
     private Writer writer;
+    private BufferedWriter buffer;
 
     protected void reset(IFileSystemAccess2 fsa, String filename) {
         URI fileUri = fsa.getURI(filename);
         try {
             stream = new ExtensibleURIConverterImpl().createOutputStream(fileUri);
             writer = new OutputStreamWriter(stream);
+            buffer = new BufferedWriter(writer);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -57,6 +59,7 @@ public class YamlExporter {
     protected void close() {
         try {
             flush();
+            buffer.close();
             writer.close();
             stream.close();
         } catch (IOException e) {
@@ -66,7 +69,7 @@ public class YamlExporter {
 
     public void flush() {
         try {
-            writer.write(builder.toString());
+            buffer.write(builder.toString());
             builder.setLength(0);
         } catch (IOException e) {
             throw new RuntimeException(e);
