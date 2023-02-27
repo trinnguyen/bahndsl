@@ -5,13 +5,12 @@
 
    <aboutInfo>
       <text>
-         BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
+BahnDSL 1.0.5: A Domain-Specific Language for Configuring and Modelling Model Railways
 
-Copyright (C) 2022 University of Bamberg, Software Technologies Research Group
+Copyright (C) 2023 University of Bamberg, Software Technologies Research Group
 https://www.uni-bamberg.de, http://www.swt-bamberg.de
 
-BahnDSL is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+BahnDSL is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 BahnDSL is a RESEARCH PROTOTYPE and distributed WITHOUT ANY WARRANTY, without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
@@ -25,20 +24,26 @@ The following people contributed to the conception and realization of the presen
    </configIni>
 
    <launcherArgs>
-      <programArgs>-clearPersistedState
+      <programArgs>
+          -clearPersistedState
       </programArgs>
-      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      <vmArgsMac>
+          -XstartOnFirstThread
+          -Dorg.eclipse.swt.internal.carbon.smallFonts
+          -Xdock:icon=../Resources/icons.icns
       </vmArgsMac>
    </launcherArgs>
 
    <windowImages/>
 
    <splash
+      location="de.uniba.swt.dsl.product"
       startupProgressRect="5,275,445,15"
       startupMessageRect="7,252,445,20"
       startupForegroundColor="000000" />
    <launcher name="Bahn IDE">
-      <win useIco="false">
+       <macosx icon="de.uniba.swt.dsl.product/icons/icons.icns"/>
+       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
@@ -52,7 +57,7 @@ The following people contributed to the conception and realization of the presen
    <license>
         <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
         <text>
-   GNU GENERAL PUBLIC LICENSE
+ GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. &lt;http://fsf.org/&gt;

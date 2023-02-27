@@ -15,17 +15,18 @@
 		<!-- Tycho settings -->
 		<tycho-version>3.0.1</tycho-version>
 		<!-- Define overridable properties for tycho-surefire-plugin -->
+		<!--
 		<platformSystemProperties></platformSystemProperties>
 		<moduleProperties></moduleProperties>
 		<systemProperties></systemProperties>
 		<additionalTestArguments></additionalTestArguments>
+		-->
 	</properties>
 	<modules>
 		<module>de.uniba.swt.dsl</module>
 		<module>de.uniba.swt.dsl.ide</module>
 		<module>de.uniba.swt.dsl.ui</module>
 		<module>de.uniba.swt.dsl.target</module>
-		<!-- <module>de.uniba.swt.dsl.tests</module> -->
 		<module>de.uniba.swt.dsl.product</module>
 		<module>de.uniba.swt.dsl.product.rcp</module>
 	</modules>
