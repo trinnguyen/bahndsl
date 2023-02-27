@@ -142,8 +142,10 @@ public class NetworkRoutesExplorer {
                 }
             }
 
-            if (!progress.empty() && progress.peek().getKey() == numberOfRoutesProcessed.incrementAndGet()) {
-                System.out.print(progress.pop().getValue());
+            synchronized (progress) {
+                if (!progress.empty() && progress.peek().getKey() == numberOfRoutesProcessed.incrementAndGet()) {
+                    System.out.print(progress.pop().getValue());
+                }
             }
         });
         System.out.print("...90%");
