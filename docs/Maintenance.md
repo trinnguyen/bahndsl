@@ -4,12 +4,11 @@
 - OS: macOS, Windows, Linux
 - Java JDK 11
 - IDE (optional)
-    - IntelliJ CE
+    - IntelliJ IDEA
     - Eclipse IDE for Java and DSL Developers
 - Build systems (required)
     - **Maven**: build Eclipse-based IDE (RCP product)
     - **Gradle**: build compiler (cli), test, build language server application
-    - **npm Node JS**: Visual Studio Code extension
 
 ## Project structure
 - A mix of gradle and maven build system: a project can be both gradle or maven project
@@ -25,7 +24,6 @@
     de.uniba.swt.dsl.product.rcp # maven
     de.uniba.swt.dsl.target # maven
     de.uniba.swt.dsl.ui # maven
-    vscode-bahn # visual studio code extension
 ```
 
 ### de.uniba.swt.dsl (Gradle/Maven)
@@ -42,7 +40,6 @@
 - Implement Language Server protocol
 - Further customisation is optional (changing server configuration)
 - Deployed as Eclipse plugin for RCP product or executable application
-- The executable application is embedded into Visual Studio Code extension for generating code during development
 
 ### de.uniba.swt.dsl.tests (Gradle/Maven)
 - JUnit 5 unit testing project
@@ -91,17 +88,6 @@ sh build-maven-rcp.sh
 - Build command line compiler **bahnc**
 ```
 sh build-gradle.sh
-```
-
-- Build Visual Studio Code extension
-```
-sh build-gradle.sh
-sh build-node-vscode.sh
-```
-
-- Publish Visual Studio Code extension (run in vscode-bahn)
-```
-vsce publish
 ```
 
 - Run unit tests

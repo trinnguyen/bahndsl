@@ -54,7 +54,7 @@ public class ExprValidationTest extends AbstractValidationTest {
     ValidationTestHelper validationTestHelper;
 
     /**
-     * Sample snippet generated in Visual Studio code and Eclipse IDE
+     * Sample snippet generated in Eclipse IDE
      * @param src
      */
     @ParameterizedTest

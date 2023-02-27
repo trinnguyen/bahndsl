@@ -1,7 +1,6 @@
 # BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 
 [![CI/CD](https://github.com/trinnguyen/bahndsl/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/trinnguyen/bahndsl/actions)
-[![BahnDSL on VSCode](https://vsmarketplacebadges.dev/version/trinnguyen.bahn-language.svg)](https://marketplace.visualstudio.com/items?itemName=trinnguyen.bahn-language) 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/trinnguyen/bahndsl?style=social)](https://github.com/trinnguyen/bahndsl/releases)
 
 ![Screen Shot 2021-08-03 at 22 57 28](https://user-images.githubusercontent.com/7035180/128086359-643f8a4b-61f2-4f93-8780-ffdb69c96e40.png)
@@ -14,7 +13,7 @@
 ### Requirements
 - Java SE 11 *([Download OpenJDK 11](https://adoptopenjdk.net/index.html?variant=openjdk11&jvmVariant=hotspot))*
 - C Compiler (clang or gcc) for compiling shared libraries
-  + macOS: clang is provided with Xcode
+  + macOS: clang is provided by Xcode
   + Linux (Ubuntu): `apt install clang`
   + Windows:
     + clang (LLVM-[VERSION]-win64.exe): https://github.com/llvm/llvm-project/releases
@@ -29,8 +28,6 @@
 - [Linux](https://github.com/trinnguyen/bahndsl/releases/download/v1.04/BahnIDE-Linux.x86_64.tar.gz)
 - [Windows](https://github.com/trinnguyen/bahndsl/releases/download/v1.04/BahnIDE-Windows.x86_64.zip)
 
-### Visual Studio Code extension (Experimental)
-- [Bahn Language VS Code Extension](https://marketplace.visualstudio.com/items?itemName=trinnguyen.bahn-language)
 
 ## Usage
 
@@ -96,12 +93,6 @@ EXAMPLE:
 - Compile into a shared C library:
   - Right-click on a Bahn model in the Project Explorer, and select "Compile to shared C library"
 
-### Visual Studio Code extension
-
-- Install from the Marketplace or search in Visual Studio Code with the keyword "bahn"
-- Open a Bahn model in Visual Studio Code (`.bahn` extension)
-- The Bahn compiler is triggered automatically and generates output files whenever a Bahn model is modified
-- The default output folder is `src-gen`
 
 ## Getting started
 
