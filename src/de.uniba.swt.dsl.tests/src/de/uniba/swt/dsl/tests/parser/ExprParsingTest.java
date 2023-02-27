@@ -86,7 +86,7 @@ public class ExprParsingTest {
 
 			"def test() min = get_shortest_route(ids) end",
 
-			"def test() min = extern log(msg) end",
+			"def test() min = extern print(msg) end",
 
 			"def test(): int return 3 end"
 	})
@@ -276,6 +276,10 @@ public class ExprParsingTest {
 			"def inter() bool b1 = is seg1 occupied end",
 			"def inter() bool b1 = is seg1 not occupied end",
 			"def inter() int lm = get speed train1 end",
+			"def inter() log \"message\" end",
+			"def inter() log (0.1 + 0.2) end",
+			"def inter() log (1 + 2) end",
+			"def inter() log (1 != 2) end",
 	})
 	public void validSyntacticSugarTest(String src) {
 		parserTestHelper.assertNoParsingErrors(src);

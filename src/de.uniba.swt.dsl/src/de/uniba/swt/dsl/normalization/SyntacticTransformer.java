@@ -28,6 +28,7 @@ import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.common.util.BahnConstants;
 import de.uniba.swt.dsl.common.util.Tuple;
+import de.uniba.swt.dsl.validation.typing.TypeCheckingTable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,6 +52,11 @@ public class SyntacticTransformer {
     private static final String EXTERN_CONFIG_FORMAT = "config_%s_%s_%s_value";
 
     public static final String EXTERN_CONFIG_POINT_POSITION = "config_get_point_position";
+
+    public static final String EXTERN_LOG_FORMAT = "log_%s";
+
+    @Inject
+    TypeCheckingTable typeCheckingTable;
 
     public boolean isSetter(BehaviourExpr expr) {
         return expr instanceof BehaviourSetExpr || expr instanceof GrantRouteFuncExpr;
@@ -84,7 +90,7 @@ public class SyntacticTransformer {
 
             if (getter instanceof GetPointPositionFuncExpr) {
                 var positionFunExpr = (GetPointPositionFuncExpr) getter;
-                return createExternalFunctionCallExpr(EXTERN_CONFIG_POINT_POSITION, List.of(positionFunExpr.getRouteExpr(), positionFunExpr.getPointEpxr()));
+                return createExternalFunctionCallExpr(EXTERN_CONFIG_POINT_POSITION, List.of(positionFunExpr.getRouteExpr(), positionFunExpr.getPointExpr()));
             }
 
             if (getter instanceof GetRoutesFuncExpr) {
@@ -142,6 +148,14 @@ public class SyntacticTransformer {
             setExpr.setValueExpr(((GrantRouteFuncExpr) expr).getTrainExpr());
 
             return normalizeSetConfigFuncExpr(setExpr);
+        }
+
+        // log an expression for debugging
+        if (expr instanceof BehaviourLogExpr) {
+            var logExpr = ((BehaviourLogExpr) expr).getLogExpr();
+            var logExprType = typeCheckingTable.computeDataType(logExpr);
+            var funcName = String.format(EXTERN_LOG_FORMAT, logExprType.toString());
+            return createExternalFunctionCallExpr(funcName, List.of(logExpr));
         }
 
         return null;
@@ -220,7 +234,8 @@ public class SyntacticTransformer {
      */
     private static ExternalFunctionCallExpr normalizeSetConfigFuncExpr(SetConfigFuncExpr expr) {
         String funcName = getConfigFunctionName(expr.getProp(), false);
-        Collection<Expression> params = List.of(createString(expr.getType().getName()),
+        Collection<Expression> params = List.of(
+                createString(expr.getType().getName()),
                 expr.getConfigExpr(),
                 createString(expr.getProp().getName()),
                 expr.getValueExpr());

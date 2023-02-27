@@ -630,6 +630,20 @@ for int n in nums
 end
 ```
 
+### log statement
+- Syntax
+```
+log primary-expression
+```
+
+- Example
+```c
+log "message"
+log (0.5 + 0.1)
+log (1 + 2)
+log (1 == 1)
+```
+
 ### Domain-specific expressions
 - Check segment occupation (returns true or false)
 ```c
@@ -679,7 +693,7 @@ int train_speed = get speed "cargo_db"
 - Get config from YAML file (dot notation of the `schema` in the [standard library](https://github.com/trinnguyen/bahndsl/blob/master/src/de.uniba.swt.dsl/resources/standardlib.bahn))
 ```c
 string src = get config route.source "route1"
-string[] segment_ids = get config route.path "route1"
+string segment_ids[] = get config route.path "route1"
 ```
 
 - Get routes from interlocking table
