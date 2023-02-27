@@ -150,7 +150,7 @@ public class SyntacticTransformer {
             return normalizeSetConfigFuncExpr(setExpr);
         }
 
-        // log an expression to the system output
+        // log an expression for debugging
         if (expr instanceof BehaviourLogExpr) {
             var logExpr = ((BehaviourLogExpr) expr).getLogExpr();
             var logExprType = typeCheckingTable.computeDataType(logExpr);

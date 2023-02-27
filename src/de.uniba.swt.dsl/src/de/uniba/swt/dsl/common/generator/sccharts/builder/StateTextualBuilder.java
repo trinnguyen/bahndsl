@@ -146,9 +146,9 @@ public class StateTextualBuilder extends TextualBuilder {
 
     private void generateHostcodeReferences(Set<String> hostCodeReferences) {
         for (String name : hostCodeReferences) {
-            append(String.format("extern @C \"%s\" %s", name, name));
-            append(LINE_BREAK);
+            appendLine(String.format("extern @C \"%s\" %s", name, name));
         }
+        appendLine("");
     }
 
     private void generateVarDecls(List<SVarDeclaration> declarations, boolean generateInputOutput) {
@@ -231,7 +231,7 @@ public class StateTextualBuilder extends TextualBuilder {
         }
 
         if (action.getEffects() != null && !action.getEffects().isEmpty()) {
-            append("do ");
+            append("do");
             append(action.getEffects().stream().map(this::generateEffect).collect(Collectors.joining(";")));
         }
     }
