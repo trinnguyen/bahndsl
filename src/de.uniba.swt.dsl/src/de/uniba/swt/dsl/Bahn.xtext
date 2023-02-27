@@ -320,7 +320,7 @@ FunctionCallStmt returns Statement:
 ;
 
 ReturnStmt returns Statement:
-	{ReturnStmt}'return' expr=Expression
+	{ReturnStmt} 'return' expr=Expression
 ;
 
 BreakStmt returns Statement:
@@ -417,7 +417,7 @@ ExternalFunctionCallExpr returns FunctionCallExpr:
 ;
 
 BehaviourExpr returns FunctionCallExpr:
-	BehaviourGetExpr | BehaviourSetExpr | GrantRouteFuncExpr | EvaluateFuncExpr
+	BehaviourGetExpr | BehaviourSetExpr | GrantRouteFuncExpr | EvaluateFuncExpr | BehaviourLogExpr
 ;
 
 BehaviourGetExpr returns BehaviourExpr:
@@ -451,7 +451,7 @@ GetConfigFuncExpr returns BehaviourSubGetExpr:
 
 GetPointPositionFuncExpr returns BehaviourSubGetExpr:
 	{GetPointPositionFuncExpr}
-	'position' pointEpxr=PrimaryExpr 'in' routeExpr=PrimaryExpr
+	'position' pointExpr=PrimaryExpr 'in' routeExpr=PrimaryExpr
 ;
 
 BehaviourSetExpr returns BehaviourExpr:
@@ -485,7 +485,12 @@ GrantRouteFuncExpr returns BehaviourExpr:
 
 EvaluateFuncExpr returns BehaviourExpr:
 	{EvaluateFuncExpr}
-	'is' objectExpr=PrimaryExpr not?='not'? (routeAvailable?='available'|segmentOccupied?='occupied'|typeSegment?='a_segment'|typeSignal?='a_signal')
+	'is' objectExpr=PrimaryExpr not?='not'? (routeAvailable?='available' | segmentOccupied?='occupied' | typeSegment?='a_segment' | typeSignal?='a_signal')
+;
+
+BehaviourLogExpr returns BehaviourExpr:
+	{BehaviourLogExpr}
+	'log' logExpr= PrimaryExpr
 ;
 
 BooleanLiteral returns LiteralExpr:

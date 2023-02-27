@@ -89,3 +89,11 @@ char *config_get_point_position(const char *route_id, const char *point_id) {
 const char *config_get_block_id_of_segment(const char *seg_id) {
     return "";
 }
+
+void log_bool(bool value) {}
+
+void log_int(int value) {}
+
+void log_float(float value) {}
+
+void log_string(const char *value) {}

@@ -49,7 +49,7 @@ public class TextualBuilder {
     }
 
     public TextualBuilder append(String text) {
-        builder.append(text).append(SPACE);
+        builder.append(text).append(indent);
         return this;
     }
 

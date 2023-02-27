@@ -679,7 +679,7 @@ int train_speed = get speed "cargo_db"
 - Get config from YAML file (dot notation of the `schema` in the [standard library](https://github.com/trinnguyen/bahndsl/blob/master/src/de.uniba.swt.dsl/resources/standardlib.bahn))
 ```c
 string src = get config route.source "route1"
-string[] segment_ids = get config route.path "route1"
+string segment_ids[] = get config route.path "route1"
 ```
 
 - Get routes from interlocking table
