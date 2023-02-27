@@ -630,6 +630,20 @@ for int n in nums
 end
 ```
 
+### log statement
+- Syntax
+```
+log primary-expression
+```
+
+- Example
+```c
+log "message"
+log (0.5 + 0.1)
+log (1 + 2)
+log (1 == 1)
+```
+
 ### Domain-specific expressions
 - Check segment occupation (returns true or false)
 ```c
