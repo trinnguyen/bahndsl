@@ -26,12 +26,15 @@ package de.uniba.swt.dsl.common.util;
 
 import de.uniba.swt.dsl.bahn.*;
 import de.uniba.swt.dsl.validation.typing.ExprDataType;
-import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 import org.eclipse.xtext.EcoreUtil2;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
 
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -299,5 +302,21 @@ public class BahnUtil {
         }
 
         return "";
+    }
+
+    public static void writeToFile(IFileSystemAccess2 fsa, String filename, String content) {
+        URI fileUri = fsa.getURI(filename);
+        try {
+            OutputStream stream = new ExtensibleURIConverterImpl().createOutputStream(fileUri);
+            Writer writer = new OutputStreamWriter(stream);
+            BufferedWriter buffer = new BufferedWriter(writer);
+            buffer.write(content);
+
+            buffer.close();
+            writer.close();
+            stream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

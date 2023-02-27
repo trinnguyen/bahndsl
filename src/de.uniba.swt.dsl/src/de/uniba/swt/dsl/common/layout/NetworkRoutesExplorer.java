@@ -32,10 +32,12 @@ import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.CrossingEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.DoubleSlipSwitchEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.StandardSwitchEdge;
+import org.eclipse.xtext.xbase.lib.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class NetworkRoutesExplorer {
     private final RoutesFinder routesFinder = new RoutesFinder();
@@ -46,6 +48,7 @@ public class NetworkRoutesExplorer {
         int id = 0;
         List<Route> routes = new ArrayList<>();
 
+        System.out.println("Finding routes for " + signals.size() + " source signals");
         for (var src : signals) {
             if (networkLayout.findVertex(src) == null)
                 continue;
@@ -60,7 +63,7 @@ public class NetworkRoutesExplorer {
                 var paths = routesFinder.findRoutes(networkLayout, src, dest, routeType);
                 if (paths != null && !paths.isEmpty()) {
                     for (Route path : paths) {
-                        path.setId(String.valueOf(id++));
+                        path.setId(id++);
                         routes.add(path);
                     }
                 }
@@ -68,80 +71,90 @@ public class NetworkRoutesExplorer {
         }
 
         // update conflicts
-        for (var route : routes) {
-            updateConflicts(route, routes);
-        }
+        updateConflicts(routes);
 
         return routes;
     }
 
-    private void updateConflicts(Route route, List<Route> routes) {
-        for (var tmpRoute : routes) {
-            if (route.equals(tmpRoute))
-                continue;
+    // Returns an array of sets of edges references: {point, double-slip switch, crossing, block}
+    private List<Set<Object>> getEdgeReferences(Route route) {
+        List<Set<Object>> references = new ArrayList<>(Arrays.asList(
+                new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>()
+        ));
 
-            if (route.getConflictRouteIds().contains(tmpRoute.getId()))
-                continue;
-
-            if (isConflict(route, tmpRoute)) {
-                route.getConflictRouteIds().add(tmpRoute.getId());
-                tmpRoute.getConflictRouteIds().add(route.getId());
-            }
-        }
-    }
-
-    private boolean isConflict(Route route1, Route route2) {
-        for (AbstractEdge edge : route1.getEdges()) {
-            // same edge
-            if (route2.getEdges().contains(edge)) {
-                return true;
-            }
-
-            // same standard switch
-            if (edge instanceof StandardSwitchEdge) {
-                if (hasPoint(route2, ((StandardSwitchEdge) edge).getPointElement()))
-                    return true;
-            }
-
-            // same double slip switch
-            if (edge instanceof DoubleSlipSwitchEdge) {
-                if (hasPoint(route2, ((DoubleSlipSwitchEdge) edge).getPointElement()))
-                    return true;
-            }
-
-            // same crossing
-            if (edge instanceof CrossingEdge) {
-                if (hasCrossing(route2, ((CrossingEdge) edge).getCrossing()))
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean hasCrossing(Route route, CrossingElement crossing) {
-        for (AbstractEdge edge : route.getEdges()) {
-            if (edge instanceof CrossingEdge) {
-                if (((CrossingEdge) edge).getCrossing().equals(crossing))
-                    return true;
-            }
-        }
-
-        return false;
-    }
-
-    private boolean hasPoint(Route route, PointElement point) {
         for (AbstractEdge edge : route.getEdges()) {
             if (edge instanceof StandardSwitchEdge) {
-                if (((StandardSwitchEdge) edge).getPointElement().equals(point))
-                    return true;
-            }
-
-            if (edge instanceof DoubleSlipSwitchEdge) {
-                if (((DoubleSlipSwitchEdge) edge).getPointElement().equals(point))
-                    return true;
+                PointElement point = ((StandardSwitchEdge) edge).getPointElement();
+                references.get(0).add(point);
+            } else if (edge instanceof DoubleSlipSwitchEdge) {
+                PointElement point = ((DoubleSlipSwitchEdge) edge).getPointElement();
+                references.get(1).add(point);
+            } else if (edge instanceof CrossingEdge) {
+                CrossingElement crossing = ((CrossingEdge) edge).getCrossing();
+                references.get(2).add(crossing);
+            } else {
+                references.get(3).add(edge);
             }
         }
 
-        return false;
+        return references;
+    }
+
+    private void updateConflicts(List<Route> routes) {
+        // Prepare progress feedback
+        System.out.print("Computing conflicts for " + routes.size() + " routes ...0%");
+        Stack<Pair<Integer, String>> progress = new Stack<>();
+        progress.push(new Pair<>(routes.size() * 3 / 4, "...75%"));
+        progress.push(new Pair<>(routes.size() / 2, "...50%"));
+        progress.push(new Pair<>(routes.size() / 4, "...25%"));
+
+        // Sort the list of routes based on their id.
+        routes.sort(Comparator.comparingInt(Route::getId));
+
+        // 2D matrix indexed by the route ids to mark the routes that conflict with each other.
+        boolean[][] hasConflictMatrix = new boolean[routes.size()][routes.size()];
+
+        // For each route, store each edge type as a set of references: { 0:point, 1:double-slip switch, 2:crossing, 3:block }
+        List<List<Set<Object>>> routesToEdges = routes.stream().map(this::getEdgeReferences).collect(Collectors.toList());
+
+        // For each route in routes.
+        AtomicInteger numberOfRoutesProcessed = new AtomicInteger();
+        IntStream.range(0, routes.size()).parallel().forEach(route1 -> {
+            var edgesRoute1 = routesToEdges.get(route1);
+
+            // Compare current route with the remaining routes.
+            for (var route2 = route1 + 1; route2 < routes.size(); ++route2) {
+                // Conflict: Routes have the same source signal or same destination signal.
+                if (routes.get(route1).getSrcSignal() == routes.get(route2).getSrcSignal()
+                        || routes.get(route1).getDestSignal() == routes.get(route2).getDestSignal()) {
+                    hasConflictMatrix[route1][route2] = true;
+                    hasConflictMatrix[route2][route1] = true;
+                    continue;
+                }
+
+                // Conflict: Routes have at least one edge in common.
+                for (var i = 0; i <  edgesRoute1.size(); ++i) {
+                    if (!Collections.disjoint(edgesRoute1.get(i), routesToEdges.get(route2).get(i))) {
+                        hasConflictMatrix[route1][route2] = true;
+                        hasConflictMatrix[route2][route1] = true;
+                        break;
+                    }
+                }
+            }
+
+            synchronized (progress) {
+                if (!progress.empty() && progress.peek().getKey() == numberOfRoutesProcessed.incrementAndGet()) {
+                    System.out.print(progress.pop().getValue());
+                }
+            }
+        });
+        System.out.print("...90%");
+
+        // Transfer the conflicts into each route object.
+        IntStream.range(0, routes.size()).parallel().forEach(routeId -> {
+            routes.get(routeId).setHasConflicts(hasConflictMatrix[routeId]);
+        });
+
+        System.out.println("...100%");
     }
 }

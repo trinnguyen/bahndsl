@@ -25,13 +25,13 @@
 package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.common.fsa.FsaUtil;
 import de.uniba.swt.dsl.common.generator.GeneratorProvider;
 import de.uniba.swt.dsl.common.layout.models.LayoutException;
 import de.uniba.swt.dsl.common.layout.models.NetworkLayout;
 import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.util.BahnUtil;
 import de.uniba.swt.dsl.common.util.LogHelper;
-import de.uniba.swt.dsl.generator.StandaloneApp;
 import org.apache.log4j.Logger;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 
@@ -41,6 +41,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class LayoutGenerator extends GeneratorProvider {
+
+	private static final String LayoutDiagramFileName = "layout_diagram.dot";
 
 	private static final String InterlockingFileName = "interlocking_table.yml";
 
@@ -82,7 +84,7 @@ public class LayoutGenerator extends GeneratorProvider {
 
 			// generate graph
 			var graph = networkLayout.generateGraph();
-			fsa.generateFile("layout_diagram.dot", dotExporter.render(networkLayout, graph));
+			dotExporter.export(fsa, LayoutDiagramFileName, networkLayout, graph);
 
 			// find all routes
 			var signals = getAllSignals(rootModule);
@@ -95,7 +97,7 @@ public class LayoutGenerator extends GeneratorProvider {
 			logger.debug(LogHelper.printObject(routes));
 
 			// generate yaml
-			fsa.generateFile(InterlockingFileName, yamlExporter.generate(routes));
+			yamlExporter.generate(fsa, InterlockingFileName, routes);
 
 		} catch (LayoutException e) {
 			throw new RuntimeException(e);

@@ -24,41 +24,79 @@
 
 package de.uniba.swt.dsl.common.util;
 
-import java.util.LinkedList;
-import java.util.List;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
+
+import java.io.*;
 
 public class YamlExporter {
 
     private static final String SPACE = "  ";
-    protected List<String> items = new LinkedList<>();
     protected int indentLevel;
+    private String indent = "";
 
-    protected void reset() {
-        items.clear();
+    private StringBuilder builder = new StringBuilder();
+    private OutputStream stream;
+    private Writer writer;
+    private BufferedWriter buffer;
+
+    protected void reset(IFileSystemAccess2 fsa, String filename) {
+        URI fileUri = fsa.getURI(filename);
+        try {
+            stream = new ExtensibleURIConverterImpl().createOutputStream(fileUri);
+            writer = new OutputStreamWriter(stream);
+            buffer = new BufferedWriter(writer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        builder = new StringBuilder();
         indentLevel = 0;
+        updateIndent();
+    }
+
+    protected void close() {
+        try {
+            flush();
+            buffer.close();
+            writer.close();
+            stream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void flush() {
+        try {
+            buffer.write(builder.toString());
+            builder.setLength(0);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void appendLine(String text) {
+        builder.append(indent)
+               .append(text)
+               .append(System.lineSeparator());
     }
 
     public void appendLine(String text, Object... args) {
-        items.add(SPACE.repeat(Math.max(0, indentLevel)) + String.format(text, args));
+        appendLine(String.format(text, args));
     }
 
-    public void increaseLevel()
-    {
+    public void increaseLevel() {
         indentLevel++;
+        updateIndent();
     }
 
-    public void decreaseLevel()
-    {
+    public void decreaseLevel() {
         indentLevel--;
+        updateIndent();
     }
 
-    protected String build()
-    {
-        return String.join("\n", items);
-    }
-
-    @Override
-    public String toString() {
-        return build();
+    private void updateIndent() {
+        indent = SPACE.repeat(Math.max(0, indentLevel));
     }
 }

@@ -34,17 +34,17 @@ public class TextualBuilder {
 
     private int indentLevel = 0;
 
-    private String linePrefix = "";
+    private String indent = "";
 
     public TextualBuilder increaseIndent() {
         indentLevel++;
-        updatePrefix();
+        updateIndent();
         return this;
     }
 
     public TextualBuilder decreaseIndent() {
         indentLevel = Math.max(0, indentLevel - 1);
-        updatePrefix();
+        updateIndent();
         return this;
     }
 
@@ -54,12 +54,14 @@ public class TextualBuilder {
     }
 
     public TextualBuilder appendLine(String text) {
-        builder.append(LINE_BREAK).append(linePrefix).append(text);
+        builder.append(LINE_BREAK).append(indent).append(text);
         return this;
     }
 
     public TextualBuilder clear() {
         builder = new StringBuilder();
+        indentLevel = 0;
+        updateIndent();
         return this;
     }
 
@@ -67,11 +69,7 @@ public class TextualBuilder {
         return builder.toString();
     }
 
-    private void updatePrefix() {
-        StringBuilder tmp = new StringBuilder();
-        for (int i = 0; i < indentLevel; i++) {
-            tmp.append(SPACE).append(SPACE);
-        }
-        linePrefix = tmp.toString();
+    private void updateIndent() {
+        indent = SPACE.repeat(Math.max(0, indentLevel * 2));
     }
 }

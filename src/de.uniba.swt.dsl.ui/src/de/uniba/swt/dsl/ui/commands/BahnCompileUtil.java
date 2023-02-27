@@ -27,7 +27,7 @@ public class BahnCompileUtil {
 	
 	private static String ext = "bahn";
 	
-	public static void processCommand(ExecutionEvent event, String route, String mode) {
+	public static void processCommand(ExecutionEvent event, String routeType, String mode) {
 		var files = getFiles(event);
 
 		
@@ -40,18 +40,18 @@ public class BahnCompileUtil {
 					
 					@Override
 					public void run(IProgressMonitor monitor) {
-						process(files, route, mode, monitor);
+						process(files, routeType, mode, monitor);
 					}
 				});
 			} catch (InvocationTargetException | InterruptedException e) {
 				StatusManager.getManager().handle(new Status(Status.WARNING, "de.uniba.swt.dsl.ui", e.getMessage(), e), StatusManager.LOG);	
 			}
     	} else {
-    		StatusManager.getManager().handle(new Status(Status.WARNING, "de.uniba.swt.dsl.ui", "No Bahn files is selected", null), StatusManager.LOG);
+    		StatusManager.getManager().handle(new Status(Status.WARNING, "de.uniba.swt.dsl.ui", "No Bahn files selected", null), StatusManager.LOG);
     	}
 	}
 	
-	private static void process(List<IFile> files, String route, String mode, IProgressMonitor pm) {
+	private static void process(List<IFile> files, String routeType, String mode, IProgressMonitor pm) {
 		pm.beginTask("Run Bahn compiler with mode: " + mode, files.size());
 		
 		// init
@@ -63,7 +63,7 @@ public class BahnCompileUtil {
 		for (IFile file : files) {
 			var path = file.getLocation().toOSString();
 			pm.subTask("Process file " + path);
-			app.runGenerator(path, fsa, null, route, mode);
+			app.runGenerator(path, fsa, null, routeType, mode);
 			
 			// refresh
 			try {

@@ -26,6 +26,7 @@ package de.uniba.swt.dsl.common.generator.sccharts;
 
 import com.google.inject.Inject;
 import de.uniba.swt.dsl.bahn.*;
+import de.uniba.swt.dsl.common.fsa.FsaUtil;
 import de.uniba.swt.dsl.common.generator.GeneratorProvider;
 import de.uniba.swt.dsl.common.generator.sccharts.builder.RootStateBuilder;
 import de.uniba.swt.dsl.common.generator.sccharts.builder.SCChartsTextualBuilder;
@@ -88,7 +89,8 @@ public class SCChartsGenerator extends GeneratorProvider {
         // print
         logger.debug("Generate SCCharts for " + scchart.getId());
 
-        fsa.generateFile(fileName, builder.buildString(scchart, refStates));
+        // Write out to file
+        BahnUtil.writeToFile(fsa, fileName, builder.buildString(scchart, refStates));
     }
 
     private List<RootState> generateReferencedStates(FuncDecl decl) {

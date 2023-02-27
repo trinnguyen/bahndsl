@@ -92,7 +92,7 @@ public class Main {
 
 		// prepare for code generation
 		String outputPath = result.getValue("o", null);
-		String route = result.getValue("r", StandaloneApp.ROUTE_SIMPLE);
+		String routeType = result.getValue("r", StandaloneApp.ROUTE_SIMPLE);
 		String mode = result.getValue("m", StandaloneApp.MODE_DEFAULT);
 
 		// process
@@ -100,7 +100,7 @@ public class Main {
 		StandaloneApp app = injector.getInstance(StandaloneApp.class);
 		JavaIoFileSystemAccess fsa = injector.getInstance(JavaIoFileSystemAccess.class);
 
-		boolean success = app.runGenerator(inputFile, fsa, outputPath, route, mode);
+		boolean success = app.runGenerator(inputFile, fsa, outputPath, routeType, mode);
 		if (!success) {
 			System.exit(1);
 		}

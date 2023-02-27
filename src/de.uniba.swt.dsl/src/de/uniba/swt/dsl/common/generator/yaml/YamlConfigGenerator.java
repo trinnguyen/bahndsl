@@ -61,16 +61,16 @@ public class YamlConfigGenerator extends GeneratorProvider {
             return;
 
         // bidib_board_config
-        fsa.generateFile(BoardFileName, boardYamlExporter.export(rootModule));
+        boardYamlExporter.export(fsa, BoardFileName, rootModule);
 
         // bidib_track_config
-        fsa.generateFile(TrackFileName, trackYamlExporter.export(rootModule));
+        trackYamlExporter.export(fsa, TrackFileName, rootModule);
 
         // bidib_train_config
-        fsa.generateFile(TrainFileName, trainYamlExporter.export(rootModule));
+        trainYamlExporter.export(fsa, TrainFileName, rootModule);
 
-        // block
-        fsa.generateFile(ExtrasConfigFileName, extrasYamlExporter.export(rootModule, networkLayout));
+        // extras_config
+        extrasYamlExporter.export(fsa, ExtrasConfigFileName, rootModule, networkLayout);
     }
 
     public void setNetworkLayout(NetworkLayout networkLayout) {

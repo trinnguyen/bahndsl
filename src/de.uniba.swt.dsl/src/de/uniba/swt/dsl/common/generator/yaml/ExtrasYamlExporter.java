@@ -34,6 +34,7 @@ import de.uniba.swt.dsl.common.util.ExtraBlockElement;
 import de.uniba.swt.dsl.common.util.ExtraReverserElement;
 import de.uniba.swt.dsl.common.util.StringUtil;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,9 +42,9 @@ import java.util.stream.Collectors;
 class ExtrasYamlExporter extends AbstractBidibYamlExporter {
     private NetworkLayout networkLayout;
 
-    public String export(RootModule rootModule, NetworkLayout networkLayout) {
+    public void export(IFileSystemAccess2 fsa, String filename, RootModule rootModule, NetworkLayout networkLayout) {
         this.networkLayout = networkLayout;
-        return export(rootModule);
+        export(fsa, filename, rootModule);
     }
 
     @Override

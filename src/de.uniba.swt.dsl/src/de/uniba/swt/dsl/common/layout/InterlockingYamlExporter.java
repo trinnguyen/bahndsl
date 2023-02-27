@@ -26,38 +26,55 @@ package de.uniba.swt.dsl.common.layout;
 
 import de.uniba.swt.dsl.bahn.LengthUnit;
 import de.uniba.swt.dsl.bahn.SegmentElement;
-import de.uniba.swt.dsl.bahn.SignalElement;
 import de.uniba.swt.dsl.common.layout.models.Route;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.AbstractPointEdge;
 import de.uniba.swt.dsl.common.layout.models.edge.BlockEdge;
 import de.uniba.swt.dsl.common.layout.models.vertex.SignalVertexMember;
 import de.uniba.swt.dsl.common.util.YamlExporter;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
+import org.eclipse.xtext.xbase.lib.Pair;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class InterlockingYamlExporter extends YamlExporter {
 
-    public String generate(Collection<Route> routes) {
+    public void generate(IFileSystemAccess2 fsa, String filename, Collection<Route> routes) {
+        // Prepare progress feedback
+        System.out.print("Generating interlocking table ...0%");
+        Stack<Pair<Integer, String>> progress = new Stack<>();
+        progress.push(new Pair<>(routes.size() * 3 / 4, "...75%"));
+        progress.push(new Pair<>(routes.size() / 2, "...50%"));
+        progress.push(new Pair<>(routes.size() / 4, "...25%"));
+
         // prepare
-        reset();
+        reset(fsa, filename);
 
         // start
         appendLine("# Interlocking table");
         appendLine("interlocking-table:");
         for (var route : routes) {
+            // Print out progress
+            if (!progress.empty() && progress.peek().getKey() == route.getId()) {
+                System.out.print(progress.pop().getValue());
+            }
+
             increaseLevel();
             generateRoute(route);
+            flush();
             decreaseLevel();
         }
 
-        return build();
+        close();
+
+        System.out.println("...100%");
     }
 
     private void generateRoute(Route route) {
         // Route ID
-        appendLine("- id: %s #route%s", route.getId(), route.getId());
+        appendLine("- id: %d #route%s", route.getId(), route.getId());
 
         // Source and destination signals, and route orientation
         increaseLevel();
@@ -101,7 +118,7 @@ public class InterlockingYamlExporter extends YamlExporter {
         // Signals
         appendLine("signals:");
         increaseLevel();
-        route.getSignals().stream().forEach(signal -> appendLine("- id: %s", signal));
+        route.getSignals().forEach(signal -> appendLine("- id: %s", signal));
         decreaseLevel();
 
         // Point aspects
@@ -119,8 +136,7 @@ public class InterlockingYamlExporter extends YamlExporter {
         // Conflicting routes
         appendLine("conflicts:");
         increaseLevel();
-        route.getConflictRouteIds().stream().sorted(Comparator.comparingInt(id -> Integer.parseInt(id)))
-                .forEach(conflict -> appendLine("- id: %s", conflict));
+        route.getConflictRouteIds().forEach(conflict -> appendLine("- id: " + conflict));
         decreaseLevel();
 
         // decrease obj level

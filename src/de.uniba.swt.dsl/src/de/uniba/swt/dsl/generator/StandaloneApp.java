@@ -83,17 +83,17 @@ public class StandaloneApp {
     @Inject
     private LibraryExternalGenerator libraryGenerator;
 
-    public boolean runGenerator(String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String route, String mode) {
+    public boolean runGenerator(String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String routeType, String mode) {
         var resource = loadResource(filePath);
         if (resource == null) {
             System.err.println("Invalid input file: " + filePath);
             return false;
         }
 
-        return runGenerator(resource, filePath, fsa, outputPath, route, mode, javaCliRuntimeExecutor);
+        return runGenerator(resource, filePath, fsa, outputPath, routeType, mode, javaCliRuntimeExecutor);
     }
 
-    public boolean runGenerator(Resource resource, String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String route, String mode, CliRuntimeExecutor runtimeExec) {
+    public boolean runGenerator(Resource resource, String filePath, AbstractFileSystemAccess2 fsa, String outputPath, String routeType, String mode, CliRuntimeExecutor runtimeExec) {
         // load
         File file = new File(filePath);
         var out = outputPath;
@@ -102,6 +102,7 @@ public class StandaloneApp {
         }
         fsa.setOutputPath(out);
         deleteDirectoryStream(Paths.get(out));
+        createDirectory(Paths.get(out));
 
         // Validate the standardlib
         Resource standardlibResource = resource.getResourceSet().getResource(getStandardLibPlatformUri(), true);
@@ -118,8 +119,8 @@ public class StandaloneApp {
         BahnGeneratorContext context = new BahnGeneratorContext();
         context.setCancelIndicator(CancelIndicator.NullImpl);
 
-        logger.info(String.format("Route generation mode: %s", route));
-        context.setRouteType(route);
+        logger.info(String.format("Route generation mode: %s", routeType));
+        context.setRouteType(routeType);
 
         // step 1: generate default artifacts
         generator.generate(resource, fsa, context);
@@ -184,8 +185,15 @@ public class StandaloneApp {
                     .map(Path::toFile)
                     .forEach(File::delete);
         } catch (IOException ex) {
-            logger.warn(String.format("Failed to delete path: %s, msg: %s", path.toString(), ex.getMessage()));
+            logger.warn(String.format("Failed to delete path: %s, msg: %s", path, ex.getMessage()));
         }
+    }
 
+    void createDirectory(Path path) {
+        try {
+            Files.createDirectories(path);
+        } catch (IOException ex) {
+            logger.error(String.format("Failed to create path: %s, msg: %s", path, ex.getMessage()));
+        }
     }
 }
