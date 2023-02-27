@@ -73,10 +73,14 @@ public class YamlExporter {
         }
     }
 
-    public void appendLine(String text, Object... args) {
+    public void appendLine(String text) {
         builder.append(indent)
-               .append(String.format(text, args))
+               .append(text)
                .append(System.lineSeparator());
+    }
+
+    public void appendLine(String text, Object... args) {
+        appendLine(String.format(text, args));
     }
 
     public void increaseLevel() {
