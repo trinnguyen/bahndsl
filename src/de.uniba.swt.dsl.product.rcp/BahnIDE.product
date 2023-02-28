@@ -43,9 +43,15 @@ The following people contributed to the conception and realization of the presen
       startupForegroundColor="000000" />
    <launcher name="Bahn IDE">
        <macosx icon="de.uniba.swt.dsl.product/icons/icons.icns"/>
-       <win useIco="false">
-         <bmp/>
-      </win>
+       <win useIco="true">
+           <bmp winSmallHigh="de.uniba.swt.dsl.product/icons/icon-16.bmp"
+                winSmallLow="de.uniba.swt.dsl.product/icons/icon-16i.bmp"
+                winMediumHigh="de.uniba.swt.dsl.product/icons/icon-32.bmp"
+                winMediumLow="de.uniba.swt.dsl.product/icons/icon-32i.bmp"
+                winLargeHigh="de.uniba.swt.dsl.product/icons/icon-48.bmp"
+                winLargeLow="de.uniba.swt.dsl.product/icons/icon-48i.bmp"
+                winExtraLargeHigh="de.uniba.swt.dsl.product/icons/icon-256.bmp"/>
+       </win>
    </launcher>
 
 
