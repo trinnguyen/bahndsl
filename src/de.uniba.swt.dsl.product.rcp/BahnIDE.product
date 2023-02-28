@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Bahn IDE" uid="BahnIDE" id="de.uniba.swt.dsl.product.product" application="org.eclipse.ui.ide.workbench" version="1.0.4" useFeatures="false" includeLaunchers="true">
+<product name="Bahn IDE" uid="BahnIDE" id="de.uniba.swt.dsl.product.product" application="org.eclipse.ui.ide.workbench" version="1.0.5" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
       <text>
@@ -745,7 +745,6 @@ Public License instead of this License.  But first, please read
       <plugin id="com.google.guava"/>
       <plugin id="com.google.inject"/>
       <plugin id="com.google.inject.assistedinject" fragment="true"/>
-      <plugin id="com.google.inject.multibindings" fragment="true"/>
       <plugin id="com.ibm.icu"/>
       <plugin id="com.sun.jna"/>
       <plugin id="com.sun.jna.platform"/>
@@ -816,8 +815,6 @@ Public License instead of this License.  But first, please read
       <plugin id="org.apache.felix.scr"/>
       <plugin id="org.apache.log4j"/>
       <plugin id="org.apache.xmlgraphics"/>
-      <plugin id="org.bouncycastle.bcpg"/>
-      <plugin id="org.bouncycastle.bcprov"/>
       <plugin id="org.eclipse.ant.core"/>
       <plugin id="org.eclipse.compare"/>
       <plugin id="org.eclipse.compare.core"/>
@@ -989,11 +986,8 @@ Public License instead of this License.  But first, please read
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
       <plugin id="org.eclipse.update.configurator"/>
       <plugin id="org.eclipse.urischeme"/>
-      <plugin id="org.eclipse.xpand"/>
-      <plugin id="org.eclipse.xtend"/>
       <plugin id="org.eclipse.xtend.lib"/>
       <plugin id="org.eclipse.xtend.lib.macro"/>
-      <plugin id="org.eclipse.xtend.typesystem.emf"/>
       <plugin id="org.eclipse.xtext"/>
       <plugin id="org.eclipse.xtext.builder"/>
       <plugin id="org.eclipse.xtext.common.types"/>
@@ -1001,7 +995,6 @@ Public License instead of this License.  But first, please read
       <plugin id="org.eclipse.xtext.common.types.shared.jdt38" fragment="true"/>
       <plugin id="org.eclipse.xtext.common.types.ui"/>
       <plugin id="org.eclipse.xtext.ecore"/>
-      <plugin id="org.eclipse.xtext.generator"/>
       <plugin id="org.eclipse.xtext.ide"/>
       <plugin id="org.eclipse.xtext.logging" fragment="true"/>
       <plugin id="org.eclipse.xtext.smap"/>
