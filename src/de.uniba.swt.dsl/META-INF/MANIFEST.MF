@@ -1,14 +1,14 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: de.uniba.swt.dsl
 Bundle-ManifestVersion: 2
-Bundle-Name: de.uniba.swt.dsl
+Bundle-Name: BahnDSL
 Bundle-Vendor: University of Bamberg, Software Technologies Research Group
-Bundle-Version: 1.0.4
+Bundle-Version: 1.0.5
 Bundle-SymbolicName: de.uniba.swt.dsl; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.xtext,
  org.eclipse.xtext.xbase,
- org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.equinox.common,
  org.eclipse.emf.ecore,
  org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
  org.eclipse.xtext.util,

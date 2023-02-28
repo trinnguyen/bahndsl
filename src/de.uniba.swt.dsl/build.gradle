@@ -18,8 +18,8 @@ tasks.withType(CreateStartScripts) {
 
 dependencies {
 	implementation fileTree('libs') { include '*.jar' }
-	implementation 'org.freemarker:freemarker:2.3.31'
-	implementation 'com.google.code.gson:gson:2.8.6'
+	implementation 'org.freemarker:freemarker:2.3.32'
+	implementation 'com.google.code.gson:gson:2.10.1'
 
 	implementation 'commons-io:commons-io:2.11.0'
 	implementation "org.eclipse.xtext:org.eclipse.xtext:${xtextVersion}"
