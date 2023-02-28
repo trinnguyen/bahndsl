@@ -15,10 +15,12 @@
 		<!-- Tycho settings -->
 		<tycho-version>3.0.3</tycho-version>
 		<!-- Define overridable properties for tycho-surefire-plugin -->
+		<!--
 		<platformSystemProperties></platformSystemProperties>
 		<moduleProperties></moduleProperties>
 		<systemProperties></systemProperties>
 		<additionalTestArguments></additionalTestArguments>
+		-->
 	</properties>
 	<modules>
 		<module>de.uniba.swt.dsl</module>
