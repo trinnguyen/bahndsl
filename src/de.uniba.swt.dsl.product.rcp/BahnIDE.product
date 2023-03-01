@@ -20,19 +20,19 @@ The following people contributed to the conception and realization of the presen
       </text>
    </aboutInfo>
 
-   <configIni use="default">
-   </configIni>
+    <configIni use="default">
+    </configIni>
 
-   <launcherArgs>
-      <programArgs>
-          -clearPersistedState
-      </programArgs>
-      <vmArgsMac>
-          -XstartOnFirstThread
-          -Dorg.eclipse.swt.internal.carbon.smallFonts
-          -Xdock:icon=../Resources/icons.icns
-      </vmArgsMac>
-   </launcherArgs>
+    <launcherArgs>
+        <programArgs>
+            -clearPersistedState
+        </programArgs>
+        <vmArgsMac>
+            -XstartOnFirstThread
+            -Dorg.eclipse.swt.internal.carbon.smallFonts
+            -Xdock:icon=../Resources/icons.icns
+        </vmArgsMac>
+    </launcherArgs>
 
    <windowImages/>
 
@@ -41,6 +41,7 @@ The following people contributed to the conception and realization of the presen
       startupProgressRect="5,275,445,15"
       startupMessageRect="7,252,445,20"
       startupForegroundColor="000000" />
+
    <launcher name="Bahn IDE">
        <macosx icon="de.uniba.swt.dsl.product/icons/icons.icns"/>
        <win useIco="true">

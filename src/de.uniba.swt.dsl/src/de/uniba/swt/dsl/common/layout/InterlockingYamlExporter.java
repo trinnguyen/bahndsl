@@ -78,15 +78,15 @@ public class InterlockingYamlExporter extends YamlExporter {
 
         // Source and destination signals, and route orientation
         increaseLevel();
-        appendLine("source: %s", route.getSrcSignal());
-        appendLine("destination: %s", route.getDestSignal());
-        appendLine("orientation: %s", route.getStartingOrientation().toString().toLowerCase());
+        appendLine("source: " + route.getSrcSignal());
+        appendLine("destination: " + route.getDestSignal());
+        appendLine("orientation: " + route.getStartingOrientation().toString().toLowerCase());
 
         // Route path (segments and signals)
         appendLine("path:");
         increaseLevel();
         String pathDescription = route.getEdges().stream().map(AbstractEdge::getKey).collect(Collectors.joining(" -> "));
-        appendLine("# %s", pathDescription);
+        appendLine("# " + pathDescription);
 
         double length = 0;
         LengthUnit unit = LengthUnit.METRE;
@@ -94,13 +94,13 @@ public class InterlockingYamlExporter extends YamlExporter {
         for (Object item : segmentsAndSignals) {
             if (item instanceof SegmentElement) {
                 SegmentElement segment = (SegmentElement) item;
-                appendLine("- id: %s", segment.getName());
+                appendLine("- id: " + segment.getName());
 
                 length += segment.getLength().getValue();
                 unit = segment.getLength().getUnit();
             } else if (item instanceof SignalVertexMember) {
                 SignalVertexMember signal = (SignalVertexMember) item;
-                appendLine("- id: %s", signal.getName());
+                appendLine("- id: " + signal.getName());
             }
         }
 
@@ -109,7 +109,7 @@ public class InterlockingYamlExporter extends YamlExporter {
         // Block sections
         appendLine("sections:");
         increaseLevel();
-        route.getBlocks().stream().map(BlockEdge::getKey).forEach(blockId -> appendLine("- id: %s", blockId));
+        route.getBlocks().stream().map(BlockEdge::getKey).forEach(blockId -> appendLine("- id: " + blockId));
         decreaseLevel();
 
         // Route length
@@ -118,7 +118,7 @@ public class InterlockingYamlExporter extends YamlExporter {
         // Signals
         appendLine("signals:");
         increaseLevel();
-        route.getSignals().forEach(signal -> appendLine("- id: %s", signal));
+        route.getSignals().forEach(signal -> appendLine("- id: " + signal));
         decreaseLevel();
 
         // Point aspects
@@ -126,9 +126,9 @@ public class InterlockingYamlExporter extends YamlExporter {
         increaseLevel();
         List<AbstractPointEdge> points = route.getPoints();
         for (AbstractPointEdge point : points) {
-            appendLine("- id: %s", point.getPointElement().getName());
+            appendLine("- id: " + point.getPointElement().getName());
             increaseLevel();
-            appendLine("position: %s", point.formatAspect());
+            appendLine("position: " + point.formatAspect());
             decreaseLevel();
         }
         decreaseLevel();
