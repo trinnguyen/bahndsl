@@ -49,7 +49,7 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
 
     @Override
     protected String getHeaderComment() {
-        return "Block layout configuration";
+        return "Module Name and Block layout configuration";
     }
 
     @Override
@@ -82,7 +82,13 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
                 compositeSignals.addAll(items);
             }
         }
-
+        // Name of module
+        if (rootModule.getName() != null) {
+        	appendLine("modulename: " + rootModule.getName());
+        } else {
+        	appendLine("modulename: undefined");
+        }
+        
         // blocks
         exportSection("blocks:", blocks);
         exportSection("platforms:", platforms);
