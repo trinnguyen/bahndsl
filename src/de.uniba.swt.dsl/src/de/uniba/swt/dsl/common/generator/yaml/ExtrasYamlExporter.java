@@ -82,13 +82,9 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
                 compositeSignals.addAll(items);
             }
         }
-        // Name of module
-        if (rootModule.getName() != null) {
-        	appendLine("modulename: " + rootModule.getName());
-        } else {
-        	appendLine("modulename: undefined");
-        }
         
+        // module-name
+        appendLine("module-name: " + rootModule.getName());
         // blocks
         exportSection("blocks:", blocks);
         exportSection("platforms:", platforms);
