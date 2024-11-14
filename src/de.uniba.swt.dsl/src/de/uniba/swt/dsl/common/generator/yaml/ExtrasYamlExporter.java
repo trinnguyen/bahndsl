@@ -90,9 +90,9 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
         exportSection("platforms:", platforms);
         exportSection("reversers:", reversers);
         exportSection("crossings:", crossings);
-        exportSection("signaltypes:", signaltypes);
+        exportSection("signal-types:", signaltypes);
         exportSection("compositions:", compositeSignals);
-        exportSection("peripheraltypes:", peripheraltypes);
+        exportSection("peripheral-types:", peripheraltypes);
     }
 
     private List<String> getSegmentNames(RootModule rootModule) {
