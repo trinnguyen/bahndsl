@@ -97,5 +97,5 @@ sh build-test.sh
 
 - Run integration tests for the command-line compiler
 ```
-build-test-cli.sh
+sh build-test-cli.sh
 ```

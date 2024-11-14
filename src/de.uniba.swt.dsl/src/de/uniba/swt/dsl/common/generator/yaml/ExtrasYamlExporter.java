@@ -49,7 +49,7 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
 
     @Override
     protected String getHeaderComment() {
-        return "Block layout configuration";
+        return "Module Name and Block layout configuration";
     }
 
     @Override
@@ -82,15 +82,17 @@ class ExtrasYamlExporter extends AbstractBidibYamlExporter {
                 compositeSignals.addAll(items);
             }
         }
-
+        
+        // module-name
+        appendLine("module-name: " + rootModule.getName());
         // blocks
         exportSection("blocks:", blocks);
         exportSection("platforms:", platforms);
         exportSection("reversers:", reversers);
         exportSection("crossings:", crossings);
-        exportSection("signaltypes:", signaltypes);
+        exportSection("signal-types:", signaltypes);
         exportSection("compositions:", compositeSignals);
-        exportSection("peripheraltypes:", peripheraltypes);
+        exportSection("peripheral-types:", peripheraltypes);
     }
 
     private List<String> getSegmentNames(RootModule rootModule) {
