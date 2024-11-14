@@ -8,80 +8,80 @@ on:
 
 jobs:
   build-gradle:
-
+    name: Build bahnc and server
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-    - name: Build bahnc with Gradle
+    - name: Build bahnc and language server with Gradle
       run: sh src/build-gradle.sh
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
-        name: build
+        name: build-bahnc
         path: src/build/*.zip
         retention-days: 1
   
   build-maven:
-
+    name: Build Bahn IDE
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
     - name: Build Bahn IDE with Maven
       run: sh src/build-maven-rcp.sh
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
-        name: build
+        name: build-ide
         path: src/build/*.*
         retention-days: 1
   
-  test:
-
+  test-unit:
+    name: Unit test
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
     - name: Run unit tests with Gradle
       run: sh src/build-test.sh
-    - name: Publish Unit Test Results
+    - name: Publish unit test results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
-        check_name: "Unit Test Results"
+        check_name: "Unit test results"
         junit_files: src/de.uniba.swt.dsl.tests/build/test-results/test/**/TEST-*.xml
     
-  test-cli:
-
+  test-integration:
+    name: Integration test
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
     - name: Run integration tests against bahnc with system C compiler
       run: sh src/build-test-cli.sh
-    - name: Publish Integration Test Results
+    - name: Publish integration test results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
-        check_name: "Integration Test Results"
+        check_name: "Integration test results"
         junit_files: src/de.uniba.swt.dsl.cli.tests/build/test-results/test/**/TEST-*.xml
     
