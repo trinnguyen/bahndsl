@@ -28,7 +28,7 @@ subprojects {
 	apply plugin: 'eclipse'
 	
 	group = 'de.uniba.swt.dsl'
-	version = '1.0.5'		// Change in Main.java, package.json, Manifest.MF, and pom.xml, BahnIDE.product
+	version = '1.0.6'		// Change in Main.java, package.json, Manifest.MF, and pom.xml, BahnIDE.product
 	
 	sourceCompatibility = '11'
 	targetCompatibility = '11'

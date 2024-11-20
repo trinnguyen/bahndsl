@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>de.uniba.swt.dsl</groupId>
 		<artifactId>de.uniba.swt.dsl.parent</artifactId>
-		<version>1.0.5</version>
+		<version>1.0.6</version>
 	</parent>
 	<artifactId>de.uniba.swt.dsl.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>

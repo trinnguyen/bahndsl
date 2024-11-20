@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Bahn IDE" uid="BahnIDE" id="de.uniba.swt.dsl.product.product" application="org.eclipse.ui.ide.workbench" version="1.0.5" useFeatures="false" includeLaunchers="true">
+<product name="Bahn IDE" uid="BahnIDE" id="de.uniba.swt.dsl.product.product" application="org.eclipse.ui.ide.workbench" version="1.0.6" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
       <text>
-BahnDSL 1.0.5: A Domain-Specific Language for Configuring and Modelling Model Railways
+BahnDSL 1.0.6: A Domain-Specific Language for Configuring and Modelling Model Railways
 
 Copyright (C) 2023 University of Bamberg, Software Technologies Research Group
 https://www.uni-bamberg.de, http://www.swt-bamberg.de
