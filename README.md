@@ -8,8 +8,6 @@
 
 ## Installation
 
-- Latest version: 1.0.5
-
 ### Requirements
 - Java SE 17: https://adoptopenjdk.net
 - C Compiler (clang or gcc) for compiling shared libraries
@@ -20,13 +18,13 @@
     + gcc (via MSYS2): https://packages.msys2.org/package/mingw-w64-x86_64-gcc
 
 ### bahnc (Bahn Compiler CLI)
-- [macOS/Linux/Windows](https://github.com/trinnguyen/bahndsl/releases/download/v1.0.5/bahnc-1.0.5.zip)
+- [macOS/Linux/Windows](https://github.com/trinnguyen/bahndsl/releases/latest) `bahnc-<version>.zip`
 
 ### Bahn IDE
-- macOS: [Intel](https://github.com/trinnguyen/bahndsl/releases/download/v1.0.5/BahnIDE-macosx.cocoa.x86_64.tar.gz), [Apple Silicon](https://github.com/trinnguyen/bahndsl/releases/download/v1.0.5/BahnIDE-macosx.cocoa.aarch64.tar.gz)
+- macOS: [Intel](https://github.com/trinnguyen/bahndsl/releases/latest/download/BahnIDE-macosx.cocoa.x86_64.tar.gz), [Apple Silicon](https://github.com/trinnguyen/bahndsl/releases/latest/download/BahnIDE-macosx.cocoa.aarch64.tar.gz)
   + Remove the quarantine flag after downloading and unzipping: `xattr -c "Bahn IDE.app"`
-- [Linux](https://github.com/trinnguyen/bahndsl/releases/download/v1.0.5/BahnIDE-linux.gtk.x86_64.tar.gz)
-- [Windows](https://github.com/trinnguyen/bahndsl/releases/download/v1.0.5/BahnIDE-win32.win32.x86_64.zip)
+- [Linux](https://github.com/trinnguyen/bahndsl/releases/latest/download/BahnIDE-linux.gtk.x86_64.tar.gz)
+- [Windows](https://github.com/trinnguyen/bahndsl/releases/latest/download/BahnIDE-win32.win32.x86_64.zip)
 
 
 ## Usage
@@ -34,7 +32,7 @@
 ### bahnc (command-line compiler)
 
 ```
-OVERVIEW: Bahn compiler 1.0.5
+OVERVIEW: Bahn compiler 1.0.6
 
 USAGE: bahnc [-o <path>][-r <route>] [-m <mode>] [-v] [-d] file
   -o <path>     output folder

@@ -3,7 +3,7 @@ Automatic-Module-Name: de.uniba.swt.dsl.product
 Bundle-ManifestVersion: 2
 Bundle-Name: Bahn IDE Product
 Bundle-Vendor: University of Bamberg, Software Technologies Research Group
-Bundle-Version: 1.0.5
+Bundle-Version: 1.0.6
 Bundle-SymbolicName: de.uniba.swt.dsl.product;singleton:=true
 Require-Bundle: javax.inject,
  org.eclipse.core.runtime,
