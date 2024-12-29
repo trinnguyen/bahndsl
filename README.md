@@ -1,5 +1,7 @@
 # BahnDSL: A Domain-Specific Language for Configuring and Modelling Model Railways
 
+Rebuild Test
+
 [![CI/CD](https://github.com/trinnguyen/bahndsl/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/trinnguyen/bahndsl/actions)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/trinnguyen/bahndsl?style=social)](https://github.com/trinnguyen/bahndsl/releases)
 
